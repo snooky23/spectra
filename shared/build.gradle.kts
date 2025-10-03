@@ -33,6 +33,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(libs.bundles.kotlinx)
+                implementation(libs.ktor.client.core)
             }
         }
 
@@ -50,6 +51,7 @@ kotlin {
             dependencies {
                 implementation(libs.androidx.core.ktx)
                 implementation(libs.kotlinx.coroutines.android)
+                implementation(libs.okhttp)
             }
         }
 
