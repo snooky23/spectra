@@ -5,15 +5,19 @@ import android.os.Bundle
 import android.widget.TextView
 import com.spectra.logger.SpectraLogger
 
+/**
+ * Example activity demonstrating Spectra Logger usage.
+ */
 class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val textView = TextView(this).apply {
-            text = "Spectra Logger Example\nVersion: ${SpectraLogger.getVersion()}"
-            textSize = 20f
-            setPadding(40, 40, 40, 40)
-        }
+        val textView =
+            TextView(this).apply {
+                text = "Spectra Logger Example\nVersion: ${SpectraLogger.getVersion()}"
+                textSize = 20f
+                setPadding(40, 40, 40, 40)
+            }
 
         setContentView(textView)
     }
