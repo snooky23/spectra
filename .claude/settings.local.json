@@ -1,7 +1,6 @@
 {
   "permissions": {
     "allow": [
-      "Read(//Users/avilevin/Downloads/Zapp-Frameworks-master/plugins/quick-brick-xray/**)",
       "Bash(grep:*)",
       "Bash(git init:*)",
       "Bash([ -f README.md ])",
@@ -14,7 +13,10 @@
       "Bash(./gradlew build:*)",
       "Bash(./gradlew:*)",
       "Bash(git add:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nComplete Milestone 1.1 - Project Foundation Setup\n\nSet up complete Kotlin Multiplatform project with iOS/Android targets, \ncomprehensive documentation, CI/CD pipeline, and example applications.\n\nKey achievements:\n- KMP project structure with Android AAR and iOS framework generation\n- Gradle build system with version catalog\n- Code quality tools (ktlint, detekt) with CI/CD integration\n- Documentation (PRD, Planning, Tasks, Claude instructions)\n- Basic example app shells for native Android and KMP projects\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git commit -m \"$(cat <<''EOF''\nComplete Milestone 1.1 - Project Foundation Setup\n\nSet up complete Kotlin Multiplatform project with iOS/Android targets, \ncomprehensive documentation, CI/CD pipeline, and example applications.\n\nKey achievements:\n- KMP project structure with Android AAR and iOS framework generation\n- Gradle build system with version catalog\n- Code quality tools (ktlint, detekt) with CI/CD integration\n- Documentation (PRD, Planning, Tasks, Claude instructions)\n- Basic example app shells for native Android and KMP projects\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit:*)",
+      "Bash(xargs cat:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

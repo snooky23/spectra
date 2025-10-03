@@ -20,7 +20,7 @@ dependencyResolutionManagement {
 // Core shared module
 include(":shared")
 
-// Example applications
+// Example applications (temporarily disabled due to module naming conflict)
 include(":examples:android-native:app")
-include(":examples:kmp-app:shared")
-include(":examples:kmp-app:androidApp")
+// include(":examples:kmp-app:shared")
+// include(":examples:kmp-app:androidApp")
