@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.compose.multiplatform)
     id("maven-publish")
 }
 
@@ -34,6 +35,10 @@ kotlin {
             dependencies {
                 implementation(libs.bundles.kotlinx)
                 implementation(libs.ktor.client.core)
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.ui)
             }
         }
 
@@ -52,6 +57,7 @@ kotlin {
                 implementation(libs.androidx.core.ktx)
                 implementation(libs.kotlinx.coroutines.android)
                 implementation(libs.okhttp)
+                implementation(libs.androidx.activity.compose)
             }
         }
 
