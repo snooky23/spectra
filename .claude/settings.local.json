@@ -17,7 +17,13 @@
       "Bash(git commit:*)",
       "Bash(xargs cat:*)",
       "Bash(cat:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(timeout:*)",
+      "Bash(git restore:*)",
+      "Bash(source:*)",
+      "Bash(echo $JAVA_HOME)",
+      "Bash([ -f /Users/avilevin/Workspace/Personal/Spectra/.editorconfig ])",
+      "Bash(git remote get-url:*)"
     ],
     "deny": [],
     "ask": []
