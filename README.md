@@ -327,7 +327,7 @@ val networkLogs = SpectraLogger.queryNetwork(
 
 ### Prerequisites
 
-- JDK 11+
+- JDK 17+ (recommend installing via [SDKMAN](https://sdkman.io/))
 - Android Studio Hedgehog or later (for Android)
 - Xcode 15+ (for iOS)
 - macOS 13+ (for iOS development)
