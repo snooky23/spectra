@@ -11,7 +11,7 @@ import platform.Foundation.NSString
 import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.NSUserDomainMask
 import platform.Foundation.create
-import platform.Foundation.dataUsingEncoding
+import platform.Foundation.stringByDeletingLastPathComponent
 import platform.Foundation.writeToFile
 
 /**
@@ -56,23 +56,22 @@ actual class FileSystem {
             val filePath = getFilePath(path)
 
             // Create parent directories if needed
-            val parentPath = NSString.stringWithString(filePath).stringByDeletingLastPathComponent
+            val nsFilePath = filePath as NSString
+            val parentPath = nsFilePath.stringByDeletingLastPathComponent()
             if (!fileManager.fileExistsAtPath(parentPath)) {
                 fileManager.createDirectoryAtPath(parentPath, true, null, null)
             }
 
-            val nsString = NSString.create(string = content)
-            val data = nsString.dataUsingEncoding(NSUTF8StringEncoding)
-
             if (append && fileManager.fileExistsAtPath(filePath)) {
-                // Append to existing file
-                val existingData = NSData.create(contentsOfFile = filePath)
-                val mutableData = existingData?.mutableCopy() as? platform.Foundation.NSMutableData
-                mutableData?.appendData(data!!)
-                mutableData?.writeToFile(filePath, atomically = true)
+                // Append to existing file - read existing content, append, write
+                val existingContent = readText(path) ?: ""
+                val newContent = existingContent + content
+                val nsContent = NSString.create(string = newContent)
+                nsContent.writeToFile(filePath, atomically = true, encoding = NSUTF8StringEncoding, error = null)
             } else {
                 // Write new file
-                data?.writeToFile(filePath, atomically = true)
+                val nsContent = NSString.create(string = content)
+                nsContent.writeToFile(filePath, atomically = true, encoding = NSUTF8StringEncoding, error = null)
             }
         }
 
