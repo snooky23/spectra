@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.compose.multiplatform)
 }
 
 android {
@@ -25,6 +26,10 @@ android {
         }
     }
 
+    buildFeatures {
+        compose = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -39,4 +44,8 @@ dependencies {
     implementation(project(":shared"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.7.7")
 }
