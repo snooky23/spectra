@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.spectra.logger.domain.model.LogEntry
 import com.spectra.logger.domain.model.LogFilter
 import com.spectra.logger.domain.storage.LogStorage
+import com.spectra.logger.ui.components.LogDetailDialog
 import com.spectra.logger.ui.components.LogEntryItem
 import kotlinx.coroutines.flow.catch
 
@@ -48,6 +49,7 @@ fun LogListScreen(
     var logs by remember { mutableStateOf<List<LogEntry>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
+    var selectedLog by remember { mutableStateOf<LogEntry?>(null) }
 
     // Observe logs from storage
     val newLogs by
@@ -71,6 +73,14 @@ fun LogListScreen(
         newLogs?.let { newLog ->
             logs = listOf(newLog) + logs
         }
+    }
+
+    // Show detail dialog if a log is selected
+    selectedLog?.let { log ->
+        LogDetailDialog(
+            entry = log,
+            onDismiss = { selectedLog = null },
+        )
     }
 
     Scaffold(
@@ -125,7 +135,10 @@ fun LogListScreen(
                         items(logs, key = { it.id }) { log ->
                             LogEntryItem(
                                 entry = log,
-                                onClick = onLogClick?.let { { it(log) } },
+                                onClick = {
+                                    selectedLog = log
+                                    onLogClick?.invoke(log)
+                                },
                             )
                         }
                     }

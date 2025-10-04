@@ -5,8 +5,6 @@ import com.spectra.logger.domain.model.LogFilter
 import com.spectra.logger.storage.FileSystem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.datetime.Clock
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 

@@ -34,8 +34,10 @@ data class StorageConfiguration(
  */
 data class PerformanceConfiguration(
     val flowBufferCapacity: Int = 64,
-    val asyncWriteTimeout: Long = 5_000, // milliseconds
-    val maxBodySize: Int = 10_000, // bytes for network logs
+    // milliseconds
+    val asyncWriteTimeout: Long = 5_000,
+    // bytes for network logs
+    val maxBodySize: Int = 10_000,
 )
 
 /**
