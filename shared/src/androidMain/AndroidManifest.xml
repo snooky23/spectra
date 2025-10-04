@@ -8,6 +8,29 @@
             android:exported="false"
             android:theme="@android:style/Theme.Material.Light.NoActionBar" />
 
+        <!-- Deep link activity for URL scheme: spectra:// -->
+        <activity
+            android:name=".ui.SpectraDeepLinkActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="spectra"
+                    android:host="open" />
+                <data
+                    android:scheme="spectra"
+                    android:host="logs" />
+                <data
+                    android:scheme="spectra"
+                    android:host="network" />
+            </intent-filter>
+        </activity>
+
         <!-- FileProvider for sharing exported logs -->
         <provider
             android:name="androidx.core.content.FileProvider"
