@@ -49,6 +49,7 @@ object SpectraURLSessionLogger {
      * @param storage The network log storage
      * @return An NSURLSession configured for logging
      */
+    @Suppress("UNUSED_PARAMETER")
     fun createSession(storage: NetworkLogStorage): NSURLSession = NSURLSession.sharedSession
 
     /**

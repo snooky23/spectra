@@ -1,9 +1,14 @@
 package com.spectra.logger.performance
 
-import com.spectra.logger.domain.LogLevel
 import com.spectra.logger.domain.Logger
 import com.spectra.logger.domain.model.LogEntry
+import com.spectra.logger.domain.model.LogLevel
 import com.spectra.logger.domain.storage.InMemoryLogStorage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Clock
 import kotlin.test.Test
@@ -100,9 +105,10 @@ class PerformanceBenchmarks {
 
     @Test
     fun benchmarkMemoryUsage() =
-        runTest {
+        runBlocking {
             val storage = InMemoryLogStorage(maxCapacity = 10_000)
-            val logger = Logger(storage = storage, minLevel = LogLevel.VERBOSE)
+            val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+            val logger = Logger(storage = storage, minLevel = LogLevel.VERBOSE, scope = scope)
 
             // Add 10K logs
             repeat(10_000) { index ->
@@ -112,6 +118,9 @@ class PerformanceBenchmarks {
                     metadata = mapOf("index" to index.toString(), "type" to "benchmark"),
                 )
             }
+
+            // Wait for async operations to complete
+            delay(500)
 
             val count = storage.count()
             println("Stored logs: $count")

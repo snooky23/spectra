@@ -81,12 +81,17 @@ naming:
   FunctionNaming:
     active: true
     functionPattern: '[a-z][a-zA-Z0-9]*'
+    excludes: ['**/examples/**']
+    ignoreAnnotated: ['Composable']
   ClassNaming:
     active: true
     classPattern: '[A-Z][a-zA-Z0-9]*'
   VariableNaming:
     active: true
     variablePattern: '[a-z][a-zA-Z0-9]*'
+  MatchingDeclarationName:
+    active: true
+    excludes: ['**/examples/**']
 
 performance:
   active: true
