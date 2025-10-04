@@ -161,16 +161,74 @@ task.resume()
 **Option 2: Use Ktor in Shared Code (Automatic)**
 See KMP section above for automatic network logging.
 
-### Show Logger UI (Android)
+### Show Logger UI
 
+#### Android
+
+**Option 1: Manual**
 ```kotlin
 import com.spectra.logger.ui.SpectraLoggerUI
 
 // From any Activity or Context
 SpectraLoggerUI.show(context)
+```
 
-// Or use Intent directly
-startActivity(Intent(this, SpectraLoggerActivity::class.java))
+**Option 2: Shake Gesture**
+```kotlin
+import com.spectra.logger.ui.SpectraLoggerTrigger
+
+// In your Application class
+class MyApp : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        // Enable shake-to-open logger
+        SpectraLoggerTrigger.enableShakeToOpen(this)
+    }
+}
+```
+
+**Option 3: Persistent Notification**
+```kotlin
+import com.spectra.logger.ui.SpectraLoggerNotification
+
+// Show notification (taps opens logger)
+SpectraLoggerNotification.show(context, "Debug Mode Active")
+
+// Hide notification
+SpectraLoggerNotification.hide(context)
+```
+
+#### iOS
+
+```swift
+// TODO: iOS UI implementation pending
+// Currently use programmatic log querying
+```
+
+### Export and Share Logs
+
+```kotlin
+import com.spectra.logger.export.FileExporter
+import com.spectra.logger.export.ExportFormat
+
+// Export to file
+val file = FileExporter.exportLogsToFile(
+    context = context,
+    format = ExportFormat.JSON,
+    filter = LogFilter(levels = setOf(LogLevel.ERROR))
+)
+
+// Share via Android share sheet
+FileExporter.shareLogs(
+    context = context,
+    format = ExportFormat.TEXT
+)
+
+// Share network logs
+FileExporter.shareNetworkLogs(
+    context = context,
+    format = ExportFormat.JSON
+)
 ```
 
 ### Querying Logs Programmatically
