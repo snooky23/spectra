@@ -4,6 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.spectra.logger.ui.screens.SpectraLoggerScreen
 
 /**
@@ -13,15 +17,33 @@ import com.spectra.logger.ui.screens.SpectraLoggerScreen
  * ```kotlin
  * // In your app code:
  * startActivity(Intent(this, SpectraLoggerActivity::class.java))
+ *
+ * // Or via URL scheme:
+ * // spectra://open - Opens main screen
+ * // spectra://logs - Opens logs tab
+ * // spectra://network - Opens network tab
  * ```
  */
 class SpectraLoggerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Parse deep link parameters
+        val deepLinkHost = intent?.getStringExtra(SpectraDeepLinkActivity.EXTRA_DEEP_LINK_HOST)
+        val initialTab =
+            when (deepLinkHost) {
+                "logs" -> 0
+                "network" -> 1
+                else -> 0 // Default to logs tab
+            }
+
         setContent {
             MaterialTheme {
-                SpectraLoggerScreen()
+                var selectedTab by remember { mutableIntStateOf(initialTab) }
+                SpectraLoggerScreen(
+                    initialTab = selectedTab,
+                    onTabSelected = { selectedTab = it },
+                )
             }
         }
     }

@@ -198,11 +198,60 @@ SpectraLoggerNotification.show(context, "Debug Mode Active")
 SpectraLoggerNotification.hide(context)
 ```
 
+**Option 4: URL Scheme** (Works from ADB, browser, or other apps)
+```bash
+# Android - via ADB
+adb shell am start -a android.intent.action.VIEW -d "spectra://open"
+adb shell am start -a android.intent.action.VIEW -d "spectra://logs"
+adb shell am start -a android.intent.action.VIEW -d "spectra://network"
+
+# Android - from browser or webview
+# Simply navigate to: spectra://open
+
+# From Chrome DevTools remote debugging
+window.location = "spectra://network"
+```
+
 #### iOS
 
+**URL Scheme Setup:**
+
+1. Add to `Info.plist`:
+```xml
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>spectra</string>
+        </array>
+    </dict>
+</array>
+```
+
+2. Handle in SwiftUI:
 ```swift
-// TODO: iOS UI implementation pending
-// Currently use programmatic log querying
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .onOpenURL { url in
+                    if url.scheme == "spectra" {
+                        // Present logger UI
+                    }
+                }
+        }
+    }
+}
+```
+
+3. Open from terminal:
+```bash
+# iOS Simulator
+xcrun simctl openurl booted "spectra://open"
+
+# Or from Safari - just type: spectra://open
 ```
 
 ### Export and Share Logs
