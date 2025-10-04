@@ -33,8 +33,10 @@ A Kotlin Multiplatform logging framework for mobile applications that works seam
 - ✅ Milestone 1.4: Configuration System
 - ✅ Milestone 2.1: Basic UI Components
 - ✅ Milestone 2.2: Enhanced Features (Shake, Notification, Export, URL Scheme)
+- ✅ Milestone 2.3: File Storage & Persistence (with automatic rotation)
+- ✅ Milestone 2.4: UI Enhancements (Detail view, Search functionality)
 
-**Next:** Milestone 2.3 - File Storage & Persistence
+**Next:** Milestone 3 - Advanced Features & Polish
 
 See [TASKS.md](./TASKS.md) for detailed development timeline.
 
@@ -164,6 +166,62 @@ task.resume()
 
 **Option 2: Use Ktor in Shared Code (Automatic)**
 See KMP section above for automatic network logging.
+
+### File Storage & Persistence
+
+Spectra Logger supports persistent file storage with automatic rotation to prevent unlimited disk usage.
+
+#### Android
+
+```kotlin
+import com.spectra.logger.domain.storage.FileLogStorage
+import com.spectra.logger.storage.FileSystem
+
+// Create file storage with automatic rotation
+val fileStorage = FileLogStorage(
+    fileSystem = FileSystem(context),
+    maxFileSize = 1_048_576L,  // 1MB per file (default)
+    maxFiles = 5                // Keep max 5 files (default)
+)
+
+// Initialize to find existing log files
+fileStorage.initialize()
+
+// Use as your log storage
+SpectraLogger.configure {
+    logStorage = fileStorage
+}
+```
+
+#### iOS
+
+```swift
+import SpectraLogger
+
+// Create file storage with automatic rotation
+let fileStorage = FileLogStorage(
+    fileSystem: FileSystem(),
+    maxFileSize: 1_048_576,  // 1MB per file
+    maxFiles: 5               // Keep max 5 files
+)
+
+// Initialize to find existing log files
+fileStorage.initialize()
+
+// Configure logger
+SpectraLogger.shared.configure { config in
+    config.logStorage = fileStorage
+}
+```
+
+**Features:**
+- Automatic file rotation when size limit is reached
+- Oldest files deleted when max file count exceeded
+- JSONL format (one JSON object per line) for efficient streaming
+- Persists across app restarts
+- Platform-specific storage:
+  - Android: `Context.filesDir/spectra_logs/`
+  - iOS: `NSDocumentDirectory/spectra_logs/`
 
 ### Show Logger UI
 
@@ -389,8 +447,9 @@ See [CLAUDE.md](./CLAUDE.md) for detailed coding standards and architecture guid
 - [x] Configuration system
 - [x] Network logging (OkHttp, URLProtocol, Ktor)
 - [x] Basic UI components
-- [ ] File storage
-- [ ] Enhanced features
+- [x] File storage with automatic rotation
+- [x] Enhanced features (shake, notification, export, URL scheme)
+- [x] UI enhancements (detail view, search)
 
 ### Version 0.5.0 (Phase 3) - UI
 - [ ] Log viewer screen
