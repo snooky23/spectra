@@ -439,6 +439,31 @@ Contributions are welcome! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for 
 
 See [CLAUDE.md](./CLAUDE.md) for detailed coding standards and architecture guidelines.
 
+### Local Development Scripts
+
+The `scripts/` directory contains standalone shell scripts that replicate the GitHub Actions CI/CD workflows, allowing you to run them locally before pushing:
+
+```bash
+# Run full CI pipeline (recommended before pushing)
+./scripts/ci.sh
+
+# Individual scripts
+./scripts/build.sh          # Build the project
+./scripts/test.sh           # Run all tests
+./scripts/code-quality.sh   # Run ktlint + detekt
+./scripts/coverage.sh       # Generate coverage reports
+./scripts/format.sh         # Auto-format code with ktlint
+./scripts/clean.sh          # Clean build artifacts
+```
+
+**Benefits:**
+- ✅ Test changes before pushing to GitHub
+- ✅ Fast feedback loop during development
+- ✅ Same checks as GitHub Actions CI
+- ✅ Easy migration to other CI platforms (CircleCI, Jenkins, etc.)
+
+See [scripts/README.md](./scripts/README.md) for detailed documentation.
+
 ## Roadmap
 
 ### Version 0.1.0 (Phase 1-2) - Foundation
