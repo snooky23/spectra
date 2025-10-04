@@ -11,11 +11,13 @@ A Kotlin Multiplatform logging framework for mobile applications that works seam
 
 ## Features
 
-- ✅ **Application event logging** with severity levels (Verbose, Debug, Info, Warning, Error)
+- ✅ **Application event logging** with severity levels (Verbose, Debug, Info, Warning, Error, Fatal)
 - ✅ **Network request/response logging** (OkHttp, URLSession, Ktor)
 - ✅ **On-device mobile UI** for viewing and filtering logs
-- ✅ **Export functionality** (text and JSON formats)
-- ✅ **Zero external dependencies** - no cloud services required
+- ✅ **Multiple trigger options** - Shake gesture, notification, URL scheme, programmatic
+- ✅ **Export & share functionality** (TEXT, JSON, CSV formats)
+- ✅ **URL scheme deep linking** - Open logger via `spectra://` from ADB, browser, or terminal
+- ✅ **Zero permissions required** - no cloud services, no invasive permissions
 - ✅ **Thread-safe** and **performant** (< 0.1ms log capture)
 - ✅ **Clean Architecture** with MVVM for UI
 
@@ -29,8 +31,9 @@ A Kotlin Multiplatform logging framework for mobile applications that works seam
 - ✅ Milestone 1.3: Network Logging Foundation
 - ✅ Milestone 1.4: Configuration System
 - ✅ Milestone 2.1: Basic UI Components
+- ✅ Milestone 2.2: Enhanced Features (Shake, Notification, Export, URL Scheme)
 
-**In Progress:** Milestone 2.2 - Enhanced Features
+**Next:** Milestone 2.3 - File Storage & Persistence
 
 See [TASKS.md](./TASKS.md) for detailed development timeline.
 
