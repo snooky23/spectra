@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.spectra.logger.domain.model.NetworkLogEntry
+import com.spectra.logger.utils.CurlGenerator
 
 /**
  * Dialog showing detailed information about a network log entry.
@@ -69,6 +70,11 @@ fun NetworkLogDetailDialog(
                         onClick = { selectedTab = 2 },
                         text = { Text("Response") },
                     )
+                    Tab(
+                        selected = selectedTab == 3,
+                        onClick = { selectedTab = 3 },
+                        text = { Text("cURL") },
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -78,12 +84,25 @@ fun NetworkLogDetailDialog(
                     0 -> OverviewTab(entry)
                     1 -> RequestTab(entry)
                     2 -> ResponseTab(entry)
+                    3 -> CurlTab(entry)
                 }
             }
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
                 Text("Close")
+            }
+        },
+        dismissButton = {
+            var showCurl by remember { mutableStateOf(false) }
+            if (showCurl) {
+                selectedTab = 3
+                showCurl = false
+            }
+            TextButton(
+                onClick = { selectedTab = 3 },
+            ) {
+                Text("Copy as cURL")
             }
         },
     )
@@ -145,6 +164,24 @@ private fun ResponseTab(entry: NetworkLogEntry) {
                 modifier = Modifier.padding(vertical = 4.dp),
             )
         }
+    }
+}
+
+@Composable
+private fun CurlTab(entry: NetworkLogEntry) {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+        SectionHeader("cURL Command")
+        Text(
+            text = "Copy this command to reproduce the request:",
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(bottom = 8.dp),
+        )
+        Text(
+            text = CurlGenerator.generate(entry),
+            style = MaterialTheme.typography.bodySmall,
+            fontFamily = FontFamily.Monospace,
+            modifier = Modifier.padding(vertical = 4.dp),
+        )
     }
 }
 
