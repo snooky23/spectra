@@ -65,11 +65,33 @@ You are building a framework that **must exceed Google's engineering standards**
 
 1. **Follow Task Order**: Complete tasks in TASKS.md order unless instructed otherwise
 
-2. **Update SESSION.md** as you work:
-   - Mark tasks complete: Change ⏳ to ✅
-   - Add session notes at the end
-   - Update "Current Context" section
-   - Document decisions made
+2. **Update SESSION.md** after each significant task or milestone:
+
+   **IMPORTANT**: SESSION.md is the project's memory. Update it frequently to track progress.
+
+   **When to Update**:
+   - ✅ After completing a milestone or major feature
+   - ✅ After making architectural decisions
+   - ✅ After fixing critical bugs
+   - ✅ At the end of each coding session
+   - ✅ When switching between major tasks
+
+   **What to Update**:
+   - **Project Status section**: Update current phase, milestone, progress %
+   - **Completed Work section**: Add newly completed features/milestones
+   - **Recent Session Work section**: Document what was done in current session
+   - **Next Steps section**: Update immediate tasks based on what's left
+   - **Last Updated date**: Always update the date at the top of the file
+   - **Technical Decisions section**: Document any important choices made
+
+   **How to Update**:
+   ```bash
+   # 1. After completing a significant task, edit SESSION.md
+   # 2. Update the relevant sections (see above)
+   # 3. Commit SESSION.md along with code changes
+   git add SESSION.md
+   git commit -m "Update SESSION.md: [describe what changed]"
+   ```
 
 3. **Write Tests First** (TDD when appropriate):
    - Write test for new function
@@ -82,6 +104,7 @@ You are building a framework that **must exceed Google's engineering standards**
    - Follow Conventional Commits format
    - Descriptive commit messages
    - Commit after each logical unit of work
+   - **Include SESSION.md** in commits when project state changes
 
 ### Ending a Session
 

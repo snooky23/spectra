@@ -9,34 +9,34 @@ This document breaks down the 18-week development timeline into concrete, action
 ### Milestone 1.1: Project Setup (Week 1)
 
 #### Tasks:
-- [
+- [x]
 
 ] Initialize Git repository with proper .gitignore
-- [ ] Set up Kotlin Multiplatform project structure
-  - [ ] Create `shared` module with commonMain, androidMain, iosMain
-  - [ ] Configure build.gradle.kts for KMP
-  - [ ] Set up Android and iOS targets
-- [ ] Configure Gradle build system
-  - [ ] Root build.gradle.kts configuration
-  - [ ] Shared module build configuration
-  - [ ] Version catalog (libs.versions.toml)
-- [ ] Set up CI/CD pipeline
-  - [ ] GitHub Actions workflow for builds
-  - [ ] Unit test execution on CI
-  - [ ] Code quality checks (ktlint, detekt)
-- [ ] Create documentation structure
-  - [ ] README.md with project overview
-  - [ ] CONTRIBUTING.md
-  - [ ] LICENSE file
-  - [ ] .github/ISSUE_TEMPLATE/
-  - [ ] .github/PULL_REQUEST_TEMPLATE.md
-- [ ] Configure code quality tools
-  - [ ] ktlint configuration
-  - [ ] detekt configuration
-  - [ ] EditorConfig
-- [ ] Verify Android AAR generation works
-- [ ] Verify iOS framework generation works
-- [ ] Create basic example apps (empty shells)
+- [x] Set up Kotlin Multiplatform project structure
+  - [x] Create `shared` module with commonMain, androidMain, iosMain
+  - [x] Configure build.gradle.kts for KMP
+  - [x] Set up Android and iOS targets
+- [x] Configure Gradle build system
+  - [x] Root build.gradle.kts configuration
+  - [x] Shared module build configuration
+  - [x] Version catalog (libs.versions.toml)
+- [x] Set up CI/CD pipeline
+  - [x] GitHub Actions workflow for builds
+  - [x] Unit test execution on CI
+  - [x] Code quality checks (ktlint, detekt)
+- [x] Create documentation structure
+  - [x] README.md with project overview
+  - [x] CONTRIBUTING.md
+  - [x] LICENSE file
+  - [x] .github/ISSUE_TEMPLATE/
+  - [x] .github/PULL_REQUEST_TEMPLATE.md
+- [x] Configure code quality tools
+  - [x] ktlint configuration
+  - [x] detekt configuration
+  - [x] EditorConfig
+- [x] Verify Android AAR generation works
+- [x] Verify iOS framework generation works
+- [x] Create basic example apps (empty shells)
 
 **Deliverables**:
 - ✅ Buildable KMP project
@@ -49,80 +49,80 @@ This document breaks down the 18-week development timeline into concrete, action
 ### Milestone 1.2: Core Logging Engine (Weeks 2-3)
 
 #### Task Group: Domain Models
-- [ ] Create `LogLevel` enum (VERBOSE, DEBUG, INFO, WARNING, ERROR)
-- [ ] Create sealed class `LogEvent` hierarchy
-  - [ ] `AppLogEvent` data class
-  - [ ] `NetworkLogEvent` data class
-- [ ] Create `LogContext` data class for context management
-- [ ] Create `LogFilter` sealed class hierarchy
-  - [ ] `ByLevel` filter
-  - [ ] `ByText` filter
-  - [ ] `ByCategory` filter
-  - [ ] `ByTimeRange` filter
+- [x] Create `LogLevel` enum (VERBOSE, DEBUG, INFO, WARNING, ERROR)
+- [x] Create sealed class `LogEvent` hierarchy
+  - [x] `AppLogEvent` data class
+  - [x] `NetworkLogEvent` data class
+- [x] Create `LogContext` data class for context management
+- [x] Create `LogFilter` sealed class hierarchy
+  - [x] `ByLevel` filter
+  - [x] `ByText` filter
+  - [x] `ByCategory` filter
+  - [x] `ByTimeRange` filter
 
 #### Task Group: Core Engine
-- [ ] Implement `LogManager` singleton
-  - [ ] Logger instance registry
-  - [ ] Configuration management
-  - [ ] Event dispatching to storage
-  - [ ] Thread-safety with atomic operations
-- [ ] Implement `Logger` class
-  - [ ] Per-category/subsystem logger instances
-  - [ ] Logging methods (verbose, debug, info, warning, error)
-  - [ ] Context management (add, remove, clear)
-  - [ ] Child logger creation
-  - [ ] Parent context inheritance
-- [ ] Implement `SpectraLogger` public API
-  - [ ] `initialize(config: SpectraConfig)` method
-  - [ ] `getLogger(category, subsystem)` factory method
-  - [ ] Thread-safe singleton access
-- [ ] Create `SpectraConfig` configuration class
-  - [ ] Builder pattern for config
-  - [ ] Default values
-  - [ ] Validation
+- [x] Implement `LogManager` singleton
+  - [x] Logger instance registry
+  - [x] Configuration management
+  - [x] Event dispatching to storage
+  - [x] Thread-safety with atomic operations
+- [x] Implement `Logger` class
+  - [x] Per-category/subsystem logger instances
+  - [x] Logging methods (verbose, debug, info, warning, error)
+  - [x] Context management (add, remove, clear)
+  - [x] Child logger creation
+  - [x] Parent context inheritance
+- [x] Implement `SpectraLogger` public API
+  - [x] `initialize(config: SpectraConfig)` method
+  - [x] `getLogger(category, subsystem)` factory method
+  - [x] Thread-safe singleton access
+- [x] Create `SpectraConfig` configuration class
+  - [x] Builder pattern for config
+  - [x] Default values
+  - [x] Validation
 
 #### Task Group: Data Layer
-- [ ] Create `CircularBuffer<T>` generic implementation
-  - [ ] FIFO eviction policy
-  - [ ] Thread-safe operations
-  - [ ] Efficient memory usage
-- [ ] Implement `InMemoryDataSource`
-  - [ ] Store logs in circular buffer
-  - [ ] Provide query methods
-  - [ ] Subscribe to new logs (Flow)
-- [ ] Create repository interfaces in domain layer
-  - [ ] `LogEventRepository` interface
-  - [ ] `ConfigRepository` interface
-- [ ] Implement `LogEventRepositoryImpl`
-  - [ ] getAllLogs()
-  - [ ] filterLogs(filter)
-  - [ ] searchLogs(query)
-  - [ ] addLog(event)
-  - [ ] clearLogs()
-  - [ ] observeLogs() as Flow
+- [x] Create `CircularBuffer<T>` generic implementation
+  - [x] FIFO eviction policy
+  - [x] Thread-safe operations
+  - [x] Efficient memory usage
+- [x] Implement `InMemoryDataSource`
+  - [x] Store logs in circular buffer
+  - [x] Provide query methods
+  - [x] Subscribe to new logs (Flow)
+- [x] Create repository interfaces in domain layer
+  - [x] `LogEventRepository` interface
+  - [x] `ConfigRepository` interface
+- [x] Implement `LogEventRepositoryImpl`
+  - [x] getAllLogs()
+  - [x] filterLogs(filter)
+  - [x] searchLogs(query)
+  - [x] addLog(event)
+  - [x] clearLogs()
+  - [x] observeLogs() as Flow
 
 #### Task Group: Testing
-- [ ] Unit tests for `CircularBuffer`
-  - [ ] Test capacity limits
-  - [ ] Test FIFO behavior
-  - [ ] Test thread safety
-- [ ] Unit tests for `LogManager`
-  - [ ] Test logger instance creation
-  - [ ] Test singleton behavior
-  - [ ] Test event dispatching
-- [ ] Unit tests for `Logger`
-  - [ ] Test all log levels
-  - [ ] Test context management
-  - [ ] Test child logger creation
-  - [ ] Test context inheritance
-- [ ] Unit tests for `LogEventRepository`
-  - [ ] Test filtering
-  - [ ] Test searching
-  - [ ] Test storage/retrieval
-- [ ] Integration tests
-  - [ ] End-to-end log capture and retrieval
-  - [ ] Multiple logger instances
-  - [ ] Concurrent logging
+- [x] Unit tests for `CircularBuffer`
+  - [x] Test capacity limits
+  - [x] Test FIFO behavior
+  - [x] Test thread safety
+- [x] Unit tests for `LogManager`
+  - [x] Test logger instance creation
+  - [x] Test singleton behavior
+  - [x] Test event dispatching
+- [x] Unit tests for `Logger`
+  - [x] Test all log levels
+  - [x] Test context management
+  - [x] Test child logger creation
+  - [x] Test context inheritance
+- [x] Unit tests for `LogEventRepository`
+  - [x] Test filtering
+  - [x] Test searching
+  - [x] Test storage/retrieval
+- [x] Integration tests
+  - [x] End-to-end log capture and retrieval
+  - [x] Multiple logger instances
+  - [x] Concurrent logging
 
 **Deliverables**:
 - ✅ Working Logger API
@@ -135,61 +135,61 @@ This document breaks down the 18-week development timeline into concrete, action
 ### Milestone 1.3: Platform File Storage (Week 4)
 
 #### Task Group: Platform Abstractions
-- [ ] Create `expect class FileSystem` in commonMain
-  - [ ] writeText(path, content)
-  - [ ] readText(path)
-  - [ ] exists(path)
-  - [ ] delete(path)
-  - [ ] getFileSize(path)
-- [ ] Implement `actual class FileSystem` for Android
-  - [ ] Use Context.filesDir for storage location
-  - [ ] Implement file operations with java.io.File
-- [ ] Implement `actual class FileSystem` for iOS
-  - [ ] Use NSFileManager for file operations
-  - [ ] Use app's Documents directory
+- [x] Create `expect class FileSystem` in commonMain
+  - [x] writeText(path, content)
+  - [x] readText(path)
+  - [x] exists(path)
+  - [x] delete(path)
+  - [x] getFileSize(path)
+- [x] Implement `actual class FileSystem` for Android
+  - [x] Use Context.filesDir for storage location
+  - [x] Implement file operations with java.io.File
+- [x] Implement `actual class FileSystem` for iOS
+  - [x] Use NSFileManager for file operations
+  - [x] Use app's Documents directory
 
 #### Task Group: File Storage
-- [ ] Create `FileDataSource` in commonMain
-  - [ ] Uses FileSystem expect/actual
-  - [ ] Implements file rotation (when size limit reached)
-  - [ ] Thread-safe file operations
-  - [ ] Background thread for I/O
-- [ ] Update `LogEventRepository` to support file storage
-  - [ ] Enable/disable file logging
-  - [ ] Set file log level
-  - [ ] Manage file size limits
-- [ ] Create `FileLogStorage` implementation
-  - [ ] Append logs to file
-  - [ ] Read logs from file
-  - [ ] File rotation logic
-  - [ ] Compression (optional)
+- [x] Create `FileDataSource` in commonMain
+  - [x] Uses FileSystem expect/actual
+  - [x] Implements file rotation (when size limit reached)
+  - [x] Thread-safe file operations
+  - [x] Background thread for I/O
+- [x] Update `LogEventRepository` to support file storage
+  - [x] Enable/disable file logging
+  - [x] Set file log level
+  - [x] Manage file size limits
+- [x] Create `FileLogStorage` implementation
+  - [x] Append logs to file
+  - [x] Read logs from file
+  - [x] File rotation logic
+  - [x] Compression (optional)
 
 #### Task Group: Export Functionality
-- [ ] Create `ExportLogsUseCase`
-  - [ ] Export to text format
-  - [ ] Export to JSON format
-  - [ ] Filter logs before export
-  - [ ] Generate filename with timestamp
-- [ ] Create `expect fun shareFile(path)` for platform sharing
-  - [ ] Android: Share via Intent
-  - [ ] iOS: Share via UIActivityViewController
+- [x] Create `ExportLogsUseCase`
+  - [x] Export to text format
+  - [x] Export to JSON format
+  - [x] Filter logs before export
+  - [x] Generate filename with timestamp
+- [x] Create `expect fun shareFile(path)` for platform sharing
+  - [x] Android: Share via Intent
+  - [x] iOS: Share via UIActivityViewController
 
 #### Task Group: Testing
-- [ ] Unit tests for `FileSystem` (Android)
-  - [ ] Test file write/read
-  - [ ] Test file deletion
-  - [ ] Test file size
-- [ ] Unit tests for `FileSystem` (iOS)
-  - [ ] Same tests as Android
-- [ ] Integration tests for file logging
-  - [ ] Test file creation
-  - [ ] Test log persistence across app restarts
-  - [ ] Test file rotation
-  - [ ] Test size limits
-- [ ] Performance tests
-  - [ ] Measure file write performance
-  - [ ] Ensure background thread usage
-  - [ ] Test with 10K+ logs
+- [x] Unit tests for `FileSystem` (Android)
+  - [x] Test file write/read
+  - [x] Test file deletion
+  - [x] Test file size
+- [x] Unit tests for `FileSystem` (iOS)
+  - [x] Same tests as Android
+- [x] Integration tests for file logging
+  - [x] Test file creation
+  - [x] Test log persistence across app restarts
+  - [x] Test file rotation
+  - [x] Test size limits
+- [x] Performance tests
+  - [x] Measure file write performance
+  - [x] Ensure background thread usage
+  - [x] Test with 10K+ logs
 
 **Deliverables**:
 - ✅ FileLogStorage for both platforms
@@ -204,49 +204,49 @@ This document breaks down the 18-week development timeline into concrete, action
 ### Milestone 2.1: Android Network Interception (Week 5)
 
 #### Tasks:
-- [ ] Create `NetworkInterceptor` interface in commonMain
-- [ ] Implement OkHttp interceptor for Android
-  - [ ] Intercept request
-  - [ ] Capture request details (URL, method, headers, body)
-  - [ ] Intercept response
-  - [ ] Capture response details (status, headers, body, duration)
-  - [ ] Create `NetworkLogEvent` from request/response
-  - [ ] Send event to LogManager
-- [ ] Implement request/response body size limits
-  - [ ] Configurable max size (default 100KB)
-  - [ ] Truncate large bodies
-  - [ ] Add "[TRUNCATED]" marker
-- [ ] Implement header redaction
-  - [ ] Redact sensitive headers (Authorization, Cookie, etc.)
-  - [ ] Configurable redaction list
-  - [ ] Replace with "[REDACTED]"
-- [ ] Implement filtering rules
-  - [ ] Ignore by domain (e.g., analytics.google.com)
-  - [ ] Ignore by file extension (e.g., .png, .jpg)
-  - [ ] Configurable ignore lists
-- [ ] Handle streaming/large responses
-  - [ ] Don't buffer entire response in memory
-  - [ ] Sample large responses
-- [ ] Create example Android app with OkHttp client
-  - [ ] Add interceptor to client
-  - [ ] Make test API calls
-  - [ ] Verify logs captured
+- [x] Create `NetworkInterceptor` interface in commonMain
+- [x] Implement OkHttp interceptor for Android
+  - [x] Intercept request
+  - [x] Capture request details (URL, method, headers, body)
+  - [x] Intercept response
+  - [x] Capture response details (status, headers, body, duration)
+  - [x] Create `NetworkLogEvent` from request/response
+  - [x] Send event to LogManager
+- [x] Implement request/response body size limits
+  - [x] Configurable max size (default 100KB)
+  - [x] Truncate large bodies
+  - [x] Add "[TRUNCATED]" marker
+- [x] Implement header redaction
+  - [x] Redact sensitive headers (Authorization, Cookie, etc.)
+  - [x] Configurable redaction list
+  - [x] Replace with "[REDACTED]"
+- [x] Implement filtering rules
+  - [x] Ignore by domain (e.g., analytics.google.com)
+  - [x] Ignore by file extension (e.g., .png, .jpg)
+  - [x] Configurable ignore lists
+- [x] Handle streaming/large responses
+  - [x] Don't buffer entire response in memory
+  - [x] Sample large responses
+- [x] Create example Android app with OkHttp client
+  - [x] Add interceptor to client
+  - [x] Make test API calls
+  - [x] Verify logs captured
 
 #### Task Group: Testing
-- [ ] Unit tests for OkHttpInterceptor
-  - [ ] Test request capture
-  - [ ] Test response capture
-  - [ ] Test header redaction
-  - [ ] Test body truncation
-  - [ ] Test filtering rules
-- [ ] Integration tests with real OkHttp client
-  - [ ] Test successful requests
-  - [ ] Test failed requests
-  - [ ] Test timeouts
-  - [ ] Test redirects
-- [ ] Performance tests
-  - [ ] Measure interception overhead (< 5ms target)
-  - [ ] Test with high request volume
+- [x] Unit tests for OkHttpInterceptor
+  - [x] Test request capture
+  - [x] Test response capture
+  - [x] Test header redaction
+  - [x] Test body truncation
+  - [x] Test filtering rules
+- [x] Integration tests with real OkHttp client
+  - [x] Test successful requests
+  - [x] Test failed requests
+  - [x] Test timeouts
+  - [x] Test redirects
+- [x] Performance tests
+  - [x] Measure interception overhead (< 5ms target)
+  - [x] Test with high request volume
 
 **Deliverables**:
 - ✅ Working Android network logging
@@ -259,48 +259,48 @@ This document breaks down the 18-week development timeline into concrete, action
 ### Milestone 2.2: iOS Network Interception (Week 6)
 
 #### Tasks:
-- [ ] Implement custom URLProtocol for iOS
-  - [ ] Register custom protocol
-  - [ ] Override canInit(with:) to filter requests
-  - [ ] Override startLoading() to intercept request
-  - [ ] Capture request details
-  - [ ] Forward request to actual network
-  - [ ] Intercept response
-  - [ ] Capture response details
-  - [ ] Calculate request duration
-  - [ ] Create NetworkLogEvent
-  - [ ] Send to LogManager
-- [ ] Handle URLSession edge cases
-  - [ ] Websockets (skip logging)
-  - [ ] Upload/download tasks
-  - [ ] Background sessions
-- [ ] Implement filtering (same as Android)
-  - [ ] Domain ignore list
-  - [ ] Extension ignore list
-- [ ] Implement header redaction (same as Android)
-- [ ] Implement body size limits (same as Android)
-- [ ] Create Objective-C/Swift wrapper for easy integration
-  - [ ] Protocol registration helper
-  - [ ] Configuration API
-- [ ] Create example iOS app
-  - [ ] Register URLProtocol
-  - [ ] Make test API calls
-  - [ ] Verify logs captured
+- [x] Implement custom URLProtocol for iOS
+  - [x] Register custom protocol
+  - [x] Override canInit(with:) to filter requests
+  - [x] Override startLoading() to intercept request
+  - [x] Capture request details
+  - [x] Forward request to actual network
+  - [x] Intercept response
+  - [x] Capture response details
+  - [x] Calculate request duration
+  - [x] Create NetworkLogEvent
+  - [x] Send to LogManager
+- [x] Handle URLSession edge cases
+  - [x] Websockets (skip logging)
+  - [x] Upload/download tasks
+  - [x] Background sessions
+- [x] Implement filtering (same as Android)
+  - [x] Domain ignore list
+  - [x] Extension ignore list
+- [x] Implement header redaction (same as Android)
+- [x] Implement body size limits (same as Android)
+- [x] Create Objective-C/Swift wrapper for easy integration
+  - [x] Protocol registration helper
+  - [x] Configuration API
+- [x] Create example iOS app
+  - [x] Register URLProtocol
+  - [x] Make test API calls
+  - [x] Verify logs captured
 
 #### Task Group: Testing
-- [ ] Unit tests for URLProtocol wrapper
-  - [ ] Test request interception
-  - [ ] Test response interception
-  - [ ] Test header redaction
-  - [ ] Test filtering
-- [ ] Integration tests with URLSession
-  - [ ] Test GET requests
-  - [ ] Test POST requests with body
-  - [ ] Test error handling
-  - [ ] Test redirects
-- [ ] Performance tests
-  - [ ] Measure overhead (< 5ms target)
-  - [ ] Test with concurrent requests
+- [x] Unit tests for URLProtocol wrapper
+  - [x] Test request interception
+  - [x] Test response interception
+  - [x] Test header redaction
+  - [x] Test filtering
+- [x] Integration tests with URLSession
+  - [x] Test GET requests
+  - [x] Test POST requests with body
+  - [x] Test error handling
+  - [x] Test redirects
+- [x] Performance tests
+  - [x] Measure overhead (< 5ms target)
+  - [x] Test with concurrent requests
 
 **Deliverables**:
 - ✅ Working iOS network logging
