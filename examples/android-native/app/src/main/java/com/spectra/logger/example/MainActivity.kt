@@ -17,16 +17,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Configure logger
-        SpectraLogger.configure {
-            minLogLevel = LogLevel.VERBOSE
-            logStorage {
-                maxCapacity = 20_000
-            }
-            networkStorage {
-                maxCapacity = 2_000
-            }
-        }
+        configureLogger()
 
         // Generate sample logs
         generateSampleLogs()
@@ -38,65 +29,82 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun configureLogger() {
+        SpectraLogger.configure {
+            minLogLevel = LogLevel.VERBOSE
+            logStorage {
+                maxCapacity = MAX_LOG_STORAGE_CAPACITY
+            }
+            networkStorage {
+                maxCapacity = MAX_NETWORK_STORAGE_CAPACITY
+            }
+        }
+    }
+
     private fun generateSampleLogs() {
         lifecycleScope.launch {
             SpectraLogger.i("App", "Spectra Logger Example Started")
             SpectraLogger.i("App", "Version: ${SpectraLogger.getVersion()}")
 
-            delay(500)
+            delay(DELAY_SHORT)
 
-            // Sample verbose logs
             SpectraLogger.v("UI", "MainActivity created")
             SpectraLogger.v("Lifecycle", "onCreate called")
 
-            // Sample debug logs
             SpectraLogger.d("Init", "Initializing example app")
             SpectraLogger.d("Config", "Logger configured with min level: ${SpectraLogger.configuration.minLogLevel}")
 
-            delay(1000)
+            delay(DELAY_MEDIUM)
 
-            // Sample info logs
             SpectraLogger.i("User", "User opened the app", metadata = mapOf("user_id" to "12345"))
             SpectraLogger.i("Navigation", "Showing logs screen")
 
-            // Sample warning logs
             SpectraLogger.w("Performance", "Large dataset detected (1000+ items)")
             SpectraLogger.w("Memory", "Memory usage: 45MB / 128MB")
 
-            delay(1500)
+            delay(DELAY_LONG)
 
-            // Sample error log with throwable
             try {
-                throw IllegalStateException("This is a sample error for demonstration")
-            } catch (e: Exception) {
+                error("This is a sample error for demonstration")
+            } catch (e: IllegalStateException) {
                 SpectraLogger.e("Error", "Caught exception during demo", e)
             }
 
-            // Sample fatal log
             SpectraLogger.f(
                 "Critical",
                 "This is a critical error example",
                 metadata = mapOf("severity" to "high", "impact" to "user_experience"),
             )
 
-            delay(2000)
+            delay(DELAY_EXTRA_LONG)
 
-            // Generate some additional logs
             repeat(SAMPLE_LOG_COUNT) { index ->
                 when (index % MODULO_FOR_LOG_TYPES) {
-                    0 -> SpectraLogger.v("Sample", "Verbose log #$index")
-                    1 -> SpectraLogger.d("Sample", "Debug log #$index")
-                    2 -> SpectraLogger.i("Sample", "Info log #$index")
-                    3 -> SpectraLogger.w("Sample", "Warning log #$index")
-                    4 -> SpectraLogger.e("Sample", "Error log #$index")
+                    LOG_TYPE_VERBOSE -> SpectraLogger.v("Sample", "Verbose log #$index")
+                    LOG_TYPE_DEBUG -> SpectraLogger.d("Sample", "Debug log #$index")
+                    LOG_TYPE_INFO -> SpectraLogger.i("Sample", "Info log #$index")
+                    LOG_TYPE_WARNING -> SpectraLogger.w("Sample", "Warning log #$index")
+                    LOG_TYPE_ERROR -> SpectraLogger.e("Sample", "Error log #$index")
                 }
-                delay(100)
+                delay(DELAY_BETWEEN_LOGS)
             }
         }
     }
 
     private companion object {
+        private const val MAX_LOG_STORAGE_CAPACITY = 20_000
+        private const val MAX_NETWORK_STORAGE_CAPACITY = 2_000
         private const val SAMPLE_LOG_COUNT = 20
         private const val MODULO_FOR_LOG_TYPES = 5
+        private const val DELAY_SHORT = 500L
+        private const val DELAY_MEDIUM = 1000L
+        private const val DELAY_LONG = 1500L
+        private const val DELAY_EXTRA_LONG = 2000L
+        private const val DELAY_BETWEEN_LOGS = 100L
+        private const val LOG_TYPE_VERBOSE = 0
+        private const val LOG_TYPE_DEBUG = 1
+        private const val LOG_TYPE_INFO = 2
+        private const val LOG_TYPE_WARNING = 3
+        private const val LOG_TYPE_ERROR = 4
     }
 }

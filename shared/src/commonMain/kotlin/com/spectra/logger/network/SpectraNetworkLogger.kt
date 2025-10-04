@@ -39,7 +39,7 @@ val SpectraNetworkLogger: ClientPlugin<SpectraNetworkLoggerConfig> =
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
         val startTimeKey = AttributeKey<Long>("SpectraStartTime")
 
-        onRequest { request, content ->
+        onRequest { request, _ ->
             request.attributes.put(startTimeKey, Clock.System.now().toEpochMilliseconds())
         }
 
