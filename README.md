@@ -23,7 +23,14 @@ A Kotlin Multiplatform logging framework for mobile applications that works seam
 
 🚧 **Under Active Development** - Version 0.0.1-SNAPSHOT
 
-Currently working on **Phase 1: Foundation** (Weeks 1-4)
+**Completed:**
+- ✅ Milestone 1.1: Project Foundation Setup
+- ✅ Milestone 1.2: Core Domain Layer
+- ✅ Milestone 1.3: Network Logging Foundation
+- ✅ Milestone 1.4: Configuration System
+- ✅ Milestone 2.1: Basic UI Components
+
+**In Progress:** Milestone 2.2 - Enhanced Features
 
 See [TASKS.md](./TASKS.md) for detailed development timeline.
 
@@ -60,26 +67,142 @@ pod 'SpectraLogger', '~> 0.0.1'
 
 ## Usage
 
+### Basic Logging
+
 ```kotlin
-// Initialize the logger
-SpectraLogger.initialize(
-    SpectraConfig(
-        maxInMemoryLogs = 10000,
-        enableFileLogging = true,
+import com.spectra.logger.SpectraLogger
+
+// Log events (available globally)
+SpectraLogger.v("TAG", "Verbose message")
+SpectraLogger.d("TAG", "Debug message")
+SpectraLogger.i("TAG", "Info message")
+SpectraLogger.w("TAG", "Warning message")
+SpectraLogger.e("TAG", "Error message", throwable = exception)
+SpectraLogger.f("TAG", "Fatal error", metadata = mapOf("userId" to "123"))
+```
+
+### Configuration
+
+```kotlin
+import com.spectra.logger.SpectraLogger
+import com.spectra.logger.domain.model.LogLevel
+
+// Configure before logging (optional - uses sensible defaults)
+SpectraLogger.configure {
+    minLogLevel = LogLevel.DEBUG  // Filter out verbose logs
+
+    logStorage {
+        maxCapacity = 20_000  // Increase from default 10K
+    }
+
+    networkStorage {
+        maxCapacity = 2_000   // Increase from default 1K
+    }
+
+    performance {
+        flowBufferCapacity = 128
+        maxBodySize = 50_000  // Max network body size
+    }
+
+    features {
         enableNetworkLogging = true
-    )
+        enableCrashReporting = false
+    }
+}
+```
+
+### Network Logging
+
+#### Android (OkHttp)
+
+```kotlin
+import com.spectra.logger.SpectraLogger
+import com.spectra.logger.network.SpectraNetworkInterceptor
+
+val client = OkHttpClient.Builder()
+    .addInterceptor(SpectraNetworkInterceptor(SpectraLogger.networkStorage))
+    .build()
+```
+
+#### KMP (Ktor)
+
+```kotlin
+import com.spectra.logger.network.SpectraNetworkLogger
+import com.spectra.logger.SpectraLogger
+
+val client = HttpClient {
+    install(SpectraNetworkLogger) {
+        storage = SpectraLogger.networkStorage
+    }
+}
+```
+
+#### iOS (URLSession)
+
+**Option 1: Manual Logging (Recommended)**
+```swift
+import SpectraLogger
+
+// Create a logging data task
+let storage = SpectraLogger.shared.networkStorage
+let session = NSURLSession.shared
+let request = NSURLRequest(url: url)
+
+let task = SpectraURLSessionLogger.createDataTask(
+    session: session,
+    request: request,
+    storage: storage
+) { data, response, error in
+    // Your completion handler
+}
+task.resume()
+```
+
+**Option 2: Use Ktor in Shared Code (Automatic)**
+See KMP section above for automatic network logging.
+
+### Show Logger UI (Android)
+
+```kotlin
+import com.spectra.logger.ui.SpectraLoggerUI
+
+// From any Activity or Context
+SpectraLoggerUI.show(context)
+
+// Or use Intent directly
+startActivity(Intent(this, SpectraLoggerActivity::class.java))
+```
+
+### Querying Logs Programmatically
+
+```kotlin
+import com.spectra.logger.SpectraLogger
+import com.spectra.logger.domain.model.LogFilter
+import com.spectra.logger.domain.model.LogLevel
+
+// Query logs
+val logs = SpectraLogger.query(
+    filter = LogFilter(
+        levels = setOf(LogLevel.ERROR, LogLevel.FATAL),
+        tags = setOf("Network", "Database"),
+        searchText = "timeout"
+    ),
+    limit = 100
 )
 
-// Get a logger instance
-val logger = SpectraLogger.getLogger("UserAuth", "app")
+// Observe logs in real-time
+SpectraLogger.observe().collect { logEntry ->
+    println("New log: ${logEntry.message}")
+}
 
-// Log events
-logger.info("User login started")
-logger.error("Login failed", exception, mapOf("userId" to userId))
-
-// Show the debug UI
-SpectraLogger.showUI(context) // Android
-SpectraLogger.showUI(presenter: viewController) // iOS
+// Query network logs
+val networkLogs = SpectraLogger.queryNetwork(
+    filter = NetworkLogFilter(
+        methods = setOf("POST"),
+        statusCodes = setOf(500, 503),
+        showOnlyErrors = true
+    )
+)
 ```
 
 ## Documentation
@@ -151,9 +274,12 @@ See [CLAUDE.md](./CLAUDE.md) for detailed coding standards and architecture guid
 
 ### Version 0.1.0 (Phase 1-2) - Foundation
 - [x] Project setup and CI/CD
-- [ ] Core logging engine
+- [x] Core logging engine
+- [x] Configuration system
+- [x] Network logging (OkHttp, URLProtocol, Ktor)
+- [x] Basic UI components
 - [ ] File storage
-- [ ] Network logging (Android, iOS, Ktor)
+- [ ] Enhanced features
 
 ### Version 0.5.0 (Phase 3) - UI
 - [ ] Log viewer screen
