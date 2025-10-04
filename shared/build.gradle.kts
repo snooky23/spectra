@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.multiplatform)
     id("maven-publish")
+    id("jacoco")
 }
 
 kotlin {
@@ -167,4 +168,23 @@ publishing {
             url = uri(layout.buildDirectory.dir("repo"))
         }
     }
+}
+
+// Jacoco configuration for code coverage
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+tasks.register<JacocoReport>("jacocoTestReport") {
+    dependsOn("testDebugUnitTest")
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(false)
+    }
+
+    sourceDirectories.setFrom(files("src/commonMain/kotlin", "src/androidMain/kotlin"))
+    classDirectories.setFrom(files("build/tmp/kotlin-classes/debugUnitTest"))
+    executionData.setFrom(files("build/jacoco/testDebugUnitTest.exec"))
 }
