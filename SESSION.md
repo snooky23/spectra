@@ -2,72 +2,194 @@
 
 This file tracks the current state, decisions, progress, and context for ongoing development sessions.
 
+**Last Updated**: 2025-10-04 (October 4th)
+
 ---
 
 ## Project Status
 
-**Current Phase**: Phase 1 - Foundation
-**Current Milestone**: Not started
+**Current Phase**: Phase 3 - UI Development
+**Current Milestone**: 3.3 - Network Viewer Screen (Next up)
 **Version**: 0.0.1-SNAPSHOT
-**Last Updated**: 2025-10-03
+**Progress**: ~45% complete (Milestones 1.1-2.4 done)
 
 ---
 
 ## Completed Work
 
-### Documentation
-- ✅ PRD.md - Complete product requirements document
-- ✅ PLANNING.md - Architecture and technical planning
-- ✅ TASKS.md - Detailed task breakdown (350+ tasks)
-- ✅ CLAUDE.md - Instructions for Claude Code sessions
-- ✅ SESSION.md - This file (session memory)
-- ✅ PRD_CHANGES.md - Summary of PRD updates for KMP support
+### Milestones Completed ✅
+- ✅ **Milestone 1.1**: Project Foundation Setup (Week 1)
+- ✅ **Milestone 1.2**: Core Domain Layer (Weeks 2-3)
+- ✅ **Milestone 1.3**: File Storage & Persistence (Week 4)
+- ✅ **Milestone 2.1**: Network Logging Foundation
+- ✅ **Milestone 2.2**: Basic UI Components (LogListScreen, components)
+- ✅ **Milestone 2.3**: Enhanced Features (Search, Export, File Storage)
+- ✅ **Milestone 2.4**: UI Enhancements (Detail Dialog, Advanced Search)
 
-### Project Structure
-- ⏳ Not yet created
+### Core Features Implemented
+1. **Logging Engine**
+   - `LogEntry` domain model with metadata support
+   - `LogLevel` enum (Verbose, Debug, Info, Warning, Error, Fatal)
+   - `LogFilter` with multi-criteria filtering
+   - `InMemoryLogStorage` with circular buffer
+   - `FileLogStorage` with automatic rotation
+   - Thread-safe operations
 
-### Implementation
-- ⏳ No code written yet
+2. **Network Logging**
+   - `NetworkLogEntry` domain model
+   - `NetworkLogFilter` with method/status filtering
+   - `InMemoryNetworkLogStorage`
+   - Network interceptor infrastructure
+
+3. **File Storage**
+   - Cross-platform `FileSystem` (expect/actual)
+   - Android implementation (Context.filesDir)
+   - iOS implementation (NSDocumentDirectory)
+   - Automatic file rotation (1MB max per file, 5 files max)
+   - JSONL format for efficient streaming
+
+4. **Configuration**
+   - `LoggerConfiguration` with DSL builder
+   - Log storage configuration
+   - Network storage configuration
+   - Performance tuning options
+   - Feature flags
+
+5. **UI Components** (Compose Multiplatform)
+   - `LogListScreen` with real-time updates
+   - `LogEntryItem` with color-coded levels
+   - `LogDetailDialog` showing full log details
+   - Search functionality (message, tag, level, metadata)
+   - Filter display (shows "X/Y logs")
+   - Export functionality (TEXT, JSON)
+
+6. **Build & CI/CD**
+   - Kotlin Multiplatform setup (iOS + Android)
+   - GitHub Actions workflows (build, code-quality)
+   - ktlint + detekt integration
+   - Jacoco code coverage
+   - Codecov integration
+   - All 58 tests passing at 100%
 
 ---
 
-## Key Decisions Made
+## Recent Session Work (October 4, 2025)
 
-### Architecture Decisions
-1. **Clean Architecture**: Adopted Clean Architecture with Domain → Data → Platform layers
-2. **MVVM for UI**: Using Model-View-ViewModel pattern for presentation layer
-3. **Expect/Actual Pattern**: For platform-specific implementations
-4. **Circular Buffer**: For efficient in-memory log storage with automatic eviction
-5. **Separate Network Logs**: Network logs stored in separate buffer from app logs
+### Session Goals
+- Fix CI/CD build failures
+- Update project documentation
+- Plan next development phase
 
-### Technology Stack Decisions
-1. **Kotlin 1.9.22**: Primary language
-2. **Kotlin Multiplatform**: For code sharing across platforms
-3. **UI Framework**: Decision pending - Compose Multiplatform vs Native UI
-   - **Recommendation**: Compose Multiplatform for code sharing
-   - **Fallback**: Native UI (SwiftUI + Jetpack Compose) if Compose MP has issues
-4. **Coroutines**: For async operations
-5. **kotlinx.serialization**: For JSON export
-6. **kotlinx.datetime**: For cross-platform timestamps
+### Completed
+1. ✅ Fixed iOS FileSystem compilation errors
+   - Corrected NSString API usage
+   - Fixed writeText return type
+   - Used NSString.create() for proper conversion
+2. ✅ Fixed detekt magic number violations in example app
+3. ✅ Added code coverage reporting (Jacoco + Codecov)
+4. ✅ Fixed GitHub Actions workflow
+5. ✅ Updated README with new milestones
+6. ✅ Updated TASKS.md to reflect actual progress
+7. ✅ Updated SESSION.md (this file)
 
-### API Decisions
-1. **Singleton LogManager**: Central manager for all loggers
-2. **Logger Instances**: Per category/subsystem
-3. **Five Log Levels**: VERBOSE, DEBUG, INFO, WARNING, ERROR
-4. **Context Management**: Key-value pairs attached to loggers
-5. **Child Loggers**: Support for hierarchical loggers with inherited context
+### Technical Decisions
+- **Kotlin/Native ↔ Objective-C**: Confirmed using Objective-C interop (not Swift) because Kotlin/Native reads C headers, not Swift interfaces
+- **String Conversion**: Must use `NSString.create(string:)` to convert Kotlin String to NSString before calling Foundation APIs
 
-### Distribution Decisions
-1. **Maven Central**: For KMP and Android artifacts
-2. **CocoaPods**: For iOS distribution (recommended)
-3. **Swift Package Manager**: Future consideration for iOS
-4. **GitHub Releases**: For direct artifact downloads
+---
+
+## Next Steps
+
+### Immediate: Milestone 3.3 - Network Viewer Screen
+
+**Goal**: Create dedicated UI for viewing and filtering network logs
+
+**Tasks**:
+1. Create `NetworkLogListScreen` composable
+   - List of network requests
+   - Color-coded by status (2xx green, 4xx orange, 5xx red)
+   - Show method, URL, status, duration
+2. Add HTTP method filters (GET, POST, PUT, DELETE, PATCH)
+3. Add status code range filters (2xx, 3xx, 4xx, 5xx)
+4. Implement `NetworkLogDetailDialog`
+   - Tabbed layout (Overview, Request, Response)
+   - Copy as cURL functionality
+5. Add search by URL
+
+**Files to Create**:
+- `shared/src/commonMain/kotlin/com/spectra/logger/ui/screens/NetworkLogListScreen.kt`
+- `shared/src/commonMain/kotlin/com/spectra/logger/ui/components/NetworkLogEntryItem.kt`
+- `shared/src/commonMain/kotlin/com/spectra/logger/ui/components/NetworkLogDetailDialog.kt`
+- `shared/src/commonMain/kotlin/com/spectra/logger/utils/CurlGenerator.kt`
+
+### Upcoming Milestones
+- **Milestone 3.4**: Settings Screen & Polish
+- **Milestone 4.1**: Example Applications
+- **Milestone 4.2**: Performance Testing
+- **Milestone 4.3**: Documentation & API Reference
+
+---
+
+## Architecture Overview
+
+### Module Structure
+```
+Spectra/
+├── shared/                      # Core KMP module
+│   ├── commonMain/
+│   │   ├── domain/
+│   │   │   ├── model/          # LogEntry, LogLevel, LogFilter
+│   │   │   └── storage/        # LogStorage, NetworkLogStorage
+│   │   ├── config/             # LoggerConfiguration
+│   │   ├── storage/            # FileSystem (expect)
+│   │   └── ui/                 # Compose UI
+│   │       ├── screens/        # LogListScreen, NetworkLogListScreen
+│   │       ├── components/     # LogEntryItem, LogDetailDialog
+│   │       └── theme/          # LogColors, Typography
+│   ├── androidMain/
+│   │   └── storage/            # FileSystem.android.kt
+│   └── iosMain/
+│       └── storage/            # FileSystem.ios.kt
+├── examples/
+│   ├── android-native/         # Native Android example app
+│   ├── ios-native/             # Native iOS example app (TODO)
+│   └── kmp-app/                # KMP example app (TODO)
+└── .github/workflows/          # CI/CD
+```
+
+### Technology Stack
+- **Language**: Kotlin 1.9.22
+- **Build**: Gradle 8.5, AGP 8.2.2
+- **Multiplatform**: Kotlin Multiplatform Mobile
+- **UI**: Compose Multiplatform 1.6.0
+- **Async**: Kotlin Coroutines + Flow
+- **Serialization**: kotlinx.serialization
+- **DateTime**: kotlinx.datetime
+- **Testing**: kotlin.test (58 tests, 100% passing)
+- **CI/CD**: GitHub Actions
+- **Code Quality**: ktlint, detekt, Jacoco
+
+---
+
+## Key Decisions
+
+### Architecture
+1. **Clean Architecture**: Domain → Data → UI layers
+2. **Expect/Actual**: For platform-specific file I/O
+3. **Circular Buffer**: In-memory storage with FIFO eviction
+4. **Separate Network Storage**: Dedicated buffer for network logs
+5. **Compose Multiplatform**: Shared UI across platforms
 
 ### Performance Targets
-- Log capture: < 0.1ms (target), < 1ms (critical)
-- Network interception: < 5ms (target), < 20ms (critical)
+- Log capture: < 0.1ms
+- Network interception: < 5ms
 - Memory: < 50MB for 10K logs
-- UI scroll: 60 FPS minimum
+- UI scroll: 60 FPS
+
+### Distribution
+- Maven Central (planned)
+- CocoaPods for iOS (planned)
+- GitHub Releases for direct downloads
 
 ---
 
@@ -79,272 +201,107 @@ This file tracks the current state, decisions, progress, and context for ongoing
 - Native Android projects (Kotlin/Java)
 - KMP projects (commonMain)
 
-**Key Features**:
-- App event logging with severity levels
-- Network request/response logging (OkHttp, URLSession, Ktor)
-- On-device mobile UI for viewing/filtering logs
-- Export logs (text/JSON format)
-- Zero external dependencies (no cloud services)
+### Key Features
+- ✅ Application event logging with severity levels
+- ✅ Network request/response logging
+- ✅ On-device mobile UI for viewing/filtering logs
+- ✅ File storage with automatic rotation
+- ✅ Export & share (TEXT, JSON)
+- ✅ Search functionality
+- ⏳ Network viewer screen (next up)
+- ⏳ Settings screen
+- ⏳ Example applications
 
-### Why This Project Exists
-**Problem**: Existing logging solutions don't work across all mobile development approaches:
-- Timber (Android only)
-- CocoaLumberjack (iOS only)
-- Napier (KMP, but no UI or network logging)
-- No solution provides on-device log viewing with network inspection
+### Why This Project
+**Problem**: No logging solution works across all mobile development approaches with on-device UI and network inspection.
 
-**Solution**: Spectra Logger works everywhere with one API and includes powerful debugging UI.
-
----
-
-## Next Steps
-
-### Immediate Tasks (Week 1 - Milestone 1.1)
-1. ⏳ Initialize Git repository with .gitignore
-2. ⏳ Set up Kotlin Multiplatform project structure
-3. ⏳ Configure Gradle build system
-4. ⏳ Set up CI/CD pipeline (GitHub Actions)
-5. ⏳ Configure code quality tools (ktlint, detekt)
-6. ⏳ Verify Android AAR generation
-7. ⏳ Verify iOS framework generation
-8. ⏳ Create basic example app shells
-
-**Goal for Week 1**: Have a buildable, testable project structure with CI/CD running
-
-### Upcoming Milestones
-- **Week 2-3**: Implement core logging engine (LogManager, Logger, Storage)
-- **Week 4**: Implement file storage (expect/actual)
-- **Week 5**: Android network logging (OkHttp)
-- **Week 6**: iOS network logging (URLProtocol)
-- **Week 7**: KMP network logging (Ktor plugin)
-
----
-
-## Open Questions & Decisions Needed
-
-### UI Framework Choice
-**Question**: Compose Multiplatform or Native UI?
-
-**Options**:
-1. **Compose Multiplatform** (Recommended)
-   - ✅ Shared UI code across platforms
-   - ✅ Modern declarative UI
-   - ✅ Single codebase to maintain
-   - ❌ Relatively new, may have platform-specific quirks
-   - ❌ Larger app size
-
-2. **Native UI** (SwiftUI + Jetpack Compose)
-   - ✅ Better platform integration
-   - ✅ Native look and feel
-   - ✅ More mature frameworks
-   - ❌ Duplicate UI code
-   - ❌ More maintenance overhead
-
-**Recommendation**: Start with Compose Multiplatform. If critical issues arise, fallback to native UI.
-
-**Decision**: ⏳ Pending (should be made by Week 8)
-
-### Telemetry/Analytics
-**Question**: Should we include opt-in telemetry for usage analytics?
-
-**Considerations**:
-- Useful for understanding feature usage
-- Can help prioritize improvements
-- Privacy concerns
-- Adds complexity
-
-**Recommendation**: No telemetry in v1.0. Add in future version with explicit opt-in if demand exists.
-
-**Decision**: ⏳ Pending
-
-### Remote Logging
-**Question**: Should we support remote log streaming in v1.0?
-
-**Recommendation**: No. This is explicitly out of scope for v1.0 (see PRD section 8). Focus on local-only logging first. Add in v1.1+ based on user demand.
-
-**Decision**: ✅ Confirmed - Out of scope for v1.0
+**Solution**: Spectra Logger provides one API that works everywhere with powerful debugging UI built-in.
 
 ---
 
 ## Known Issues & Risks
 
+### Current Issues
+- None (CI/CD passing, all tests green)
+
 ### Technical Risks
-1. **KMP Platform Differences**: iOS and Android may have subtle differences requiring platform-specific workarounds
-   - **Mitigation**: Early platform-specific prototyping, thorough testing
-
-2. **Network Interception Performance**: Intercepting all network traffic could impact app performance
-   - **Mitigation**: Make network logging opt-in, thorough performance testing
-
-3. **Memory Management**: Large log buffers could cause memory pressure
-   - **Mitigation**: Strict size limits, circular buffer, background pruning
-
-### Current Blockers
-- None (project not yet started)
-
-### Future Concerns
-- Compose Multiplatform stability on iOS
-- URLProtocol registration on iOS (must happen before URLSession creation)
-- Thread safety in high-concurrency scenarios
+1. **iOS Compilation**: Kotlin/Native requires Objective-C API usage (not Swift)
+   - Mitigation: Use Foundation APIs directly via cinterop
+2. **Memory Management**: Large buffers could cause pressure
+   - Mitigation: Circular buffer with strict limits
+3. **Network Overhead**: Intercepting all traffic impacts performance
+   - Mitigation: Make opt-in, filter unnecessary requests
 
 ---
 
-## Code Conventions & Standards
+## Code Conventions
 
 ### Package Structure
 ```
 com.spectra.logger
-├── core/                 # Core logging engine
-├── domain/               # Business logic
-│   ├── model/
-│   ├── repository/
-│   └── usecase/
-├── data/                 # Data layer
-│   ├── repository/
-│   └── source/
-├── network/              # Network logging
-├── platform/             # Platform abstractions (expect/actual)
-├── ui/                   # UI layer (if Compose MP)
-│   ├── screen/
-│   ├── component/
-│   ├── navigation/
-│   └── theme/
-└── util/                 # Utilities
+├── domain/
+│   ├── model/               # LogEntry, NetworkLogEntry, LogFilter
+│   └── storage/             # LogStorage interfaces
+├── config/                  # LoggerConfiguration
+├── storage/                 # FileSystem (expect/actual)
+├── ui/
+│   ├── screens/             # LogListScreen, NetworkLogListScreen
+│   ├── components/          # Reusable UI components
+│   └── theme/               # Colors, typography
+└── utils/                   # Helpers, extensions
 ```
 
-### Naming Conventions
-- **Interfaces**: Descriptive names (e.g., `LogEventRepository`)
-- **Implementations**: `Impl` suffix (e.g., `LogEventRepositoryImpl`)
-- **Use Cases**: `UseCase` suffix (e.g., `FilterLogsUseCase`)
-- **ViewModels**: `ViewModel` suffix (e.g., `LogViewerViewModel`)
-- **State Classes**: `State` suffix (e.g., `LogViewerState`)
-
-### Code Style
-- **Language**: Kotlin
-- **Style Guide**: Official Kotlin coding conventions
-- **Formatting**: ktlint enforced via CI
-- **Static Analysis**: detekt enforced via CI
-- **Max Line Length**: 120 characters
-- **Documentation**: KDoc for all public APIs
+### Naming
+- Interfaces: Descriptive (e.g., `LogStorage`)
+- Implementations: Context-specific (e.g., `InMemoryLogStorage`, `FileLogStorage`)
+- Composables: PascalCase with `Screen` or `Item` suffix
+- Constants: `SCREAMING_SNAKE_CASE`
 
 ### Git Conventions
-- **Branches**: `feature/`, `bugfix/`, `hotfix/`, `release/`
-- **Commits**: Conventional Commits format
-  - `feat:` for new features
-  - `fix:` for bug fixes
-  - `docs:` for documentation
-  - `test:` for tests
-  - `refactor:` for refactoring
-  - `chore:` for maintenance
-- **PR Requirements**:
-  - Passing CI checks
-  - Code review approval
-  - No merge conflicts
-  - Tests added/updated
+- Commit format: Conventional Commits
+- Branch naming: `feature/`, `bugfix/`, `hotfix/`
+- CI requirements: All checks passing, code review
 
 ---
 
-## Resources & References
+## Resources
 
 ### Documentation
-- [PRD.md](./PRD.md) - Product Requirements Document
-- [PLANNING.md](./PLANNING.md) - Architecture & Planning
-- [TASKS.md](./TASKS.md) - Task Breakdown
+- [PRD.md](./PRD.md) - Product Requirements
+- [PLANNING.md](./PLANNING.md) - Architecture Design
+- [TASKS.md](./TASKS.md) - Detailed Task Breakdown
 - [CLAUDE.md](./CLAUDE.md) - Claude Code Instructions
+- [README.md](./README.md) - Public Documentation
 
 ### External Resources
 - Kotlin Multiplatform: https://kotlinlang.org/docs/multiplatform.html
 - Compose Multiplatform: https://www.jetbrains.com/lp/compose-multiplatform/
-- OkHttp Interceptors: https://square.github.io/okhttp/features/interceptors/
-- URLProtocol (Apple): https://developer.apple.com/documentation/foundation/urlprotocol
-- Ktor Client: https://ktor.io/docs/client.html
-
-### Inspiration
-- Timber (Android): Logger API design inspiration
-- Napier (KMP): KMP logging patterns
-- Mobile development best practices for network logging
+- Foundation (iOS): https://developer.apple.com/documentation/foundation
 
 ---
 
-## Team & Contacts
+## Session Update Protocol
 
-**Project Lead**: [Your Name]
-**Repository**: [GitHub URL]
-**Discussions**: [GitHub Discussions]
-**Issues**: [GitHub Issues]
+**IMPORTANT**: This file (SESSION.md) must be updated after completing each significant task or milestone.
 
----
+### When to Update
+- ✅ After completing a milestone
+- ✅ After making key architectural decisions
+- ✅ After fixing major bugs
+- ✅ At the end of each coding session
+- ✅ When switching focus areas
 
-## Session Notes
+### What to Update
+1. **Project Status** section (phase, milestone, progress %)
+2. **Completed Work** section (add new achievements)
+3. **Recent Session Work** section (document what was done)
+4. **Next Steps** section (update immediate tasks)
+5. **Last Updated** date at top
 
-### Session 1 (2025-10-03)
-**Goal**: Create project documentation and planning
-
-**Work Done**:
-1. Created comprehensive PRD with 100+ requirements
-2. Updated PRD to support KMP projects in addition to native iOS/Android
-3. Added 4th user persona (KMP Developer)
-4. Expanded competitive analysis
-5. Created PLANNING.md with full architecture design
-6. Created TASKS.md with 350+ tasks across 18 weeks
-7. Created CLAUDE.md with instructions for future sessions
-8. Created SESSION.md (this file) for session memory
-
-**Decisions Made**:
-- Clean Architecture chosen
-- MVVM for UI layer
-- Performance targets established
-- Distribution strategy defined
-- 18-week timeline agreed upon
-
-**Next Session Goals**:
-- Begin Milestone 1.1 (Project Setup)
-- Initialize KMP project structure
-- Configure build system
-- Set up CI/CD
+### How to Update
+See instructions in [CLAUDE.md](./CLAUDE.md) for the update protocol.
 
 ---
 
-## Appendix: Quick Reference
-
-### Common Commands
-```bash
-# Build project
-./gradlew build
-
-# Run tests
-./gradlew test
-
-# Run Android tests
-./gradlew :shared:testDebugUnitTest
-
-# Build iOS framework
-./gradlew :shared:linkReleaseFrameworkIosArm64
-
-# Format code
-./gradlew ktlintFormat
-
-# Run static analysis
-./gradlew detekt
-
-# Publish to Maven Local
-./gradlew publishToMavenLocal
-```
-
-### Module Overview
-- `shared/` - Core KMP module (domain + data layers)
-- `ui/` - UI layer (Compose MP or native)
-- `examples/android-native/` - Native Android example
-- `examples/ios-native/` - Native iOS example
-- `examples/kmp-app/` - KMP example
-
-### Key Files
-- `build.gradle.kts` - Root build configuration
-- `shared/build.gradle.kts` - Shared module config
-- `gradle/libs.versions.toml` - Dependency versions
-- `.github/workflows/` - CI/CD configuration
-
----
-
-**Last Updated**: 2025-10-03 by Claude Code
-**Version**: 1.0
-**Status**: Initial documentation complete, ready to start implementation
+**Session Status**: ✅ Documentation updated, ready for next development phase
+**Next Action**: Begin Milestone 3.3 - Network Viewer Screen
