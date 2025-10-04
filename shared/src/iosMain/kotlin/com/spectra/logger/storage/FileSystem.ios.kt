@@ -51,35 +51,36 @@ actual class FileSystem {
         path: String,
         content: String,
         append: Boolean,
-    ) = withContext(Dispatchers.Default) {
-        val filePath = getFilePath(path)
+    ): Unit =
+        withContext(Dispatchers.Default) {
+            val filePath = getFilePath(path)
 
-        // Create parent directories if needed
-        val parentPath = (filePath as NSString).stringByDeletingLastPathComponent
-        if (!fileManager.fileExistsAtPath(parentPath)) {
-            fileManager.createDirectoryAtPath(parentPath, true, null, null)
+            // Create parent directories if needed
+            val parentPath = NSString.stringWithString(filePath).stringByDeletingLastPathComponent
+            if (!fileManager.fileExistsAtPath(parentPath)) {
+                fileManager.createDirectoryAtPath(parentPath, true, null, null)
+            }
+
+            val nsString = NSString.create(string = content)
+            val data = nsString.dataUsingEncoding(NSUTF8StringEncoding)
+
+            if (append && fileManager.fileExistsAtPath(filePath)) {
+                // Append to existing file
+                val existingData = NSData.create(contentsOfFile = filePath)
+                val mutableData = existingData?.mutableCopy() as? platform.Foundation.NSMutableData
+                mutableData?.appendData(data!!)
+                mutableData?.writeToFile(filePath, atomically = true)
+            } else {
+                // Write new file
+                data?.writeToFile(filePath, atomically = true)
+            }
         }
-
-        val nsString = NSString.create(string = content)
-        val data = nsString.dataUsingEncoding(NSUTF8StringEncoding)
-
-        if (append && fileManager.fileExistsAtPath(filePath)) {
-            // Append to existing file
-            val existingData = NSData.dataWithContentsOfFile(filePath)
-            val mutableData = existingData?.mutableCopy() as? platform.Foundation.NSMutableData
-            mutableData?.appendData(data!!)
-            mutableData?.writeToFile(filePath, true)
-        } else {
-            // Write new file
-            data?.writeToFile(filePath, true)
-        }
-    }
 
     actual suspend fun readText(path: String): String? =
         withContext(Dispatchers.Default) {
             val filePath = getFilePath(path)
             if (fileManager.fileExistsAtPath(filePath)) {
-                val data = NSData.dataWithContentsOfFile(filePath)
+                val data = NSData.create(contentsOfFile = filePath)
                 data?.let {
                     NSString.create(data = it, encoding = NSUTF8StringEncoding) as? String
                 }

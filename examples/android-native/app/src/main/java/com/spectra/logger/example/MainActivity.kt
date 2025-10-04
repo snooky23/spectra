@@ -15,10 +15,15 @@ class MainActivity : Activity() {
         val textView =
             TextView(this).apply {
                 text = "Spectra Logger Example\nVersion: ${SpectraLogger.getVersion()}"
-                textSize = 20f
-                setPadding(40, 40, 40, 40)
+                textSize = TEXT_SIZE_SP
+                setPadding(PADDING_DP, PADDING_DP, PADDING_DP, PADDING_DP)
             }
 
         setContentView(textView)
+    }
+
+    private companion object {
+        private const val TEXT_SIZE_SP = 20f
+        private const val PADDING_DP = 40
     }
 }
