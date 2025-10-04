@@ -21,23 +21,23 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+    - name: Grant execute permissions for scripts
+      run: chmod +x scripts/*.sh gradlew
 
-    - name: Build with Gradle
-      run: ./gradlew build --no-daemon --stacktrace
+    - name: Verify Java environment
+      run: ./scripts/setup-java.sh
+
+    - name: Run build
+      run: ./scripts/build.sh
 
     - name: Run tests
-      run: ./gradlew test --no-daemon --stacktrace
+      run: ./scripts/test.sh
 
-    - name: Run ktlint
-      run: ./gradlew ktlintCheck --no-daemon
-
-    - name: Run detekt
-      run: ./gradlew detekt --no-daemon
+    - name: Run code quality checks
+      run: ./scripts/code-quality.sh
 
     - name: Generate test coverage
-      run: ./gradlew :shared:jacocoTestReport --no-daemon
+      run: ./scripts/coverage.sh
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
@@ -60,7 +60,7 @@ jobs:
       with:
         name: test-results
         path: |
-          **/build/test-results/test/
+          **/build/test-results/
           **/build/reports/tests/
 
   code-quality:
@@ -77,14 +77,14 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+    - name: Grant execute permissions for scripts
+      run: chmod +x scripts/*.sh gradlew
 
-    - name: Run ktlint
-      run: ./gradlew ktlintCheck --no-daemon
+    - name: Verify Java environment
+      run: ./scripts/setup-java.sh
 
-    - name: Run detekt
-      run: ./gradlew detekt --no-daemon
+    - name: Run code quality checks
+      run: ./scripts/code-quality.sh
 
     - name: Upload detekt reports
       if: always()

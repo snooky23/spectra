@@ -18,13 +18,15 @@ import kotlinx.datetime.Clock
  *
  * @property storage Log storage implementation
  * @property minLevel Minimum log level to capture (default: VERBOSE)
- * @property scope Coroutine scope for async operations
+ * @property scope Coroutine scope for async operations (default: background scope)
  */
 class Logger(
     private val storage: LogStorage,
     private val minLevel: LogLevel = LogLevel.VERBOSE,
-    private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+    scope: CoroutineScope? = null,
 ) {
+    private val scope: CoroutineScope = scope ?: CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
     /**
      * Log a verbose message.
      */
