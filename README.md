@@ -1,6 +1,7 @@
 # Spectra Logger
 
-[![Build and Test](https://github.com/yourusername/spectra-logger/actions/workflows/build.yml/badge.svg)](https://github.com/yourusername/spectra-logger/actions/workflows/build.yml)
+[![Build and Test](https://github.com/snooky23/Spectra/actions/workflows/build.yml/badge.svg)](https://github.com/snooky23/Spectra/actions/workflows/build.yml)
+[![codecov](https://codecov.io/gh/snooky23/Spectra/branch/main/graph/badge.svg)](https://codecov.io/gh/snooky23/Spectra)
 [![Maven Central](https://img.shields.io/maven-central/v/com.spectra.logger/logger)](https://search.maven.org/artifact/com.spectra.logger/logger)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
