@@ -12,9 +12,10 @@ import java.io.File
  */
 actual class FileSystem(private val context: Context) {
     private val baseDir: File
-        get() = File(context.filesDir, "spectra_logs").apply {
-            if (!exists()) mkdirs()
-        }
+        get() =
+            File(context.filesDir, "spectra_logs").apply {
+                if (!exists()) mkdirs()
+            }
 
     private fun getFile(path: String): File = File(baseDir, path)
 
