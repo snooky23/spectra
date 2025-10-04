@@ -13,12 +13,10 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import platform.Foundation.NSData
 import platform.Foundation.NSHTTPURLResponse
-import platform.Foundation.NSString
 import platform.Foundation.NSURLRequest
 import platform.Foundation.NSURLResponse
 import platform.Foundation.NSURLSession
 import platform.Foundation.NSURLSessionDataTask
-import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.dataTaskWithRequest
 
 /**

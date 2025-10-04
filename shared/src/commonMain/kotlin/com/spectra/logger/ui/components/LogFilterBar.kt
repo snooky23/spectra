@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +26,7 @@ import com.spectra.logger.ui.theme.LogColors
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
+@Suppress("FunctionName")
 fun LogFilterBar(
     searchText: String,
     onSearchTextChange: (String) -> Unit,
