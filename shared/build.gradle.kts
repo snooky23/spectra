@@ -188,3 +188,16 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     classDirectories.setFrom(files("build/tmp/kotlin-classes/debugUnitTest"))
     executionData.setFrom(files("build/jacoco/testDebugUnitTest.exec"))
 }
+
+// Fix for IntelliJ IDEA duplicate content roots warning
+// Compose Multiplatform creates composeResources for test source sets which causes conflicts
+tasks.register("cleanDuplicateResources") {
+    doLast {
+        delete("src/commonTest/composeResources")
+        delete("src/androidUnitTest/composeResources")
+    }
+}
+
+tasks.named("preBuild") {
+    dependsOn("cleanDuplicateResources")
+}

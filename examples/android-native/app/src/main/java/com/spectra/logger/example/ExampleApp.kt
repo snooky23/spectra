@@ -42,93 +42,108 @@ import java.util.Locale
 private suspend fun exportLogs(context: Context) =
     withContext(Dispatchers.IO) {
         try {
-            // Get all logs
             val logs = SpectraLogger.logStorage.query()
             val networkLogs = SpectraLogger.networkStorage.query()
-
-            // Create export content
             val timestamp = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.US).format(Date())
-            val content = buildString {
-                appendLine("Spectra Logger Export")
-                appendLine("Generated: $timestamp")
-                appendLine("=" + "=".repeat(SEPARATOR_LENGTH))
-                appendLine()
 
-                appendLine("APPLICATION LOGS (${logs.size})")
-                appendLine("-" + "-".repeat(SEPARATOR_LENGTH))
-                logs.forEach { log ->
-                    appendLine("[${log.level}] ${log.timestamp} - ${log.tag}")
-                    appendLine("  ${log.message}")
-                    log.metadata.takeIf { it.isNotEmpty() }?.let { metadata ->
-                        appendLine("  Metadata: $metadata")
-                    }
-                    log.throwable?.let { throwable ->
-                        appendLine("  Exception: $throwable")
-                    }
-                    appendLine()
-                }
-
-                appendLine()
-                appendLine("NETWORK LOGS (${networkLogs.size})")
-                appendLine("-" + "-".repeat(SEPARATOR_LENGTH))
-                networkLogs.forEach { log ->
-                    appendLine("[${log.method}] ${log.url}")
-                    appendLine("  Timestamp: ${log.timestamp}")
-                    appendLine("  Duration: ${log.duration}ms")
-                    log.responseCode?.let { code ->
-                        appendLine("  Status: $code")
-                    }
-                    log.requestHeaders.takeIf { it.isNotEmpty() }?.let { headers ->
-                        appendLine("  Request Headers: $headers")
-                    }
-                    log.requestBody?.let { body ->
-                        appendLine("  Request Body: $body")
-                    }
-                    log.responseHeaders.takeIf { it.isNotEmpty() }?.let { headers ->
-                        appendLine("  Response Headers: $headers")
-                    }
-                    log.responseBody?.let { body ->
-                        appendLine("  Response Body: $body")
-                    }
-                    log.error?.let { error ->
-                        appendLine("  Error: $error")
-                    }
-                    appendLine()
-                }
-            }
-
-            // Write to file
+            val content = createExportContent(logs, networkLogs, timestamp)
             val file = File(context.cacheDir, "spectra_logs_$timestamp.txt")
             file.writeText(content)
 
-            // Create share intent with FileProvider
-            withContext(Dispatchers.Main) {
-                val uri =
-                    FileProvider.getUriForFile(
-                        context,
-                        "${context.packageName}.spectra.fileprovider",
-                        file,
-                    )
-
-                val shareIntent =
-                    Intent(Intent.ACTION_SEND).apply {
-                        type = "text/plain"
-                        putExtra(Intent.EXTRA_STREAM, uri)
-                        putExtra(Intent.EXTRA_SUBJECT, "Spectra Logger Export")
-                        putExtra(Intent.EXTRA_TEXT, "Logs exported from Spectra Logger")
-                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    }
-
-                context.startActivity(
-                    Intent.createChooser(shareIntent, "Export Logs"),
-                )
-            }
+            shareLogFile(context, file)
 
             SpectraLogger.i("Export", "Successfully exported ${logs.size + networkLogs.size} logs")
-        } catch (e: Exception) {
-            SpectraLogger.e("Export", "Failed to export logs", e)
+        } catch (e: java.io.IOException) {
+            SpectraLogger.e("Export", "Failed to write log file", e)
+        } catch (e: android.content.ActivityNotFoundException) {
+            SpectraLogger.e("Export", "No app available to share logs", e)
         }
     }
+
+/**
+ * Creates formatted export content from logs.
+ */
+private fun createExportContent(
+    logs: List<com.spectra.logger.domain.model.LogEntry>,
+    networkLogs: List<com.spectra.logger.domain.model.NetworkLogEntry>,
+    timestamp: String,
+): String =
+    buildString {
+        appendLine("Spectra Logger Export")
+        appendLine("Generated: $timestamp")
+        appendLine("=" + "=".repeat(SEPARATOR_LENGTH))
+        appendLine()
+
+        appendLine("APPLICATION LOGS (${logs.size})")
+        appendLine("-" + "-".repeat(SEPARATOR_LENGTH))
+        logs.forEach { log ->
+            appendLine("[${log.level}] ${log.timestamp} - ${log.tag}")
+            appendLine("  ${log.message}")
+            log.metadata.takeIf { it.isNotEmpty() }?.let { metadata ->
+                appendLine("  Metadata: $metadata")
+            }
+            log.throwable?.let { throwable ->
+                appendLine("  Exception: $throwable")
+            }
+            appendLine()
+        }
+
+        appendLine()
+        appendLine("NETWORK LOGS (${networkLogs.size})")
+        appendLine("-" + "-".repeat(SEPARATOR_LENGTH))
+        networkLogs.forEach { log ->
+            appendLine("[${log.method}] ${log.url}")
+            appendLine("  Timestamp: ${log.timestamp}")
+            appendLine("  Duration: ${log.duration}ms")
+            log.responseCode?.let { code ->
+                appendLine("  Status: $code")
+            }
+            log.requestHeaders.takeIf { it.isNotEmpty() }?.let { headers ->
+                appendLine("  Request Headers: $headers")
+            }
+            log.requestBody?.let { body ->
+                appendLine("  Request Body: $body")
+            }
+            log.responseHeaders.takeIf { it.isNotEmpty() }?.let { headers ->
+                appendLine("  Response Headers: $headers")
+            }
+            log.responseBody?.let { body ->
+                appendLine("  Response Body: $body")
+            }
+            log.error?.let { error ->
+                appendLine("  Error: $error")
+            }
+            appendLine()
+        }
+    }
+
+/**
+ * Shares the log file using Android's share sheet.
+ */
+private suspend fun shareLogFile(
+    context: Context,
+    file: File,
+) = withContext(Dispatchers.Main) {
+    val uri =
+        FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.spectra.fileprovider",
+            file,
+        )
+
+    val shareIntent =
+        Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            putExtra(Intent.EXTRA_SUBJECT, "Spectra Logger Export")
+            putExtra(Intent.EXTRA_TEXT, "Logs exported from Spectra Logger")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+    context.startActivity(
+        Intent.createChooser(shareIntent, "Export Logs"),
+    )
+}
 
 private const val SEPARATOR_LENGTH = 80
 
