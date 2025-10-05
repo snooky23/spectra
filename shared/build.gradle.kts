@@ -191,25 +191,55 @@ tasks.register<JacocoReport>("jacocoTestReport") {
 
 // Fix for IntelliJ IDEA duplicate content roots warning
 // Compose Multiplatform creates composeResources for test source sets which causes conflicts
-tasks.register("cleanDuplicateResources") {
+// This comprehensive fix prevents the directories from being created in the first place
+
+// 1. Clean up any existing test composeResources directories
+tasks.register("cleanTestComposeResources") {
     doLast {
-        delete("src/commonTest/composeResources")
-        delete("src/androidUnitTest/composeResources")
-        delete("src/iosTest/composeResources")
+        // Delete all test-related composeResources directories
+        val testResourceDirs = listOf(
+            "src/commonTest/composeResources",
+            "src/androidUnitTest/composeResources",
+            "src/androidInstrumentedTest/composeResources",
+            "src/iosTest/composeResources",
+            "src/iosX64Test/composeResources",
+            "src/iosArm64Test/composeResources",
+            "src/iosSimulatorArm64Test/composeResources"
+        )
+        testResourceDirs.forEach { delete(it) }
     }
 }
 
+// 2. Run cleanup before build and before IntelliJ sync
 tasks.named("preBuild") {
-    dependsOn("cleanDuplicateResources")
+    dependsOn("cleanTestComposeResources")
 }
 
-// Additional fix: Configure Compose to skip test source sets
+// Run cleanup when IntelliJ/Android Studio syncs the project
+tasks.configureEach {
+    if (name == "prepareKotlinIdeaImport" || name == "generateProjectStructureMetadata") {
+        dependsOn("cleanTestComposeResources")
+    }
+}
+
+// 3. Disable Compose resource generation for test source sets
 afterEvaluate {
+    // Find and disable all Compose resource generation tasks for test source sets
     tasks.configureEach {
-        if (name.contains("generateComposeResClass") &&
-            (name.contains("Test") || name.contains("test"))
-        ) {
+        val taskName = name.lowercase()
+        val isComposeResourceTask = taskName.contains("generatecomposeresclass") ||
+                taskName.contains("composeresources")
+        val isTestTask = taskName.contains("test")
+
+        if (isComposeResourceTask && isTestTask) {
             enabled = false
+        }
+    }
+
+    // Also clean up after any task that might create these directories
+    tasks.configureEach {
+        if (name.contains("generateComposeResClass")) {
+            finalizedBy("cleanTestComposeResources")
         }
     }
 }
