@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
@@ -192,7 +192,7 @@ fun ExampleApp() {
 private fun BottomNavigationBar(navController: androidx.navigation.NavHostController) {
     val items =
         listOf(
-            Triple(Screen.Logs, Icons.Default.List, "Logs"),
+            Triple(Screen.Logs, Icons.AutoMirrored.Filled.List, "Logs"),
             Triple(Screen.Network, Icons.Default.Warning, "Network"),
             Triple(Screen.Settings, Icons.Default.Settings, "Settings"),
         )
