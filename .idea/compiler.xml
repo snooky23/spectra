@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel target="17" />
+    <excludeFromCompile>
+      <directory url="file://$PROJECT_DIR$/examples/ios-native" includeSubdirectories="true" />
+    </excludeFromCompile>
+  </component>
+</project>
