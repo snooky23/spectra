@@ -53,6 +53,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
 
+    // Kotlinx
+    implementation(libs.kotlinx.datetime)
+
     // Compose BOM for version alignment
     val composeBom = platform("androidx.compose:compose-bom:2024.02.00")
     implementation(composeBom)
