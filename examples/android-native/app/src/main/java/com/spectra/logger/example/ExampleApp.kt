@@ -249,12 +249,6 @@ private fun AppNavHost(
             SettingsScreen(
                 logStorage = SpectraLogger.logStorage,
                 networkLogStorage = SpectraLogger.networkStorage,
-                currentMinLevel = SpectraLogger.configuration.minLogLevel,
-                onMinLevelChange = { newLevel ->
-                    SpectraLogger.configure {
-                        minLogLevel = newLevel
-                    }
-                },
                 onExportLogs = {
                     scope.launch {
                         exportLogs(context)
