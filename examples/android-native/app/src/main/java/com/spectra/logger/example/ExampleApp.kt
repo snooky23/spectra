@@ -1,5 +1,7 @@
 package com.spectra.logger.example
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
@@ -14,6 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.FileProvider
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -24,7 +28,109 @@ import com.spectra.logger.SpectraLogger
 import com.spectra.logger.ui.screens.LogListScreen
 import com.spectra.logger.ui.screens.NetworkLogScreen
 import com.spectra.logger.ui.screens.SettingsScreen
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+/**
+ * Exports all logs to a text file and opens the system share dialog.
+ */
+private suspend fun exportLogs(context: Context) =
+    withContext(Dispatchers.IO) {
+        try {
+            // Get all logs
+            val logs = SpectraLogger.logStorage.query()
+            val networkLogs = SpectraLogger.networkStorage.query()
+
+            // Create export content
+            val timestamp = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.US).format(Date())
+            val content = buildString {
+                appendLine("Spectra Logger Export")
+                appendLine("Generated: $timestamp")
+                appendLine("=" + "=".repeat(SEPARATOR_LENGTH))
+                appendLine()
+
+                appendLine("APPLICATION LOGS (${logs.size})")
+                appendLine("-" + "-".repeat(SEPARATOR_LENGTH))
+                logs.forEach { log ->
+                    appendLine("[${log.level}] ${log.timestamp} - ${log.tag}")
+                    appendLine("  ${log.message}")
+                    log.metadata.takeIf { it.isNotEmpty() }?.let { metadata ->
+                        appendLine("  Metadata: $metadata")
+                    }
+                    log.throwable?.let { throwable ->
+                        appendLine("  Exception: $throwable")
+                    }
+                    appendLine()
+                }
+
+                appendLine()
+                appendLine("NETWORK LOGS (${networkLogs.size})")
+                appendLine("-" + "-".repeat(SEPARATOR_LENGTH))
+                networkLogs.forEach { log ->
+                    appendLine("[${log.method}] ${log.url}")
+                    appendLine("  Timestamp: ${log.timestamp}")
+                    appendLine("  Duration: ${log.duration}ms")
+                    log.responseCode?.let { code ->
+                        appendLine("  Status: $code")
+                    }
+                    log.requestHeaders.takeIf { it.isNotEmpty() }?.let { headers ->
+                        appendLine("  Request Headers: $headers")
+                    }
+                    log.requestBody?.let { body ->
+                        appendLine("  Request Body: $body")
+                    }
+                    log.responseHeaders.takeIf { it.isNotEmpty() }?.let { headers ->
+                        appendLine("  Response Headers: $headers")
+                    }
+                    log.responseBody?.let { body ->
+                        appendLine("  Response Body: $body")
+                    }
+                    log.error?.let { error ->
+                        appendLine("  Error: $error")
+                    }
+                    appendLine()
+                }
+            }
+
+            // Write to file
+            val file = File(context.cacheDir, "spectra_logs_$timestamp.txt")
+            file.writeText(content)
+
+            // Create share intent with FileProvider
+            withContext(Dispatchers.Main) {
+                val uri =
+                    FileProvider.getUriForFile(
+                        context,
+                        "${context.packageName}.spectra.fileprovider",
+                        file,
+                    )
+
+                val shareIntent =
+                    Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(Intent.EXTRA_STREAM, uri)
+                        putExtra(Intent.EXTRA_SUBJECT, "Spectra Logger Export")
+                        putExtra(Intent.EXTRA_TEXT, "Logs exported from Spectra Logger")
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+
+                context.startActivity(
+                    Intent.createChooser(shareIntent, "Export Logs"),
+                )
+            }
+
+            SpectraLogger.i("Export", "Successfully exported ${logs.size + networkLogs.size} logs")
+        } catch (e: Exception) {
+            SpectraLogger.e("Export", "Failed to export logs", e)
+        }
+    }
+
+private const val SEPARATOR_LENGTH = 80
 
 /**
  * Navigation screen definitions for the example app.
@@ -105,6 +211,8 @@ private fun AppNavHost(
     modifier: Modifier = Modifier,
     scope: kotlinx.coroutines.CoroutineScope,
 ) {
+    val context = LocalContext.current
+
     NavHost(
         navController = navController,
         startDestination = Screen.Logs.route,
@@ -134,7 +242,7 @@ private fun AppNavHost(
                 },
                 onExportLogs = {
                     scope.launch {
-                        SpectraLogger.i("Export", "Export logs requested")
+                        exportLogs(context)
                     }
                 },
             )
