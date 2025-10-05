@@ -20,9 +20,8 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -64,7 +63,6 @@ fun NetworkLogScreen(
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
     var searchQuery by remember { mutableStateOf("") }
-    var isSearchActive by remember { mutableStateOf(false) }
     var selectedMethods by remember { mutableStateOf<Set<String>>(emptySet()) }
     var selectedStatusRanges by remember { mutableStateOf<Set<String>>(emptySet()) }
     var selectedLog by remember { mutableStateOf<NetworkLogEntry?>(null) }
@@ -93,12 +91,13 @@ fun NetworkLogScreen(
         }
     }
 
-    // Filter logs based on search and filters
+    // Filter logs based on search and filters (minimum 2 characters for search)
     val filteredLogs =
         logs.filter { log ->
             val matchesSearch =
-                searchQuery.isEmpty() ||
-                    log.url.contains(searchQuery, ignoreCase = true)
+                searchQuery.length < 2 ||
+                    log.url.contains(searchQuery, ignoreCase = true) ||
+                    log.method.contains(searchQuery, ignoreCase = true)
 
             val matchesMethod =
                 selectedMethods.isEmpty() || selectedMethods.contains(log.method)
@@ -146,14 +145,11 @@ fun NetworkLogScreen(
                     .fillMaxSize()
                     .padding(paddingValues),
         ) {
-            // Modern search bar
-            SearchBar(
-                query = searchQuery,
-                onQueryChange = { searchQuery = it },
-                onSearch = { isSearchActive = false },
-                active = isSearchActive,
-                onActiveChange = { isSearchActive = it },
-                placeholder = { Text("Search by URL...") },
+            // Search field (minimum 2 characters to filter)
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                placeholder = { Text("Search by URL or method (min 2 chars)...") },
                 leadingIcon = {
                     Icon(Icons.Default.Search, contentDescription = "Search")
                 },
@@ -169,13 +165,8 @@ fun NetworkLogScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                 shape = RoundedCornerShape(28.dp),
-                colors =
-                    SearchBarDefaults.colors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    ),
-            ) {
-                // Search suggestions could go here
-            }
+                singleLine = true,
+            )
 
             // HTTP Method Filters
             if (httpMethods.isNotEmpty()) {
