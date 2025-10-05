@@ -41,6 +41,7 @@ import com.spectra.logger.domain.model.NetworkLogFilter
 import com.spectra.logger.domain.storage.NetworkLogStorage
 import com.spectra.logger.ui.components.NetworkLogDetailDialog
 import com.spectra.logger.ui.components.NetworkLogItem
+import com.spectra.logger.ui.theme.LogColors
 import kotlinx.coroutines.flow.catch
 
 /**
@@ -206,6 +207,15 @@ fun NetworkLogScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     statusRanges.forEach { range ->
+                        val statusColor =
+                            when (range) {
+                                "2xx" -> LogColors.NetworkStatus.Success
+                                "3xx" -> LogColors.NetworkStatus.Redirect
+                                "4xx" -> LogColors.NetworkStatus.ClientError
+                                "5xx" -> LogColors.NetworkStatus.ServerError
+                                else -> LogColors.NetworkStatus.Unknown
+                            }
+
                         FilterChip(
                             selected = selectedStatusRanges.contains(range),
                             onClick = {
@@ -217,6 +227,12 @@ fun NetworkLogScreen(
                                     }
                             },
                             label = { Text(range) },
+                            colors =
+                                FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = statusColor.copy(alpha = 0.2f),
+                                    selectedLabelColor = statusColor,
+                                    selectedLeadingIconColor = statusColor,
+                                ),
                         )
                     }
                 }
