@@ -1,0 +1,20 @@
+# IntelliJ IDEA configuration
+# Most .idea files are gitignored, but we keep this file to configure exclusions
+
+# Workspace file should be ignored (user-specific settings)
+workspace.xml
+
+# User-specific configurations
+tasks.xml
+usage.statistics.xml
+dictionaries/
+shelf/
+
+# Sensitive or machine-specific
+aws.xml
+deployment.xml
+
+# Generated files
+.name
+modules.xml
+*.iml
