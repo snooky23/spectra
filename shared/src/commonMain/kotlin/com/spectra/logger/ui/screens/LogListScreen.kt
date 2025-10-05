@@ -45,6 +45,7 @@ import com.spectra.logger.domain.model.LogLevel
 import com.spectra.logger.domain.storage.LogStorage
 import com.spectra.logger.ui.components.LogDetailDialog
 import com.spectra.logger.ui.components.LogEntryItem
+import com.spectra.logger.ui.theme.LogColors
 import kotlinx.coroutines.flow.catch
 
 /**
@@ -213,15 +214,9 @@ fun LogListScreen(
                         label = { Text(level.name) },
                         colors =
                             FilterChipDefaults.filterChipColors(
-                                selectedContainerColor =
-                                    when (level) {
-                                        LogLevel.VERBOSE -> MaterialTheme.colorScheme.surfaceVariant
-                                        LogLevel.DEBUG -> MaterialTheme.colorScheme.primaryContainer
-                                        LogLevel.INFO -> MaterialTheme.colorScheme.secondaryContainer
-                                        LogLevel.WARNING -> MaterialTheme.colorScheme.tertiaryContainer
-                                        LogLevel.ERROR -> MaterialTheme.colorScheme.errorContainer
-                                        LogLevel.FATAL -> MaterialTheme.colorScheme.error
-                                    },
+                                selectedContainerColor = LogColors.getColor(level).copy(alpha = 0.2f),
+                                selectedLabelColor = LogColors.getColor(level),
+                                selectedLeadingIconColor = LogColors.getColor(level),
                             ),
                     )
                 }

@@ -207,7 +207,8 @@ tasks.named("preBuild") {
 afterEvaluate {
     tasks.configureEach {
         if (name.contains("generateComposeResClass") &&
-            (name.contains("Test") || name.contains("test"))) {
+            (name.contains("Test") || name.contains("test"))
+        ) {
             enabled = false
         }
     }
