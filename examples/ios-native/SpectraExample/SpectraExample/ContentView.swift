@@ -1,5 +1,6 @@
 import SwiftUI
-import shared
+import SpectraLogger
+import UIKit
 
 struct ContentView: View {
     @State private var selectedTab = 0
@@ -8,7 +9,7 @@ struct ContentView: View {
         TabView(selection: $selectedTab) {
             LogsView()
                 .tabItem {
-                    Label("Logs", systemImage: "list.bullet")
+                    Label("Logs", systemImage: "list.bullet.rectangle")
                 }
                 .tag(0)
 
@@ -27,16 +28,14 @@ struct ContentView: View {
     }
 }
 
+// MARK: - Logs View (Using Compose UI)
 struct LogsView: View {
     var body: some View {
         NavigationView {
-            // Use Compose UI from shared module
-            ComposeViewControllerRepresentable(
-                createViewController: {
-                    MainViewControllerKt.createLogListViewController(
-                        storage: SpectraLogger.shared.logStorage
-                    )
-                }
+            ComposeViewController(
+                viewController: MainViewControllerKt.LogListViewController(
+                    storage: SpectraLoggerKt.logStorage
+                )
             )
             .navigationTitle("Logs")
             .navigationBarTitleDisplayMode(.inline)
@@ -44,16 +43,14 @@ struct LogsView: View {
     }
 }
 
+// MARK: - Network View (Using Compose UI)
 struct NetworkView: View {
     var body: some View {
         NavigationView {
-            // Use Compose UI from shared module
-            ComposeViewControllerRepresentable(
-                createViewController: {
-                    MainViewControllerKt.createNetworkLogViewController(
-                        storage: SpectraLogger.shared.networkStorage
-                    )
-                }
+            ComposeViewController(
+                viewController: MainViewControllerKt.NetworkLogViewController(
+                    storage: SpectraLoggerKt.networkStorage
+                )
             )
             .navigationTitle("Network")
             .navigationBarTitleDisplayMode(.inline)
@@ -61,30 +58,16 @@ struct NetworkView: View {
     }
 }
 
+// MARK: - Settings View (Native SwiftUI)
 struct SettingsView: View {
-    @State private var selectedLogLevel: LogLevel = .verbose
     @State private var logCount: Int32 = 0
     @State private var networkCount: Int32 = 0
-    @State private var showClearAlert = false
-    @State private var showNetworkClearAlert = false
+    @State private var showClearLogsAlert = false
+    @State private var showClearNetworkAlert = false
 
     var body: some View {
         NavigationView {
             Form {
-                Section("Log Level") {
-                    Picker("Minimum Level", selection: $selectedLogLevel) {
-                        ForEach(LogLevel.allCases, id: \.self) { level in
-                            Text(level.name).tag(level)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .onChange(of: selectedLogLevel) { _, newValue in
-                        SpectraLogger.shared.configure { config in
-                            config.minLogLevel = newValue
-                        }
-                    }
-                }
-
                 Section("Storage") {
                     HStack {
                         VStack(alignment: .leading) {
@@ -95,7 +78,7 @@ struct SettingsView: View {
                         }
                         Spacer()
                         Button("Clear") {
-                            showClearAlert = true
+                            showClearLogsAlert = true
                         }
                         .foregroundColor(.red)
                         .disabled(logCount == 0)
@@ -110,7 +93,7 @@ struct SettingsView: View {
                         }
                         Spacer()
                         Button("Clear") {
-                            showNetworkClearAlert = true
+                            showClearNetworkAlert = true
                         }
                         .foregroundColor(.red)
                         .disabled(networkCount == 0)
@@ -121,31 +104,48 @@ struct SettingsView: View {
                     Button("Export All Logs") {
                         exportLogs()
                     }
+                    Text("Export all logs to share with developers")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                Section("About") {
+                    HStack {
+                        Text("Version")
+                        Spacer()
+                        Text("1.0.0")
+                            .foregroundColor(.secondary)
+                    }
+
+                    HStack {
+                        Text("Framework")
+                        Spacer()
+                        Text("Spectra Logger")
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
-            .alert("Clear Application Logs?", isPresented: $showClearAlert) {
+            .alert("Clear Application Logs?", isPresented: $showClearLogsAlert) {
                 Button("Cancel", role: .cancel) {}
                 Button("Clear", role: .destructive) {
                     Task {
-                        try? await SpectraLogger.shared.clear()
-                        await updateCounts()
+                        await clearLogs()
                     }
                 }
             } message: {
-                Text("This will permanently delete all \(logCount) application logs.")
+                Text("This will permanently delete all \(logCount) application logs. This action cannot be undone.")
             }
-            .alert("Clear Network Logs?", isPresented: $showNetworkClearAlert) {
+            .alert("Clear Network Logs?", isPresented: $showClearNetworkAlert) {
                 Button("Cancel", role: .cancel) {}
                 Button("Clear", role: .destructive) {
                     Task {
-                        try? await SpectraLogger.shared.clearNetwork()
-                        await updateCounts()
+                        await clearNetworkLogs()
                     }
                 }
             } message: {
-                Text("This will permanently delete all \(networkCount) network logs.")
+                Text("This will permanently delete all \(networkCount) network logs. This action cannot be undone.")
             }
             .task {
                 await updateCounts()
@@ -154,32 +154,55 @@ struct SettingsView: View {
     }
 
     private func updateCounts() async {
-        logCount = try! await SpectraLogger.shared.count()
-        networkCount = try! await SpectraLogger.shared.networkCount()
+        do {
+            logCount = try await SpectraLoggerKt.logStorage.count()
+            networkCount = try await SpectraLoggerKt.networkStorage.count()
+        } catch {
+            SpectraLoggerKt.e(tag: "Settings", message: "Failed to update counts: \(error.localizedDescription)")
+        }
+    }
+
+    private func clearLogs() async {
+        do {
+            try await SpectraLoggerKt.logStorage.clear()
+            await updateCounts()
+            SpectraLoggerKt.i(tag: "Settings", message: "Application logs cleared")
+        } catch {
+            SpectraLoggerKt.e(tag: "Settings", message: "Failed to clear logs: \(error.localizedDescription)")
+        }
+    }
+
+    private func clearNetworkLogs() async {
+        do {
+            try await SpectraLoggerKt.networkStorage.clear()
+            await updateCounts()
+            SpectraLoggerKt.i(tag: "Settings", message: "Network logs cleared")
+        } catch {
+            SpectraLoggerKt.e(tag: "Settings", message: "Failed to clear network logs: \(error.localizedDescription)")
+        }
     }
 
     private func exportLogs() {
-        SpectraLogger.shared.i(tag: "Export", message: "Export logs requested")
-        // TODO: Implement export functionality
+        SpectraLoggerKt.i(tag: "Export", message: "Export logs requested")
+        // TODO: Implement export to file and share sheet
+        // This would involve:
+        // 1. Query all logs from storage
+        // 2. Format logs as text/JSON
+        // 3. Save to temporary file
+        // 4. Present UIActivityViewController
     }
 }
 
-// Helper to wrap Compose ViewController in SwiftUI
-struct ComposeViewControllerRepresentable: UIViewControllerRepresentable {
-    let createViewController: () -> UIViewController
+// MARK: - Compose UIViewController Wrapper
+struct ComposeViewController: UIViewControllerRepresentable {
+    let viewController: UIViewController
 
     func makeUIViewController(context: Context) -> UIViewController {
-        createViewController()
+        return viewController
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        // No updates needed
-    }
-}
-
-extension LogLevel: CaseIterable {
-    public static var allCases: [LogLevel] {
-        return [.verbose, .debug, .info, .warning, .error, .fatal]
+        // No updates needed for Compose UI
     }
 }
 

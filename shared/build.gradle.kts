@@ -195,9 +195,20 @@ tasks.register("cleanDuplicateResources") {
     doLast {
         delete("src/commonTest/composeResources")
         delete("src/androidUnitTest/composeResources")
+        delete("src/iosTest/composeResources")
     }
 }
 
 tasks.named("preBuild") {
     dependsOn("cleanDuplicateResources")
+}
+
+// Additional fix: Configure Compose to skip test source sets
+afterEvaluate {
+    tasks.configureEach {
+        if (name.contains("generateComposeResClass") &&
+            (name.contains("Test") || name.contains("test"))) {
+            enabled = false
+        }
+    }
 }
