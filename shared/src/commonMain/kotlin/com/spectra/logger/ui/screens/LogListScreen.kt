@@ -1,21 +1,31 @@
 package com.spectra.logger.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -31,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.spectra.logger.domain.model.LogEntry
 import com.spectra.logger.domain.model.LogFilter
+import com.spectra.logger.domain.model.LogLevel
 import com.spectra.logger.domain.storage.LogStorage
 import com.spectra.logger.ui.components.LogDetailDialog
 import com.spectra.logger.ui.components.LogEntryItem
@@ -59,24 +70,37 @@ fun LogListScreen(
     var selectedLog by remember { mutableStateOf<LogEntry?>(null) }
     var searchQuery by remember { mutableStateOf("") }
     var isSearchActive by remember { mutableStateOf(false) }
+    var selectedLogLevels by remember { mutableStateOf(setOf<LogLevel>()) }
 
-    // Filter logs based on search query
+    // Filter logs based on search query and log levels
     val filteredLogs =
-        remember(logs, searchQuery) {
-            if (searchQuery.isBlank()) {
-                logs
-            } else {
-                logs.filter { log ->
-                    log.message.contains(searchQuery, ignoreCase = true) ||
-                        log.tag.contains(searchQuery, ignoreCase = true) ||
-                        log.level.name.contains(searchQuery, ignoreCase = true) ||
-                        log.throwable?.contains(searchQuery, ignoreCase = true) == true ||
-                        log.metadata.any { (key, value) ->
-                            key.contains(searchQuery, ignoreCase = true) ||
-                                value.contains(searchQuery, ignoreCase = true)
-                        }
-                }
+        remember(logs, searchQuery, selectedLogLevels) {
+            var filtered = logs
+
+            // Filter by log levels
+            if (selectedLogLevels.isNotEmpty()) {
+                filtered =
+                    filtered.filter { log ->
+                        selectedLogLevels.contains(log.level)
+                    }
             }
+
+            // Filter by search query
+            if (searchQuery.isNotBlank()) {
+                filtered =
+                    filtered.filter { log ->
+                        log.message.contains(searchQuery, ignoreCase = true) ||
+                            log.tag.contains(searchQuery, ignoreCase = true) ||
+                            log.level.name.contains(searchQuery, ignoreCase = true) ||
+                            log.throwable?.contains(searchQuery, ignoreCase = true) == true ||
+                            log.metadata.any { (key, value) ->
+                                key.contains(searchQuery, ignoreCase = true) ||
+                                    value.contains(searchQuery, ignoreCase = true)
+                            }
+                    }
+            }
+
+            filtered
         }
 
     // Observe logs from storage
@@ -116,26 +140,12 @@ fun LogListScreen(
             TopAppBar(
                 title = {
                     Text(
-                        if (searchQuery.isNotBlank()) {
+                        if (searchQuery.isNotBlank() || selectedLogLevels.isNotEmpty()) {
                             "Logs (${filteredLogs.size}/${logs.size})"
                         } else {
                             "Logs (${logs.size})"
                         },
                     )
-                },
-                actions = {
-                    if (isSearchActive) {
-                        IconButton(onClick = {
-                            searchQuery = ""
-                            isSearchActive = false
-                        }) {
-                            Icon(Icons.Default.Close, contentDescription = "Close search")
-                        }
-                    } else {
-                        IconButton(onClick = { isSearchActive = true }) {
-                            Icon(Icons.Default.Search, contentDescription = "Search logs")
-                        }
-                    }
                 },
                 colors =
                     TopAppBarDefaults.topAppBarColors(
@@ -152,26 +162,72 @@ fun LogListScreen(
                     .fillMaxSize()
                     .padding(paddingValues),
         ) {
-            // Search bar
-            if (isSearchActive) {
-                androidx.compose.material3.TextField(
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
-                    placeholder = { Text("Search logs...") },
-                    leadingIcon = {
-                        Icon(Icons.Default.Search, contentDescription = null)
-                    },
-                    trailingIcon = {
-                        if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = { searchQuery = "" }) {
-                                Icon(Icons.Default.Close, contentDescription = "Clear search")
-                            }
+            // Modern search bar
+            SearchBar(
+                query = searchQuery,
+                onQueryChange = { searchQuery = it },
+                onSearch = { isSearchActive = false },
+                active = isSearchActive,
+                onActiveChange = { isSearchActive = it },
+                placeholder = { Text("Search logs...") },
+                leadingIcon = {
+                    Icon(Icons.Default.Search, contentDescription = "Search")
+                },
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(onClick = { searchQuery = "" }) {
+                            Icon(Icons.Default.Close, contentDescription = "Clear")
                         }
-                    },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                )
+                    }
+                },
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                shape = RoundedCornerShape(28.dp),
+                colors =
+                    SearchBarDefaults.colors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    ),
+            ) {
+                // Search suggestions could go here
             }
+
+            // Log level filter chips
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                items(LogLevel.entries) { level ->
+                    FilterChip(
+                        selected = selectedLogLevels.contains(level),
+                        onClick = {
+                            selectedLogLevels =
+                                if (selectedLogLevels.contains(level)) {
+                                    selectedLogLevels - level
+                                } else {
+                                    selectedLogLevels + level
+                                }
+                        },
+                        label = { Text(level.name) },
+                        colors =
+                            FilterChipDefaults.filterChipColors(
+                                selectedContainerColor =
+                                    when (level) {
+                                        LogLevel.VERBOSE -> MaterialTheme.colorScheme.surfaceVariant
+                                        LogLevel.DEBUG -> MaterialTheme.colorScheme.primaryContainer
+                                        LogLevel.INFO -> MaterialTheme.colorScheme.secondaryContainer
+                                        LogLevel.WARNING -> MaterialTheme.colorScheme.tertiaryContainer
+                                        LogLevel.ERROR -> MaterialTheme.colorScheme.errorContainer
+                                        LogLevel.FATAL -> MaterialTheme.colorScheme.error
+                                    },
+                            ),
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Content
             Box(

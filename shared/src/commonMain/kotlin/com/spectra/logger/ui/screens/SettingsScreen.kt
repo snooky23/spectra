@@ -14,14 +14,10 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -36,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.spectra.logger.domain.model.LogLevel
 import com.spectra.logger.domain.storage.LogStorage
 import com.spectra.logger.domain.storage.NetworkLogStorage
 import kotlinx.coroutines.launch
@@ -46,8 +41,6 @@ import kotlinx.coroutines.launch
  *
  * @param logStorage Log storage instance
  * @param networkLogStorage Network log storage instance
- * @param currentMinLevel Current minimum log level
- * @param onMinLevelChange Callback when minimum log level changes
  * @param onExportLogs Callback to export logs
  * @param modifier Modifier for the screen
  */
@@ -56,8 +49,6 @@ import kotlinx.coroutines.launch
 fun SettingsScreen(
     logStorage: LogStorage,
     networkLogStorage: NetworkLogStorage,
-    currentMinLevel: LogLevel = LogLevel.VERBOSE,
-    onMinLevelChange: (LogLevel) -> Unit = {},
     onExportLogs: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -94,44 +85,6 @@ fun SettingsScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp),
         ) {
-            // Log Level Section
-            SettingSection(title = "Log Level") {
-                Text(
-                    text = "Set minimum log level to display",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                val logLevels = LogLevel.entries
-                var selectedIndex by remember { mutableStateOf(logLevels.indexOf(currentMinLevel)) }
-
-                SingleChoiceSegmentedButtonRow(
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    logLevels.forEachIndexed { index, level ->
-                        SegmentedButton(
-                            selected = selectedIndex == index,
-                            onClick = {
-                                selectedIndex = index
-                                onMinLevelChange(level)
-                            },
-                            shape =
-                                SegmentedButtonDefaults.itemShape(
-                                    index = index,
-                                    count = logLevels.size,
-                                ),
-                        ) {
-                            Text(level.name.take(1))
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(16.dp))
-
             // Storage Section
             SettingSection(title = "Storage") {
                 // Log storage info
@@ -195,9 +148,7 @@ fun SettingsScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Export Section
             SettingSection(title = "Export") {
