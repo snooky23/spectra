@@ -1,30 +1,47 @@
 import SwiftUI
 
-struct ContentView: View {
+/// SpectraLoggerScreen - Complete ready-to-use logger UI with all tabs
+/// This is what users get from the SDK - one screen with everything included
+struct SpectraLoggerScreen: View {
+    @Environment(\.dismiss) private var dismiss
     @State private var selectedTab = 0
 
     var body: some View {
-        TabView(selection: $selectedTab) {
-            LogsView()
-                .tabItem {
-                    Label("Logs", systemImage: "list.bullet.rectangle")
-                }
-                .tag(0)
+        NavigationView {
+            TabView(selection: $selectedTab) {
+                LogsView()
+                    .tabItem {
+                        Label("Logs", systemImage: "list.bullet.rectangle")
+                    }
+                    .tag(0)
 
-            NetworkView()
-                .tabItem {
-                    Label("Network", systemImage: "network")
-                }
-                .tag(1)
+                NetworkView()
+                    .tabItem {
+                        Label("Network", systemImage: "network")
+                    }
+                    .tag(1)
 
-            SettingsView()
-                .tabItem {
-                    Label("Settings", systemImage: "gearshape")
+                SettingsView()
+                    .tabItem {
+                        Label("Settings", systemImage: "gearshape")
+                    }
+                    .tag(2)
+            }
+            .navigationTitle("Spectra Logger")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
                 }
-                .tag(2)
+            }
         }
     }
 }
+
+// MARK: - For backwards compatibility / preview only
+typealias ContentView = SpectraLoggerScreen
 
 // MARK: - Logs View (Placeholder)
 struct LogsView: View {
