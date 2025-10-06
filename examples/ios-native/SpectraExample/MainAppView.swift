@@ -87,10 +87,10 @@ struct MainAppView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showSpectraLogger) {
-                // This is the complete Spectra Logger screen from the SDK
+                // This is the complete Spectra Logger screen from the KMP SDK
                 // It comes with all tabs (Logs, Network, Settings) built-in
                 // Users just present it - no need to build tabs themselves
-                SpectraLoggerScreen()
+                SpectraLoggerView()
             }
         }
     }
