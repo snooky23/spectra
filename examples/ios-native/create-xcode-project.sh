@@ -35,7 +35,7 @@ cat > "$PROJECT_NAME.xcodeproj/project.pbxproj" << 'EOF'
 		D0A001 /* SpectraExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A000 /* SpectraExampleApp.swift */; };
 		D0A005 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D0A004 /* Assets.xcassets */; };
 		D0A007 /* MainAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A006 /* MainAppView.swift */; };
-		D0A008 /* SpectraLoggerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A00E /* SpectraLoggerView.swift */; };
+		D0A008 /* SpectraLoggerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A002 /* SpectraLoggerView.swift */; };
 		D0A00A /* SpectraLogger.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0A009 /* SpectraLogger.framework */; };
 		D0A00B /* SpectraLogger.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D0A009 /* SpectraLogger.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -57,9 +57,9 @@ cat > "$PROJECT_NAME.xcodeproj/project.pbxproj" << 'EOF'
 /* Begin PBXFileReference section */
 		D0AFFD /* SpectraExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpectraExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0A000 /* SpectraExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectraExampleApp.swift; sourceTree = "<group>"; };
+		D0A002 /* SpectraLoggerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectraLoggerView.swift; sourceTree = "<group>"; };
 		D0A004 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D0A006 /* MainAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppView.swift; sourceTree = "<group>"; };
-		D0A00E /* SpectraLoggerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectraLoggerView.swift; sourceTree = "<group>"; };
 		D0A009 /* SpectraLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpectraLogger.framework; path = "../../shared/build/bin/iosSimulatorArm64/debugFramework/SpectraLogger.framework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -96,9 +96,9 @@ cat > "$PROJECT_NAME.xcodeproj/project.pbxproj" << 'EOF'
 			isa = PBXGroup;
 			children = (
 				D0A000 /* SpectraExampleApp.swift */,
-				D0A006 /* MainAppView.swift */,
-				D0A00E /* SpectraLoggerView.swift */,
+				D0A002 /* SpectraLoggerView.swift */,
 				D0A004 /* Assets.xcassets */,
+				D0A006 /* MainAppView.swift */,
 			);
 			path = SpectraExample;
 			sourceTree = "<group>";
