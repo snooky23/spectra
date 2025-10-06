@@ -1,6 +1,4 @@
 import SwiftUI
-import SpectraLogger
-import UIKit
 
 struct ContentView: View {
     @State private var selectedTab = 0
@@ -28,30 +26,38 @@ struct ContentView: View {
     }
 }
 
-// MARK: - Logs View (Using Compose UI)
+// MARK: - Logs View (Placeholder)
 struct LogsView: View {
     var body: some View {
         NavigationView {
-            ComposeViewController(
-                viewController: MainViewControllerKt.LogListViewController(
-                    storage: SpectraLoggerKt.logStorage
-                )
-            )
+            VStack(spacing: 20) {
+                Image(systemName: "list.bullet.rectangle")
+                    .font(.system(size: 60))
+                    .foregroundColor(.blue)
+                Text("Application Logs")
+                    .font(.title)
+                Text("View coming soon")
+                    .foregroundColor(.secondary)
+            }
             .navigationTitle("Logs")
             .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
 
-// MARK: - Network View (Using Compose UI)
+// MARK: - Network View (Placeholder)
 struct NetworkView: View {
     var body: some View {
         NavigationView {
-            ComposeViewController(
-                viewController: MainViewControllerKt.NetworkLogViewController(
-                    storage: SpectraLoggerKt.networkStorage
-                )
-            )
+            VStack(spacing: 20) {
+                Image(systemName: "network")
+                    .font(.system(size: 60))
+                    .foregroundColor(.orange)
+                Text("Network Logs")
+                    .font(.title)
+                Text("View coming soon")
+                    .foregroundColor(.secondary)
+            }
             .navigationTitle("Network")
             .navigationBarTitleDisplayMode(.inline)
         }
@@ -154,55 +160,24 @@ struct SettingsView: View {
     }
 
     private func updateCounts() async {
-        do {
-            logCount = try await SpectraLoggerKt.logStorage.count()
-            networkCount = try await SpectraLoggerKt.networkStorage.count()
-        } catch {
-            SpectraLoggerKt.e(tag: "Settings", message: "Failed to update counts: \(error.localizedDescription)")
-        }
+        // Placeholder - would fetch from SpectraLogger storage
+        logCount = 42
+        networkCount = 15
     }
 
     private func clearLogs() async {
-        do {
-            try await SpectraLoggerKt.logStorage.clear()
-            await updateCounts()
-            SpectraLoggerKt.i(tag: "Settings", message: "Application logs cleared")
-        } catch {
-            SpectraLoggerKt.e(tag: "Settings", message: "Failed to clear logs: \(error.localizedDescription)")
-        }
+        // Placeholder - would clear SpectraLogger storage
+        logCount = 0
     }
 
     private func clearNetworkLogs() async {
-        do {
-            try await SpectraLoggerKt.networkStorage.clear()
-            await updateCounts()
-            SpectraLoggerKt.i(tag: "Settings", message: "Network logs cleared")
-        } catch {
-            SpectraLoggerKt.e(tag: "Settings", message: "Failed to clear network logs: \(error.localizedDescription)")
-        }
+        // Placeholder - would clear SpectraLogger network storage
+        networkCount = 0
     }
 
     private func exportLogs() {
-        SpectraLoggerKt.i(tag: "Export", message: "Export logs requested")
-        // TODO: Implement export to file and share sheet
-        // This would involve:
-        // 1. Query all logs from storage
-        // 2. Format logs as text/JSON
-        // 3. Save to temporary file
-        // 4. Present UIActivityViewController
-    }
-}
-
-// MARK: - Compose UIViewController Wrapper
-struct ComposeViewController: UIViewControllerRepresentable {
-    let viewController: UIViewController
-
-    func makeUIViewController(context: Context) -> UIViewController {
-        return viewController
-    }
-
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        // No updates needed for Compose UI
+        // Placeholder - would export logs
+        print("Export logs requested")
     }
 }
 
