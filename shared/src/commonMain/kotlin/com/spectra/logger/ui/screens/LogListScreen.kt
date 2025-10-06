@@ -138,13 +138,7 @@ fun LogListScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        if (searchQuery.length >= 2 || selectedLogLevels.isNotEmpty()) {
-                            "Logs (${filteredLogs.size}/${logs.size})"
-                        } else {
-                            "Logs (${logs.size})"
-                        },
-                    )
+                    Text("Logs")
                 },
                 colors =
                     TopAppBarDefaults.topAppBarColors(

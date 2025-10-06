@@ -127,9 +127,7 @@ fun NetworkLogScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        "Network Logs (${filteredLogs.size}/${logs.size})",
-                    )
+                    Text("Network Logs")
                 },
                 colors =
                     TopAppBarDefaults.topAppBarColors(
