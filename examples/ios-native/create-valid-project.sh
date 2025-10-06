@@ -1,3 +1,21 @@
+#!/bin/bash
+# Create a minimal valid Xcode project for SpectraExample
+
+set -e
+
+PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$PROJECT_DIR"
+
+echo "Creating minimal valid Xcode project..."
+
+# Clean up
+rm -rf SpectraExample.xcodeproj
+
+# Create project structure
+mkdir -p "SpectraExample.xcodeproj"
+
+# Create a minimal valid project.pbxproj
+cat > "SpectraExample.xcodeproj/project.pbxproj" << 'PBXPROJ'
 // !$*UTF8*$!
 {
 	archiveVersion = 1;
@@ -405,3 +423,12 @@
 	};
 	rootObject = AAFFF6 /* Project object */;
 }
+PBXPROJ
+
+echo "✅ Xcode project created successfully!"
+echo "Testing project validity..."
+xcodebuild -project SpectraExample.xcodeproj -list || {
+    echo "❌ Project validation failed"
+    exit 1
+}
+echo "✅ Project is valid!"
