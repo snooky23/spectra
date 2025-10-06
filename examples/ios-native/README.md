@@ -10,6 +10,35 @@ This example demonstrates how to use Spectra Logger in a native iOS application 
 
 ## Setup
 
+### Option 1: Using CocoaPods (Recommended for Local Development)
+
+1. **Install CocoaPods** (if not already installed):
+   ```bash
+   sudo gem install cocoapods
+   ```
+
+2. **Set up CocoaPods and build the framework**:
+   ```bash
+   cd examples/ios-native
+   ./setup-pods.sh
+   ```
+
+3. **Open the workspace** (NOT the .xcodeproj):
+   ```bash
+   open SpectraExample.xcworkspace
+   ```
+
+4. **Build and run the project**:
+   - Select iPhone simulator (iPhone 15 Pro recommended)
+   - Press Cmd+R to build and run
+
+5. **After making changes to the shared module**:
+   ```bash
+   pod update SpectraLogger
+   ```
+
+### Option 2: Direct Framework Linking (Alternative)
+
 1. **Build the Spectra framework**:
    ```bash
    cd ../..
@@ -27,7 +56,7 @@ This example demonstrates how to use Spectra Logger in a native iOS application 
    open SpectraExample.xcodeproj
    ```
 
-4. **Build and run the project**
+4. **Build and run the project**:
    - Select iPhone simulator (iPhone 15 Pro recommended)
    - Press Cmd+R to build and run
 
@@ -63,7 +92,12 @@ examples/ios-native/
 
 ### 1. Framework Linking
 
-The Kotlin Multiplatform framework is linked via:
+**With CocoaPods**:
+- The framework is managed as a local pod via `Podfile`
+- CocoaPods automatically builds the framework using the `prepare_command` in `SpectraLogger.podspec`
+- Framework is located at `../../shared/build/cocoapods/framework/SpectraLogger.framework`
+
+**With Direct Linking**:
 - **FRAMEWORK_SEARCH_PATHS**: Points to `../../shared/build/bin/iosSimulatorArm64/debugFramework`
 - **Embedded Framework**: `SpectraLogger.framework` is embedded in the app bundle
 

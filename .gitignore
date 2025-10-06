@@ -65,7 +65,10 @@ playground.xcworkspace
 # CocoaPods
 Pods/
 *.podspec
+!shared/SpectraLogger.podspec
 Podfile.lock
+*.xcworkspace
+!*.xcworkspace/contents.xcworkspacedata
 
 # Carthage
 Carthage/Build/
