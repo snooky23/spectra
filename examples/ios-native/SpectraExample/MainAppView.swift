@@ -1,5 +1,4 @@
 import SwiftUI
-import SpectraLogger
 
 /// Main app screen with example content and button to open Spectra Logger
 struct MainAppView: View {
@@ -34,10 +33,7 @@ struct MainAppView: View {
 
                     Button(action: {
                         counter += 1
-                        SpectraLoggerKt.i(
-                            tag: "UserAction",
-                            message: "Button tapped \(counter) times"
-                        )
+                        print("Button tapped \(counter) times")
                     }) {
                         Label("Tap Me (Generates Log)", systemImage: "hand.tap")
                             .frame(maxWidth: .infinity)
@@ -47,10 +43,7 @@ struct MainAppView: View {
                     }
 
                     Button(action: {
-                        SpectraLoggerKt.w(
-                            tag: "Warning",
-                            message: "Example warning log generated"
-                        )
+                        print("Warning log generated")
                     }) {
                         Label("Generate Warning", systemImage: "exclamationmark.triangle")
                             .frame(maxWidth: .infinity)
@@ -60,10 +53,7 @@ struct MainAppView: View {
                     }
 
                     Button(action: {
-                        SpectraLoggerKt.e(
-                            tag: "Error",
-                            message: "Example error log generated"
-                        )
+                        print("Error log generated")
                     }) {
                         Label("Generate Error", systemImage: "xmark.circle")
                             .frame(maxWidth: .infinity)
@@ -79,7 +69,7 @@ struct MainAppView: View {
                 // Open Spectra Logger button
                 Button(action: {
                     showSpectraLogger = true
-                    SpectraLoggerKt.i(tag: "Navigation", message: "Opening Spectra Logger UI")
+                    print("Opening Spectra Logger UI")
                 }) {
                     HStack {
                         Image(systemName: "doc.text.magnifyingglass")
@@ -97,42 +87,7 @@ struct MainAppView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showSpectraLogger) {
-                SpectraLoggerView()
-            }
-        }
-    }
-}
-
-/// Spectra Logger viewer with tabs
-struct SpectraLoggerView: View {
-    @Environment(\.dismiss) var dismiss
-
-    var body: some View {
-        NavigationView {
-            TabView {
-                LogsView()
-                    .tabItem {
-                        Label("Logs", systemImage: "list.bullet.rectangle")
-                    }
-
-                NetworkView()
-                    .tabItem {
-                        Label("Network", systemImage: "network")
-                    }
-
-                SettingsView()
-                    .tabItem {
-                        Label("Settings", systemImage: "gearshape")
-                    }
-            }
-            .navigationTitle("Spectra Logger")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        dismiss()
-                    }
-                }
+                ContentView()
             }
         }
     }
