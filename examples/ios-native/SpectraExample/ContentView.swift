@@ -1,31 +1,44 @@
 import SwiftUI
 
-/// SpectraLoggerScreen - Complete ready-to-use logger UI with all tabs
-/// This is what users get from the SDK - one screen with everything included
+/// SpectraLoggerScreen - Placeholder for the complete SDK logger UI
+///
+/// In the actual SDK, this would be the complete Spectra Logger screen with:
+/// - Logs tab with filtering and search
+/// - Network tab for network logs
+/// - Settings tab with export functionality
+/// - Bottom navigation with live log counts
+///
+/// For now, this is a placeholder showing what users will get from the SDK.
 struct SpectraLoggerScreen: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedTab = 0
 
     var body: some View {
         NavigationView {
-            TabView(selection: $selectedTab) {
-                LogsView()
-                    .tabItem {
-                        Label("Logs", systemImage: "list.bullet.rectangle")
-                    }
-                    .tag(0)
+            VStack(spacing: 30) {
+                Image(systemName: "doc.text.magnifyingglass")
+                    .font(.system(size: 80))
+                    .foregroundColor(.purple)
 
-                NetworkView()
-                    .tabItem {
-                        Label("Network", systemImage: "network")
-                    }
-                    .tag(1)
+                Text("Spectra Logger SDK")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
 
-                SettingsView()
-                    .tabItem {
-                        Label("Settings", systemImage: "gearshape")
-                    }
-                    .tag(2)
+                Text("Complete logger UI with all tabs")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+
+                VStack(alignment: .leading, spacing: 12) {
+                    FeatureRow(icon: "list.bullet.rectangle", text: "Logs Tab (with filtering & search)")
+                    FeatureRow(icon: "network", text: "Network Tab (request/response logs)")
+                    FeatureRow(icon: "gearshape", text: "Settings Tab (export & management)")
+                    FeatureRow(icon: "chart.bar", text: "Live log counts on navigation")
+                }
+                .padding()
+                .background(Color.purple.opacity(0.1))
+                .cornerRadius(12)
+                .padding(.horizontal)
+
+                Spacer()
             }
             .navigationTitle("Spectra Logger")
             .navigationBarTitleDisplayMode(.inline)
@@ -40,164 +53,21 @@ struct SpectraLoggerScreen: View {
     }
 }
 
-// MARK: - For backwards compatibility / preview only
-typealias ContentView = SpectraLoggerScreen
-
-// MARK: - Logs View (Placeholder)
-struct LogsView: View {
-    var body: some View {
-        NavigationView {
-            VStack(spacing: 20) {
-                Image(systemName: "list.bullet.rectangle")
-                    .font(.system(size: 60))
-                    .foregroundColor(.blue)
-                Text("Application Logs")
-                    .font(.title)
-                Text("View coming soon")
-                    .foregroundColor(.secondary)
-            }
-            .navigationTitle("Logs")
-            .navigationBarTitleDisplayMode(.inline)
-        }
-    }
-}
-
-// MARK: - Network View (Placeholder)
-struct NetworkView: View {
-    var body: some View {
-        NavigationView {
-            VStack(spacing: 20) {
-                Image(systemName: "network")
-                    .font(.system(size: 60))
-                    .foregroundColor(.orange)
-                Text("Network Logs")
-                    .font(.title)
-                Text("View coming soon")
-                    .foregroundColor(.secondary)
-            }
-            .navigationTitle("Network")
-            .navigationBarTitleDisplayMode(.inline)
-        }
-    }
-}
-
-// MARK: - Settings View (Native SwiftUI)
-struct SettingsView: View {
-    @State private var logCount: Int32 = 0
-    @State private var networkCount: Int32 = 0
-    @State private var showClearLogsAlert = false
-    @State private var showClearNetworkAlert = false
+struct FeatureRow: View {
+    let icon: String
+    let text: String
 
     var body: some View {
-        NavigationView {
-            Form {
-                Section("Storage") {
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text("Application Logs")
-                            Text("\(logCount) logs stored")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        Spacer()
-                        Button("Clear") {
-                            showClearLogsAlert = true
-                        }
-                        .foregroundColor(.red)
-                        .disabled(logCount == 0)
-                    }
-
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text("Network Logs")
-                            Text("\(networkCount) logs stored")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        Spacer()
-                        Button("Clear") {
-                            showClearNetworkAlert = true
-                        }
-                        .foregroundColor(.red)
-                        .disabled(networkCount == 0)
-                    }
-                }
-
-                Section("Export") {
-                    Button("Export All Logs") {
-                        exportLogs()
-                    }
-                    Text("Export all logs to share with developers")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-
-                Section("About") {
-                    HStack {
-                        Text("Version")
-                        Spacer()
-                        Text("1.0.0")
-                            .foregroundColor(.secondary)
-                    }
-
-                    HStack {
-                        Text("Framework")
-                        Spacer()
-                        Text("Spectra Logger")
-                            .foregroundColor(.secondary)
-                    }
-                }
-            }
-            .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.inline)
-            .alert("Clear Application Logs?", isPresented: $showClearLogsAlert) {
-                Button("Cancel", role: .cancel) {}
-                Button("Clear", role: .destructive) {
-                    Task {
-                        await clearLogs()
-                    }
-                }
-            } message: {
-                Text("This will permanently delete all \(logCount) application logs. This action cannot be undone.")
-            }
-            .alert("Clear Network Logs?", isPresented: $showClearNetworkAlert) {
-                Button("Cancel", role: .cancel) {}
-                Button("Clear", role: .destructive) {
-                    Task {
-                        await clearNetworkLogs()
-                    }
-                }
-            } message: {
-                Text("This will permanently delete all \(networkCount) network logs. This action cannot be undone.")
-            }
-            .task {
-                await updateCounts()
-            }
+        HStack {
+            Image(systemName: icon)
+                .foregroundColor(.purple)
+                .frame(width: 24)
+            Text(text)
+                .font(.body)
         }
-    }
-
-    private func updateCounts() async {
-        // Placeholder - would fetch from SpectraLogger storage
-        logCount = 42
-        networkCount = 15
-    }
-
-    private func clearLogs() async {
-        // Placeholder - would clear SpectraLogger storage
-        logCount = 0
-    }
-
-    private func clearNetworkLogs() async {
-        // Placeholder - would clear SpectraLogger network storage
-        networkCount = 0
-    }
-
-    private func exportLogs() {
-        // Placeholder - would export logs
-        print("Export logs requested")
     }
 }
 
 #Preview {
-    ContentView()
+    SpectraLoggerScreen()
 }
