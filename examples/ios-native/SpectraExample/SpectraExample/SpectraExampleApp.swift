@@ -3,6 +3,7 @@ import SpectraLogger
 
 @main
 struct SpectraExampleApp: App {
+    @State private var openSpectraLogger = false
 
     init() {
         // Initialize Spectra Logger
@@ -21,7 +22,45 @@ struct SpectraExampleApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainAppView()
+                .onOpenURL { url in
+                    handleURL(url)
+                }
+        }
+    }
+
+    /// Handle incoming URL scheme
+    private func handleURL(_ url: URL) {
+        SpectraLoggerKt.i(tag: "DeepLink", message: "App opened with URL: \(url.absoluteString)")
+
+        guard url.scheme == "spectralogger" else {
+            SpectraLoggerKt.w(tag: "DeepLink", message: "Unknown URL scheme: \(url.scheme ?? "nil")")
+            return
+        }
+
+        // Handle different paths
+        switch url.host {
+        case "logs":
+            SpectraLoggerKt.i(tag: "DeepLink", message: "Opening logs screen")
+            openSpectraLogger = true
+
+        case "network":
+            SpectraLoggerKt.i(tag: "DeepLink", message: "Opening network logs screen")
+            openSpectraLogger = true
+
+        case "clear":
+            SpectraLoggerKt.i(tag: "DeepLink", message: "Clearing logs via deep link")
+            Task {
+                do {
+                    try await SpectraLoggerKt.logStorage.clear()
+                    SpectraLoggerKt.i(tag: "DeepLink", message: "Logs cleared successfully")
+                } catch {
+                    SpectraLoggerKt.e(tag: "DeepLink", message: "Failed to clear logs: \(error)")
+                }
+            }
+
+        default:
+            SpectraLoggerKt.w(tag: "DeepLink", message: "Unknown URL path: \(url.host ?? "nil")")
         }
     }
 

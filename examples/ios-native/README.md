@@ -62,6 +62,8 @@ This example demonstrates how to use Spectra Logger in a native iOS application 
 
 ## Features Demonstrated
 
+- **Main App Screen**: Example app with button to open Spectra Logger
+- **Deep Linking**: URL scheme support to open logger from other apps
 - **Logging**: All log levels (Verbose, Debug, Info, Warning, Error, Fatal)
 - **Metadata**: Structured logging with key-value pairs
 - **UI Components** (using Compose Multiplatform UI):
@@ -78,14 +80,19 @@ This example demonstrates how to use Spectra Logger in a native iOS application 
 
 ```
 examples/ios-native/
-├── SpectraExample.xcodeproj/     # Xcode project file
-├── SpectraExample/                # Main application directory
-│   └── SpectraExample/            # Source files
-│       ├── SpectraExampleApp.swift   # App entry point with logger initialization
-│       ├── ContentView.swift         # Main UI with tabs (SwiftUI)
+├── SpectraExample.xcodeproj/          # Xcode project file
+├── SpectraExample.xcworkspace/        # Workspace (when using CocoaPods)
+├── SpectraExample/                    # Main application directory
+│   └── SpectraExample/                # Source files
+│       ├── SpectraExampleApp.swift   # App entry point with URL scheme handling
+│       ├── MainAppView.swift         # Main app screen with Spectra button
+│       ├── ContentView.swift         # Spectra Logger UI views
 │       └── Assets.xcassets/          # App icons and colors
-├── create-xcode-project.sh        # Script to generate Xcode project
-└── README.md                      # This file
+├── Podfile                            # CocoaPods dependencies
+├── setup-pods.sh                      # CocoaPods setup script
+├── add-url-scheme.sh                  # URL scheme configuration helper
+├── create-xcode-project.sh            # Script to generate Xcode project
+└── README.md                          # This file
 ```
 
 ## How It Works
@@ -194,6 +201,56 @@ After building for a different target, update the `FRAMEWORK_SEARCH_PATHS` in Xc
 1. Open project settings
 2. Select your team in "Signing & Capabilities"
 3. Or disable code signing for simulator builds
+
+## URL Scheme Support
+
+The app supports deep linking to open Spectra Logger from other apps or command line.
+
+### Supported URLs
+
+- `spectralogger://logs` - Opens the logs screen
+- `spectralogger://network` - Opens the network logs screen
+- `spectralogger://clear` - Clears all logs
+
+### Setup URL Scheme
+
+1. **Configure in Xcode**:
+   - Open the project in Xcode
+   - Select the SpectraExample target
+   - Go to the "Info" tab
+   - Add URL Type:
+     - Identifier: `com.spectra.logger`
+     - URL Schemes: `spectralogger`
+     - Role: Editor
+
+2. **Or run the helper script**:
+   ```bash
+   ./add-url-scheme.sh
+   ```
+
+### Testing URL Scheme
+
+From Terminal (with simulator running):
+```bash
+# Open logs screen
+xcrun simctl openurl booted spectralogger://logs
+
+# Open network logs
+xcrun simctl openurl booted spectralogger://network
+
+# Clear logs
+xcrun simctl openurl booted spectralogger://clear
+```
+
+From Safari on simulator:
+- Just type the URL in the address bar: `spectralogger://logs`
+
+From another iOS app:
+```swift
+if let url = URL(string: "spectralogger://logs") {
+    UIApplication.shared.open(url)
+}
+```
 
 ## Network Logging
 
