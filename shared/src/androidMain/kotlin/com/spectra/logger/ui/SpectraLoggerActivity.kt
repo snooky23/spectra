@@ -28,22 +28,9 @@ class SpectraLoggerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Parse deep link parameters
-        val deepLinkHost = intent?.getStringExtra(SpectraDeepLinkActivity.EXTRA_DEEP_LINK_HOST)
-        val initialTab =
-            when (deepLinkHost) {
-                "logs" -> 0
-                "network" -> 1
-                else -> 0 // Default to logs tab
-            }
-
         setContent {
             MaterialTheme {
-                var selectedTab by remember { mutableIntStateOf(initialTab) }
-                SpectraLoggerScreen(
-                    initialTab = selectedTab,
-                    onTabSelected = { selectedTab = it },
-                )
+                SpectraLoggerScreen()
             }
         }
     }

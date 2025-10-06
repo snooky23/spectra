@@ -59,6 +59,7 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.android)
                 implementation(libs.okhttp)
                 implementation(libs.androidx.activity.compose)
+                implementation(libs.androidx.navigation.compose)
             }
         }
 

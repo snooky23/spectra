@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
-                ExampleApp()
+                MainAppScreen()
             }
         }
     }
