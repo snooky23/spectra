@@ -13,7 +13,11 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -168,6 +172,16 @@ sealed class Screen(val route: String, val title: String) {
 }
 
 /**
+ * Navigation item for bottom bar.
+ */
+private data class NavItem(
+    val screen: Screen,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector,
+    val label: String,
+    val count: Int? = null
+)
+
+/**
  * Main application composable with bottom navigation.
  */
 @Composable
@@ -190,24 +204,49 @@ fun ExampleApp() {
 
 @Composable
 private fun BottomNavigationBar(navController: androidx.navigation.NavHostController) {
+    // Track log counts
+    val appLogsCount = remember { mutableIntStateOf(0) }
+    val networkLogsCount = remember { mutableIntStateOf(0) }
+
+    // Update counts when new logs arrive
+    LaunchedEffect(Unit) {
+        SpectraLogger.logStorage.observe().collect {
+            appLogsCount.intValue = SpectraLogger.logStorage.count()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        SpectraLogger.networkStorage.observe().collect {
+            networkLogsCount.intValue = SpectraLogger.networkStorage.count()
+        }
+    }
+
     val items =
         listOf(
-            Triple(Screen.Logs, Icons.AutoMirrored.Filled.List, "Logs"),
-            Triple(Screen.Network, Icons.Default.Warning, "Network"),
-            Triple(Screen.Settings, Icons.Default.Settings, "Settings"),
+            NavItem(Screen.Logs, Icons.AutoMirrored.Filled.List, "Logs", appLogsCount.intValue),
+            NavItem(Screen.Network, Icons.Default.Warning, "Network", networkLogsCount.intValue),
+            NavItem(Screen.Settings, Icons.Default.Settings, "Settings"),
         )
 
     NavigationBar {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
 
-        items.forEach { (screen, icon, label) ->
+        items.forEach { item ->
             NavigationBarItem(
-                icon = { Icon(icon, contentDescription = label) },
-                label = { Text(label) },
-                selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                icon = { Icon(item.icon, contentDescription = item.label) },
+                label = {
+                    Text(
+                        if (item.count != null && item.count > 0) {
+                            "${item.label} (${item.count})"
+                        } else {
+                            item.label
+                        }
+                    )
+                },
+                selected = currentDestination?.hierarchy?.any { it.route == item.screen.route } == true,
                 onClick = {
-                    navController.navigate(screen.route) {
+                    navController.navigate(item.screen.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }
