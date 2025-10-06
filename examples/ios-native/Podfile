@@ -1,0 +1,27 @@
+# Uncomment the next line to define a global platform for your project
+platform :ios, '15.0'
+
+target 'SpectraExample' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  # Local Spectra Logger framework
+  # This uses the local build output from the shared KMP module
+  pod 'SpectraLogger', :path => '../../shared'
+
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      # Ensure deployment target is set correctly
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+
+      # Disable bitcode for simulator builds
+      config.build_settings['ENABLE_BITCODE'] = 'NO'
+
+      # Set valid architectures
+      config.build_settings['VALID_ARCHS'] = 'arm64 x86_64'
+    end
+  end
+end
