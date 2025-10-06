@@ -35,6 +35,7 @@ cat > "$PROJECT_NAME.xcodeproj/project.pbxproj" << 'EOF'
 		D0A001 /* SpectraExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A000 /* SpectraExampleApp.swift */; };
 		D0A003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A002 /* ContentView.swift */; };
 		D0A005 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D0A004 /* Assets.xcassets */; };
+		D0A007 /* MainAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A006 /* MainAppView.swift */; };
 		D0A00A /* SpectraLogger.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0A009 /* SpectraLogger.framework */; };
 		D0A00B /* SpectraLogger.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D0A009 /* SpectraLogger.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -58,6 +59,7 @@ cat > "$PROJECT_NAME.xcodeproj/project.pbxproj" << 'EOF'
 		D0A000 /* SpectraExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectraExampleApp.swift; sourceTree = "<group>"; };
 		D0A002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D0A004 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D0A006 /* MainAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppView.swift; sourceTree = "<group>"; };
 		D0A009 /* SpectraLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpectraLogger.framework; path = "../../shared/build/bin/iosSimulatorArm64/debugFramework/SpectraLogger.framework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -94,6 +96,7 @@ cat > "$PROJECT_NAME.xcodeproj/project.pbxproj" << 'EOF'
 			isa = PBXGroup;
 			children = (
 				D0A000 /* SpectraExampleApp.swift */,
+				D0A006 /* MainAppView.swift */,
 				D0A002 /* ContentView.swift */,
 				D0A004 /* Assets.xcassets */,
 			);
@@ -179,6 +182,7 @@ cat > "$PROJECT_NAME.xcodeproj/project.pbxproj" << 'EOF'
 			buildActionMask = 2147483647;
 			files = (
 				D0A003 /* ContentView.swift in Sources */,
+				D0A007 /* MainAppView.swift in Sources */,
 				D0A001 /* SpectraExampleApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -320,9 +324,13 @@ cat > "$PROJECT_NAME.xcodeproj/project.pbxproj" << 'EOF'
 					"$(PROJECT_DIR)/../../shared/build/bin/iosSimulatorArm64/debugFramework",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Spectra Example";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				"INFOPLIST_KEY_CFBundleURLTypes[0][CFBundleTypeRole]" = Editor;
+				"INFOPLIST_KEY_CFBundleURLTypes[0][CFBundleURLName]" = "com.spectra.logger";
+				"INFOPLIST_KEY_CFBundleURLTypes[0][CFBundleURLSchemes][0]" = spectralogger;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -354,9 +362,13 @@ cat > "$PROJECT_NAME.xcodeproj/project.pbxproj" << 'EOF'
 					"$(PROJECT_DIR)/../../shared/build/bin/iosSimulatorArm64/debugFramework",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Spectra Example";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				"INFOPLIST_KEY_CFBundleURLTypes[0][CFBundleTypeRole]" = Editor;
+				"INFOPLIST_KEY_CFBundleURLTypes[0][CFBundleURLName]" = "com.spectra.logger";
+				"INFOPLIST_KEY_CFBundleURLTypes[0][CFBundleURLSchemes][0]" = spectralogger;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
