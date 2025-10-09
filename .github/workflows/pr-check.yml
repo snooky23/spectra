@@ -43,7 +43,7 @@ jobs:
 
   test-coverage:
     name: Test Coverage
-    runs-on: macos-latest
+    runs-on: macos-15  # Use macOS 15 (Sequoia)
 
     steps:
       - name: Checkout code
