@@ -64,8 +64,8 @@ publishing {
                 developers {
                     developer {
                         id.set("yourusername")
-                        name.set("Your Name")
-                        email.set("your.email@example.com")
+                        name.set("Avi Levin")
+                        email.set("aviavi23@gmail.com")
                     }
                 }
 
@@ -126,7 +126,7 @@ signing {
 
 1. Register for CocoaPods Trunk:
 ```bash
-pod trunk register your.email@example.com 'Your Name'
+pod trunk register aviavi23@gmail.com 'Avi Levin'
 ```
 
 2. Verify email and create session
@@ -141,7 +141,7 @@ Pod::Spec.new do |spec|
   spec.version                  = '0.1.0'
   spec.homepage                 = 'https://github.com/yourusername/spectra-logger'
   spec.source                   = { :git => "https://github.com/yourusername/spectra-logger.git", :tag => "#{spec.version}" }
-  spec.authors                  = { 'Your Name' => 'your.email@example.com' }
+  spec.authors                  = { 'Avi Levin' => 'aviavi23@gmail.com' }
   spec.license                  = { :type => 'Apache-2.0', :file => 'LICENSE' }
   spec.summary                  = 'Kotlin Multiplatform logging framework for mobile'
   spec.vendored_frameworks      = 'build/cocoapods/framework/shared.framework'

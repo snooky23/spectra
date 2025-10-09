@@ -1,0 +1,221 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Triggers on tags like v1.0.0, v1.2.3, etc.
+
+permissions:
+  contents: write  # Required for creating releases
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: macos-14  # Use latest macOS for better Apple Silicon support
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for proper versioning
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-read-only: false
+
+      - name: Extract version from tag
+        id: get_version
+        run: |
+          # Extract version from tag (e.g., v1.0.0 -> 1.0.0)
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "📦 Building version: $VERSION"
+
+      - name: Grant execute permission for scripts
+        run: |
+          chmod +x scripts/build/*.sh
+          chmod +x scripts/release/*.sh
+
+      - name: Build XCFramework
+        run: ./scripts/build/build-xcframework.sh Release
+
+      - name: Package XCFramework with checksum
+        id: package
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          FRAMEWORK_NAME="SpectraLogger"
+          XCFRAMEWORK_PATH="build/xcframework/$FRAMEWORK_NAME.xcframework"
+          ZIP_NAME="$FRAMEWORK_NAME.xcframework.zip"
+
+          # Create zip
+          cd build/xcframework
+          zip -r "$ZIP_NAME" "$FRAMEWORK_NAME.xcframework"
+          cd ../..
+
+          # Calculate checksum
+          CHECKSUM=$(swift package compute-checksum "build/xcframework/$ZIP_NAME")
+          echo "CHECKSUM=$CHECKSUM" >> $GITHUB_OUTPUT
+          echo "ZIP_PATH=build/xcframework/$ZIP_NAME" >> $GITHUB_OUTPUT
+          echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_OUTPUT
+
+          echo "✅ Package created"
+          echo "📦 File: $ZIP_NAME"
+          echo "🔐 Checksum: $CHECKSUM"
+
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          CHECKSUM="${{ steps.package.outputs.CHECKSUM }}"
+          ZIP_NAME="${{ steps.package.outputs.ZIP_NAME }}"
+
+          cat > release-notes.md << 'EOFNOTES'
+          ## SpectraLogger vVERSION_PLACEHOLDER
+
+          ### Installation
+
+          #### Swift Package Manager
+
+          Add this to your `Package.swift`:
+
+          ```swift
+          dependencies: [
+              .package(url: "https://github.com/REPO_PLACEHOLDER.git", from: "VERSION_PLACEHOLDER")
+          ]
+          ```
+
+          Or add via Xcode:
+          1. File → Add Package Dependencies
+          2. Enter: `https://github.com/REPO_PLACEHOLDER.git`
+          3. Select version: `VERSION_PLACEHOLDER`
+
+          #### Manual Installation
+
+          Download `ZIP_NAME_PLACEHOLDER` and add the XCFramework to your project.
+
+          ### Binary Target Information
+
+          ```swift
+          .binaryTarget(
+              name: "SpectraLogger",
+              url: "https://github.com/REPO_PLACEHOLDER/releases/download/vVERSION_PLACEHOLDER/ZIP_NAME_PLACEHOLDER",
+              checksum: "CHECKSUM_PLACEHOLDER"
+          )
+          ```
+
+          ### What's Included
+
+          - iOS Arm64 (devices)
+          - iOS x86_64 (simulator - Intel Mac)
+          - iOS Arm64 (simulator - Apple Silicon Mac)
+
+          ### Requirements
+
+          - iOS 13.0+
+          - Xcode 14.0+
+          - Swift 5.9+
+
+          ### Verification
+
+          SHA256 Checksum: `CHECKSUM_PLACEHOLDER`
+
+          ---
+
+          For documentation and usage examples, see the [README](https://github.com/REPO_PLACEHOLDER/blob/main/README.md).
+          EOFNOTES
+
+          # Replace placeholders
+          sed -i '' "s/VERSION_PLACEHOLDER/$VERSION/g" release-notes.md
+          sed -i '' "s/CHECKSUM_PLACEHOLDER/$CHECKSUM/g" release-notes.md
+          sed -i '' "s/ZIP_NAME_PLACEHOLDER/$ZIP_NAME/g" release-notes.md
+          sed -i '' "s|REPO_PLACEHOLDER|${{ github.repository }}|g" release-notes.md
+
+          echo "RELEASE_NOTES_PATH=release-notes.md" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ${{ steps.package.outputs.ZIP_PATH }}
+          body_path: ${{ steps.release_notes.outputs.RELEASE_NOTES_PATH }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Print release summary
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          CHECKSUM="${{ steps.package.outputs.CHECKSUM }}"
+          ZIP_NAME="${{ steps.package.outputs.ZIP_NAME }}"
+
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ Release created successfully!"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📦 Version: $VERSION"
+          echo "📁 File: $ZIP_NAME"
+          echo "🔐 Checksum: $CHECKSUM"
+          echo "🔗 Release URL: https://github.com/${{ github.repository }}/releases/tag/v$VERSION"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "⚠️  Next steps:"
+          echo "1. Update Package.swift with the URL and checksum above"
+          echo "2. Commit and push the Package.swift changes"
+          echo "3. Announce the release!"
+
+      # Publish to CocoaPods
+      - name: Publish to CocoaPods Trunk
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+
+          # Update podspec versions (replace placeholder)
+          sed -i '' "s/YOUR_USERNAME/${{ github.repository_owner }}/g" shared/SpectraLogger.podspec
+          sed -i '' "s/YOUR_USERNAME/${{ github.repository_owner }}/g" SpectraLoggerUI/SpectraLoggerUI.podspec
+
+          echo "📦 Publishing to CocoaPods..."
+
+          # Validate podspecs
+          echo "✅ Validating SpectraLogger.podspec..."
+          pod spec lint shared/SpectraLogger.podspec --allow-warnings
+
+          echo "✅ Validating SpectraLoggerUI.podspec..."
+          pod spec lint SpectraLoggerUI/SpectraLoggerUI.podspec --allow-warnings
+
+          # Publish to CocoaPods Trunk (if token is available)
+          if [ -n "$COCOAPODS_TRUNK_TOKEN" ]; then
+            echo "🚀 Publishing SpectraLogger to CocoaPods..."
+            pod trunk push shared/SpectraLogger.podspec --allow-warnings
+
+            echo "🚀 Publishing SpectraLoggerUI to CocoaPods..."
+            pod trunk push SpectraLoggerUI/SpectraLoggerUI.podspec --allow-warnings
+
+            echo "✅ Published to CocoaPods!"
+          else
+            echo "⚠️  COCOAPODS_TRUNK_TOKEN not set. Skipping CocoaPods publish."
+            echo "To publish to CocoaPods:"
+            echo "1. Run: pod trunk register your@email.com 'Your Name'"
+            echo "2. Get token: pod trunk me"
+            echo "3. Add COCOAPODS_TRUNK_TOKEN secret to GitHub"
+            echo "4. Then run: pod trunk push shared/SpectraLogger.podspec --allow-warnings"
+            echo "5. Then run: pod trunk push SpectraLoggerUI/SpectraLoggerUI.podspec --allow-warnings"
+          fi
+
+      # Optional: Publish to Maven Central (uncomment when ready)
+      # - name: Publish to Maven Central
+      #   run: ./gradlew publishToMavenCentral
+      #   env:
+      #     MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+      #     MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+      #     SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+      #     SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}

@@ -1100,6 +1100,63 @@ This document breaks down the 18-week development timeline into concrete, action
 
 ## Phase 6: Post-Launch (Ongoing)
 
+### Dependency Management & Distribution Improvements
+
+#### Task Group: Version Catalog Enhancements (✅ COMPLETED)
+- [x] Add header documentation with update links
+- [x] Organize versions into semantic groups
+- [x] Create dependency bundles for common use cases
+  - [x] `kotlinx` bundle (coroutines, serialization, datetime, atomicfu)
+  - [x] `androidx-core` bundle
+  - [x] `androidx-compose` bundle
+  - [x] `compose-ui` bundle
+  - [x] `ktor` bundle
+  - [x] `testing` bundle (complete suite)
+  - [x] `testing-core` bundle (iOS compatible)
+- [x] Create VERSION_CATALOG_GUIDE.md documentation
+- [x] Create BUNDLE_MIGRATION_EXAMPLE.md with examples
+
+#### Task Group: Swift Package Manager Binary Distribution
+- [ ] Set up automated XCFramework builds
+  - [ ] Create Gradle task to build all iOS targets
+  - [ ] Create Gradle task to generate XCFramework
+  - [ ] Add XCFramework to .gitignore
+  - [ ] Document XCFramework build process
+- [ ] Set up GitHub Releases workflow
+  - [ ] Create release script
+  - [ ] Zip XCFramework for distribution
+  - [ ] Calculate SHA256 checksum
+  - [ ] Upload to GitHub Releases
+  - [ ] Generate release notes automatically
+- [ ] Update Package.swift for remote binary
+  - [ ] Change from local path to remote URL
+  - [ ] Add checksum validation
+  - [ ] Test installation from GitHub Release
+  - [ ] Document versioning strategy
+- [ ] Create automation scripts
+  - [ ] Script to build and zip XCFramework
+  - [ ] Script to calculate checksum
+  - [ ] Script to update Package.swift with new version
+  - [ ] Script to create GitHub Release
+- [ ] Update CI/CD pipeline
+  - [ ] Add step to build XCFramework on release
+  - [ ] Add step to upload to GitHub Releases
+  - [ ] Add step to validate Package.swift
+- [ ] Documentation updates
+  - [ ] Update iOS installation instructions
+  - [ ] Add release process documentation
+  - [ ] Add troubleshooting guide for SPM
+  - [ ] Document how to use specific versions
+
+#### Task Group: Optional Simplifications Using Bundles
+- [ ] Simplify shared/build.gradle.kts using new bundles
+  - [ ] Replace individual kotlinx dependencies with bundle
+  - [ ] Replace individual androidx dependencies with bundles
+  - [ ] Update testing dependencies to use bundles
+- [ ] Simplify example app build files
+  - [ ] Update Android example to use bundles
+  - [ ] Document bundle usage in examples
+
 ### Maintenance Tasks (Continuous)
 - [ ] Bug fix releases (patch versions)
 - [ ] Security updates

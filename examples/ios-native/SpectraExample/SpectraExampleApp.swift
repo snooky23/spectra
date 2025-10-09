@@ -2,6 +2,7 @@ import SwiftUI
 
 @main
 struct SpectraExampleApp: App {
+    @StateObject private var settingsViewModel = SettingsViewModel()
 
     init() {
         // Initialize app
@@ -12,6 +13,8 @@ struct SpectraExampleApp: App {
     var body: some Scene {
         WindowGroup {
             MainAppView()
+                .preferredColorScheme(settingsViewModel.appearanceMode.colorScheme)
+                .statusBar(hidden: true)
                 .onOpenURL { url in
                     handleURL(url)
                 }
