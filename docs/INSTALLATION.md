@@ -1,15 +1,16 @@
 # Installation Guide
 
-SpectraLogger supports **two installation methods**: Swift Package Manager (SPM) and CocoaPods.
+SpectraLogger supports **three installation methods**: Swift Package Manager (SPM), CocoaPods, and Carthage.
 
 ## Quick Comparison
 
-| Method | Best For | Installation Time | Xcode Integration |
-|--------|----------|-------------------|-------------------|
-| **SPM** | New projects, Swift-first teams | ⚡ Fast | ✅ Built-in |
-| **CocoaPods** | Legacy projects, established teams | ⏱️ Moderate | ⚠️ Requires setup |
+| Method | Best For | Installation Time | Xcode Integration | Market Share |
+|--------|----------|-------------------|-------------------|--------------|
+| **SPM** | New projects, Swift-first teams | ⚡ Fast | ✅ Built-in | ~50% |
+| **CocoaPods** | Legacy projects, established teams | ⏱️ Moderate | ⚠️ Requires setup | ~40% |
+| **Carthage** | Enterprise, manual control | ⏱️ Moderate | 🔧 Manual | ~10% |
 
-**Recommendation:** Use SPM if your project supports it. CocoaPods is available for projects that require it.
+**Recommendation:** Use SPM if your project supports it. CocoaPods and Carthage are available for projects that require them.
 
 ---
 
@@ -111,6 +112,52 @@ pod install
 
 ```bash
 open YourApp.xcworkspace  # Important: Use .xcworkspace, not .xcodeproj
+```
+
+---
+
+## Option 3: Carthage
+
+### 1. Install Carthage (if needed)
+
+```bash
+brew install carthage
+```
+
+### 2. Create or Update Cartfile
+
+```ruby
+# Binary distribution (recommended - faster)
+binary "https://raw.githubusercontent.com/snooky23/Spectra/main/SpectraLogger.json" ~> 1.0
+```
+
+**Note**: SpectraLoggerUI is not available via Carthage (SwiftUI source-only). Use SPM or CocoaPods for the UI component.
+
+### 3. Update Dependencies
+
+```bash
+carthage update --use-xcframeworks --platform iOS
+```
+
+This will download the pre-built XCFramework (8.5MB) to `Carthage/Build/`.
+
+### 4. Add to Xcode Project
+
+1. **Drag & Drop**: Drag `Carthage/Build/SpectraLogger.xcframework` into your Xcode project
+2. **General Tab**: Ensure it's added to "Frameworks, Libraries, and Embedded Content"
+3. **Embed**: Set to "Embed & Sign"
+
+### 5. Add Run Script (for updates)
+
+**Target → Build Phases → New Run Script Phase**:
+
+```bash
+/usr/local/bin/carthage copy-frameworks
+```
+
+**Input Files**:
+```
+$(SRCROOT)/Carthage/Build/SpectraLogger.xcframework
 ```
 
 ---
@@ -328,6 +375,28 @@ pod search SpectraLogger
 - Make sure you're opening `.xcworkspace`, not `.xcodeproj`
 - Clean derived data: `Shift+Cmd+K` in Xcode
 
+### Carthage Issues
+
+**"Failed to download binary"**
+```bash
+# Verify JSON manifest exists
+curl https://raw.githubusercontent.com/snooky23/Spectra/main/SpectraLogger.json
+
+# Clear Carthage cache
+rm -rf ~/Library/Caches/org.carthage.CarthageKit
+carthage update --use-xcframeworks --platform iOS
+```
+
+**"XCFramework not found"**
+- Ensure you ran `carthage update` with `--use-xcframeworks` flag
+- Check `Carthage/Build/` directory for `SpectraLogger.xcframework`
+- Verify Xcode 12+ (required for XCFramework support)
+
+**"Module not found" when building**
+- Verify XCFramework is in "Frameworks, Libraries, and Embedded Content"
+- Set to "Embed & Sign" (not "Do Not Embed")
+- Clean build folder and rebuild
+
 ---
 
 ## Migration Between Methods
@@ -346,6 +415,25 @@ pod search SpectraLogger
 2. Create Podfile (see CocoaPods section)
 3. Run `pod install`
 4. Open `.xcworkspace`
+
+### To/From Carthage
+
+**From Carthage to SPM**:
+1. Remove XCFramework from Xcode project
+2. Delete `Cartfile` and `Carthage/` directory
+3. Follow SPM installation above
+
+**From Carthage to CocoaPods**:
+1. Remove XCFramework from Xcode project
+2. Delete `Cartfile` and `Carthage/` directory
+3. Create Podfile and run `pod install`
+4. Open `.xcworkspace`
+
+**To Carthage** (from SPM or CocoaPods):
+1. Remove existing installation
+2. Create `Cartfile` (see Carthage section)
+3. Run `carthage update --use-xcframeworks`
+4. Manually add XCFramework to Xcode
 
 ---
 

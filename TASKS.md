@@ -1184,12 +1184,12 @@ This document breaks down the 18-week development timeline into concrete, action
 - [ ] Publish SpectraLogger to CocoaPods Trunk
 - [ ] Publish SpectraLoggerUI to CocoaPods Trunk
 
-**Deferred to v1.0.1** (Lower priority, ~10-15% market):
-- [ ] Carthage support
-  - [ ] Create Cartfile for consumers
-  - [ ] Pre-build XCFramework for Carthage
-  - [ ] Test `carthage update` installation
-  - [ ] Document Carthage installation
+**Completed** (Added to v1.0.0):
+- [x] Carthage support (~10-15% market)
+  - [x] Create SpectraLogger.json binary manifest
+  - [x] Update INSTALLATION.md with Carthage instructions
+  - [x] Create comprehensive CARTHAGE_GUIDE.md
+  - [x] Document troubleshooting and migration paths
 
 **Release Date**: Ready to publish now!
 
