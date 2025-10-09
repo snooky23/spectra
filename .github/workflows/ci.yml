@@ -24,7 +24,10 @@ jobs:
           cache: gradle
 
       - name: Grant execute permission for scripts
-        run: chmod +x scripts/build/*.sh scripts/test/*.sh gradlew
+        run: |
+          find scripts/build -name "*.sh" -exec chmod +x {} \;
+          find scripts/test -name "*.sh" -exec chmod +x {} \;
+          chmod +x gradlew
 
       - name: Build KMP
         run: ./scripts/build/build-kmp.sh
@@ -62,7 +65,10 @@ jobs:
           xcode-version: '26'  # Use Xcode 26 (latest stable)
 
       - name: Grant execute permission for scripts
-        run: chmod +x scripts/build/*.sh scripts/test/*.sh gradlew
+        run: |
+          find scripts/build -name "*.sh" -exec chmod +x {} \;
+          find scripts/test -name "*.sh" -exec chmod +x {} \;
+          chmod +x gradlew
 
       - name: Build iOS XCFramework
         run: ./scripts/build/build-ios-xcframework.sh
@@ -97,7 +103,9 @@ jobs:
           cache: gradle
 
       - name: Grant execute permission for scripts
-        run: chmod +x scripts/build/*.sh scripts/test/*.sh
+        run: |
+          find scripts/build -name "*.sh" -exec chmod +x {} \;
+          find scripts/test -name "*.sh" -exec chmod +x {} \;
 
       - name: Build Android Example
         run: ./scripts/build/build-android-example.sh
