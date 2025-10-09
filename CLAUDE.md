@@ -99,12 +99,30 @@ You are building a framework that **must exceed Google's engineering standards**
    - Verify test passes
    - Refactor if needed
 
-4. **Commit Frequently**:
+4. **Run Code Quality Checks Before Every Commit** ⚠️ **CRITICAL**:
+   ```bash
+   # ALWAYS run this before committing:
+   ./scripts/code-quality.sh
+
+   # This runs:
+   # - ktlintCheck (code formatting)
+   # - detekt (code quality)
+   ```
+
+   **If code quality checks fail**:
+   - Fix the issues immediately
+   - Run `./gradlew ktlintFormat` to auto-fix formatting
+   - Fix detekt violations manually or update baseline if needed
+   - Re-run code quality checks until they pass
+   - Only then proceed with commit
+
+5. **Commit Frequently**:
    - Small, atomic commits
    - Follow Conventional Commits format
    - Descriptive commit messages
    - Commit after each logical unit of work
    - **Include SESSION.md** in commits when project state changes
+   - **Always run code quality checks first** (see step 4 above)
 
 ### Ending a Session
 
