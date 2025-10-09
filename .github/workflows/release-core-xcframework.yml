@@ -1,4 +1,4 @@
-name: Manual Release
+name: Release Core XCFramework
 
 on:
   workflow_dispatch:
