@@ -76,7 +76,8 @@
       "Bash(gh auth:*)",
       "Bash(unset GITHUB_TOKEN)",
       "Bash(./CREATE_RELEASE.sh:*)",
-      "Bash(gh run list:*)"
+      "Bash(gh run list:*)",
+      "Bash(./scripts/build/build-kmp.sh:*)"
     ],
     "deny": [],
     "ask": []
