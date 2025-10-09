@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-15  # Use macOS 15 (Sequoia)
 
     steps:
     - name: Checkout code

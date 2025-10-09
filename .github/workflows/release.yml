@@ -11,7 +11,7 @@ permissions:
 jobs:
   release:
     name: Create Release
-    runs-on: macos-14  # Use latest macOS for better Apple Silicon support
+    runs-on: macos-15  # Use macOS 15 (Sequoia) for best Apple Silicon support
 
     steps:
       - name: Checkout code
