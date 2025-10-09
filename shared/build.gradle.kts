@@ -184,22 +184,21 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     executionData.setFrom(files("build/jacoco/testDebugUnitTest.exec"))
 }
 
-
 // Task to create XCFramework for iOS
 tasks.register("createXCFramework") {
     group = "build"
     description = "Creates an XCFramework for all iOS targets"
-    
+
     val frameworkName = "SpectraLogger"
     val buildType = "Release"
     val xcframeworkPath = "${project.buildDir}/XCFrameworks/${buildType.lowercase()}/$frameworkName.xcframework"
-    
+
     dependsOn(
         "linkReleaseFrameworkIosArm64",
         "linkReleaseFrameworkIosX64",
-        "linkReleaseFrameworkIosSimulatorArm64"
+        "linkReleaseFrameworkIosSimulatorArm64",
     )
-    
+
     doLast {
         exec {
             commandLine(
@@ -208,7 +207,7 @@ tasks.register("createXCFramework") {
                 "-framework", "${project.buildDir}/bin/iosArm64/releaseFramework/$frameworkName.framework",
                 "-framework", "${project.buildDir}/bin/iosSimulatorArm64/releaseFramework/$frameworkName.framework",
                 "-framework", "${project.buildDir}/bin/iosX64/releaseFramework/$frameworkName.framework",
-                "-output", xcframeworkPath
+                "-output", xcframeworkPath,
             )
         }
         println("✅ XCFramework created at: $xcframeworkPath")

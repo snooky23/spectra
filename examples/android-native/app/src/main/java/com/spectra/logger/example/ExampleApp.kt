@@ -14,7 +14,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -178,7 +177,7 @@ private data class NavItem(
     val screen: Screen,
     val icon: androidx.compose.ui.graphics.vector.ImageVector,
     val label: String,
-    val count: Int? = null
+    val count: Int? = null,
 )
 
 /**
@@ -241,7 +240,7 @@ private fun BottomNavigationBar(navController: androidx.navigation.NavHostContro
                             "${item.label} (${item.count})"
                         } else {
                             item.label
-                        }
+                        },
                     )
                 },
                 selected = currentDestination?.hierarchy?.any { it.route == item.screen.route } == true,
