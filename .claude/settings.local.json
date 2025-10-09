@@ -79,7 +79,8 @@
       "Bash(gh run list:*)",
       "Bash(./scripts/build/build-kmp.sh:*)",
       "Bash(./scripts/code-quality.sh:*)",
-      "Bash(git ls-tree:*)"
+      "Bash(git ls-tree:*)",
+      "Bash(./scripts/build/build-android-example.sh:*)"
     ],
     "deny": [],
     "ask": []
