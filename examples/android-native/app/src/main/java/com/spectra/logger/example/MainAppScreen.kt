@@ -18,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -27,26 +26,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import com.spectra.logger.SpectraLogger
-import com.spectra.logger.ui.screens.SpectraLoggerScreen
 
 /**
- * Main app screen - demonstrates how to integrate Spectra Logger
+ * Main app screen - demonstrates SpectraLogger integration
  *
- * Users only need one button that opens the complete SpectraLoggerScreen from the SDK
+ * This example shows:
+ * 1. Logging user actions
+ * 2. Logging different severity levels
+ * 3. Simple integration (just call SpectraLogger methods)
  */
 @Composable
 fun MainAppScreen() {
-    var showLogger by remember { mutableStateOf(false) }
     var tapCount by remember { mutableIntStateOf(0) }
 
     Column(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(24.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -109,37 +106,43 @@ fun MainAppScreen() {
             Text("Generate Error")
         }
 
-        Spacer(modifier = Modifier.size(48.dp))
-
-        // Open Spectra Logger button - this is the only SDK integration needed!
-        Button(
+        OutlinedButton(
             onClick = {
-                showLogger = true
-                SpectraLogger.i("Navigation", "Opening Spectra Logger UI")
+                try {
+                    throw IllegalStateException("Test exception")
+                } catch (e: Exception) {
+                    SpectraLogger.e("Exception", "Test exception caught", e)
+                }
             },
             modifier = Modifier.fillMaxWidth(),
-            colors =
-                ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                ),
+        ) {
+            Text("Generate Exception")
+        }
+
+        Spacer(modifier = Modifier.size(24.dp))
+
+        Button(
+            onClick = {
+                SpectraLogger.d("Debug", "Debug message - check logcat!")
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+            ),
         ) {
             Text(
-                "Open Spectra Logger",
+                "Generate Debug Log",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
             )
         }
-    }
 
-    // Present the complete Spectra Logger screen from the SDK
-    // It comes with all tabs (Logs, Network, Settings) built-in
-    // Users just show it - no need to build tabs themselves
-    if (showLogger) {
-        Dialog(
-            onDismissRequest = { showLogger = false },
-            properties = DialogProperties(usePlatformDefaultWidth = false),
-        ) {
-            SpectraLoggerScreen()
-        }
+        Spacer(modifier = Modifier.size(16.dp))
+
+        Text(
+            text = "Check logcat to see all logged messages",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }

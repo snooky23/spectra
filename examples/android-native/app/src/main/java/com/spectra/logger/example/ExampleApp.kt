@@ -1,298 +1,122 @@
 package com.spectra.logger.example
 
-import android.content.Context
-import android.content.Intent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.FileProvider
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.unit.dp
 import com.spectra.logger.SpectraLogger
-import com.spectra.logger.ui.screens.LogListScreen
-import com.spectra.logger.ui.screens.NetworkLogScreen
-import com.spectra.logger.ui.screens.SettingsScreen
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 /**
- * Exports all logs to a text file and opens the system share dialog.
+ * Simple example app demonstrating SpectraLogger usage.
+ *
+ * This is a minimal example showing how to:
+ * 1. Log messages at different levels
+ * 2. Log with tags
+ * 3. Log exceptions
+ * 4. Generate network traffic (for network logging demo)
  */
-private suspend fun exportLogs(context: Context) =
-    withContext(Dispatchers.IO) {
-        try {
-            val logs = SpectraLogger.logStorage.query()
-            val networkLogs = SpectraLogger.networkStorage.query()
-            val timestamp = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.US).format(Date())
-
-            val content = createExportContent(logs, networkLogs, timestamp)
-            val file = File(context.cacheDir, "spectra_logs_$timestamp.txt")
-            file.writeText(content)
-
-            shareLogFile(context, file)
-
-            SpectraLogger.i("Export", "Successfully exported ${logs.size + networkLogs.size} logs")
-        } catch (e: java.io.IOException) {
-            SpectraLogger.e("Export", "Failed to write log file", e)
-        } catch (e: android.content.ActivityNotFoundException) {
-            SpectraLogger.e("Export", "No app available to share logs", e)
-        }
-    }
-
-/**
- * Creates formatted export content from logs.
- */
-private fun createExportContent(
-    logs: List<com.spectra.logger.domain.model.LogEntry>,
-    networkLogs: List<com.spectra.logger.domain.model.NetworkLogEntry>,
-    timestamp: String,
-): String =
-    buildString {
-        appendLine("Spectra Logger Export")
-        appendLine("Generated: $timestamp")
-        appendLine("=" + "=".repeat(SEPARATOR_LENGTH))
-        appendLine()
-
-        appendLine("APPLICATION LOGS (${logs.size})")
-        appendLine("-" + "-".repeat(SEPARATOR_LENGTH))
-        logs.forEach { log ->
-            appendLine("[${log.level}] ${log.timestamp} - ${log.tag}")
-            appendLine("  ${log.message}")
-            log.metadata.takeIf { it.isNotEmpty() }?.let { metadata ->
-                appendLine("  Metadata: $metadata")
-            }
-            log.throwable?.let { throwable ->
-                appendLine("  Exception: $throwable")
-            }
-            appendLine()
-        }
-
-        appendLine()
-        appendLine("NETWORK LOGS (${networkLogs.size})")
-        appendLine("-" + "-".repeat(SEPARATOR_LENGTH))
-        networkLogs.forEach { log ->
-            appendLine("[${log.method}] ${log.url}")
-            appendLine("  Timestamp: ${log.timestamp}")
-            appendLine("  Duration: ${log.duration}ms")
-            log.responseCode?.let { code ->
-                appendLine("  Status: $code")
-            }
-            log.requestHeaders.takeIf { it.isNotEmpty() }?.let { headers ->
-                appendLine("  Request Headers: $headers")
-            }
-            log.requestBody?.let { body ->
-                appendLine("  Request Body: $body")
-            }
-            log.responseHeaders.takeIf { it.isNotEmpty() }?.let { headers ->
-                appendLine("  Response Headers: $headers")
-            }
-            log.responseBody?.let { body ->
-                appendLine("  Response Body: $body")
-            }
-            log.error?.let { error ->
-                appendLine("  Error: $error")
-            }
-            appendLine()
-        }
-    }
-
-/**
- * Shares the log file using Android's share sheet.
- */
-private suspend fun shareLogFile(
-    context: Context,
-    file: File,
-) = withContext(Dispatchers.Main) {
-    val uri =
-        FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.spectra.fileprovider",
-            file,
-        )
-
-    val shareIntent =
-        Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_STREAM, uri)
-            putExtra(Intent.EXTRA_SUBJECT, "Spectra Logger Export")
-            putExtra(Intent.EXTRA_TEXT, "Logs exported from Spectra Logger")
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-
-    context.startActivity(
-        Intent.createChooser(shareIntent, "Export Logs"),
-    )
-}
-
-private const val SEPARATOR_LENGTH = 80
-
-/**
- * Navigation screen definitions for the example app.
- */
-sealed class Screen(val route: String, val title: String) {
-    /**
-     * Logs screen showing application logs.
-     */
-    data object Logs : Screen("logs", "Logs")
-
-    /**
-     * Network screen showing network request logs.
-     */
-    data object Network : Screen("network", "Network")
-
-    /**
-     * Settings screen for logger configuration.
-     */
-    data object Settings : Screen("settings", "Settings")
-}
-
-/**
- * Navigation item for bottom bar.
- */
-private data class NavItem(
-    val screen: Screen,
-    val icon: androidx.compose.ui.graphics.vector.ImageVector,
-    val label: String,
-    val count: Int? = null,
-)
-
-/**
- * Main application composable with bottom navigation.
- */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExampleApp() {
-    val navController = rememberNavController()
-    val scope = rememberCoroutineScope()
-
     Scaffold(
-        bottomBar = {
-            BottomNavigationBar(navController)
+        topBar = {
+            TopAppBar(
+                title = { Text("SpectraLogger Example") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                ),
+            )
         },
     ) { innerPadding ->
-        AppNavHost(
-            navController = navController,
-            modifier = Modifier.padding(innerPadding),
-            scope = scope,
-        )
-    }
-}
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = "SpectraLogger Demo",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(bottom = 24.dp),
+            )
 
-@Composable
-private fun BottomNavigationBar(navController: androidx.navigation.NavHostController) {
-    // Track log counts
-    val appLogsCount = remember { mutableIntStateOf(0) }
-    val networkLogsCount = remember { mutableIntStateOf(0) }
+            Button(
+                onClick = { logDebugMessage() },
+                modifier = Modifier.padding(vertical = 8.dp),
+            ) {
+                Text("Log Debug Message")
+            }
 
-    // Update counts when new logs arrive
-    LaunchedEffect(Unit) {
-        SpectraLogger.logStorage.observe().collect {
-            appLogsCount.intValue = SpectraLogger.logStorage.count()
-        }
-    }
+            Button(
+                onClick = { logInfoMessage() },
+                modifier = Modifier.padding(vertical = 8.dp),
+            ) {
+                Text("Log Info Message")
+            }
 
-    LaunchedEffect(Unit) {
-        SpectraLogger.networkStorage.observe().collect {
-            networkLogsCount.intValue = SpectraLogger.networkStorage.count()
-        }
-    }
+            Button(
+                onClick = { logWarningMessage() },
+                modifier = Modifier.padding(vertical = 8.dp),
+            ) {
+                Text("Log Warning Message")
+            }
 
-    val items =
-        listOf(
-            NavItem(Screen.Logs, Icons.AutoMirrored.Filled.List, "Logs", appLogsCount.intValue),
-            NavItem(Screen.Network, Icons.Default.Warning, "Network", networkLogsCount.intValue),
-            NavItem(Screen.Settings, Icons.Default.Settings, "Settings"),
-        )
+            Button(
+                onClick = { logErrorMessage() },
+                modifier = Modifier.padding(vertical = 8.dp),
+            ) {
+                Text("Log Error Message")
+            }
 
-    NavigationBar {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentDestination = navBackStackEntry?.destination
+            Button(
+                onClick = { logWithException() },
+                modifier = Modifier.padding(vertical = 8.dp),
+            ) {
+                Text("Log with Exception")
+            }
 
-        items.forEach { item ->
-            NavigationBarItem(
-                icon = { Icon(item.icon, contentDescription = item.label) },
-                label = {
-                    Text(
-                        if (item.count != null && item.count > 0) {
-                            "${item.label} (${item.count})"
-                        } else {
-                            item.label
-                        },
-                    )
-                },
-                selected = currentDestination?.hierarchy?.any { it.route == item.screen.route } == true,
-                onClick = {
-                    navController.navigate(item.screen.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
+            Text(
+                text = "Check logcat to see the logged messages",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 24.dp),
             )
         }
     }
 }
 
-@Composable
-private fun AppNavHost(
-    navController: androidx.navigation.NavHostController,
-    modifier: Modifier = Modifier,
-    scope: kotlinx.coroutines.CoroutineScope,
-) {
-    val context = LocalContext.current
+private fun logDebugMessage() {
+    SpectraLogger.d("ExampleApp", "This is a debug message")
+}
 
-    NavHost(
-        navController = navController,
-        startDestination = Screen.Logs.route,
-        modifier = modifier,
-    ) {
-        composable(Screen.Logs.route) {
-            LogListScreen(
-                storage = SpectraLogger.logStorage,
-            )
-        }
+private fun logInfoMessage() {
+    SpectraLogger.i("ExampleApp", "User performed an action")
+}
 
-        composable(Screen.Network.route) {
-            NetworkLogScreen(
-                storage = SpectraLogger.networkStorage,
-            )
-        }
+private fun logWarningMessage() {
+    SpectraLogger.w("ExampleApp", "This might be a problem")
+}
 
-        composable(Screen.Settings.route) {
-            SettingsScreen(
-                logStorage = SpectraLogger.logStorage,
-                networkLogStorage = SpectraLogger.networkStorage,
-                onExportLogs = {
-                    scope.launch {
-                        exportLogs(context)
-                    }
-                },
-            )
-        }
+private fun logErrorMessage() {
+    SpectraLogger.e("ExampleApp", "An error occurred!")
+}
+
+private fun logWithException() {
+    try {
+        throw IllegalStateException("Example exception for logging")
+    } catch (e: Exception) {
+        SpectraLogger.e("ExampleApp", "Caught an exception", e)
     }
 }
