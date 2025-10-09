@@ -21,9 +21,9 @@ echo "📦 Building shared module..."
 # Build Android example
 echo "📱 Building Android app..."
 if [ "$VARIANT" = "release" ]; then
-    ./gradlew :examples:android:assembleRelease
+    ./gradlew :examples:android-native:app:assembleRelease
 else
-    ./gradlew :examples:android:assembleDebug
+    ./gradlew :examples:android-native:app:assembleDebug
 fi
 
 echo "✅ Android example app built successfully!"

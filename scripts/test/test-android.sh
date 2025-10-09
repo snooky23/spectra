@@ -13,6 +13,6 @@ cd "$PROJECT_ROOT"
 
 # Run unit tests
 echo "📋 Running Android unit tests..."
-./gradlew :examples:android:testDebugUnitTest
+./gradlew :examples:android-native:app:testDebugUnitTest
 
 echo "✅ Android tests passed!"
