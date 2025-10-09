@@ -20,6 +20,9 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
       - name: Run Kotlin linter
         run: ./gradlew ktlintCheck
 
@@ -53,11 +56,15 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
       - name: Run tests with coverage
-        run: ./gradlew koverXmlReport
+        run: ./gradlew jacocoTestReport
 
       - name: Upload coverage to Codecov
+        if: always()
         uses: codecov/codecov-action@v4
         with:
-          file: ./build/reports/kover/report.xml
+          files: ./shared/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
           fail_ci_if_error: false
