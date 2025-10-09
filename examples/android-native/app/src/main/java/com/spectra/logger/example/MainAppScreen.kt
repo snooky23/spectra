@@ -41,9 +41,10 @@ fun MainAppScreen() {
     var tapCount by remember { mutableIntStateOf(0) }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -126,9 +127,10 @@ fun MainAppScreen() {
                 SpectraLogger.d("Debug", "Debug message - check logcat!")
             },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-            ),
+            colors =
+                ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                ),
         ) {
             Text(
                 "Generate Debug Log",
