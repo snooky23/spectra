@@ -80,7 +80,9 @@
       "Bash(./scripts/build/build-kmp.sh:*)",
       "Bash(./scripts/code-quality.sh:*)",
       "Bash(git ls-tree:*)",
-      "Bash(./scripts/build/build-android-example.sh:*)"
+      "Bash(./scripts/build/build-android-example.sh:*)",
+      "Read(//Users/avilevin/**)",
+      "Bash(git mv:*)"
     ],
     "deny": [],
     "ask": []
