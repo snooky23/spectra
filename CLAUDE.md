@@ -754,6 +754,88 @@ release/1.1.0
    - [ ] Builds pass
    - [ ] Manually tested
 
+### Maintaining CHANGELOG.md
+
+**IMPORTANT**: We maintain a CHANGELOG.md file following [Keep a Changelog](https://keepachangelog.com/) format.
+
+**When to Update CHANGELOG.md**:
+- ✅ **After adding a new feature** (feat: commits)
+- ✅ **After fixing a bug** (fix: commits)
+- ✅ **After making breaking changes** (BREAKING CHANGE)
+- ✅ **After deprecating functionality**
+- ✅ **When preparing a release** (consolidate all changes)
+- ❌ **NOT for internal refactoring** (unless it affects users)
+- ❌ **NOT for documentation updates** (unless significant)
+- ❌ **NOT for chore/build commits** (unless user-visible)
+
+**How to Update**:
+
+1. **Add entry to [Unreleased] section** during development:
+   ```markdown
+   ## [Unreleased]
+
+   ### Added
+   - New feature X that allows users to Y
+
+   ### Fixed
+   - Bug where Z caused crash in edge case
+
+   ### Changed
+   - Improved performance of W by 50%
+   ```
+
+2. **When releasing**, move [Unreleased] to versioned section:
+   ```markdown
+   ## [Unreleased]
+
+   <!-- Empty until next development cycle -->
+
+   ## [1.1.0] - 2025-10-15
+
+   ### Added
+   - New feature X that allows users to Y
+
+   ### Fixed
+   - Bug where Z caused crash in edge case
+   ```
+
+3. **Update links at bottom**:
+   ```markdown
+   [Unreleased]: https://github.com/snooky23/Spectra/compare/v1.1.0...HEAD
+   [1.1.0]: https://github.com/snooky23/Spectra/compare/v1.0.0...v1.1.0
+   ```
+
+**Categories** (in this order):
+- **Added** - New features
+- **Changed** - Changes in existing functionality
+- **Deprecated** - Soon-to-be removed features
+- **Removed** - Removed features
+- **Fixed** - Bug fixes
+- **Security** - Security fixes
+
+**Example Workflow**:
+
+```bash
+# 1. Make code changes
+git add MyNewFeature.kt
+git commit -m "feat(core): add automatic log rotation"
+
+# 2. Update CHANGELOG.md
+# Add entry under [Unreleased] > Added:
+# - Automatic log rotation with configurable size and count limits
+
+# 3. Commit CHANGELOG
+git add CHANGELOG.md
+git commit -m "docs(changelog): add automatic log rotation entry"
+```
+
+**Release Process**:
+When creating a release (e.g., v1.1.0):
+1. Move all [Unreleased] entries to new version section
+2. Add release date
+3. Update comparison links
+4. Commit: `git commit -m "docs(changelog): prepare v1.1.0 release"`
+
 ---
 
 ## Platform-Specific Guidance
