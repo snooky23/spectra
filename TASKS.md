@@ -1165,30 +1165,200 @@ This document breaks down the 18-week development timeline into concrete, action
 - [ ] Documentation improvements
 - [ ] Community support (issues, discussions)
 
-### Future Enhancements (Roadmap for v1.1+)
-- [ ] Remote log streaming (WebSocket)
-  - [ ] Real-time log viewing from desktop
-  - [ ] Developer dashboard
-- [ ] Log analytics
-  - [ ] Error rate graphs
-  - [ ] Network performance charts
-  - [ ] Most common errors
+### Future Enhancements (Product Roadmap)
+
+#### v1.0.0 - Production Release (✅ IN PROGRESS)
+**Goal**: Lightweight, production-ready logging framework
+
+**Completed**:
+- [x] Remove Compose Multiplatform from core (93% size reduction: 119MB → 8.5MB)
+- [x] Separate UI layers (SpectraLoggerUI pod for iOS, future Compose for Android)
+- [x] Build lightweight XCFramework (8.5MB)
+- [x] Create professional podspecs (SpectraLogger, SpectraLoggerUI)
+- [x] Set up SPM binary distribution
+- [x] CocoaPods distribution ready
+- [x] Push to GitHub with v1.0.0 tag
+
+**Remaining** (Complete These to Release v1.0.0):
+- [ ] Create GitHub Release v1.0.0 with XCFramework
+- [ ] Publish SpectraLogger to CocoaPods Trunk
+- [ ] Publish SpectraLoggerUI to CocoaPods Trunk
+
+**Deferred to v1.0.1** (Lower priority, ~10-15% market):
+- [ ] Carthage support
+  - [ ] Create Cartfile for consumers
+  - [ ] Pre-build XCFramework for Carthage
+  - [ ] Test `carthage update` installation
+  - [ ] Document Carthage installation
+
+**Release Date**: Ready to publish now!
+
+---
+
+#### v1.1.0 - Enhanced Features (Q1 2026)
+**Goal**: Developer experience improvements and advanced features
+
+**Features**:
+- [ ] Remote log collection (optional server)
+  - [ ] Real-time log streaming via WebSocket
+  - [ ] Web-based log viewer dashboard
+  - [ ] Multi-device session management
+- [ ] Crash reporting integration
+  - [ ] Automatic crash detection
+  - [ ] Stack trace capture
+  - [ ] Attach recent logs to crash reports
+- [ ] Analytics integration
+  - [ ] Error rate tracking
+  - [ ] Network performance metrics
+  - [ ] User session analytics
+- [ ] Custom log formatters
+  - [ ] JSON formatter
+  - [ ] CSV formatter
+  - [ ] Custom template support
+  - [ ] Colored console output
+- [ ] Advanced filtering
+  - [ ] Regex search support
+  - [ ] Saved filter presets
+  - [ ] Complex filter combinations (AND/OR/NOT)
+  - [ ] Time-based filters (last hour, today, custom range)
+
+**Target Size**: Core remains ~8-10MB, optional features as separate modules
+
+---
+
+#### v1.2.0 - Developer Tools (Q2 2026)
+**Goal**: Integration with development tools and IDEs
+
+**Features**:
+- [ ] Xcode console integration
+  - [ ] SpectraLogger output appears in Xcode console
+  - [ ] Color-coded by log level
+  - [ ] Clickable links to source files
+- [ ] Android Studio plugin
+  - [ ] View logs in IDE tool window
+  - [ ] Filter and search within IDE
+  - [ ] Export directly from IDE
+- [ ] CLI tool for log analysis
+  - [ ] Parse exported log files
+  - [ ] Generate reports
+  - [ ] Statistical analysis
+  - [ ] Diff between two log files
+- [ ] Web-based log viewer
+  - [ ] Standalone web app
+  - [ ] Upload and analyze log exports
+  - [ ] Share logs with team (read-only links)
+  - [ ] Advanced search and filtering
+
+**Developer Experience Improvements**:
+- [ ] Xcode templates for quick setup
+- [ ] Android Studio project wizard
+- [ ] Interactive tutorial in UI
+- [ ] Sample projects repository
+
+---
+
+#### v1.3.0 - Team Collaboration (Q3 2026)
+**Goal**: Features for teams and shared debugging
+
+**Features**:
+- [ ] Log encryption at rest
+  - [ ] AES-256 encryption for file storage
+  - [ ] Optional encryption for in-memory logs
+  - [ ] Secure export with password protection
+- [ ] Cloud sync (optional, opt-in)
+  - [ ] Sync logs across devices
+  - [ ] Team log sharing
+  - [ ] Privacy-first: End-to-end encryption
+  - [ ] Self-hosted option available
+- [ ] Team collaboration features
+  - [ ] Share log sessions with team members
+  - [ ] Comment on specific logs
+  - [ ] Create tickets from logs
+  - [ ] Integration with issue trackers (Jira, GitHub Issues)
+- [ ] Advanced search
+  - [ ] Full-text search engine (Lucene/Tantivy)
+  - [ ] Fuzzy matching
+  - [ ] Search across all fields
+  - [ ] Saved search queries
+
+**Enterprise Features**:
+- [ ] SSO/SAML support
+- [ ] Role-based access control
+- [ ] Audit logs
+- [ ] Compliance reporting (GDPR, SOC2)
+
+---
+
+#### v2.0.0 - Platform Expansion (Q4 2026)
+**Goal**: Support more platforms and advanced capabilities
+
+**New Platforms**:
+- [ ] Desktop support
+  - [ ] JVM target for server-side logging
+  - [ ] macOS app with native UI (SwiftUI)
+  - [ ] Windows/Linux with Compose Desktop UI
+- [ ] Web platform
+  - [ ] Kotlin/JS target for browser logging
+  - [ ] Kotlin/Wasm for future-proof web support
+  - [ ] Web worker support for background logging
+- [ ] Kotlin/Native expansion
+  - [ ] watchOS support
+  - [ ] tvOS support
+  - [ ] Linux ARM (Raspberry Pi, etc.)
+
+**Advanced Features**:
+- [ ] Plugin architecture
+  - [ ] Custom log sinks (Elasticsearch, Splunk, etc.)
+  - [ ] Custom formatters
+  - [ ] Custom filters and processors
+  - [ ] Third-party plugin marketplace
 - [ ] Crash symbolication
   - [ ] Upload dSYMs/mapping files
-  - [ ] Symbolicate stack traces
-- [ ] Plugin architecture
-  - [ ] Custom sinks
-  - [ ] Custom formatters
-  - [ ] Custom filters
+  - [ ] Automatic symbolication of stack traces
+  - [ ] Source map support for web
 - [ ] Integration with crash reporting services
-  - [ ] Sentry
-  - [ ] Firebase Crashlytics
-  - [ ] Bugsnag
-- [ ] Desktop platform support
-  - [ ] JVM target
-  - [ ] Desktop UI (Compose for Desktop)
-- [ ] Web platform (JS/Wasm) (future)
-- [ ] Kotlin/Native targets (watchOS, tvOS, etc.)
+  - [ ] Sentry SDK integration
+  - [ ] Firebase Crashlytics integration
+  - [ ] Bugsnag integration
+  - [ ] Custom integrations via plugin API
+- [ ] Performance monitoring
+  - [ ] Automatic performance metrics
+  - [ ] Network request timing analysis
+  - [ ] UI render performance tracking
+  - [ ] Battery usage monitoring
+
+**Breaking Changes**:
+- Minimum iOS version: 15.0+ (dropping iOS 13)
+- Minimum Android version: API 26+ (dropping API 24)
+- New package structure for plugins
+
+---
+
+### Long-Term Vision (2027+)
+
+**AI-Powered Features**:
+- [ ] Automatic log analysis with AI
+  - [ ] Anomaly detection
+  - [ ] Pattern recognition
+  - [ ] Suggested fixes for common errors
+  - [ ] Root cause analysis
+- [ ] Smart search with natural language
+  - [ ] "Show me all errors in the last hour"
+  - [ ] "Find network requests that took longer than 5 seconds"
+- [ ] Predictive debugging
+  - [ ] Identify potential issues before they happen
+  - [ ] Proactive alerting
+
+**Open Source Ecosystem**:
+- [ ] Official community plugins
+- [ ] Third-party integrations marketplace
+- [ ] Enterprise support tier
+- [ ] Professional services for custom integrations
+
+**Standards & Protocols**:
+- [ ] Support for OpenTelemetry
+- [ ] W3C Trace Context propagation
+- [ ] Industry-standard log formats (syslog, CEF, etc.)
 
 ---
 
