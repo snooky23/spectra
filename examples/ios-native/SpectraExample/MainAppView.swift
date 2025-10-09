@@ -1,4 +1,5 @@
 import SwiftUI
+import SpectraLoggerUI
 
 /// Main app screen with example content and button to open Spectra Logger
 struct MainAppView: View {
@@ -8,6 +9,8 @@ struct MainAppView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 30) {
+                Spacer()
+                    .frame(height: 20)
                 // App branding
                 VStack(spacing: 10) {
                     Image(systemName: "app.badge.checkmark")

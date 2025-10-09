@@ -30,12 +30,18 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		8195228F9ADCF39B039BE01E /* LogsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LogsView.swift; path = ../Views/LogsView.swift; sourceTree = "<group>"; };
+		8D9DC3618D3F1E5D501DE7CF /* SettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SettingsView.swift; path = ../Views/SettingsView.swift; sourceTree = "<group>"; };
+		A6F11163D579A722F99B1459 /* NetworkLogsViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NetworkLogsViewModel.swift; path = ../ViewModels/NetworkLogsViewModel.swift; sourceTree = "<group>"; };
 		AA0000 /* SpectraExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectraExampleApp.swift; sourceTree = "<group>"; };
 		AA0002 /* MainAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppView.swift; sourceTree = "<group>"; };
 		AA0004 /* SpectraLoggerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectraLoggerView.swift; sourceTree = "<group>"; };
 		AA0006 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		AA0008 /* SpectraLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpectraLogger.framework; path = "../../shared/build/bin/iosSimulatorArm64/debugFramework/SpectraLogger.framework"; sourceTree = "<group>"; };
+		AA0008 /* SpectraLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpectraLogger.framework; path = ../../shared/build/bin/iosSimulatorArm64/debugFramework/SpectraLogger.framework; sourceTree = "<group>"; };
 		AAFFFF /* SpectraExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpectraExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C142B4693C50AA790A968E05 /* LogsViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LogsViewModel.swift; path = ../ViewModels/LogsViewModel.swift; sourceTree = "<group>"; };
+		D23EC76B25200D1CA1642D4A /* NetworkLogsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NetworkLogsView.swift; path = ../Views/NetworkLogsView.swift; sourceTree = "<group>"; };
+		EFCED8CC39672C46ACAA51A7 /* SettingsViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SettingsViewModel.swift; path = ../ViewModels/SettingsViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,7 +56,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		AAFFF5 /*  */ = {
+		7C8E25A159FBFB8B33A1FCBA /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				8195228F9ADCF39B039BE01E /* LogsView.swift */,
+				D23EC76B25200D1CA1642D4A /* NetworkLogsView.swift */,
+				8D9DC3618D3F1E5D501DE7CF /* SettingsView.swift */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		AAFFF5 = {
 			isa = PBXGroup;
 			children = (
 				AAFFF7 /* SpectraExample */,
@@ -66,6 +82,8 @@
 				AA0002 /* MainAppView.swift */,
 				AA0004 /* SpectraLoggerView.swift */,
 				AA0006 /* Assets.xcassets */,
+				F48B27A96A269D341821DE69 /* ViewModels */,
+				7C8E25A159FBFB8B33A1FCBA /* Views */,
 			);
 			path = SpectraExample;
 			sourceTree = "<group>";
@@ -84,6 +102,16 @@
 				AAFFFF /* SpectraExample.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		F48B27A96A269D341821DE69 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				C142B4693C50AA790A968E05 /* LogsViewModel.swift */,
+				A6F11163D579A722F99B1459 /* NetworkLogsViewModel.swift */,
+				EFCED8CC39672C46ACAA51A7 /* SettingsViewModel.swift */,
+			);
+			name = ViewModels;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -130,7 +158,7 @@
 				en,
 				Base,
 			);
-			mainGroup = AAFFF5 /*  */;
+			mainGroup = AAFFF5;
 			productRefGroup = AAFFFE /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -302,18 +330,11 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Spectra Example";
-				INFOPLIST_KEY_CFBundleURLTypes = (
-					{
-						CFBundleTypeRole = Editor;
-						CFBundleURLName = "com.spectra.logger";
-						CFBundleURLSchemes = (
-							spectralogger,
-						);
-					},
-				);
+				INFOPLIST_KEY_CFBundleURLTypes = "{\"CFBundleTypeRole\"=>\"Editor\", \"CFBundleURLName\"=>\"com.spectra.logger\", \"CFBundleURLSchemes\"=>[\"spectralogger\"]}";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -349,18 +370,11 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Spectra Example";
-				INFOPLIST_KEY_CFBundleURLTypes = (
-					{
-						CFBundleTypeRole = Editor;
-						CFBundleURLName = "com.spectra.logger";
-						CFBundleURLSchemes = (
-							spectralogger,
-						);
-					},
-				);
+				INFOPLIST_KEY_CFBundleURLTypes = "{\"CFBundleTypeRole\"=>\"Editor\", \"CFBundleURLName\"=>\"com.spectra.logger\", \"CFBundleURLSchemes\"=>[\"spectralogger\"]}";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;

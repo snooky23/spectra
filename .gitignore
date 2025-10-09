@@ -66,6 +66,7 @@ playground.xcworkspace
 Pods/
 *.podspec
 !shared/SpectraLogger.podspec
+!SpectraLoggerUI/SpectraLoggerUI.podspec
 Podfile.lock
 *.xcworkspace
 !*.xcworkspace/contents.xcworkspacedata
@@ -119,6 +120,11 @@ coverage/
 *.zip
 *.tar.gz
 *.rar
+
+# XCFramework builds (generated, not committed)
+build/xcframework/
+build/releases/
+*.xcframework.zip
 
 # Temporary files
 *.swp

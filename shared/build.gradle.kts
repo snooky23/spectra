@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.compose.multiplatform)
     id("maven-publish")
     id("jacoco")
 }
@@ -19,13 +18,14 @@ kotlin {
     }
 
     // iOS targets
+    val iosFrameworkName = "SpectraLogger"
     listOf(
         iosX64(),
         iosArm64(),
         iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "SpectraLogger"
+            baseName = iosFrameworkName
             isStatic = true
         }
     }
@@ -36,10 +36,6 @@ kotlin {
             dependencies {
                 implementation(libs.bundles.kotlinx)
                 implementation(libs.ktor.client.core)
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material3)
-                implementation(compose.ui)
             }
         }
 
@@ -58,8 +54,6 @@ kotlin {
                 implementation(libs.androidx.core.ktx)
                 implementation(libs.kotlinx.coroutines.android)
                 implementation(libs.okhttp)
-                implementation(libs.androidx.activity.compose)
-                implementation(libs.androidx.navigation.compose)
             }
         }
 
@@ -190,57 +184,33 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     executionData.setFrom(files("build/jacoco/testDebugUnitTest.exec"))
 }
 
-// Fix for IntelliJ IDEA duplicate content roots warning
-// Compose Multiplatform creates composeResources for test source sets which causes conflicts
-// This comprehensive fix prevents the directories from being created in the first place
 
-// 1. Clean up any existing test composeResources directories
-tasks.register("cleanTestComposeResources") {
+// Task to create XCFramework for iOS
+tasks.register("createXCFramework") {
+    group = "build"
+    description = "Creates an XCFramework for all iOS targets"
+    
+    val frameworkName = "SpectraLogger"
+    val buildType = "Release"
+    val xcframeworkPath = "${project.buildDir}/XCFrameworks/${buildType.lowercase()}/$frameworkName.xcframework"
+    
+    dependsOn(
+        "linkReleaseFrameworkIosArm64",
+        "linkReleaseFrameworkIosX64",
+        "linkReleaseFrameworkIosSimulatorArm64"
+    )
+    
     doLast {
-        // Delete all test-related composeResources directories
-        val testResourceDirs = listOf(
-            "src/commonTest/composeResources",
-            "src/androidUnitTest/composeResources",
-            "src/androidInstrumentedTest/composeResources",
-            "src/iosTest/composeResources",
-            "src/iosX64Test/composeResources",
-            "src/iosArm64Test/composeResources",
-            "src/iosSimulatorArm64Test/composeResources"
-        )
-        testResourceDirs.forEach { delete(it) }
-    }
-}
-
-// 2. Run cleanup before build and before IntelliJ sync
-tasks.named("preBuild") {
-    dependsOn("cleanTestComposeResources")
-}
-
-// Run cleanup when IntelliJ/Android Studio syncs the project
-tasks.configureEach {
-    if (name == "prepareKotlinIdeaImport" || name == "generateProjectStructureMetadata") {
-        dependsOn("cleanTestComposeResources")
-    }
-}
-
-// 3. Disable Compose resource generation for test source sets
-afterEvaluate {
-    // Find and disable all Compose resource generation tasks for test source sets
-    tasks.configureEach {
-        val taskName = name.lowercase()
-        val isComposeResourceTask = taskName.contains("generatecomposeresclass") ||
-                taskName.contains("composeresources")
-        val isTestTask = taskName.contains("test")
-
-        if (isComposeResourceTask && isTestTask) {
-            enabled = false
+        exec {
+            commandLine(
+                "xcodebuild",
+                "-create-xcframework",
+                "-framework", "${project.buildDir}/bin/iosArm64/releaseFramework/$frameworkName.framework",
+                "-framework", "${project.buildDir}/bin/iosSimulatorArm64/releaseFramework/$frameworkName.framework",
+                "-framework", "${project.buildDir}/bin/iosX64/releaseFramework/$frameworkName.framework",
+                "-output", xcframeworkPath
+            )
         }
-    }
-
-    // Also clean up after any task that might create these directories
-    tasks.configureEach {
-        if (name.contains("generateComposeResClass")) {
-            finalizedBy("cleanTestComposeResources")
-        }
+        println("✅ XCFramework created at: $xcframeworkPath")
     }
 }
