@@ -149,7 +149,8 @@ class PerformanceBenchmarks {
             val threshold = if (System.getenv("CI") != null) 500L else 100L
             assertTrue(
                 concurrentTime.inWholeMilliseconds < threshold,
-                "Concurrent logging should be < ${threshold}ms for 1000 logs, was ${concurrentTime.inWholeMilliseconds}ms",
+                "Concurrent logging should be < ${threshold}ms for 1000 logs, " +
+                    "was ${concurrentTime.inWholeMilliseconds}ms",
             )
         }
 
@@ -197,7 +198,8 @@ class PerformanceBenchmarks {
             val threshold = if (System.getenv("CI") != null) 100L else 15L
             assertTrue(
                 filterTime.inWholeMilliseconds < threshold,
-                "Filtered query should be < ${threshold}ms, was ${filterTime.inWholeMilliseconds}ms",
+                "Filtered query should be < ${threshold}ms, " +
+                    "was ${filterTime.inWholeMilliseconds}ms",
             )
         }
 }
