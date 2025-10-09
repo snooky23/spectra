@@ -1,0 +1,238 @@
+name: Manual Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 1.0.0)'
+        required: true
+        type: string
+      release_notes:
+        description: 'Release notes (optional, will use default if empty)'
+        required: false
+        type: string
+
+jobs:
+  release:
+    name: Build and Release
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26'
+
+      - name: Grant execute permission for scripts
+        run: |
+          find scripts -type f -name "*.sh" -exec chmod +x {} \;
+          chmod +x gradlew
+
+      - name: Validate version format
+        run: |
+          if ! [[ "${{ inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Error: Invalid version format. Expected: X.Y.Z (e.g., 1.0.0)"
+            exit 1
+          fi
+
+      - name: Check if tag exists
+        run: |
+          if git rev-parse "v${{ inputs.version }}" >/dev/null 2>&1; then
+            echo "❌ Error: Tag v${{ inputs.version }} already exists"
+            exit 1
+          fi
+
+      - name: Build XCFramework and calculate checksum
+        id: build
+        run: |
+          ./scripts/release/create-release.sh ${{ inputs.version }}
+
+          # Read the checksum
+          CHECKSUM=$(cat build/releases/${{ inputs.version }}/checksum.txt)
+          echo "checksum=$CHECKSUM" >> $GITHUB_OUTPUT
+          echo "✅ Checksum: $CHECKSUM"
+
+      - name: Update Package.swift with checksum
+        run: |
+          VERSION="${{ inputs.version }}"
+          CHECKSUM="${{ steps.build.outputs.checksum }}"
+
+          # Update Package.swift with the correct URL and checksum
+          sed -i.bak \
+            -e "s|url: \"https://github.com/snooky23/spectra/releases/download/v.*\.xcframework\.zip\"|url: \"https://github.com/snooky23/spectra/releases/download/v${VERSION}/SpectraLogger.xcframework.zip\"|" \
+            -e "s|checksum: \".*\"|checksum: \"${CHECKSUM}\"|" \
+            Package.swift
+
+          rm Package.swift.bak
+
+          echo "✅ Updated Package.swift"
+          cat Package.swift
+
+      - name: Commit Package.swift
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add Package.swift
+          git commit -m "chore: update Package.swift for v${{ inputs.version }}"
+          git push origin main
+
+      - name: Create and push tag
+        run: |
+          RELEASE_NOTES="${{ inputs.release_notes }}"
+
+          if [ -z "$RELEASE_NOTES" ]; then
+            RELEASE_NOTES="Release ${{ inputs.version }} - Production-ready logging framework
+
+## What's Included
+
+### Core Framework (SpectraLogger)
+- High-performance logging with < 0.1ms capture time
+- Network request/response interception
+- Circular buffer storage with automatic pruning
+- Thread-safe operations for multi-threaded apps
+- Cross-platform support (iOS 13.0+ & Android 7.0+)
+
+### iOS UI Companion (SpectraLoggerUI)
+- Native SwiftUI log viewer
+- Real-time log streaming
+- Advanced filtering and search
+- Network traffic inspector
+- Export capabilities (JSON, Text, CSV)
+
+## Installation
+
+### Swift Package Manager
+\`\`\`swift
+dependencies: [
+    .package(url: \"https://github.com/snooky23/spectra.git\", from: \"${{ inputs.version }}\")
+]
+\`\`\`
+
+### CocoaPods
+\`\`\`ruby
+pod 'SpectraLogger', '~> ${{ inputs.version }}'
+pod 'SpectraLoggerUI', '~> ${{ inputs.version }}'  # Optional: SwiftUI UI
+\`\`\`
+
+## Documentation
+- Installation Guide: docs/INSTALLATION.md
+- CocoaPods Guide: docs/COCOAPODS_GUIDE.md
+- SPM Guide: docs/SPM_DISTRIBUTION_GUIDE.md
+
+🎉 Ready for production use!"
+          fi
+
+          git tag -a "v${{ inputs.version }}" -m "$RELEASE_NOTES"
+          git push origin "v${{ inputs.version }}"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ inputs.version }}"
+          ZIP_PATH="build/releases/${VERSION}/SpectraLogger.xcframework.zip"
+          CHECKSUM="${{ steps.build.outputs.checksum }}"
+
+          RELEASE_NOTES="${{ inputs.release_notes }}"
+          if [ -z "$RELEASE_NOTES" ]; then
+            RELEASE_NOTES="Release ${VERSION} - Production-ready logging framework
+
+## What's Included
+
+### Core Framework (SpectraLogger)
+- High-performance logging with < 0.1ms capture time
+- Network request/response interception
+- Circular buffer storage with automatic pruning
+- Thread-safe operations for multi-threaded apps
+- Cross-platform support (iOS 13.0+ & Android 7.0+)
+
+### iOS UI Companion (SpectraLoggerUI)
+- Native SwiftUI log viewer
+- Real-time log streaming
+- Advanced filtering and search
+- Network traffic inspector
+- Export capabilities (JSON, Text, CSV)
+
+## Installation
+
+### Swift Package Manager
+\`\`\`swift
+dependencies: [
+    .package(url: \"https://github.com/snooky23/spectra.git\", from: \"${VERSION}\")
+]
+\`\`\`
+
+### CocoaPods
+\`\`\`ruby
+pod 'SpectraLogger', '~> ${VERSION}'
+pod 'SpectraLoggerUI', '~> ${VERSION}'  # Optional: SwiftUI UI
+\`\`\`
+
+## Binary Checksum
+
+For manual XCFramework installation, verify the checksum:
+\`\`\`
+${CHECKSUM}
+\`\`\`
+
+## Documentation
+- Installation Guide: https://github.com/snooky23/spectra/blob/main/docs/INSTALLATION.md
+- CocoaPods Guide: https://github.com/snooky23/spectra/blob/main/docs/COCOAPODS_GUIDE.md
+- SPM Guide: https://github.com/snooky23/spectra/blob/main/docs/SPM_DISTRIBUTION_GUIDE.md
+
+🎉 Ready for production use!"
+          fi
+
+          gh release create "v${VERSION}" \
+            "$ZIP_PATH" \
+            --title "Release ${VERSION}" \
+            --notes "$RELEASE_NOTES"
+
+      - name: Publish to CocoaPods
+        if: secrets.COCOAPODS_TRUNK_TOKEN != ''
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+        run: |
+          # Update podspec version
+          sed -i.bak "s/s.version.*=.*/s.version = '${{ inputs.version }}'/" shared/SpectraLogger.podspec
+          rm shared/SpectraLogger.podspec.bak
+
+          # Update checksum in podspec
+          CHECKSUM="${{ steps.build.outputs.checksum }}"
+          sed -i.bak "s/:sha256 => '.*'/:sha256 => '${CHECKSUM}'/" shared/SpectraLogger.podspec
+          rm shared/SpectraLogger.podspec.bak
+
+          # Publish to CocoaPods
+          cd shared
+          pod trunk push SpectraLogger.podspec --allow-warnings
+
+      - name: Summary
+        run: |
+          echo "✅ Release v${{ inputs.version }} completed successfully!"
+          echo ""
+          echo "📦 Release URL: https://github.com/snooky23/spectra/releases/tag/v${{ inputs.version }}"
+          echo "📋 Checksum: ${{ steps.build.outputs.checksum }}"
+          echo ""
+          echo "Next steps:"
+          echo "1. ✅ Package.swift has been updated and committed"
+          echo "2. ✅ GitHub Release has been created"
+          echo "3. ✅ XCFramework has been uploaded"
+          if [ -n "${{ secrets.COCOAPODS_TRUNK_TOKEN }}" ]; then
+            echo "4. ✅ Published to CocoaPods"
+          else
+            echo "4. ⏭️  CocoaPods publishing skipped (no token)"
+          fi
