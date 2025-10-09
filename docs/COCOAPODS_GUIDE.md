@@ -206,11 +206,11 @@ The workflow will:
 Pod::Spec.new do |spec|
   spec.name         = 'SpectraLogger'
   spec.version      = '1.0.0'
-  spec.homepage     = 'https://github.com/snooky23/Spectra'
+  spec.homepage     = 'https://github.com/snooky23/spectra'
 
   # Downloads pre-built XCFramework from GitHub Releases
   spec.source       = {
-    :http => "https://github.com/snooky23/Spectra/releases/download/v#{spec.version}/SpectraLogger.xcframework.zip"
+    :http => "https://github.com/snooky23/spectra/releases/download/v#{spec.version}/SpectraLogger.xcframework.zip"
   }
 
   # Use vendored XCFramework (no build required)
@@ -236,7 +236,7 @@ Pod::Spec.new do |spec|
 
   # Downloads source code from Git
   spec.source       = {
-    :git => 'https://github.com/snooky23/Spectra.git',
+    :git => 'https://github.com/snooky23/spectra.git',
     :tag => "v#{spec.version}"
   }
 
@@ -461,7 +461,7 @@ pod trunk deprecate SpectraLogger --in-favor-of=SpectraLoggerV2
 ## Support
 
 For issues:
-- GitHub Issues: https://github.com/snooky23/Spectra/issues
+- GitHub Issues: https://github.com/snooky23/spectra/issues
 - CocoaPods: https://trunk.cocoapods.org/pods/SpectraLogger
 
 ---

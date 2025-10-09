@@ -111,7 +111,7 @@ Beta versions (0.1.0 - 0.9.x) were used for internal testing and proof of concep
 #### Swift Package Manager
 ```swift
 dependencies: [
-    .package(url: "https://github.com/snooky23/Spectra.git", from: "1.0.0")
+    .package(url: "https://github.com/snooky23/spectra.git", from: "1.0.0")
 ]
 ```
 
@@ -128,11 +128,11 @@ binary "https://raw.githubusercontent.com/snooky23/Spectra/main/SpectraLogger.js
 
 ### Support
 
-- 📘 Documentation: https://github.com/snooky23/Spectra/tree/main/docs
-- 🐛 Issues: https://github.com/snooky23/Spectra/issues
-- 💬 Discussions: https://github.com/snooky23/Spectra/discussions
+- 📘 Documentation: https://github.com/snooky23/spectra/tree/main/docs
+- 🐛 Issues: https://github.com/snooky23/spectra/issues
+- 💬 Discussions: https://github.com/snooky23/spectra/discussions
 
 ---
 
-[Unreleased]: https://github.com/snooky23/Spectra/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/snooky23/Spectra/releases/tag/v1.0.0
+[Unreleased]: https://github.com/snooky23/spectra/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/snooky23/spectra/releases/tag/v1.0.0

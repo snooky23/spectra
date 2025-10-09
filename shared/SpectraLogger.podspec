@@ -127,17 +127,17 @@ Pod::Spec.new do |s|
 
     📚 RESOURCES
 
-    • Documentation: https://github.com/snooky23/Spectra/tree/main/docs
-    • API Reference: https://github.com/snooky23/Spectra/wiki
-    • Examples: https://github.com/snooky23/Spectra/tree/main/examples
-    • Issues & Support: https://github.com/snooky23/Spectra/issues
-    • Discussions: https://github.com/snooky23/Spectra/discussions
+    • Documentation: https://github.com/snooky23/spectra/tree/main/docs
+    • API Reference: https://github.com/snooky23/spectra/wiki
+    • Examples: https://github.com/snooky23/spectra/tree/main/examples
+    • Issues & Support: https://github.com/snooky23/spectra/issues
+    • Discussions: https://github.com/snooky23/spectra/discussions
 
     Install SpectraLoggerUI companion pod for native SwiftUI log viewing interface.
   DESC
 
-  s.homepage                    = 'https://github.com/snooky23/Spectra'
-  s.documentation_url           = 'https://github.com/snooky23/Spectra/tree/main/docs'
+  s.homepage                    = 'https://github.com/snooky23/spectra'
+  s.documentation_url           = 'https://github.com/snooky23/spectra/tree/main/docs'
   s.screenshots                 = [
     'https://raw.githubusercontent.com/snooky23/Spectra/main/docs/assets/screenshots/log-viewer.png',
     'https://raw.githubusercontent.com/snooky23/Spectra/main/docs/assets/screenshots/network-inspector.png'
@@ -175,7 +175,7 @@ Pod::Spec.new do |s|
   # ――― Source Location ――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
   s.source                      = {
-    :http => "https://github.com/snooky23/Spectra/releases/download/v#{s.version}/SpectraLogger.xcframework.zip",
+    :http => "https://github.com/snooky23/spectra/releases/download/v#{s.version}/SpectraLogger.xcframework.zip",
     :sha256 => 'CHECKSUM_WILL_BE_REPLACED_BY_RELEASE_SCRIPT'
   }
 

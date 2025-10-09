@@ -59,7 +59,7 @@ Copy the token value.
 
 ### 3. Add GitHub Secret
 
-1. Go to: https://github.com/snooky23/Spectra/settings/secrets/actions
+1. Go to: https://github.com/snooky23/spectra/settings/secrets/actions
 2. Click **"New repository secret"**
 3. **Name:** `COCOAPODS_TRUNK_TOKEN`
 4. **Value:** Paste the token from step 2
@@ -83,7 +83,7 @@ git tag -a "v$VERSION" -m "Release v$VERSION"
 git push origin "v$VERSION"
 
 # 3. Watch the workflow run
-# Go to: https://github.com/snooky23/Spectra/actions
+# Go to: https://github.com/snooky23/spectra/actions
 ```
 
 ### What Happens Next
@@ -103,7 +103,7 @@ git push origin "v$VERSION"
    - Publishes `SpectraLoggerUI`
 
 3. **Release is live!**
-   - GitHub: https://github.com/snooky23/Spectra/releases
+   - GitHub: https://github.com/snooky23/spectra/releases
    - CocoaPods: https://cocoapods.org/pods/SpectraLogger
 
 ---
@@ -122,7 +122,7 @@ git tag -d v1.0.0
 git push origin :refs/tags/v1.0.0
 
 # Delete the release on GitHub (if created)
-# Go to: https://github.com/snooky23/Spectra/releases
+# Go to: https://github.com/snooky23/spectra/releases
 # Click the release, then "Delete this release"
 
 # Fix the issue, then re-tag
@@ -132,7 +132,7 @@ git push origin v1.0.0
 
 ### Option 2: Re-run workflow
 
-1. Go to: https://github.com/snooky23/Spectra/actions
+1. Go to: https://github.com/snooky23/spectra/actions
 2. Click on the failed workflow run
 3. Click "Re-run all jobs"
 
@@ -197,7 +197,7 @@ Once the secret is set, you can either:
 
 3. **Update CHANGELOG.md** before releasing
 
-4. **Monitor workflow runs** at https://github.com/snooky23/Spectra/actions
+4. **Monitor workflow runs** at https://github.com/snooky23/spectra/actions
 
 5. **Verify release** after it completes:
    - Test SPM installation in a sample project

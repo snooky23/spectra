@@ -22,7 +22,7 @@ SpectraLogger supports **three installation methods**: Swift Package Manager (SP
 2. **File → Add Package Dependencies**
 3. **Enter URL:**
    ```
-   https://github.com/snooky23/Spectra.git
+   https://github.com/snooky23/spectra.git
    ```
 4. **Select version:** `1.0.0` or "Up to Next Major Version"
 5. **Choose products:**
@@ -47,7 +47,7 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            url: "https://github.com/snooky23/Spectra.git",
+            url: "https://github.com/snooky23/spectra.git",
             from: "1.0.0"
         )
     ],
@@ -449,9 +449,9 @@ carthage update --use-xcframeworks --platform iOS
 
 ## Support
 
-- 📘 Documentation: https://github.com/snooky23/Spectra/tree/main/docs
-- 🐛 Issues: https://github.com/snooky23/Spectra/issues
-- 💬 Discussions: https://github.com/snooky23/Spectra/discussions
+- 📘 Documentation: https://github.com/snooky23/spectra/tree/main/docs
+- 🐛 Issues: https://github.com/snooky23/spectra/issues
+- 💬 Discussions: https://github.com/snooky23/spectra/discussions
 
 ---
 

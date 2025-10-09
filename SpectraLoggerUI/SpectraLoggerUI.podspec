@@ -194,18 +194,18 @@ Pod::Spec.new do |s|
 
     📚 RESOURCES
 
-    • Documentation: https://github.com/snooky23/Spectra/tree/main/docs
-    • Integration Guide: https://github.com/snooky23/Spectra/blob/main/docs/INSTALLATION.md
-    • Examples: https://github.com/snooky23/Spectra/tree/main/examples/ios-native
-    • API Reference: https://github.com/snooky23/Spectra/wiki/SpectraLoggerUI
-    • Screenshots: https://github.com/snooky23/Spectra/tree/main/docs/assets/screenshots
-    • Video Demo: https://github.com/snooky23/Spectra#video-demo
+    • Documentation: https://github.com/snooky23/spectra/tree/main/docs
+    • Integration Guide: https://github.com/snooky23/spectra/blob/main/docs/INSTALLATION.md
+    • Examples: https://github.com/snooky23/spectra/tree/main/examples/ios-native
+    • API Reference: https://github.com/snooky23/spectra/wiki/SpectraLoggerUI
+    • Screenshots: https://github.com/snooky23/spectra/tree/main/docs/assets/screenshots
+    • Video Demo: https://github.com/snooky23/spectra#video-demo
 
     Requires SpectraLogger pod. Install both for the complete experience.
   DESC
 
-  s.homepage                    = 'https://github.com/snooky23/Spectra'
-  s.documentation_url           = 'https://github.com/snooky23/Spectra/tree/main/docs'
+  s.homepage                    = 'https://github.com/snooky23/spectra'
+  s.documentation_url           = 'https://github.com/snooky23/spectra/tree/main/docs'
   s.screenshots                 = [
     'https://raw.githubusercontent.com/snooky23/Spectra/main/docs/assets/screenshots/ui-log-viewer.png',
     'https://raw.githubusercontent.com/snooky23/Spectra/main/docs/assets/screenshots/ui-network-inspector.png',
@@ -245,7 +245,7 @@ Pod::Spec.new do |s|
   # ――― Source Location ――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
   s.source                      = {
-    :git => 'https://github.com/snooky23/Spectra.git',
+    :git => 'https://github.com/snooky23/spectra.git',
     :tag => "v#{s.version}",
     :submodules => false
   }

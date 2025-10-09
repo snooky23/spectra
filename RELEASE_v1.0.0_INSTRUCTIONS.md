@@ -29,7 +29,7 @@ All preparation is complete:
    Copy the token (the `password` value).
 
 2. **Add GitHub Secret:**
-   - Go to: https://github.com/snooky23/Spectra/settings/secrets/actions
+   - Go to: https://github.com/snooky23/spectra/settings/secrets/actions
    - Click **"New repository secret"**
    - Name: `COCOAPODS_TRUNK_TOKEN`
    - Value: Paste your token
@@ -55,14 +55,14 @@ git push origin v1.0.0
 
 **Option B: Manual Re-run** (If Option A fails)
 
-1. Go to: https://github.com/snooky23/Spectra/actions
+1. Go to: https://github.com/snooky23/spectra/actions
 2. Find the "Release" workflow run for v1.0.0
 3. Click "Re-run all jobs"
 
 ### Step 3: Watch It Work! 🚀
 
 1. **Monitor the workflow:**
-   - Go to: https://github.com/snooky23/Spectra/actions
+   - Go to: https://github.com/snooky23/spectra/actions
    - Watch the "Release" workflow run (~5 minutes)
 
 2. **What happens automatically:**
@@ -74,7 +74,7 @@ git push origin v1.0.0
    - ✅ Publishes SpectraLoggerUI to CocoaPods
 
 3. **Verify when complete:**
-   - GitHub Release: https://github.com/snooky23/Spectra/releases/tag/v1.0.0
+   - GitHub Release: https://github.com/snooky23/spectra/releases/tag/v1.0.0
    - CocoaPods: https://cocoapods.org/pods/SpectraLogger
    - CocoaPods UI: https://cocoapods.org/pods/SpectraLoggerUI
 
@@ -85,7 +85,7 @@ Once complete, users can install via:
 ### Swift Package Manager
 ```swift
 dependencies: [
-    .package(url: "https://github.com/snooky23/Spectra.git", from: "1.0.0")
+    .package(url: "https://github.com/snooky23/spectra.git", from: "1.0.0")
 ]
 ```
 
@@ -105,7 +105,7 @@ binary "https://raw.githubusercontent.com/snooky23/Spectra/main/SpectraLogger.js
 ### If release workflow fails:
 
 1. **Check the logs:**
-   - https://github.com/snooky23/Spectra/actions
+   - https://github.com/snooky23/spectra/actions
    - Click the failed run to see error details
 
 2. **Common issues:**

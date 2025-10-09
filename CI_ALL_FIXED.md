@@ -167,7 +167,7 @@ All workflows are now ready to pass on GitHub:
 cat ~/.netrc | grep cocoapods.org -A 2
 
 # Add to GitHub Secrets:
-# https://github.com/snooky23/Spectra/settings/secrets/actions
+# https://github.com/snooky23/spectra/settings/secrets/actions
 # Name: COCOAPODS_TRUNK_TOKEN
 # Value: <your token>
 ```
@@ -184,7 +184,7 @@ git push origin v1.0.0
 
 ### Step 3: Watch It Work! (5 minutes)
 
-- Monitor: https://github.com/snooky23/Spectra/actions
+- Monitor: https://github.com/snooky23/spectra/actions
 - Workflow will:
   1. Build XCFramework ✅
   2. Create GitHub Release ✅
@@ -202,7 +202,7 @@ Once the CI workflow completes, you should see all green checks:
 - ✅ Code Quality
 - ✅ Test Coverage
 
-Check at: https://github.com/snooky23/Spectra/actions
+Check at: https://github.com/snooky23/spectra/actions
 
 ---
 
