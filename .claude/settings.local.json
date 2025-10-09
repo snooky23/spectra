@@ -66,7 +66,17 @@
       "Bash(\"$BUILD_DIR/iosX64/releaseFramework/$FRAMEWORK_NAME.framework/$FRAMEWORK_NAME\" )",
       "Bash(\"$BUILD_DIR/iosSimulatorArm64/releaseFramework/$FRAMEWORK_NAME.framework/$FRAMEWORK_NAME\" )",
       "Bash(TEMP_DIR=\"/Users/avilevin/Workspace/Personal/Spectra/shared/build/temp-simulator/$FRAMEWORK_NAME.framework\")",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git tag -a v1.0.0 -m \"$(cat <<''EOF''\nRelease 1.0.0 - Production-ready logging framework\n\n🚀 First stable release of SpectraLogger\n\n## What''s New\n\n### Core Framework (SpectraLogger)\n- High-performance logging with < 0.1ms capture time\n- Network request/response interception\n- Circular buffer storage with automatic pruning\n- Thread-safe operations for multi-threaded apps\n- Cross-platform support (iOS 13.0+ & Android 7.0+)\n- Lightweight: 8.5MB XCFramework (93% smaller than previous versions)\n\n### iOS UI Companion (SpectraLoggerUI)\n- Native SwiftUI log viewer\n- Real-time log streaming with 60 FPS scrolling\n- Advanced filtering and search\n- Network traffic inspector with syntax highlighting\n- Export capabilities (JSON, Text, CSV)\n\n## Installation\n\n### Swift Package Manager\n```swift\ndependencies: [\n    .package(url: \"https://github.com/snooky23/Spectra.git\", from: \"1.0.0\")\n]\n```\n\n### CocoaPods\n```ruby\npod ''SpectraLogger'', ''~> 1.0''\npod ''SpectraLoggerUI'', ''~> 1.0''  # Optional: SwiftUI UI\n```\n\n## Architecture\n- Pure Kotlin Multiplatform core (no UI dependencies)\n- Separate UI layers for each platform\n- Clean separation of concerns\n\n## Documentation\n- Installation Guide: docs/INSTALLATION.md\n- CocoaPods Guide: docs/COCOAPODS_GUIDE.md\n- SPM Guide: docs/SPM_DISTRIBUTION_GUIDE.md\n\n🎉 Ready for production use!\nEOF\n)\")",
+      "Bash(gh release create:*)",
+      "Bash(/Users/avilevin/Workspace/Personal/Spectra/build/releases/1.0.0/SpectraLogger.xcframework.zip )",
+      "Bash(brew install:*)",
+      "Bash(gh auth:*)",
+      "Bash(unset GITHUB_TOKEN)",
+      "Bash(./CREATE_RELEASE.sh:*)",
+      "Bash(gh run list:*)"
     ],
     "deny": [],
     "ask": []

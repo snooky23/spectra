@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>Indentation:MainAppScreen.kt$ </ID>
+    <ID>LongMethod:MainAppScreen.kt$@Composable fun MainAppScreen()</ID>
+  </CurrentIssues>
+</SmellBaseline>
