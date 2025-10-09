@@ -49,7 +49,7 @@ GitHub Actions will automatically:
 4. Create GitHub Release
 5. Upload artifacts
 
-Monitor at: https://github.com/snooky23/Spectra/actions
+Monitor at: https://github.com/snooky23/spectra/actions
 
 ### 4. Update Package.swift
 
@@ -59,7 +59,7 @@ Update `Package.swift`:
 ```swift
 .binaryTarget(
     name: "SpectraLogger",
-    url: "https://github.com/snooky23/Spectra/releases/download/v1.0.0/SpectraLogger.xcframework.zip",
+    url: "https://github.com/snooky23/spectra/releases/download/v1.0.0/SpectraLogger.xcframework.zip",
     checksum: "<CHECKSUM_FROM_RELEASE>"
 )
 ```
@@ -160,7 +160,7 @@ git tag -a v1.0.0-rc.1 -m "Release Candidate 1 for 1.0.0"
 
 Users can install pre-releases:
 ```swift
-.package(url: "https://github.com/snooky23/Spectra.git", exact: "1.0.0-beta.1")
+.package(url: "https://github.com/snooky23/spectra.git", exact: "1.0.0-beta.1")
 ```
 
 ---

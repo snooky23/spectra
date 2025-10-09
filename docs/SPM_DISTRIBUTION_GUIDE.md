@@ -62,7 +62,7 @@ SpectraLogger uses **binary distribution** via SPM, following industry best prac
 2. **File → Add Package Dependencies**
 3. **Enter repository URL:**
    ```
-   https://github.com/snooky23/Spectra.git
+   https://github.com/snooky23/spectra.git
    ```
 4. **Select version** (e.g., `1.0.0` or "Up to Next Major Version")
 5. **Click "Add Package"**
@@ -86,7 +86,7 @@ let package = Package(
         .iOS(.v13)
     ],
     dependencies: [
-        .package(url: "https://github.com/snooky23/Spectra.git", from: "1.0.0")
+        .package(url: "https://github.com/snooky23/spectra.git", from: "1.0.0")
     ],
     targets: [
         .target(
@@ -163,7 +163,7 @@ After the release is created, update `Package.swift`:
 ```swift
 .binaryTarget(
     name: "SpectraLogger",
-    url: "https://github.com/snooky23/Spectra/releases/download/v1.0.0/SpectraLogger.xcframework.zip",
+    url: "https://github.com/snooky23/spectra/releases/download/v1.0.0/SpectraLogger.xcframework.zip",
     checksum: "abc123..." // Use checksum from release
 )
 ```
@@ -377,7 +377,7 @@ Include in release notes:
 // ✅ Automatic download, verified, versioned
 .binaryTarget(
     name: "SpectraLogger",
-    url: "https://github.com/snooky23/Spectra/releases/download/v1.0.0/SpectraLogger.xcframework.zip",
+    url: "https://github.com/snooky23/spectra/releases/download/v1.0.0/SpectraLogger.xcframework.zip",
     checksum: "abc123..."
 )
 ```
@@ -413,8 +413,8 @@ Include in release notes:
 ## Support
 
 For issues or questions:
-- GitHub Issues: https://github.com/snooky23/Spectra/issues
-- Discussions: https://github.com/snooky23/Spectra/discussions
+- GitHub Issues: https://github.com/snooky23/spectra/issues
+- Discussions: https://github.com/snooky23/spectra/discussions
 
 ---
 

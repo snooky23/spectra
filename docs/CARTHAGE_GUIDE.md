@@ -376,9 +376,9 @@ See [RELEASE_PROCESS.md](./RELEASE_PROCESS.md#carthage-distribution) for instruc
 
 ## Support
 
-- 📘 Documentation: https://github.com/snooky23/Spectra/tree/main/docs
-- 🐛 Issues: https://github.com/snooky23/Spectra/issues
-- 💬 Discussions: https://github.com/snooky23/Spectra/discussions
+- 📘 Documentation: https://github.com/snooky23/spectra/tree/main/docs
+- 🐛 Issues: https://github.com/snooky23/spectra/issues
+- 💬 Discussions: https://github.com/snooky23/spectra/discussions
 
 ---
 

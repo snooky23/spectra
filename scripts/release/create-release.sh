@@ -83,7 +83,7 @@ cat > "$PACKAGE_SNIPPET_FILE" << EOF
 
 .binaryTarget(
     name: "$FRAMEWORK_NAME",
-    url: "https://github.com/snooky23/Spectra/releases/download/$TAG/$ZIP_NAME",
+    url: "https://github.com/snooky23/spectra/releases/download/$TAG/$ZIP_NAME",
     checksum: "$CHECKSUM"
 )
 EOF

@@ -819,8 +819,8 @@ release/1.1.0
 
 3. **Update links at bottom**:
    ```markdown
-   [Unreleased]: https://github.com/snooky23/Spectra/compare/v1.1.0...HEAD
-   [1.1.0]: https://github.com/snooky23/Spectra/compare/v1.0.0...v1.1.0
+   [Unreleased]: https://github.com/snooky23/spectra/compare/v1.1.0...HEAD
+   [1.1.0]: https://github.com/snooky23/spectra/compare/v1.0.0...v1.1.0
    ```
 
 **Categories** (in this order):

@@ -26,7 +26,7 @@ let package = Package(
         // DISTRIBUTION: Released binary from GitHub Releases
         .binaryTarget(
             name: "SpectraLogger",
-            url: "https://github.com/snooky23/Spectra/releases/download/v1.0.0/SpectraLogger.xcframework.zip",
+            url: "https://github.com/snooky23/spectra/releases/download/v1.0.0/SpectraLogger.xcframework.zip",
             checksum: "2d1892d4f8836ab59e0a5bb8c4e1de06af1ef96fbae357923126f08cfa8b7bef"
         )
 
