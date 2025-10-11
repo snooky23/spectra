@@ -101,24 +101,22 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           CHECKSUM="${{ steps.build.outputs.checksum }}"
 
-          # Create annotated tag with heredoc for multi-line message
-          git tag -a "$TAG_NAME" -m "$(cat <<EOF
-Release ${VERSION} - Production-ready logging framework
-
-🚀 SpectraLogger v${VERSION}
-
-## Core Framework
-- High-performance logging with < 0.1ms capture time
-- Network request/response interception
-- Thread-safe operations
-- Cross-platform (iOS 13.0+ & Android 7.0+)
-
-## Installation
-See release notes for Swift Package Manager and CocoaPods instructions.
-
-Checksum: ${CHECKSUM}
-EOF
-)"
+          # Create annotated tag with multi-line message
+          git tag -a "$TAG_NAME" \
+            -m "Release ${VERSION} - Production-ready logging framework" \
+            -m "" \
+            -m "🚀 SpectraLogger v${VERSION}" \
+            -m "" \
+            -m "## Core Framework" \
+            -m "- High-performance logging with < 0.1ms capture time" \
+            -m "- Network request/response interception" \
+            -m "- Thread-safe operations" \
+            -m "- Cross-platform (iOS 13.0+ & Android 7.0+)" \
+            -m "" \
+            -m "## Installation" \
+            -m "See release notes for Swift Package Manager and CocoaPods instructions." \
+            -m "" \
+            -m "Checksum: ${CHECKSUM}"
 
           # Push commit and tag
           git push origin main
