@@ -65,28 +65,39 @@ jobs:
           echo "checksum=$CHECKSUM" >> $GITHUB_OUTPUT
           echo "✅ Checksum: $CHECKSUM"
 
-      - name: Generate Package.swift snippet for release notes
-        id: package_swift
+      - name: Update and commit Package.swift
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           CHECKSUM="${{ steps.build.outputs.checksum }}"
 
-          # Create Package.swift snippet for release notes
-          cat > package_swift_snippet.md << EOF
-          ## Swift Package Manager Installation
+          # Fetch and checkout main branch (we're in detached HEAD from tag)
+          git fetch origin main
+          git checkout main
 
-          Update your \`Package.swift\`:
+          # Update Package.swift with the correct URL and checksum
+          sed -i.bak \
+            -e "s|url: \"https://github.com/snooky23/spectra/releases/download/v.*\.xcframework\.zip\"|url: \"https://github.com/snooky23/spectra/releases/download/v${VERSION}/SpectraLogger.xcframework.zip\"|" \
+            -e "s|checksum: \".*\"|checksum: \"${CHECKSUM}\"|" \
+            Package.swift
 
-          \`\`\`swift
-          .binaryTarget(
-              name: "SpectraLogger",
-              url: "https://github.com/snooky23/spectra/releases/download/v${VERSION}/SpectraLogger.xcframework.zip",
-              checksum: "${CHECKSUM}"
-          )
-          \`\`\`
-          EOF
+          rm Package.swift.bak
 
-          echo "✅ Package.swift snippet created"
+          echo "✅ Updated Package.swift"
+          cat Package.swift
+
+          # Commit and push changes
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add Package.swift
+          git commit -m "chore: update Package.swift for v${VERSION}
+
+Updated XCFramework URL and checksum for release v${VERSION}
+
+Checksum: ${CHECKSUM}"
+          git push origin main
+
+          echo "✅ Package.swift committed to main"
 
       - name: Create GitHub Release
         env:
