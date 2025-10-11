@@ -1,5 +1,6 @@
 package com.spectra.logger.storage
 
+import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,7 +20,7 @@ import platform.Foundation.writeToFile
  *
  * Files are stored in NSDocumentDirectory which is backed up by iCloud.
  */
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 actual class FileSystem {
     private val fileManager = NSFileManager.defaultManager
     private val baseDir: String by lazy {
@@ -56,8 +57,8 @@ actual class FileSystem {
             val filePath = getFilePath(path)
 
             // Create parent directories if needed
-            val nsFilePath = filePath as NSString
-            val parentPath = nsFilePath.stringByDeletingLastPathComponent()
+            val nsFilePath = NSString.create(string = filePath)
+            val parentPath = nsFilePath.stringByDeletingLastPathComponent
             if (!fileManager.fileExistsAtPath(parentPath)) {
                 fileManager.createDirectoryAtPath(parentPath, true, null, null)
             }
@@ -81,7 +82,7 @@ actual class FileSystem {
             if (fileManager.fileExistsAtPath(filePath)) {
                 val data = NSData.create(contentsOfFile = filePath)
                 data?.let {
-                    NSString.create(data = it, encoding = NSUTF8StringEncoding) as? String
+                    NSString.create(data = it, encoding = NSUTF8StringEncoding)?.toString()
                 }
             } else {
                 null

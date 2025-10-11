@@ -46,7 +46,10 @@ subprojects {
         buildUponDefaultConfig = true
         allRules = false
         config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    }
 
+    // Configure reports on Detekt tasks instead of extension
+    tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
         reports {
             html.required.set(true)
             xml.required.set(true)

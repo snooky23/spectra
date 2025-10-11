@@ -28,6 +28,13 @@ kotlin {
             baseName = iosFrameworkName
             isStatic = true
         }
+
+        // Add compiler flags to suppress expect/actual class warnings
+        iosTarget.compilations.all {
+            kotlinOptions {
+                freeCompilerArgs += listOf("-Xexpect-actual-classes")
+            }
+        }
     }
 
     sourceSets {
