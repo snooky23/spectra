@@ -166,22 +166,34 @@ jobs:
 
           echo "📦 Publishing to CocoaPods..."
 
-          echo "🔍 Before update - checksum line:"
-          grep ":sha256" shared/SpectraLogger.podspec || echo "No :sha256 line found!"
+          # Verify file exists
+          if [ ! -f "shared/SpectraLogger.podspec" ]; then
+            echo "❌ Error: shared/SpectraLogger.podspec not found!"
+            ls -la shared/
+            exit 1
+          fi
 
-          # Update podspec version using perl
-          perl -i -pe "s/s\.version\s*=\s*'[^']*'/s.version = '${{ steps.version.outputs.version }}'/" shared/SpectraLogger.podspec
+          echo "🔍 Before update:"
+          grep -E "(s\.version|:sha256)" shared/SpectraLogger.podspec
 
-          # Update checksum in podspec using perl (more reliable than sed)
+          # Update podspec version and checksum
           CHECKSUM="${{ steps.build.outputs.checksum }}"
-          echo "🔍 Checksum to insert: $CHECKSUM"
-          perl -i -pe "s/:sha256\s*=>\s*'[^']*'/:sha256 => '${CHECKSUM}'/" shared/SpectraLogger.podspec
+          echo "🔍 Updating with checksum: $CHECKSUM"
 
-          echo "🔍 After update - checksum line:"
-          grep ":sha256" shared/SpectraLogger.podspec || echo "No :sha256 line found!"
+          # Use perl with explicit in-place editing
+          perl -i.backup -pe "s/s\.version\s*=\s*'[^']*'/s.version = '${{ steps.version.outputs.version }}'/" shared/SpectraLogger.podspec
+          perl -i.backup -pe "s/:sha256\s*=>\s*'[^']*'/:sha256 => '${CHECKSUM}'/" shared/SpectraLogger.podspec
+
+          # Remove backup files
+          rm -f shared/SpectraLogger.podspec.backup
+
+          echo "🔍 After update:"
+          grep -E "(s\.version|:sha256)" shared/SpectraLogger.podspec
 
           # Publish to CocoaPods
           cd shared
+          echo "🔍 About to push podspec from $(pwd):"
+          grep -E "(s\.version|:sha256)" SpectraLogger.podspec
           pod trunk push SpectraLogger.podspec --allow-warnings
 
           echo "✅ Published to CocoaPods successfully!"

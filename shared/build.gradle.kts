@@ -1,3 +1,11 @@
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.TaskAction
+import org.gradle.process.ExecOperations
+import javax.inject.Inject
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
@@ -192,32 +200,46 @@ tasks.register<JacocoReport>("jacocoTestReport") {
 }
 
 // Task to create XCFramework for iOS
-tasks.register("createXCFramework") {
+abstract class CreateXCFrameworkTask : DefaultTask() {
+    @get:Input
+    abstract val frameworkName: Property<String>
+
+    @get:InputDirectory
+    abstract val buildDirectory: DirectoryProperty
+
+    @get:Inject
+    abstract val execOperations: ExecOperations
+
+    @TaskAction
+    fun createXCFramework() {
+        val buildDir = buildDirectory.get().asFile
+        val name = frameworkName.get()
+        val buildType = "Release"
+        val xcframeworkPath = "$buildDir/XCFrameworks/${buildType.lowercase()}/$name.xcframework"
+
+        execOperations.exec {
+            commandLine(
+                "xcodebuild",
+                "-create-xcframework",
+                "-framework", "$buildDir/bin/iosArm64/releaseFramework/$name.framework",
+                "-framework", "$buildDir/bin/iosSimulatorArm64/releaseFramework/$name.framework",
+                "-framework", "$buildDir/bin/iosX64/releaseFramework/$name.framework",
+                "-output", xcframeworkPath,
+            )
+        }
+        println("✅ XCFramework created at: $xcframeworkPath")
+    }
+}
+
+tasks.register<CreateXCFrameworkTask>("createXCFramework") {
     group = "build"
     description = "Creates an XCFramework for all iOS targets"
-
-    val frameworkName = "SpectraLogger"
-    val buildType = "Release"
-    val buildDir = project.layout.buildDirectory.get().asFile
-    val xcframeworkPath = "$buildDir/XCFrameworks/${buildType.lowercase()}/$frameworkName.xcframework"
+    frameworkName.set("SpectraLogger")
+    buildDirectory.set(project.layout.buildDirectory)
 
     dependsOn(
         "linkReleaseFrameworkIosArm64",
         "linkReleaseFrameworkIosX64",
         "linkReleaseFrameworkIosSimulatorArm64",
     )
-
-    doLast {
-        project.exec {
-            commandLine(
-                "xcodebuild",
-                "-create-xcframework",
-                "-framework", "$buildDir/bin/iosArm64/releaseFramework/$frameworkName.framework",
-                "-framework", "$buildDir/bin/iosSimulatorArm64/releaseFramework/$frameworkName.framework",
-                "-framework", "$buildDir/bin/iosX64/releaseFramework/$frameworkName.framework",
-                "-output", xcframeworkPath,
-            )
-        }
-        println("✅ XCFramework created at: $xcframeworkPath")
-    }
 }
