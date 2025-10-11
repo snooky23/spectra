@@ -155,7 +155,7 @@ jobs:
             --notes-file release_notes.md
 
       - name: Publish to CocoaPods
-        if: secrets.COCOAPODS_TRUNK_TOKEN != ''
+        if: ${{ secrets.COCOAPODS_TRUNK_TOKEN != '' }}
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
         run: |
