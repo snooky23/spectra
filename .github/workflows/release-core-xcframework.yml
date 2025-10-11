@@ -1,9 +1,12 @@
 name: Release Core XCFramework
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'  # Triggers on version tags like v1.0.0, v1.2.3, etc.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 1.0.0 without v prefix)'
+        required: true
+        type: string
 
 jobs:
   release:
@@ -34,18 +37,17 @@ jobs:
           find scripts -type f -name "*.sh" -exec chmod +x {} \;
           chmod +x gradlew
 
-      - name: Extract version from tag
+      - name: Set version variables
         id: version
         run: |
-          # Extract version from tag (e.g., v1.0.0 -> 1.0.0)
-          TAG_NAME=${GITHUB_REF#refs/tags/}
-          VERSION=${TAG_NAME#v}
+          VERSION="${{ github.event.inputs.version }}"
+          TAG_NAME="v${VERSION}"
 
           echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-          echo "📋 Tag: $TAG_NAME"
           echo "📋 Version: $VERSION"
+          echo "📋 Tag: $TAG_NAME"
 
       - name: Validate version format
         run: |
@@ -68,11 +70,8 @@ jobs:
       - name: Update and commit Package.swift
         run: |
           VERSION="${{ steps.version.outputs.version }}"
+          TAG_NAME="${{ steps.version.outputs.tag }}"
           CHECKSUM="${{ steps.build.outputs.checksum }}"
-
-          # Fetch and checkout main branch (we're in detached HEAD from tag)
-          git fetch origin main
-          git checkout main
 
           # Update Package.swift with the correct URL and checksum
           sed -i.bak \
@@ -85,7 +84,7 @@ jobs:
           echo "✅ Updated Package.swift"
           cat Package.swift
 
-          # Commit and push changes
+          # Commit changes
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
@@ -95,9 +94,35 @@ jobs:
 Updated XCFramework URL and checksum for release v${VERSION}
 
 Checksum: ${CHECKSUM}"
-          git push origin main
 
-          echo "✅ Package.swift committed to main"
+          echo "✅ Package.swift committed"
+
+      - name: Create and push tag
+        run: |
+          TAG_NAME="${{ steps.version.outputs.tag }}"
+          VERSION="${{ steps.version.outputs.version }}"
+
+          # Create annotated tag
+          git tag -a "$TAG_NAME" -m "Release ${VERSION} - Production-ready logging framework
+
+🚀 SpectraLogger v${VERSION}
+
+## Core Framework
+- High-performance logging with < 0.1ms capture time
+- Network request/response interception
+- Thread-safe operations
+- Cross-platform (iOS 13.0+ & Android 7.0+)
+
+## Installation
+See release notes for Swift Package Manager and CocoaPods instructions.
+
+Checksum: ${{ steps.build.outputs.checksum }}"
+
+          # Push commit and tag
+          git push origin main
+          git push origin "$TAG_NAME"
+
+          echo "✅ Tag $TAG_NAME created and pushed"
 
       - name: Create GitHub Release
         env:
