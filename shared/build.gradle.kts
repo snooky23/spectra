@@ -191,7 +191,8 @@ tasks.register("createXCFramework") {
 
     val frameworkName = "SpectraLogger"
     val buildType = "Release"
-    val xcframeworkPath = "${project.buildDir}/XCFrameworks/${buildType.lowercase()}/$frameworkName.xcframework"
+    val buildDir = project.layout.buildDirectory.get().asFile
+    val xcframeworkPath = "$buildDir/XCFrameworks/${buildType.lowercase()}/$frameworkName.xcframework"
 
     dependsOn(
         "linkReleaseFrameworkIosArm64",
@@ -200,13 +201,13 @@ tasks.register("createXCFramework") {
     )
 
     doLast {
-        exec {
+        project.exec {
             commandLine(
                 "xcodebuild",
                 "-create-xcframework",
-                "-framework", "${project.buildDir}/bin/iosArm64/releaseFramework/$frameworkName.framework",
-                "-framework", "${project.buildDir}/bin/iosSimulatorArm64/releaseFramework/$frameworkName.framework",
-                "-framework", "${project.buildDir}/bin/iosX64/releaseFramework/$frameworkName.framework",
+                "-framework", "$buildDir/bin/iosArm64/releaseFramework/$frameworkName.framework",
+                "-framework", "$buildDir/bin/iosSimulatorArm64/releaseFramework/$frameworkName.framework",
+                "-framework", "$buildDir/bin/iosX64/releaseFramework/$frameworkName.framework",
                 "-output", xcframeworkPath,
             )
         }

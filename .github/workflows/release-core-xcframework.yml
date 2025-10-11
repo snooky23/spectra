@@ -169,13 +169,13 @@ jobs:
           echo "🔍 Before update - checksum line:"
           grep ":sha256" shared/SpectraLogger.podspec || echo "No :sha256 line found!"
 
-          # Update podspec version
-          sed -i '' "s/s\.version[[:space:]]*=[[:space:]]*'[^']*'/s.version = '${{ steps.version.outputs.version }}'/" shared/SpectraLogger.podspec
+          # Update podspec version using perl
+          perl -i -pe "s/s\.version\s*=\s*'[^']*'/s.version = '${{ steps.version.outputs.version }}'/" shared/SpectraLogger.podspec
 
-          # Update checksum in podspec
+          # Update checksum in podspec using perl (more reliable than sed)
           CHECKSUM="${{ steps.build.outputs.checksum }}"
           echo "🔍 Checksum to insert: $CHECKSUM"
-          sed -i '' "s/:sha256[[:space:]]*=>[[:space:]]*'[^']*'/:sha256 => '${CHECKSUM}'/" shared/SpectraLogger.podspec
+          perl -i -pe "s/:sha256\s*=>\s*'[^']*'/:sha256 => '${CHECKSUM}'/" shared/SpectraLogger.podspec
 
           echo "🔍 After update - checksum line:"
           grep ":sha256" shared/SpectraLogger.podspec || echo "No :sha256 line found!"
