@@ -99,57 +99,60 @@ jobs:
           ZIP_PATH="build/releases/${VERSION}/SpectraLogger.xcframework.zip"
           CHECKSUM="${{ steps.build.outputs.checksum }}"
 
-          RELEASE_NOTES="Release ${VERSION} - Production-ready logging framework
+          # Create release notes using heredoc
+          cat > release_notes.md << EOF
+          Release ${VERSION} - Production-ready logging framework
 
-## What's Included
+          ## What's Included
 
-### Core Framework (SpectraLogger)
-- High-performance logging with < 0.1ms capture time
-- Network request/response interception
-- Circular buffer storage with automatic pruning
-- Thread-safe operations for multi-threaded apps
-- Cross-platform support (iOS 13.0+ & Android 7.0+)
+          ### Core Framework (SpectraLogger)
+          - High-performance logging with < 0.1ms capture time
+          - Network request/response interception
+          - Circular buffer storage with automatic pruning
+          - Thread-safe operations for multi-threaded apps
+          - Cross-platform support (iOS 13.0+ & Android 7.0+)
 
-### iOS UI Companion (SpectraLoggerUI)
-- Native SwiftUI log viewer
-- Real-time log streaming
-- Advanced filtering and search
-- Network traffic inspector
-- Export capabilities (JSON, Text, CSV)
+          ### iOS UI Companion (SpectraLoggerUI)
+          - Native SwiftUI log viewer
+          - Real-time log streaming
+          - Advanced filtering and search
+          - Network traffic inspector
+          - Export capabilities (JSON, Text, CSV)
 
-## Installation
+          ## Installation
 
-### Swift Package Manager
-\`\`\`swift
-dependencies: [
-    .package(url: \"https://github.com/snooky23/spectra.git\", from: \"${VERSION}\")
-]
-\`\`\`
+          ### Swift Package Manager
+          \`\`\`swift
+          dependencies: [
+              .package(url: "https://github.com/snooky23/spectra.git", from: "${VERSION}")
+          ]
+          \`\`\`
 
-### CocoaPods
-\`\`\`ruby
-pod 'SpectraLogger', '~> ${VERSION}'
-pod 'SpectraLoggerUI', '~> ${VERSION}'  # Optional: SwiftUI UI
-\`\`\`
+          ### CocoaPods
+          \`\`\`ruby
+          pod 'SpectraLogger', '~> ${VERSION}'
+          pod 'SpectraLoggerUI', '~> ${VERSION}'  # Optional: SwiftUI UI
+          \`\`\`
 
-## Binary Checksum
+          ## Binary Checksum
 
-For manual XCFramework installation, verify the checksum:
-\`\`\`
-${CHECKSUM}
-\`\`\`
+          For manual XCFramework installation, verify the checksum:
+          \`\`\`
+          ${CHECKSUM}
+          \`\`\`
 
-## Documentation
-- Installation Guide: https://github.com/snooky23/spectra/blob/main/docs/INSTALLATION.md
-- CocoaPods Guide: https://github.com/snooky23/spectra/blob/main/docs/COCOAPODS_GUIDE.md
-- SPM Guide: https://github.com/snooky23/spectra/blob/main/docs/SPM_DISTRIBUTION_GUIDE.md
+          ## Documentation
+          - Installation Guide: https://github.com/snooky23/spectra/blob/main/docs/INSTALLATION.md
+          - CocoaPods Guide: https://github.com/snooky23/spectra/blob/main/docs/COCOAPODS_GUIDE.md
+          - SPM Guide: https://github.com/snooky23/spectra/blob/main/docs/SPM_DISTRIBUTION_GUIDE.md
 
-🎉 Ready for production use!"
+          🎉 Ready for production use!
+          EOF
 
           gh release create "${TAG_NAME}" \
             "$ZIP_PATH" \
             --title "Release ${VERSION}" \
-            --notes "$RELEASE_NOTES"
+            --notes-file release_notes.md
 
       - name: Publish to CocoaPods
         if: secrets.COCOAPODS_TRUNK_TOKEN != ''
