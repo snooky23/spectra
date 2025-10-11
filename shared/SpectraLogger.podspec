@@ -139,8 +139,8 @@ Pod::Spec.new do |s|
   s.homepage                    = 'https://github.com/snooky23/spectra'
   s.documentation_url           = 'https://github.com/snooky23/spectra/tree/main/docs'
   s.screenshots                 = [
-    'https://raw.githubusercontent.com/snooky23/Spectra/main/docs/assets/screenshots/log-viewer.png',
-    'https://raw.githubusercontent.com/snooky23/Spectra/main/docs/assets/screenshots/network-inspector.png'
+    'https://raw.githubusercontent.com/snooky23/spectra/main/docs/assets/screenshots/log-viewer.png',
+    'https://raw.githubusercontent.com/snooky23/spectra/main/docs/assets/screenshots/network-inspector.png'
   ]
 
   # ――― Author Metadata ―――――――――――――――――――――――――――――――――――――――――――――――――――――― #
