@@ -32,10 +32,14 @@ fi
 # Navigate to project root
 cd "$PROJECT_ROOT"
 
-# Check if tag already exists
-if git rev-parse "$TAG" >/dev/null 2>&1; then
-    echo "❌ Error: Tag $TAG already exists"
-    exit 1
+# Note: We don't check if tag exists because this script is designed to run
+# in CI/CD workflows triggered by tag push. The tag will always exist.
+# If running locally, the user should manage tags manually.
+
+# Clean any previous build artifacts for this version
+if [ -d "$PROJECT_ROOT/build/releases/$VERSION" ]; then
+    echo "🗑️  Cleaning previous release artifacts for $VERSION..."
+    rm -rf "$PROJECT_ROOT/build/releases/$VERSION"
 fi
 
 # Build XCFramework
