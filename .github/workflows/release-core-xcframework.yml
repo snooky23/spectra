@@ -166,17 +166,19 @@ jobs:
 
           echo "📦 Publishing to CocoaPods..."
 
+          echo "🔍 Before update - checksum line:"
+          grep ":sha256" shared/SpectraLogger.podspec || echo "No :sha256 line found!"
+
           # Update podspec version
-          sed -i.bak "s/s.version.*=.*/s.version = '${{ steps.version.outputs.version }}'/" shared/SpectraLogger.podspec
-          rm shared/SpectraLogger.podspec.bak
+          sed -i '' "s/s\.version[[:space:]]*=[[:space:]]*'[^']*'/s.version = '${{ steps.version.outputs.version }}'/" shared/SpectraLogger.podspec
 
           # Update checksum in podspec
           CHECKSUM="${{ steps.build.outputs.checksum }}"
-          sed -i.bak "s/:sha256 => '[^']*'/:sha256 => '${CHECKSUM}'/" shared/SpectraLogger.podspec
-          rm shared/SpectraLogger.podspec.bak
+          echo "🔍 Checksum to insert: $CHECKSUM"
+          sed -i '' "s/:sha256[[:space:]]*=>[[:space:]]*'[^']*'/:sha256 => '${CHECKSUM}'/" shared/SpectraLogger.podspec
 
-          echo "✅ Updated podspec:"
-          grep -A 2 ":sha256" shared/SpectraLogger.podspec
+          echo "🔍 After update - checksum line:"
+          grep ":sha256" shared/SpectraLogger.podspec || echo "No :sha256 line found!"
 
           # Publish to CocoaPods
           cd shared
