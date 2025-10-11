@@ -172,8 +172,11 @@ jobs:
 
           # Update checksum in podspec
           CHECKSUM="${{ steps.build.outputs.checksum }}"
-          sed -i.bak "s/:sha256 => '.*'/:sha256 => '${CHECKSUM}'/" shared/SpectraLogger.podspec
+          sed -i.bak "s/:sha256 => '[^']*'/:sha256 => '${CHECKSUM}'/" shared/SpectraLogger.podspec
           rm shared/SpectraLogger.podspec.bak
+
+          echo "✅ Updated podspec:"
+          grep -A 2 ":sha256" shared/SpectraLogger.podspec
 
           # Publish to CocoaPods
           cd shared
