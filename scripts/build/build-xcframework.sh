@@ -46,13 +46,33 @@ if [ -d "$XCFRAMEWORK_PATH" ]; then
     rm -rf "$XCFRAMEWORK_PATH"
 fi
 
-# Create XCFramework
+# Create fat binary for simulator (combines x86_64 and arm64)
+echo "🔨 Creating simulator fat binary..."
+BUILD_DIR="$PROJECT_ROOT/shared/build/bin"
+TEMP_SIMULATOR_DIR="$PROJECT_ROOT/shared/build/temp-simulator"
+rm -rf "$TEMP_SIMULATOR_DIR"
+mkdir -p "$TEMP_SIMULATOR_DIR/$FRAMEWORK_NAME.framework"
+
+# Copy the framework structure from one of the simulator builds
+cp -R "$BUILD_DIR/iosSimulatorArm64/$FRAMEWORK_PATH/$FRAMEWORK_NAME.framework/" "$TEMP_SIMULATOR_DIR/$FRAMEWORK_NAME.framework/"
+
+# Create fat binary combining both simulator architectures
+lipo -create \
+    "$BUILD_DIR/iosX64/$FRAMEWORK_PATH/$FRAMEWORK_NAME.framework/$FRAMEWORK_NAME" \
+    "$BUILD_DIR/iosSimulatorArm64/$FRAMEWORK_PATH/$FRAMEWORK_NAME.framework/$FRAMEWORK_NAME" \
+    -output "$TEMP_SIMULATOR_DIR/$FRAMEWORK_NAME.framework/$FRAMEWORK_NAME"
+
+echo "✅ Simulator fat binary created"
+
+# Create XCFramework with device and simulator (fat binary)
 echo "📦 Creating XCFramework..."
 xcodebuild -create-xcframework \
-    -framework "$PROJECT_ROOT/shared/build/bin/iosArm64/$FRAMEWORK_PATH/$FRAMEWORK_NAME.framework" \
-    -framework "$PROJECT_ROOT/shared/build/bin/iosX64/$FRAMEWORK_PATH/$FRAMEWORK_NAME.framework" \
-    -framework "$PROJECT_ROOT/shared/build/bin/iosSimulatorArm64/$FRAMEWORK_PATH/$FRAMEWORK_NAME.framework" \
+    -framework "$BUILD_DIR/iosArm64/$FRAMEWORK_PATH/$FRAMEWORK_NAME.framework" \
+    -framework "$TEMP_SIMULATOR_DIR/$FRAMEWORK_NAME.framework" \
     -output "$XCFRAMEWORK_PATH"
+
+# Clean up temp directory
+rm -rf "$TEMP_SIMULATOR_DIR"
 
 echo "✅ XCFramework created successfully!"
 echo "📍 Location: $XCFRAMEWORK_PATH"
