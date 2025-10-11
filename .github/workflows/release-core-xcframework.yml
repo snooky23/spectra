@@ -155,10 +155,17 @@ jobs:
             --notes-file release_notes.md
 
       - name: Publish to CocoaPods
-        if: ${{ secrets.COCOAPODS_TRUNK_TOKEN != '' }}
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
         run: |
+          # Check if CocoaPods token is set
+          if [ -z "$COCOAPODS_TRUNK_TOKEN" ]; then
+            echo "⏭️  Skipping CocoaPods publishing (no COCOAPODS_TRUNK_TOKEN secret set)"
+            exit 0
+          fi
+
+          echo "📦 Publishing to CocoaPods..."
+
           # Update podspec version
           sed -i.bak "s/s.version.*=.*/s.version = '${{ steps.version.outputs.version }}'/" shared/SpectraLogger.podspec
           rm shared/SpectraLogger.podspec.bak
@@ -171,6 +178,8 @@ jobs:
           # Publish to CocoaPods
           cd shared
           pod trunk push SpectraLogger.podspec --allow-warnings
+
+          echo "✅ Published to CocoaPods successfully!"
 
       - name: Summary
         run: |
