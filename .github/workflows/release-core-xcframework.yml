@@ -65,30 +65,28 @@ jobs:
           echo "checksum=$CHECKSUM" >> $GITHUB_OUTPUT
           echo "✅ Checksum: $CHECKSUM"
 
-      - name: Update Package.swift with checksum
+      - name: Generate Package.swift snippet for release notes
+        id: package_swift
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           CHECKSUM="${{ steps.build.outputs.checksum }}"
 
-          # Update Package.swift with the correct URL and checksum
-          sed -i.bak \
-            -e "s|url: \"https://github.com/snooky23/spectra/releases/download/v.*\.xcframework\.zip\"|url: \"https://github.com/snooky23/spectra/releases/download/v${VERSION}/SpectraLogger.xcframework.zip\"|" \
-            -e "s|checksum: \".*\"|checksum: \"${CHECKSUM}\"|" \
-            Package.swift
+          # Create Package.swift snippet for release notes
+          cat > package_swift_snippet.md << EOF
+          ## Swift Package Manager Installation
 
-          rm Package.swift.bak
+          Update your \`Package.swift\`:
 
-          echo "✅ Updated Package.swift"
-          cat Package.swift
+          \`\`\`swift
+          .binaryTarget(
+              name: "SpectraLogger",
+              url: "https://github.com/snooky23/spectra/releases/download/v${VERSION}/SpectraLogger.xcframework.zip",
+              checksum: "${CHECKSUM}"
+          )
+          \`\`\`
+          EOF
 
-      - name: Commit Package.swift
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          git add Package.swift
-          git commit -m "chore: update Package.swift for v${{ steps.version.outputs.version }}"
-          git push origin main
+          echo "✅ Package.swift snippet created"
 
       - name: Create GitHub Release
         env:
@@ -122,10 +120,23 @@ jobs:
           ## Installation
 
           ### Swift Package Manager
+
+          Add to your \`Package.swift\`:
+
           \`\`\`swift
           dependencies: [
               .package(url: "https://github.com/snooky23/spectra.git", from: "${VERSION}")
           ]
+          \`\`\`
+
+          Or use the binary target directly:
+
+          \`\`\`swift
+          .binaryTarget(
+              name: "SpectraLogger",
+              url: "https://github.com/snooky23/spectra/releases/download/v${VERSION}/SpectraLogger.xcframework.zip",
+              checksum: "${CHECKSUM}"
+          )
           \`\`\`
 
           ### CocoaPods
@@ -134,17 +145,17 @@ jobs:
           pod 'SpectraLoggerUI', '~> ${VERSION}'  # Optional: SwiftUI UI
           \`\`\`
 
-          ## Binary Checksum
+          ## Verification
 
-          For manual XCFramework installation, verify the checksum:
+          XCFramework SHA256 checksum:
           \`\`\`
           ${CHECKSUM}
           \`\`\`
 
           ## Documentation
-          - Installation Guide: https://github.com/snooky23/spectra/blob/main/docs/INSTALLATION.md
-          - CocoaPods Guide: https://github.com/snooky23/spectra/blob/main/docs/COCOAPODS_GUIDE.md
-          - SPM Guide: https://github.com/snooky23/spectra/blob/main/docs/SPM_DISTRIBUTION_GUIDE.md
+          - [Installation Guide](https://github.com/snooky23/spectra/blob/main/docs/INSTALLATION.md)
+          - [CocoaPods Guide](https://github.com/snooky23/spectra/blob/main/docs/COCOAPODS_GUIDE.md)
+          - [SPM Distribution Guide](https://github.com/snooky23/spectra/blob/main/docs/SPM_DISTRIBUTION_GUIDE.md)
 
           🎉 Ready for production use!
           EOF
@@ -200,17 +211,22 @@ jobs:
 
       - name: Summary
         run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "✅ Release v${{ steps.version.outputs.version }} completed successfully!"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo ""
           echo "📦 Release URL: https://github.com/snooky23/spectra/releases/tag/v${{ steps.version.outputs.version }}"
           echo "📋 Checksum: ${{ steps.build.outputs.checksum }}"
           echo ""
-          echo "Next steps:"
-          echo "1. ✅ Package.swift has been updated and committed"
-          echo "2. ✅ GitHub Release has been created"
-          echo "3. ✅ XCFramework has been uploaded"
+          echo "✅ Completed:"
+          echo "  1. Built XCFramework for all iOS targets"
+          echo "  2. Created GitHub Release with binary"
+          echo "  3. Generated installation instructions"
           if [ -n "${{ secrets.COCOAPODS_TRUNK_TOKEN }}" ]; then
-            echo "4. ✅ Published to CocoaPods"
+            echo "  4. Published to CocoaPods"
           else
-            echo "4. ⏭️  CocoaPods publishing skipped (no token)"
+            echo "  4. ⏭️  CocoaPods publishing skipped (no token set)"
           fi
+          echo ""
+          echo "📝 Installation instructions are in the release notes"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
