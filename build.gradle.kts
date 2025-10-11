@@ -61,9 +61,9 @@ subprojects {
 
 // Dokka configuration for multi-module documentation
 tasks.dokkaHtmlMultiModule.configure {
-    outputDirectory.set(buildDir.resolve("dokka"))
+    outputDirectory.set(layout.buildDirectory.dir("dokka"))
 }
 
 tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
+    delete(rootProject.layout.buildDirectory)
 }
