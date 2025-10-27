@@ -1,5 +1,7 @@
 import SwiftUI
-import SpectraLoggerUI
+
+// TODO: Import SpectraLoggerUI once framework linking is set up
+// import SpectraLoggerUI
 
 /// Main app screen with example content and button to open Spectra Logger
 struct MainAppView: View {
@@ -90,10 +92,20 @@ struct MainAppView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showSpectraLogger) {
-                // This is the complete Spectra Logger screen from the KMP SDK
-                // It comes with all tabs (Logs, Network, Settings) built-in
-                // Users just present it - no need to build tabs themselves
-                SpectraLoggerView()
+                // TODO: Replace with SpectraLoggerView() once SpectraLoggerUI is integrated
+                VStack {
+                    Text("Spectra Logger")
+                        .font(.title)
+                        .padding()
+                    Text("(Coming soon - SpectraLoggerUI framework integration in progress)")
+                        .foregroundColor(.gray)
+                        .padding()
+                    Spacer()
+                    Button("Close") {
+                        showSpectraLogger = false
+                    }
+                    .padding()
+                }
             }
         }
     }
