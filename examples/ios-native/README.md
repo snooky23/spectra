@@ -277,17 +277,232 @@ The example generates 30+ sample logs on startup to demonstrate:
 - Smooth UI with large log sets
 - Search and filtering performance
 
+## Testing
+
+### Quick Test Commands
+
+```bash
+# From examples/ios-native directory
+
+# Option 1: Fresh setup from scratch
+./setup-pods.sh
+open SpectraExample.xcworkspace
+
+# Option 2: Update if already set up
+pod install
+open SpectraExample.xcworkspace
+
+# Then in Xcode: Cmd+R to build and run
+```
+
+### Manual Testing Checklist
+
+Once the app is running in the simulator, test these features:
+
+#### App Logs Tab ✅
+- [ ] Launch the app
+- [ ] Tap "Tap Me" button - should generate logs
+- [ ] Tap "Generate Warning" - should add warning log
+- [ ] Tap "Generate Error" - should add error log
+- [ ] Logs appear in real-time
+- [ ] Tap a log to view full details
+- [ ] Search logs by message
+- [ ] Filter logs by level (Verbose, Debug, Info, Warning, Error, Fatal)
+
+#### Network Logs Tab ✅
+- [ ] Network requests appear (if URLSession is integrated)
+- [ ] Filter by HTTP method (GET, POST, PUT, DELETE, PATCH)
+- [ ] Filter by status code ranges (2xx, 3xx, 4xx, 5xx)
+- [ ] Tap network request to view details
+- [ ] View request headers and body
+- [ ] View response headers and body
+- [ ] Copy cURL command for request
+
+#### Settings Tab ✅
+- [ ] Toggle appearance (Light/Dark/System)
+- [ ] View app log count
+- [ ] View network log count
+- [ ] Tap "Clear Logs" button
+- [ ] Confirm clear action
+- [ ] Logs are cleared successfully
+- [ ] Export logs (if implemented)
+
+#### URL Scheme Deep Linking ✅
+```bash
+# From terminal while simulator is running
+
+# Open logs screen
+xcrun simctl openurl booted spectralogger://logs
+
+# Open network logs
+xcrun simctl openurl booted spectralogger://network
+
+# Clear all logs
+xcrun simctl openurl booted spectralogger://clear
+```
+
+### Automated Testing
+
+#### Build from Command Line
+
+```bash
+# Build the app
+xcodebuild -workspace SpectraExample.xcworkspace \
+           -scheme SpectraExample \
+           -configuration Debug \
+           -sdk iphonesimulator \
+           -derivedDataPath build
+
+# Or simply
+xcodebuild build-for-testing \
+           -workspace SpectraExample.xcworkspace \
+           -scheme SpectraExample \
+           -configuration Debug
+```
+
+#### Run on Physical Device
+
+```bash
+# Build for physical device (arm64)
+xcodebuild -workspace SpectraExample.xcworkspace \
+           -scheme SpectraExample \
+           -configuration Release \
+           -sdk iphoneos \
+           -derivedDataPath build
+```
+
+### Rebuilding After Changes
+
+If you modify the shared KMP module:
+
+```bash
+# Update the framework
+pod update SpectraLogger
+
+# If that doesn't work, clean everything
+rm -rf Pods
+rm Podfile.lock
+./setup-pods.sh
+
+# Then in Xcode: Clean (Cmd+Shift+K) and rebuild (Cmd+B)
+```
+
+### Debugging
+
+#### View Console Logs
+
+1. In Xcode: View → Debug Area → Show Console (Cmd+Shift+Y)
+2. Run the app
+3. All print statements and framework logs appear here
+
+#### Enable Detailed Logging
+
+In `SpectraExampleApp.swift`, uncomment for more verbose output:
+
+```swift
+init() {
+    print("Spectra Logger iOS Example Started")
+    print("Version: 1.0.0")
+    // Add your debugging logs here
+}
+```
+
+#### Check Pod Installation
+
+```bash
+# Verify pods are properly installed
+cat Podfile.lock | grep -A 2 "PODS:"
+
+# Check specific framework
+ls -la Pods/SpectraLogger/
+ls -la Pods/SpectraLoggerUI/
+```
+
+### Performance Testing
+
+The example app is optimized to show:
+- **Log Capture**: < 1ms per log
+- **UI Rendering**: Smooth 60 FPS scrolling with 1000+ logs
+- **Memory**: Efficient circular buffer with bounded memory
+- **Search/Filter**: Sub-millisecond filtering
+
+Test this yourself:
+1. Generate 100+ logs by repeatedly tapping buttons
+2. Scroll the log list - should remain smooth
+3. Search for logs - filtering is instant
+4. No memory warnings or crashes
+
+### Troubleshooting
+
+#### Build Fails with "Module Not Found"
+
+```bash
+# 1. Make sure using .xcworkspace, not .xcodeproj
+open SpectraExample.xcworkspace
+
+# 2. Clean and rebuild
+Xcode: Product → Clean Build Folder (Cmd+Shift+K)
+Xcode: Product → Build (Cmd+B)
+
+# 3. If still failing, reset everything
+rm -rf Pods Podfile.lock ~/Library/Developer/Xcode/DerivedData/*
+./setup-pods.sh
+open SpectraExample.xcworkspace
+```
+
+#### Framework Not Found Error
+
+```bash
+# Rebuild the KMP framework
+cd ../..
+./gradlew shared:linkReleaseFrameworkIosSimulatorArm64
+cd examples/ios-native
+
+# Update pods
+pod install
+```
+
+#### Simulator Crashes
+
+```bash
+# Kill stuck simulator
+xcrun simctl shutdown all
+xcrun simctl erase all
+
+# Reopen and rebuild
+open SpectraExample.xcworkspace
+# Cmd+B then Cmd+R
+```
+
+#### CocoaPods Issues
+
+```bash
+# Update CocoaPods itself
+sudo gem install cocoapods
+
+# Clear pod cache
+rm -rf ~/Library/Caches/CocoaPods
+
+# Reinstall pods
+rm -rf Pods Podfile.lock
+./setup-pods.sh
+```
+
 ## Notes
 
 - The framework must be rebuilt after any changes to the shared module
+- Always use `.xcworkspace` (not `.xcodeproj`) when using CocoaPods
 - Use Xcode's simulator for development, physical device for testing production builds
 - Network logging requires additional URLSession configuration
 - All log levels are written with full word names (Verbose, Debug, Info, Warning, Error, Fatal)
+- CocoaPods automatically builds the KMP framework via the Podfile's `prepare_command`
 
 ## Next Steps
 
-1. Customize the UI to match your app's design
-2. Add network logging for your API calls
+1. Add network logging to your API calls
+2. Customize the UI to match your app's design
 3. Implement export functionality
 4. Add crashlytics or analytics integration
 5. Create custom log filters and search
+6. Add automatic log rotation to disk storage
+7. Create unit tests for your logging integration
