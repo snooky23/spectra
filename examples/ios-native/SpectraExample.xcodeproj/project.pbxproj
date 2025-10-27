@@ -13,6 +13,7 @@
 		AA0007 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA0006 /* Assets.xcassets */; };
 		AA0009 /* SpectraLogger.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0008 /* SpectraLogger.framework */; };
 		AA000A /* SpectraLogger.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AA0008 /* SpectraLogger.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E99EBD5D0EF5CFA7B1BE04A9 /* Pods_SpectraExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 936FAE9F4F6E8715F11BED82 /* Pods_SpectraExample.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,8 +31,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		58D07EA35902E87521B54C5E /* Pods-SpectraExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SpectraExample.debug.xcconfig"; path = "Target Support Files/Pods-SpectraExample/Pods-SpectraExample.debug.xcconfig"; sourceTree = "<group>"; };
 		8195228F9ADCF39B039BE01E /* LogsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LogsView.swift; path = ../Views/LogsView.swift; sourceTree = "<group>"; };
 		8D9DC3618D3F1E5D501DE7CF /* SettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SettingsView.swift; path = ../Views/SettingsView.swift; sourceTree = "<group>"; };
+		936FAE9F4F6E8715F11BED82 /* Pods_SpectraExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SpectraExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6F11163D579A722F99B1459 /* NetworkLogsViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NetworkLogsViewModel.swift; path = ../ViewModels/NetworkLogsViewModel.swift; sourceTree = "<group>"; };
 		AA0000 /* SpectraExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectraExampleApp.swift; sourceTree = "<group>"; };
 		AA0002 /* MainAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppView.swift; sourceTree = "<group>"; };
@@ -41,6 +44,7 @@
 		AAFFFF /* SpectraExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpectraExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C142B4693C50AA790A968E05 /* LogsViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LogsViewModel.swift; path = ../ViewModels/LogsViewModel.swift; sourceTree = "<group>"; };
 		D23EC76B25200D1CA1642D4A /* NetworkLogsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NetworkLogsView.swift; path = ../Views/NetworkLogsView.swift; sourceTree = "<group>"; };
+		DADEC8E15F7CA0426FD52D75 /* Pods-SpectraExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SpectraExample.release.xcconfig"; path = "Target Support Files/Pods-SpectraExample/Pods-SpectraExample.release.xcconfig"; sourceTree = "<group>"; };
 		EFCED8CC39672C46ACAA51A7 /* SettingsViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SettingsViewModel.swift; path = ../ViewModels/SettingsViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -50,12 +54,23 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA0009 /* SpectraLogger.framework in Frameworks */,
+				E99EBD5D0EF5CFA7B1BE04A9 /* Pods_SpectraExample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4CA97905AF23DC7BD3A4E36C /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				58D07EA35902E87521B54C5E /* Pods-SpectraExample.debug.xcconfig */,
+				DADEC8E15F7CA0426FD52D75 /* Pods-SpectraExample.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		7C8E25A159FBFB8B33A1FCBA /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -72,6 +87,7 @@
 				AAFFF7 /* SpectraExample */,
 				AAFFF8 /* Frameworks */,
 				AAFFFE /* Products */,
+				4CA97905AF23DC7BD3A4E36C /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -92,6 +108,7 @@
 			isa = PBXGroup;
 			children = (
 				AA0008 /* SpectraLogger.framework */,
+				936FAE9F4F6E8715F11BED82 /* Pods_SpectraExample.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -121,6 +138,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AA000D /* Build configuration list for PBXNativeTarget "SpectraExample" */;
 			buildPhases = (
+				D6FBC2F8F3A556F6C7F01EB9 /* [CP] Check Pods Manifest.lock */,
 				AAFFFB /* Frameworks */,
 				AAFFFA /* Resources */,
 				AAFFF9 /* Sources */,
@@ -178,6 +196,31 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		D6FBC2F8F3A556F6C7F01EB9 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SpectraExample-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		AAFFF9 /* Sources */ = {
@@ -316,6 +359,7 @@
 		};
 		AA0012 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 58D07EA35902E87521B54C5E /* Pods-SpectraExample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -356,6 +400,7 @@
 		};
 		AA0013 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DADEC8E15F7CA0426FD52D75 /* Pods-SpectraExample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

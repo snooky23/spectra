@@ -9,9 +9,8 @@ target 'SpectraExample' do
   # This uses the local build output from the shared KMP module
   pod 'SpectraLogger', :path => '../../shared'
 
-  # Local Spectra Logger UI (SwiftUI components)
-  # Provides the ready-to-use Spectra Logger UI
-  pod 'SpectraLoggerUI', :path => '../../SpectraLoggerUI'
+  # Note: SpectraLoggerUI is integrated via Xcode framework linking
+  # rather than CocoaPods due to static binary compatibility
 
 end
 

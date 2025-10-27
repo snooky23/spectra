@@ -257,9 +257,9 @@ Pod::Spec.new do |s|
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
-  s.source_files                = 'SpectraLoggerUI/Sources/SpectraLoggerUI/**/*.swift'
+  s.source_files                = 'Sources/SpectraLoggerUI/**/*.swift'
   s.resource_bundles            = {
-    'SpectraLoggerUI' => ['SpectraLoggerUI/Sources/SpectraLoggerUI/Resources/**/*']
+    'SpectraLoggerUI' => ['Sources/SpectraLoggerUI/Resources/**/*']
   }
 
   # ――― Dependencies ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
