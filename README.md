@@ -374,6 +374,30 @@ val networkLogs = SpectraLogger.queryNetwork(
 )
 ```
 
+## Testing
+
+### Quick Start Testing
+
+```bash
+# Test the iOS example app (recommended for visual testing)
+cd examples/ios-native
+./setup-pods.sh
+open SpectraExample.xcworkspace
+# Then press Cmd+R to build and run
+
+# Test the Swift package only
+cd SpectraLoggerUI
+swift test
+
+# Test the Kotlin core
+./gradlew test
+```
+
+For detailed testing guide with troubleshooting, see:
+- **[iOS Testing Guide](./iOS_TESTING_GUIDE.md)** - Quick reference for all iOS testing
+- **[iOS Example App README](./examples/ios-native/README.md#testing)** - How to test the example app
+- **[SpectraLoggerUI Testing Guide](./SpectraLoggerUI/TESTING.md)** - Comprehensive testing guide
+
 ## Documentation
 
 - [Product Requirements Document](./PRD.md) - Complete product specification
@@ -381,6 +405,10 @@ val networkLogs = SpectraLogger.queryNetwork(
 - [Task Breakdown](./TASKS.md) - Development timeline and milestones
 - [Claude Code Instructions](./CLAUDE.md) - For AI-assisted development
 - [Session Memory](./SESSION.md) - Current development state
+- [iOS Testing Guide](./iOS_TESTING_GUIDE.md) - Quick reference for iOS testing
+- [SpectraLoggerUI Documentation](./SpectraLoggerUI/README.md) - SwiftUI package guide
+- [API Reference](./docs/API.md) - Complete API documentation
+- [Usage Guide](./docs/USAGE_GUIDE.md) - How to use Spectra Logger
 
 ## Building from Source
 
