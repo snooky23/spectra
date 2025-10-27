@@ -5,9 +5,13 @@ target 'SpectraExample' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 
-  # Local Spectra Logger framework
+  # Local Spectra Logger framework (KMP core library)
   # This uses the local build output from the shared KMP module
   pod 'SpectraLogger', :path => '../../shared'
+
+  # Local Spectra Logger UI (SwiftUI components)
+  # Provides the ready-to-use Spectra Logger UI
+  pod 'SpectraLoggerUI', :path => '../../SpectraLoggerUI'
 
 end
 
