@@ -133,15 +133,25 @@ In your target:
 
 ### Option B: Use Core + UI (Recommended)
 
+#### Local Development (During Development)
+
 Add to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(path: "../SpectraLoggerUI")
+    .package(path: "../SpectraLoggerUI")  // Local development
 ]
 ```
 
-In your target:
+#### Release Mode (Using Published Package)
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/snooky23/spectra.git", from: "1.0.0")
+]
+```
+
+In your target (same for both local and release):
 
 ```swift
 .target(
@@ -232,6 +242,136 @@ open Package.swift
 ```bash
 ./gradlew test
 ./gradlew iosTest
+```
+
+---
+
+## Local Development vs Release Mode
+
+Spectra Logger packages support both local development and release modes.
+
+### Local Development Mode (Default)
+
+**When**: Developing both packages together in the same workspace
+
+**Configuration**:
+
+In `SpectraLoggerUI/Package.swift`:
+```swift
+dependencies: [
+    .package(path: "../SpectraLogger"),  // ← Local development
+]
+```
+
+In `examples/ios-native/Package.swift`:
+```swift
+dependencies: [
+    .package(path: "../../SpectraLoggerUI"),  // ← Local development
+]
+```
+
+**Advantages**:
+- Live changes to core or UI are immediately reflected
+- No need to rebuild and republish
+- Perfect for debugging both packages together
+- Can test integration in real-time
+
+**How to switch TO local mode**:
+1. Ensure both packages are in the same workspace
+2. Edit `Package.swift`
+3. Use `.package(path: "...")` with relative paths
+4. Run `swift build` or open in Xcode
+
+### Release Mode
+
+**When**: Using published, released versions of packages
+
+**Configuration**:
+
+In `SpectraLoggerUI/Package.swift`:
+```swift
+dependencies: [
+    .package(url: "https://github.com/snooky23/spectra.git", from: "1.0.0"),
+]
+```
+
+**Advantages**:
+- Uses stable, vetted releases
+- No workspace structure required
+- Can be used in any project
+- Version pinning for reproducibility
+- Automatic updates based on version requirements
+
+**How to switch TO release mode**:
+
+1. **Replace path dependency with URL**:
+   ```swift
+   // From:
+   .package(path: "../SpectraLogger")
+
+   // To:
+   .package(url: "https://github.com/snooky23/spectra.git", from: "1.0.0")
+   ```
+
+2. **Pin to specific version**:
+   ```swift
+   // Exact version:
+   .package(url: "https://github.com/snooky23/spectra.git", .exact("1.0.0"))
+
+   // Range:
+   .package(url: "https://github.com/snooky23/spectra.git", "1.0.0"..<"2.0.0")
+
+   // Up to next major:
+   .package(url: "https://github.com/snooky23/spectra.git", .upToNextMajor(from: "1.0.0"))
+   ```
+
+3. **Run package resolution**:
+   ```bash
+   swift package resolve
+   ```
+
+### Quick Reference: Mode Switching
+
+**Local → Release**:
+```diff
+- .package(path: "../SpectraLoggerUI")
++ .package(url: "https://github.com/snooky23/spectra.git", from: "1.0.0")
+```
+
+**Release → Local**:
+```diff
+- .package(url: "https://github.com/snooky23/spectra.git", from: "1.0.0")
++ .package(path: "../SpectraLoggerUI")
+```
+
+### Repository Structure for Development
+
+To use local development mode, organize your workspace like this:
+
+```
+workspace/
+├── spectra/                          # Main repo (this repository)
+│   ├── SpectraLogger/               # Core package
+│   ├── SpectraLoggerUI/             # UI package
+│   └── examples/
+│       └── ios-native/              # Example app
+└── my-app/                          # Your app using local development
+    ├── Package.swift                # Points to ../spectra/SpectraLoggerUI
+    └── Sources/
+```
+
+Or if everything is in one repo:
+
+```
+spectra/
+├── SpectraLogger/
+│   └── Package.swift                # Points to ../SpectraLoggerUI (release) OR local
+├── SpectraLoggerUI/
+│   └── Package.swift                # Points to ../SpectraLogger
+├── examples/
+│   └── ios-native/
+│       └── Package.swift            # Points to ../../SpectraLoggerUI (local)
+└── shared/                          # Kotlin Multiplatform module
 ```
 
 ---
