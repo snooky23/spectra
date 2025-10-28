@@ -7,12 +7,15 @@ let package = Package(
         .iOS(.v15),
     ],
     dependencies: [
-        // Add dependencies here
+        // Spectra Logger UI (includes core framework)
+        .package(path: "../../SpectraLoggerUI")
     ],
     targets: [
         .target(
             name: "SpectraExample",
-            dependencies: [],
+            dependencies: [
+                .product(name: "SpectraLoggerUI", package: "SpectraLoggerUI")
+            ],
             path: "SpectraExample"
         ),
     ]

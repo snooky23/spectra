@@ -14,21 +14,18 @@ let package = Package(
             targets: ["SpectraLoggerUI"]
         ),
     ],
+    dependencies: [
+        // Core logging framework (Kotlin Multiplatform compiled to iOS)
+        .package(path: "../SpectraLogger")
+    ],
     targets: [
         // SwiftUI views and ViewModels for iOS
         .target(
             name: "SpectraLoggerUI",
-            dependencies: ["SpectraLogger"],
+            dependencies: [
+                .product(name: "SpectraLogger", package: "SpectraLogger")
+            ],
             path: "Sources/SpectraLoggerUI"
-        ),
-
-        // KMP Framework (binary target)
-        // Note: Build the XCFramework first by running:
-        // cd ../shared && ./gradlew :shared:linkReleaseFrameworkIosArm64 :shared:linkReleaseFrameworkIosSimulatorArm64
-        // then create XCFramework manually or use the provided script
-        .binaryTarget(
-            name: "SpectraLogger",
-            path: "../shared/build/XCFrameworks/release/SpectraLogger.xcframework"
         ),
 
         .testTarget(
