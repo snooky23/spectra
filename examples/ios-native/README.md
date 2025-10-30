@@ -10,55 +10,34 @@ This example demonstrates how to use Spectra Logger in a native iOS application 
 
 ## Setup
 
-### Option 1: Using CocoaPods (Recommended for Local Development)
+### Quick Start (Swift Package Manager)
 
-1. **Install CocoaPods** (if not already installed):
-   ```bash
-   sudo gem install cocoapods
-   ```
-
-2. **Set up CocoaPods and build the framework**:
-   ```bash
-   cd examples/ios-native
-   ./setup-pods.sh
-   ```
-
-3. **Open the workspace** (NOT the .xcodeproj):
-   ```bash
-   open SpectraExample.xcworkspace
-   ```
-
-4. **Build and run the project**:
-   - Select iPhone simulator (iPhone 15 Pro recommended)
-   - Press Cmd+R to build and run
-
-5. **After making changes to the shared module**:
-   ```bash
-   pod update SpectraLogger
-   ```
-
-### Option 2: Direct Framework Linking (Alternative)
-
-1. **Build the Spectra framework**:
+1. **Ensure the XCFramework is built**:
    ```bash
    cd ../..
-   ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
+   ./gradlew shared:linkReleaseFrameworkIosArm64 shared:linkReleaseFrameworkIosSimulatorArm64 shared:createXCFramework
    ```
 
-2. **Create the Xcode project** (first time only):
+2. **Open the Xcode project**:
    ```bash
    cd examples/ios-native
-   ./create-xcode-project.sh
-   ```
-
-3. **Open the Xcode project**:
-   ```bash
    open SpectraExample.xcodeproj
    ```
 
-4. **Build and run the project**:
+3. **Build and run**:
    - Select iPhone simulator (iPhone 15 Pro recommended)
-   - Press Cmd+R to build and run
+   - Press **Cmd+B** to build
+   - Press **Cmd+R** to run
+
+That's it! No CocoaPods setup needed.
+
+### How Dependencies Are Managed
+
+This example app uses **Swift Package Manager** to depend on:
+- `SpectraLoggerUI` (local development) - located at `../../SpectraLoggerUI`
+- `SpectraLogger` (core framework) - binary XCFramework
+
+To switch to released versions, modify the package dependencies in Xcode project settings.
 
 ## Features Demonstrated
 
@@ -80,20 +59,19 @@ This example demonstrates how to use Spectra Logger in a native iOS application 
 
 ```
 examples/ios-native/
-├── SpectraExample.xcodeproj/          # Xcode project file
-├── SpectraExample.xcworkspace/        # Workspace (when using CocoaPods)
-├── SpectraExample/                    # Main application directory
-│   └── SpectraExample/                # Source files
-│       ├── SpectraExampleApp.swift   # App entry point with URL scheme handling
-│       ├── MainAppView.swift         # Main app screen with Spectra button
-│       ├── ContentView.swift         # Spectra Logger UI views
-│       └── Assets.xcassets/          # App icons and colors
-├── Podfile                            # CocoaPods dependencies
-├── setup-pods.sh                      # CocoaPods setup script
-├── add-url-scheme.sh                  # URL scheme configuration helper
-├── create-xcode-project.sh            # Script to generate Xcode project
-└── README.md                          # This file
+├── SpectraExample.xcodeproj/          # Xcode project (uses Swift Package Manager)
+├── SpectraExample/                    # Application source files
+│   ├── SpectraExampleApp.swift        # App entry point (@main)
+│   ├── MainAppView.swift              # Main screen with Spectra Logger button
+│   ├── SpectraLoggerView.swift        # Wrapper for SpectraLoggerUI
+│   ├── Assets.xcassets/               # App icons and images
+│   └── ViewModels/                    # View model files
+├── README.md                          # This file
+└── (no Podfile or .xcworkspace - uses native SPM)
 ```
+
+**Dependencies** (managed via Xcode project settings):
+- `SpectraLoggerUI` → depends on `SpectraLogger` → XCFramework binary
 
 ## How It Works
 
