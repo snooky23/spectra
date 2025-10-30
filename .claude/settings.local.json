@@ -11,7 +11,11 @@
       "Bash(git push:*)",
       "Bash(pod install:*)",
       "Bash(killall:*)",
-      "Bash(xcodebuild:*)"
+      "Bash(xcodebuild:*)",
+      "Bash(pod lib lint:*)",
+      "Bash(swift package:*)",
+      "Bash(swift build:*)",
+      "Bash(open:*)"
     ],
     "deny": [],
     "ask": []
