@@ -333,6 +333,14 @@ struct FilterChip: View {
 // Extension to make LogEntry identifiable for sheet
 extension LogEntry: Identifiable {}
 
-#Preview {
+// MARK: - Previews
+
+#Preview("LogsView - Light") {
     LogsView()
+        .preferredColorScheme(.light)
+}
+
+#Preview("LogsView - Dark") {
+    LogsView()
+        .preferredColorScheme(.dark)
 }

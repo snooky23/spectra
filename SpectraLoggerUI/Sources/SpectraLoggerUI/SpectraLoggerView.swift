@@ -94,6 +94,14 @@ public struct SpectraLoggerView: View {
     }
 }
 
-#Preview {
+// MARK: - Previews
+
+#Preview("SpectraLoggerView - Light") {
     SpectraLoggerView()
+        .preferredColorScheme(.light)
+}
+
+#Preview("SpectraLoggerView - Dark") {
+    SpectraLoggerView()
+        .preferredColorScheme(.dark)
 }

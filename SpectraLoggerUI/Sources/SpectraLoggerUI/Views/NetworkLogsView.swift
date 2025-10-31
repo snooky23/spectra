@@ -320,6 +320,14 @@ struct NetworkLogDetailView: View {
 // Extension to make NetworkLogEntry identifiable for sheet
 extension NetworkLogEntry: Identifiable {}
 
-#Preview {
+// MARK: - Previews
+
+#Preview("NetworkLogsView - Light") {
     NetworkLogsView()
+        .preferredColorScheme(.light)
+}
+
+#Preview("NetworkLogsView - Dark") {
+    NetworkLogsView()
+        .preferredColorScheme(.dark)
 }
