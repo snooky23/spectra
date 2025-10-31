@@ -38,7 +38,7 @@ struct NetworkLogsView: View {
                             FilterChip(
                                 title: range,
                                 isSelected: viewModel.selectedStatusRanges.contains(range),
-                                color: colorForStatusRange(range)
+                                color: ColorUtilities.colorForStatusRange(range)
                             ) {
                                 viewModel.toggleStatusRange(range)
                             }
@@ -100,15 +100,6 @@ struct NetworkLogsView: View {
         }
     }
 
-    private func colorForStatusRange(_ range: String) -> Color {
-        switch range {
-        case "2xx": return .green
-        case "3xx": return .blue
-        case "4xx": return .orange
-        case "5xx": return .red
-        default: return .gray
-        }
-    }
 }
 
 /// Single network log entry row
@@ -135,15 +126,15 @@ struct NetworkLogRow: View {
                         .fontWeight(.semibold)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 2)
-                        .background(colorForStatus(status).opacity(0.2))
-                        .foregroundColor(colorForStatus(status))
+                        .background(ColorUtilities.colorForStatusCode(status).opacity(0.2))
+                        .foregroundColor(ColorUtilities.colorForStatusCode(status))
                         .cornerRadius(4)
                 }
 
                 Spacer()
 
                 // Timestamp
-                Text(formatTimestamp(log.timestamp))
+                Text(DateFormattingUtilities.formatShortTime(log.timestamp))
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
@@ -168,22 +159,6 @@ struct NetworkLogRow: View {
         .padding(.vertical, 4)
     }
 
-    private func colorForStatus(_ status: Int32) -> Color {
-        switch status {
-        case 200..<300: return .green
-        case 300..<400: return .blue
-        case 400..<500: return .orange
-        case 500..<600: return .red
-        default: return .gray
-        }
-    }
-
-    private func formatTimestamp(_ timestamp: Kotlinx_datetimeInstant) -> String {
-        let date = Date(timeIntervalSince1970: TimeInterval(timestamp.epochSeconds))
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm:ss"
-        return formatter.string(from: date)
-    }
 }
 
 /// Network log detail sheet
@@ -210,8 +185,8 @@ struct NetworkLogDetailView: View {
                                 .font(.headline)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
-                                .background(colorForStatus(status).opacity(0.2))
-                                .foregroundColor(colorForStatus(status))
+                                .background(ColorUtilities.colorForStatusCode(status).opacity(0.2))
+                                .foregroundColor(ColorUtilities.colorForStatusCode(status))
                                 .cornerRadius(6)
                         }
 
