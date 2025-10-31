@@ -15,7 +15,7 @@ struct LogsView: View {
                     .padding(.horizontal)
                     .padding(.top, 8)
 
-                // Filter chips
+                // Filter chips - Log Levels
                 if !LogLevel.entries.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
@@ -32,6 +32,38 @@ struct LogsView: View {
                         .padding(.horizontal)
                     }
                     .frame(height: 44)
+                }
+
+                // Filter chips - Tags
+                if !viewModel.availableTags.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(viewModel.availableTags, id: \.self) { tag in
+                                FilterChip(
+                                    title: tag,
+                                    isSelected: viewModel.selectedTags.contains(tag),
+                                    color: .blue
+                                ) {
+                                    viewModel.toggleTag(tag)
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                    .frame(height: 44)
+                }
+
+                // Group by tag toggle
+                if !viewModel.availableTags.isEmpty {
+                    HStack {
+                        Label("Group by Tag", systemImage: "square.grid.2x2")
+                            .font(.caption)
+                        Spacer()
+                        Toggle("", isOn: $viewModel.groupByTag)
+                            .labelsHidden()
+                    }
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
                 }
 
                 Divider()
@@ -52,6 +84,20 @@ struct LogsView: View {
                             .foregroundColor(.secondary)
                     }
                     Spacer()
+                } else if viewModel.groupByTag && !viewModel.groupedLogs.isEmpty {
+                    List {
+                        ForEach(viewModel.groupedLogs.keys.sorted(), id: \.self) { tag in
+                            Section(header: Text(tag).fontWeight(.semibold)) {
+                                ForEach(viewModel.groupedLogs[tag] ?? [], id: \.id) { log in
+                                    LogRow(log: log)
+                                        .onTapGesture {
+                                            selectedLog = log
+                                        }
+                                }
+                            }
+                        }
+                    }
+                    .listStyle(.plain)
                 } else {
                     List {
                         ForEach(viewModel.filteredLogs, id: \.id) { log in
