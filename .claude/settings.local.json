@@ -15,7 +15,9 @@
       "Bash(pod lib lint:*)",
       "Bash(swift package:*)",
       "Bash(swift build:*)",
-      "Bash(open:*)"
+      "Bash(open:*)",
+      "Bash(lipo -info:*)",
+      "Bash(xcrun simctl:*)"
     ],
     "deny": [],
     "ask": []
