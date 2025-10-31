@@ -161,14 +161,11 @@ struct MainAppView: View {
 #Preview("MainAppView - iPhone 14 Pro") {
     MainAppView()
         .preferredColorScheme(.light)
-        .previewDevice(PreviewDevice(rawValue: "iPhone 14 Pro"))
-        .previewDisplayName("iPhone 14 Pro")
 }
 
 #Preview("MainAppView - iPad") {
     MainAppView()
         .preferredColorScheme(.light)
-        .previewDevice(PreviewDevice(rawValue: "iPad (10th generation)"))
 }
 
 // MARK: - Component Previews
