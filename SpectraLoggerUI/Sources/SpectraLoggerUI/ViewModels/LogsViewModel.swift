@@ -7,9 +7,13 @@ import Combine
 class LogsViewModel: ObservableObject {
     @Published var logs: [LogEntry] = []
     @Published var filteredLogs: [LogEntry] = []
+    @Published var groupedLogs: [String: [LogEntry]] = [:] // Logs grouped by tag
     @Published var isLoading = true
     @Published var searchText = ""
     @Published var selectedLevels: Set<LogLevel> = []
+    @Published var selectedTags: Set<String> = []
+    @Published var groupByTag = false
+    @Published var availableTags: [String] = []
 
     private let storage: LogStorage
     private var cancellables = Set<AnyCancellable>()
@@ -21,12 +25,13 @@ class LogsViewModel: ObservableObject {
     }
 
     private func setupObservers() {
-        // Observe search text changes
-        $searchText
-            .combineLatest($selectedLevels, $logs)
+        // Observe search text, levels, tags, and grouping changes
+        Publishers.CombineLatest4($searchText, $selectedLevels, $selectedTags, $groupByTag)
+            .combineLatest($logs)
             .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
-            .sink { [weak self] searchText, levels, logs in
-                self?.applyFilters(searchText: searchText, levels: levels, logs: logs)
+            .sink { [weak self] combined, logs in
+                let (searchText, levels, tags, groupByTag) = combined
+                self?.applyFilters(searchText: searchText, levels: levels, tags: tags, groupByTag: groupByTag, logs: logs)
             }
             .store(in: &cancellables)
     }
@@ -40,7 +45,15 @@ class LogsViewModel: ObservableObject {
                 let result = try await storage.query(filter: noFilter, limit: nil)
                 DispatchQueue.main.async {
                     self.logs = result
-                    self.applyFilters(searchText: self.searchText, levels: self.selectedLevels, logs: result)
+                    // Extract unique tags from logs, sorted alphabetically
+                    self.availableTags = Array(Set(result.map { $0.tag })).sorted()
+                    self.applyFilters(
+                        searchText: self.searchText,
+                        levels: self.selectedLevels,
+                        tags: self.selectedTags,
+                        groupByTag: self.groupByTag,
+                        logs: result
+                    )
                     self.isLoading = false
                 }
             } catch {
@@ -57,12 +70,23 @@ class LogsViewModel: ObservableObject {
         // For now, logs are loaded on demand with loadLogs()
     }
 
-    private func applyFilters(searchText: String, levels: Set<LogLevel>, logs: [LogEntry]) {
+    private func applyFilters(
+        searchText: String,
+        levels: Set<LogLevel>,
+        tags: Set<String>,
+        groupByTag: Bool,
+        logs: [LogEntry]
+    ) {
         var filtered = logs
 
         // Filter by log level
         if !levels.isEmpty {
             filtered = filtered.filter { levels.contains($0.level) }
+        }
+
+        // Filter by tags
+        if !tags.isEmpty {
+            filtered = filtered.filter { tags.contains($0.tag) }
         }
 
         // Filter by search text (min 2 chars)
@@ -75,6 +99,13 @@ class LogsViewModel: ObservableObject {
         }
 
         filteredLogs = filtered
+
+        // Group by tag if enabled
+        if groupByTag {
+            groupedLogs = Dictionary(grouping: filtered, by: { $0.tag })
+        } else {
+            groupedLogs = [:]
+        }
     }
 
     func toggleLevel(_ level: LogLevel) {
@@ -85,11 +116,21 @@ class LogsViewModel: ObservableObject {
         }
     }
 
+    func toggleTag(_ tag: String) {
+        if selectedTags.contains(tag) {
+            selectedTags.remove(tag)
+        } else {
+            selectedTags.insert(tag)
+        }
+    }
+
     func clearLogs() {
         Task {
             try await storage.clear()
             logs = []
             filteredLogs = []
+            groupedLogs = [:]
+            availableTags = []
         }
     }
 }
