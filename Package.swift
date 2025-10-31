@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "SpectraLogger",
     platforms: [
-        .iOS(.v13)
+        .iOS(.v15)
     ],
     products: [
         .library(
