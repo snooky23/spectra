@@ -2,7 +2,7 @@
 
 This file tracks the current state, decisions, progress, and context for ongoing development sessions.
 
-**Last Updated**: 2025-10-04 (October 4th - Final Update)
+**Last Updated**: 2025-10-31 (October 31st - iOS UI Enhancements)
 
 ---
 
@@ -141,6 +141,99 @@ This file tracks the current state, decisions, progress, and context for ongoing
    - Detailed Usage Guide (docs/USAGE_GUIDE.md)
    - Publishing Guide (docs/PUBLISHING.md)
 10. ✅ Build verification & test fixes (all 58 tests passing)
+
+## Recent Session Work (October 31, 2025)
+
+### iOS SwiftUI UI Enhancements & Documentation
+
+**Key Achievements**:
+1. ✅ **Fixed Dark Mode Functionality**
+   - Issue: SettingsView was creating its own SettingsViewModel instead of using parent's
+   - Solution: Modified SpectraLoggerView to pass settingsViewModel to SettingsView
+   - Changed SettingsView to use @ObservedObject instead of @StateObject
+   - Dark mode now properly propagates across all tabs
+
+2. ✅ **Repositioned Share Buttons** (User Request)
+   - Moved from menu to prominent toolbar position
+   - Created ShareSheetModifier for native iOS share sheet integration
+   - Share button now visible in Logs and Network tabs
+
+3. ✅ **Enhanced Error Display with Stack Traces**
+   - Refactored to store stack traces in metadata (not message body)
+   - Created ExpandableErrorSection component with:
+     - Line numbers for each stack trace line
+     - Copy-to-clipboard functionality
+     - Monospaced font for readability
+     - Horizontal scroll for long lines
+   - Stack traces only shown in detail view (not list)
+   - Error logs show orange "Has Error" badge in list
+
+4. ✅ **Implemented AppContext for App-Level Metadata**
+   - Created AppContext data class with required and optional fields
+   - sessionId (required): Unique session identifier
+   - Optional: appVersion, buildNumber, deviceModel, osVersion, osName, userId
+   - Integrated into LoggerConfiguration
+   - All logs automatically enriched with AppContext in metadata
+
+5. ✅ **Added Tag-Based Filtering & Grouping**
+   - Added tag filter chips (like log level filters)
+   - Support for multiple tags (AND filtering)
+   - Toggle "Group by Tag" to organize logs into expandable sections
+   - Tags automatically extracted from loaded logs
+   - Enhanced LogsViewModel with tag management
+
+6. ✅ **Enhanced iOS Example App**
+   - Added generateStackTrace() utility function
+   - Added "Error with Stack Trace" button demonstrating stack trace logging
+   - Stack traces stored in metadata (not throwable parameter)
+   - Rich metadata example: operation, dividend, divisor, severity, error_type
+
+7. ✅ **Comprehensive Documentation Updates**
+   - **SpectraLoggerUI/README.md**:
+     - Added Advanced Usage section with tag filtering, error logging, dark mode, exports
+     - Enhanced Features section with detailed descriptions
+     - Added AppContext configuration examples
+
+   - **examples/ios-native/README.md**:
+     - Updated to reflect Swift Package Manager setup (no CocoaPods)
+     - Added error logging with stack traces example
+     - Enhanced manual testing checklist (stack traces, tags, dark mode, share)
+     - Improved "How It Works" section
+
+   - **docs/API.md**:
+     - Added AppContext documentation with fields and usage patterns
+     - Added Error Logging with Stack Traces example
+     - Enhanced Tag-Based Organization with multiple filtering examples
+     - Documented stack trace UI features
+
+   - **Main README.md**:
+     - Reorganized Features with subsections: Core Logging, Application Context, UI & Filtering
+     - Documented new features with checkmarks
+
+### Technical Details
+
+**Stack Trace Implementation**:
+- Stored in metadata["stack_trace"] (not throwable parameter)
+- KMP throwable type doesn't accept String, so metadata approach is cleaner
+- Display with line numbers, copy button, expandable UI
+
+**Tag Filtering Design**:
+- Multiple tags use AND logic (logs must have ALL selected tags)
+- Tags automatically discovered from logs
+- Grouping preserves insertion order from storage
+- UI shows available tags as chips for easy selection
+
+**AppContext Features**:
+- Applied to ALL logs automatically
+- Optional fields allow gradual adoption
+- toMetadataMap() method returns only non-null values
+- Session tracking enables log correlation
+
+### Code Quality
+- ✅ All code quality checks passing (ktlint + detekt)
+- ✅ Proper formatting with ktlint auto-formatting
+- ✅ No compiler warnings
+- ✅ Ready for production use
 
 ### Technical Decisions
 - **Kotlin/Native ↔ Objective-C**: Confirmed using Objective-C interop (not Swift) because Kotlin/Native reads C headers, not Swift interfaces
