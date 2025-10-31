@@ -1,5 +1,6 @@
 package com.spectra.logger.config
 
+import com.spectra.logger.domain.model.AppContext
 import com.spectra.logger.domain.model.LogLevel
 
 /**
@@ -12,6 +13,7 @@ data class LoggerConfiguration(
     val networkStorageConfig: StorageConfiguration = StorageConfiguration(maxCapacity = 1_000),
     val performanceConfig: PerformanceConfiguration = PerformanceConfiguration(),
     val enabledFeatures: FeatureFlags = FeatureFlags(),
+    val appContext: AppContext? = null,
 ) {
     companion object {
         /**
@@ -61,6 +63,7 @@ annotation class LoggerConfigurationDsl
 @LoggerConfigurationDsl
 class LoggerConfigurationBuilder {
     var minLogLevel: LogLevel = LogLevel.VERBOSE
+    var appContext: AppContext? = null
 
     private var logStorageConfig = StorageConfiguration()
     private var networkStorageConfig = StorageConfiguration(maxCapacity = 1_000)
@@ -103,6 +106,7 @@ class LoggerConfigurationBuilder {
             networkStorageConfig = networkStorageConfig,
             performanceConfig = performanceConfig,
             enabledFeatures = enabledFeatures,
+            appContext = appContext,
         )
 }
 
@@ -158,10 +162,27 @@ class FeatureFlagsBuilder(
 /**
  * DSL function to create logger configuration.
  *
- * Example:
+ * Example (minimal):
+ * ```
+ * val config = configure {
+ *     appContext = AppContext(sessionId = UUID.random().toString())
+ * }
+ * ```
+ *
+ * Example (full):
  * ```
  * val config = configure {
  *     minLogLevel = LogLevel.DEBUG
+ *     appContext = AppContext(
+ *         sessionId = UUID.random().toString(),
+ *         appVersion = "1.0.0",
+ *         buildNumber = "42",
+ *         deviceModel = "iPhone14Pro",
+ *         osVersion = "17.0",
+ *         osName = "iOS",
+ *         userId = "user123",
+ *         environment = "production"
+ *     )
  *     logStorage {
  *         maxCapacity = 20_000
  *     }
