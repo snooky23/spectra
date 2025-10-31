@@ -5,6 +5,7 @@ import SpectraLogger
 struct LogsView: View {
     @StateObject private var viewModel = LogsViewModel()
     @State private var selectedLog: LogEntry?
+    @State private var shareItems: [Any] = []
 
     var body: some View {
         NavigationView {
@@ -68,21 +69,34 @@ struct LogsView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {
-                        Button(role: .destructive, action: viewModel.clearLogs) {
-                            Label("Clear All Logs", systemImage: "trash")
+                        Button(action: shareAllLogs) {
+                            Label("Share All Logs", systemImage: "square.and.arrow.up")
                         }
                         Button(action: viewModel.loadLogs) {
                             Label("Refresh", systemImage: "arrow.clockwise")
+                        }
+                        Button(role: .destructive, action: viewModel.clearLogs) {
+                            Label("Clear All Logs", systemImage: "trash")
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle")
                     }
                 }
             }
+            .shareSheet(items: $shareItems)
             .sheet(item: $selectedLog) { log in
                 LogDetailView(log: log)
             }
         }
+    }
+
+    private func shareAllLogs() {
+        let logsText = viewModel.logs.map { log in
+            "[\\(log.level.name.uppercased())] \\(DateFormattingUtilities.formatFullTimestamp(log.timestamp)) - \\(log.tag): \\(log.message)"
+        }.joined(separator: "\n")
+
+        let textToShare = logsText.isEmpty ? "No logs to share" : logsText
+        shareItems = [textToShare]
     }
 
 }
