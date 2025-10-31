@@ -68,10 +68,12 @@ struct LogsView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: shareAllLogs) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {
-                        Button(action: shareAllLogs) {
-                            Label("Share All Logs", systemImage: "square.and.arrow.up")
-                        }
                         Button(action: viewModel.loadLogs) {
                             Label("Refresh", systemImage: "arrow.clockwise")
                         }
