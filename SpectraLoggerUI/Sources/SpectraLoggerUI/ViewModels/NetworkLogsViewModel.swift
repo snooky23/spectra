@@ -44,38 +44,37 @@ class NetworkLogsViewModel: ObservableObject {
         Task {
             isLoading = true
             do {
-                // Query logs from KMP storage
-                let result = try await storage.query(filter: NetworkLogFilter.none, limit: nil)
-                logs = result
-                applyFilters(
-                    searchText: searchText,
-                    methods: selectedMethods,
-                    statusRanges: selectedStatusRanges,
-                    logs: result
+                // Query network logs from KMP storage with no filter and no limit
+                let noFilter = NetworkLogFilter(
+                    methods: nil,
+                    urlPattern: nil,
+                    statusCodes: nil,
+                    minDuration: nil,
+                    showOnlyErrors: false
                 )
-
-                // Observe new logs
-                observeNewLogs()
+                let result = try await storage.query(filter: noFilter, limit: nil)
+                DispatchQueue.main.async {
+                    self.logs = result
+                    self.applyFilters(
+                        searchText: self.searchText,
+                        methods: self.selectedMethods,
+                        statusRanges: self.selectedStatusRanges,
+                        logs: result
+                    )
+                    self.isLoading = false
+                }
             } catch {
                 print("Error loading network logs: \(error)")
+                DispatchQueue.main.async {
+                    self.isLoading = false
+                }
             }
-            isLoading = false
         }
     }
 
     private func observeNewLogs() {
-        Task {
-            for await newLog in storage.observe(filter: NetworkLogFilter.none) {
-                // Prepend new log to the list
-                logs.insert(newLog, at: 0)
-                applyFilters(
-                    searchText: searchText,
-                    methods: selectedMethods,
-                    statusRanges: selectedStatusRanges,
-                    logs: logs
-                )
-            }
-        }
+        // TODO: Implement network log observation when KMP Flow-to-Swift interop is available
+        // For now, logs are loaded on demand with loadLogs()
     }
 
     private func applyFilters(

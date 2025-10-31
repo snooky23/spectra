@@ -3,254 +3,144 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 55;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AA0001 /* SpectraExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000 /* SpectraExampleApp.swift */; };
-		AA0003 /* MainAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002 /* MainAppView.swift */; };
-		AA0005 /* SpectraLoggerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0004 /* SpectraLoggerView.swift */; };
-		AA0007 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA0006 /* Assets.xcassets */; };
-		AA0009 /* SpectraLogger.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0008 /* SpectraLogger.framework */; };
-		AA000A /* SpectraLogger.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AA0008 /* SpectraLogger.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		E99EBD5D0EF5CFA7B1BE04A9 /* Pods_SpectraExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 936FAE9F4F6E8715F11BED82 /* Pods_SpectraExample.framework */; };
+		00000000000000000000000000000111 /* SpectraExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000000000211; };
+		00000000000000000000000000000112 /* MainAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000000000212; };
+		00000000000000000000000000000113 /* SpectraLoggerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000000000213; };
+		00000000000000000000000000000114 /* SpectraLoggerUI in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000000000000310; };
 /* End PBXBuildFile section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		AA000B /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				AA000A /* SpectraLogger.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
-		58D07EA35902E87521B54C5E /* Pods-SpectraExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SpectraExample.debug.xcconfig"; path = "Target Support Files/Pods-SpectraExample/Pods-SpectraExample.debug.xcconfig"; sourceTree = "<group>"; };
-		8195228F9ADCF39B039BE01E /* LogsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LogsView.swift; path = ../Views/LogsView.swift; sourceTree = "<group>"; };
-		8D9DC3618D3F1E5D501DE7CF /* SettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SettingsView.swift; path = ../Views/SettingsView.swift; sourceTree = "<group>"; };
-		936FAE9F4F6E8715F11BED82 /* Pods_SpectraExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SpectraExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		A6F11163D579A722F99B1459 /* NetworkLogsViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NetworkLogsViewModel.swift; path = ../ViewModels/NetworkLogsViewModel.swift; sourceTree = "<group>"; };
-		AA0000 /* SpectraExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectraExampleApp.swift; sourceTree = "<group>"; };
-		AA0002 /* MainAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppView.swift; sourceTree = "<group>"; };
-		AA0004 /* SpectraLoggerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectraLoggerView.swift; sourceTree = "<group>"; };
-		AA0006 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		AA0008 /* SpectraLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpectraLogger.framework; path = ../../shared/build/bin/iosSimulatorArm64/debugFramework/SpectraLogger.framework; sourceTree = "<group>"; };
-		AAFFFF /* SpectraExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpectraExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		C142B4693C50AA790A968E05 /* LogsViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LogsViewModel.swift; path = ../ViewModels/LogsViewModel.swift; sourceTree = "<group>"; };
-		D23EC76B25200D1CA1642D4A /* NetworkLogsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NetworkLogsView.swift; path = ../Views/NetworkLogsView.swift; sourceTree = "<group>"; };
-		DADEC8E15F7CA0426FD52D75 /* Pods-SpectraExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SpectraExample.release.xcconfig"; path = "Target Support Files/Pods-SpectraExample/Pods-SpectraExample.release.xcconfig"; sourceTree = "<group>"; };
-		EFCED8CC39672C46ACAA51A7 /* SettingsViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SettingsViewModel.swift; path = ../ViewModels/SettingsViewModel.swift; sourceTree = "<group>"; };
+		00000000000000000000000000000001 /* SpectraExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpectraExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		00000000000000000000000000000211 /* SpectraExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectraExample/SpectraExampleApp.swift; sourceTree = SOURCE_ROOT; };
+		00000000000000000000000000000212 /* MainAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectraExample/MainAppView.swift; sourceTree = SOURCE_ROOT; };
+		00000000000000000000000000000213 /* SpectraLoggerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectraExample/SpectraLoggerView.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		AAFFFB /* Frameworks */ = {
+		00000000000000000000000000000410 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA0009 /* SpectraLogger.framework in Frameworks */,
-				E99EBD5D0EF5CFA7B1BE04A9 /* Pods_SpectraExample.framework in Frameworks */,
+				00000000000000000000000000000114 /* SpectraLoggerUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		4CA97905AF23DC7BD3A4E36C /* Pods */ = {
+		00000000000000000000000000000501 = {
 			isa = PBXGroup;
 			children = (
-				58D07EA35902E87521B54C5E /* Pods-SpectraExample.debug.xcconfig */,
-				DADEC8E15F7CA0426FD52D75 /* Pods-SpectraExample.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
-			sourceTree = "<group>";
-		};
-		7C8E25A159FBFB8B33A1FCBA /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				8195228F9ADCF39B039BE01E /* LogsView.swift */,
-				D23EC76B25200D1CA1642D4A /* NetworkLogsView.swift */,
-				8D9DC3618D3F1E5D501DE7CF /* SettingsView.swift */,
-			);
-			name = Views;
-			sourceTree = "<group>";
-		};
-		AAFFF5 = {
-			isa = PBXGroup;
-			children = (
-				AAFFF7 /* SpectraExample */,
-				AAFFF8 /* Frameworks */,
-				AAFFFE /* Products */,
-				4CA97905AF23DC7BD3A4E36C /* Pods */,
+				00000000000000000000000000000601,
+				00000000000000000000000000000701,
 			);
 			sourceTree = "<group>";
 		};
-		AAFFF7 /* SpectraExample */ = {
+		00000000000000000000000000000601 /* SpectraExample */ = {
 			isa = PBXGroup;
 			children = (
-				AA0000 /* SpectraExampleApp.swift */,
-				AA0002 /* MainAppView.swift */,
-				AA0004 /* SpectraLoggerView.swift */,
-				AA0006 /* Assets.xcassets */,
-				F48B27A96A269D341821DE69 /* ViewModels */,
-				7C8E25A159FBFB8B33A1FCBA /* Views */,
+				00000000000000000000000000000211 /* SpectraExampleApp.swift */,
+				00000000000000000000000000000212 /* MainAppView.swift */,
+				00000000000000000000000000000213 /* SpectraLoggerView.swift */,
 			);
 			path = SpectraExample;
-			sourceTree = "<group>";
+			sourceTree = SOURCE_ROOT;
 		};
-		AAFFF8 /* Frameworks */ = {
+		00000000000000000000000000000701 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AA0008 /* SpectraLogger.framework */,
-				936FAE9F4F6E8715F11BED82 /* Pods_SpectraExample.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		AAFFFE /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				AAFFFF /* SpectraExample.app */,
+				00000000000000000000000000000001 /* SpectraExample.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		F48B27A96A269D341821DE69 /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-				C142B4693C50AA790A968E05 /* LogsViewModel.swift */,
-				A6F11163D579A722F99B1459 /* NetworkLogsViewModel.swift */,
-				EFCED8CC39672C46ACAA51A7 /* SettingsViewModel.swift */,
-			);
-			name = ViewModels;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AAFFFC /* SpectraExample */ = {
+		00000000000000000000000000000801 /* SpectraExample */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AA000D /* Build configuration list for PBXNativeTarget "SpectraExample" */;
+			buildConfigurationList = 00000000000000000000000000000901 /* Build configuration list for PBXNativeTarget "SpectraExample" */;
 			buildPhases = (
-				D6FBC2F8F3A556F6C7F01EB9 /* [CP] Check Pods Manifest.lock */,
-				AAFFFB /* Frameworks */,
-				AAFFFA /* Resources */,
-				AAFFF9 /* Sources */,
-				AA000B /* Embed Frameworks */,
+				00000000000000000000000000000410 /* Frameworks */,
+				00000000000000000000000000001010 /* Sources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = SpectraExample;
+			packageProductDependencies = (
+				00000000000000000000000000000310 /* SpectraLoggerUI */,
+			);
 			productName = SpectraExample;
-			productReference = AAFFFF /* SpectraExample.app */;
+			productReference = 00000000000000000000000000000001 /* SpectraExample.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		AAFFF6 /* Project object */ = {
+		00000000000000000000000000001101 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					AAFFFC = {
+					00000000000000000000000000000801 = {
 						CreatedOnToolsVersion = 15.0;
 					};
 				};
 			};
-			buildConfigurationList = AA000C /* Build configuration list for PBXProject "SpectraExample" */;
-			compatibilityVersion = "Xcode 14.0";
+			buildConfigurationList = 00000000000000000000000000001201 /* Build settings for project "SpectraExample" */;
+			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = AAFFF5;
-			productRefGroup = AAFFFE /* Products */;
+			mainGroup = 00000000000000000000000000000501;
+			packageReferences = (
+				00000000000000000000000000000320 /* XCLocalSwiftPackageReference "../../SpectraLoggerUI" */,
+			);
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AAFFFC /* SpectraExample */,
+				00000000000000000000000000000801 /* SpectraExample */,
 			);
 		};
 /* End PBXProject section */
 
-/* Begin PBXResourcesBuildPhase section */
-		AAFFFA /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				AA0007 /* Assets.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		D6FBC2F8F3A556F6C7F01EB9 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SpectraExample-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
-		AAFFF9 /* Sources */ = {
+		00000000000000000000000000001010 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA0001 /* SpectraExampleApp.swift in Sources */,
-				AA0003 /* MainAppView.swift in Sources */,
-				AA0005 /* SpectraLoggerView.swift in Sources */,
+				00000000000000000000000000000111 /* SpectraExampleApp.swift in Sources */,
+				00000000000000000000000000000112 /* MainAppView.swift in Sources */,
+				00000000000000000000000000000113 /* SpectraLoggerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		AA0010 /* Debug */ = {
+		00000000000000000000000000001301 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LANGUAGE_DIALECT = "c++20";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -267,15 +157,14 @@
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_C_LANGUAGE_DIALECT = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -290,31 +179,28 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		AA0011 /* Release */ = {
+		00000000000000000000000000001302 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LANGUAGE_DIALECT = "c++20";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -331,15 +217,14 @@
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_C_LANGUAGE_DIALECT = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -348,91 +233,68 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		AA0012 /* Debug */ = {
+		00000000000000000000000000001401 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 58D07EA35902E87521B54C5E /* Pods-SpectraExample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/../../shared/build/bin/iosSimulatorArm64/debugFramework",
-				);
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Spectra Example";
-				INFOPLIST_KEY_CFBundleURLTypes = "{\"CFBundleTypeRole\"=>\"Editor\", \"CFBundleURLName\"=>\"com.spectra.logger\", \"CFBundleURLSchemes\"=>[\"spectralogger\"]}";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifestType = UISceneManifestTypeCode;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UIStatusBarHidden = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLe";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.spectra.logger.example;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.spectra.logger.example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		AA0013 /* Release */ = {
+		00000000000000000000000000001402 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DADEC8E15F7CA0426FD52D75 /* Pods-SpectraExample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/../../shared/build/bin/iosSimulatorArm64/debugFramework",
-				);
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Spectra Example";
-				INFOPLIST_KEY_CFBundleURLTypes = "{\"CFBundleTypeRole\"=>\"Editor\", \"CFBundleURLName\"=>\"com.spectra.logger\", \"CFBundleURLSchemes\"=>[\"spectralogger\"]}";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifestType = UISceneManifestTypeCode;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UIStatusBarHidden = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLe";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.spectra.logger.example;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.spectra.logger.example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -442,25 +304,41 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AA000C /* Build configuration list for PBXProject "SpectraExample" */ = {
+		00000000000000000000000000001201 /* Build settings for project "SpectraExample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AA0010 /* Debug */,
-				AA0011 /* Release */,
+				00000000000000000000000000001301 /* Debug */,
+				00000000000000000000000000001302 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AA000D /* Build configuration list for PBXNativeTarget "SpectraExample" */ = {
+		00000000000000000000000000000901 /* Build configuration list for PBXNativeTarget "SpectraExample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AA0012 /* Debug */,
-				AA0013 /* Release */,
+				00000000000000000000000000001401 /* Debug */,
+				00000000000000000000000000001402 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		00000000000000000000000000000310 /* SpectraLoggerUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 00000000000000000000000000000320 /* XCLocalSwiftPackageReference "../../SpectraLoggerUI" */;
+			productName = SpectraLoggerUI;
+		};
+/* End XCSwiftPackageProductDependency section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		00000000000000000000000000000320 /* XCLocalSwiftPackageReference "../../SpectraLoggerUI" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../SpectraLoggerUI";
+		};
+/* End XCLocalSwiftPackageReference section */
+
 	};
-	rootObject = AAFFF6 /* Project object */;
+	rootObject = 00000000000000000000000000001101 /* Project object */;
 }

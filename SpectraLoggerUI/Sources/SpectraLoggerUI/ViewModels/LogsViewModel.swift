@@ -35,28 +35,26 @@ class LogsViewModel: ObservableObject {
         Task {
             isLoading = true
             do {
-                // Query logs from KMP storage
-                let result = try await storage.query(filter: LogFilter.none, limit: nil)
-                logs = result
-                applyFilters(searchText: searchText, levels: selectedLevels, logs: result)
-
-                // Observe new logs
-                observeNewLogs()
+                // Query logs from KMP storage with no filter (all properties nil) and no limit
+                let noFilter = LogFilter(levels: nil, tags: nil, searchText: nil, fromTimestamp: nil, toTimestamp: nil)
+                let result = try await storage.query(filter: noFilter, limit: nil)
+                DispatchQueue.main.async {
+                    self.logs = result
+                    self.applyFilters(searchText: self.searchText, levels: self.selectedLevels, logs: result)
+                    self.isLoading = false
+                }
             } catch {
                 print("Error loading logs: \(error)")
+                DispatchQueue.main.async {
+                    self.isLoading = false
+                }
             }
-            isLoading = false
         }
     }
 
     private func observeNewLogs() {
-        Task {
-            for await newLog in storage.observe(filter: LogFilter.none) {
-                // Prepend new log to the list
-                logs.insert(newLog, at: 0)
-                applyFilters(searchText: searchText, levels: selectedLevels, logs: logs)
-            }
-        }
+        // TODO: Implement log observation when KMP Flow-to-Swift interop is available
+        // For now, logs are loaded on demand with loadLogs()
     }
 
     private func applyFilters(searchText: String, levels: Set<LogLevel>, logs: [LogEntry]) {
