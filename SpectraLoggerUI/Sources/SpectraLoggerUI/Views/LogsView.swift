@@ -22,7 +22,7 @@ struct LogsView: View {
                                 FilterChip(
                                     title: level.name,
                                     isSelected: viewModel.selectedLevels.contains(level),
-                                    color: colorForLogLevel(level)
+                                    color: ColorUtilities.colorForLogLevel(level)
                                 ) {
                                     viewModel.toggleLevel(level)
                                 }
@@ -85,17 +85,6 @@ struct LogsView: View {
         }
     }
 
-    private func colorForLogLevel(_ level: LogLevel) -> Color {
-        switch level {
-        case .verbose: return .secondary
-        case .debug: return .blue
-        case .info: return .green
-        case .warning: return .orange
-        case .error: return .red
-        case .fatal: return .purple
-        default: return .gray
-        }
-    }
 }
 
 /// Single log entry row
@@ -111,8 +100,8 @@ struct LogRow: View {
                     .fontWeight(.semibold)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 2)
-                    .background(colorForLogLevel(log.level).opacity(0.2))
-                    .foregroundColor(colorForLogLevel(log.level))
+                    .background(ColorUtilities.colorForLogLevel(log.level).opacity(0.2))
+                    .foregroundColor(ColorUtilities.colorForLogLevel(log.level))
                     .cornerRadius(4)
 
                 // Tag
@@ -123,7 +112,7 @@ struct LogRow: View {
                 Spacer()
 
                 // Timestamp
-                Text(formatTimestamp(log.timestamp))
+                Text(DateFormattingUtilities.formatShortTime(log.timestamp))
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
@@ -147,24 +136,7 @@ struct LogRow: View {
         .padding(.vertical, 4)
     }
 
-    private func colorForLogLevel(_ level: LogLevel) -> Color {
-        switch level {
-        case .verbose: return .secondary
-        case .debug: return .blue
-        case .info: return .green
-        case .warning: return .orange
-        case .error: return .red
-        case .fatal: return .purple
-        default: return .gray
-        }
-    }
 
-    private func formatTimestamp(_ timestamp: Kotlinx_datetimeInstant) -> String {
-        let date = Date(timeIntervalSince1970: TimeInterval(timestamp.epochSeconds))
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm:ss"
-        return formatter.string(from: date)
-    }
 }
 
 /// Log detail sheet
@@ -182,13 +154,13 @@ struct LogDetailView: View {
                             .font(.headline)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
-                            .background(colorForLogLevel(log.level).opacity(0.2))
-                            .foregroundColor(colorForLogLevel(log.level))
+                            .background(ColorUtilities.colorForLogLevel(log.level).opacity(0.2))
+                            .foregroundColor(ColorUtilities.colorForLogLevel(log.level))
                             .cornerRadius(6)
 
                         Spacer()
 
-                        Text(formatFullTimestamp(log.timestamp))
+                        Text(DateFormattingUtilities.formatFullTimestamp(log.timestamp))
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -241,25 +213,7 @@ struct LogDetailView: View {
         }
     }
 
-    private func colorForLogLevel(_ level: LogLevel) -> Color {
-        switch level {
-        case .verbose: return .secondary
-        case .debug: return .blue
-        case .info: return .green
-        case .warning: return .orange
-        case .error: return .red
-        case .fatal: return .purple
-        default: return .gray
-        }
-    }
 
-    private func formatFullTimestamp(_ timestamp: Kotlinx_datetimeInstant) -> String {
-        let date = Date(timeIntervalSince1970: TimeInterval(timestamp.epochSeconds))
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .medium
-        return formatter.string(from: date)
-    }
 }
 
 /// Reusable detail section
