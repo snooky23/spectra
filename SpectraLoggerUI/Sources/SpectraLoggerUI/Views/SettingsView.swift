@@ -3,7 +3,7 @@ import SpectraLogger
 
 /// Pure SwiftUI Settings screen with native iOS design
 struct SettingsView: View {
-    @StateObject private var viewModel = SettingsViewModel()
+    @ObservedObject var viewModel: SettingsViewModel
 
     var body: some View {
         NavigationView {
@@ -143,11 +143,11 @@ struct SettingsView: View {
 // MARK: - Previews
 
 #Preview("SettingsView - Light") {
-    SettingsView()
+    SettingsView(viewModel: SettingsViewModel())
         .preferredColorScheme(.light)
 }
 
 #Preview("SettingsView - Dark") {
-    SettingsView()
+    SettingsView(viewModel: SettingsViewModel())
         .preferredColorScheme(.dark)
 }
