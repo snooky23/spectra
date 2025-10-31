@@ -23,17 +23,18 @@ let package = Package(
         // For distribution (using released binary):
         //   Use the URL-based target (default)
 
-        // DISTRIBUTION: Released binary from GitHub Releases
+        // LOCAL DEVELOPMENT: Uncomment for local builds
         .binaryTarget(
             name: "SpectraLogger",
-            url: "https://github.com/snooky23/spectra/releases/download/v1.0.0/SpectraLogger.xcframework.zip",
-            checksum: "2d1892d4f8836ab59e0a5bb8c4e1de06af1ef96fbae357923126f08cfa8b7bef"
+            path: "build/xcframework/SpectraLogger.xcframework"
         )
 
-        // LOCAL DEVELOPMENT: Uncomment for local builds
+        // DISTRIBUTION: Released binary from GitHub Releases
+        // Uncomment for distribution builds
         // .binaryTarget(
         //     name: "SpectraLogger",
-        //     path: "build/xcframework/SpectraLogger.xcframework"
+        //     url: "https://github.com/snooky23/spectra/releases/download/v1.0.0/SpectraLogger.xcframework.zip",
+        //     checksum: "2d1892d4f8836ab59e0a5bb8c4e1de06af1ef96fbae357923126f08cfa8b7bef"
         // )
     ]
 )

@@ -93,6 +93,9 @@ public struct SpectraLoggerView: View {
             }
         }
         .preferredColorScheme(settingsViewModel.appearanceMode.colorScheme)
+        .onReceive(settingsViewModel.$appearanceMode) { _ in
+            // Ensure view re-evaluates when appearanceMode changes
+        }
     }
 }
 

@@ -17,7 +17,8 @@
       "Bash(swift build:*)",
       "Bash(open:*)",
       "Bash(lipo -info:*)",
-      "Bash(xcrun simctl:*)"
+      "Bash(xcrun simctl:*)",
+      "Bash(gh issue list:*)"
     ],
     "deny": [],
     "ask": []
