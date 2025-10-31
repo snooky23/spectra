@@ -12,11 +12,31 @@ A Kotlin Multiplatform logging framework for mobile applications that works seam
 
 ## Features
 
+### Core Logging
 - ✅ **Application event logging** with severity levels (Verbose, Debug, Info, Warning, Error, Fatal)
 - ✅ **Network request/response logging** (OkHttp, URLSession, Ktor)
+- ✅ **Unique message IDs** for tracking individual log entries
+- ✅ **Stack trace capture** for errors and exceptions
+- ✅ **Metadata support** for additional context on every log
+
+### Application Context
+- ✅ **AppContext model** - Capture app info once, enrich all logs automatically
+- ✅ **Build/Version info** - Version, build number for reproduction
+- ✅ **Device information** - Model, OS version for environment-specific bugs
+- ✅ **Session tracking** - Group related logs within a session
+- ✅ **User identification** - Optional user ID for user-specific debugging
+
+### UI & Filtering
 - ✅ **On-device mobile UI** for viewing and filtering logs
+- ✅ **Multi-level filtering** - By log level, tag, and search text
+- ✅ **Tag-based grouping** - Organize logs by component/source
+- ✅ **Expandable error sections** - View full stack traces with line numbers
+- ✅ **Share native buttons** - Export logs via iOS share sheet
+- ✅ **Dark mode support** - Light/Dark/System appearance modes
+
+### Advanced Features
 - ✅ **Multiple trigger options** - Shake gesture, notification, URL scheme, programmatic
-- ✅ **Export & share functionality** (TEXT, JSON, CSV formats)
+- ✅ **Export & share functionality** (TEXT, JSON formats)
 - ✅ **URL scheme deep linking** - Open logger via `spectra://` from ADB, browser, or terminal
 - ✅ **Zero permissions required** - no cloud services, no invasive permissions
 - ✅ **Thread-safe** and **performant** (< 0.1ms log capture)
