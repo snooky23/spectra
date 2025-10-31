@@ -53,6 +53,34 @@ struct SectionHeader: View {
     }
 }
 
+// MARK: - Utility Functions
+
+/// Generates a mock stack trace for demonstrating error logging
+func generateStackTrace() -> String {
+    let stackTrace = """
+    Fatal error: Attempted to divide by zero
+    Stack trace:
+    0 SpectraExample                    0x0000000104b8e3a0 calculateDivision(_:) + 52
+    1 SpectraExample                    0x0000000104b8e2c8 processUserInput(_:) + 120
+    2 SpectraExample                    0x0000000104b8e1f0 handleButtonTap() + 88
+    3 UIKitCore                         0x00000001a01c9e20 -[UIApplication sendAction:to:from:forEvent:] + 96
+    4 UIKitCore                         0x00000001a01c9c00 -[UIControl sendAction:withEvent:] + 128
+    5 UIKitCore                         0x00000001a01ca020 -[UIControl _sendActionsForEvents:withEvent:] + 324
+    6 SwiftUI                           0x00000001a8c4f188 <closure>() + 420
+    7 SwiftUI                           0x00000001a8c4e5d8 closure #1 in _EnvironmentKeyWritingModifier.body + 360
+    8 CoreFoundation                    0x000000019fb3e504 __CFRUNLOOP_IS_CALLING_OUT_TO_A_BLOCK__ + 24
+    9 CoreFoundation                    0x000000019fb3e050 __CFRunLoopDoBlocks + 368
+    10 CoreFoundation                   0x000000019fb3c9e0 __CFRunLoopRun + 828
+    11 CoreFoundation                   0x000000019fb3c400 CFRunLoopRunSpecific + 600
+    12 GraphicsServices                 0x00000001a4a96050 GSEventRunModal + 164
+    13 UIKitCore                        0x00000001a01b1de8 -[UIApplication _run] + 888
+    14 UIKitCore                        0x00000001a01b1268 UIApplicationMain + 340
+    15 SpectraExample                   0x0000000104b8e000 main + 8
+    16 dyld                             0x00000001a01b9e94 start + 2220
+    """
+    return stackTrace
+}
+
 // MARK: - Main App View
 
 /// Main app screen with example content and button to open Spectra Logger
@@ -114,6 +142,27 @@ struct MainAppView: View {
                                 message: "Error log generated",
                                 throwable: nil,
                                 metadata: [:]
+                            )
+                        }
+                    )
+
+                    LogButton(
+                        label: "Error with Stack Trace",
+                        icon: "exclamationmark.triangle.fill",
+                        backgroundColor: .red,
+                        action: {
+                            let stackTrace = generateStackTrace()
+                            SpectraLogger.shared.e(
+                                tag: "Example",
+                                message: "Fatal error: Attempted to divide by zero\n\(stackTrace)",
+                                throwable: nil,
+                                metadata: [
+                                    "operation": "calculateDivision",
+                                    "dividend": "10",
+                                    "divisor": "0",
+                                    "severity": "CRITICAL",
+                                    "error_type": "ArithmeticException"
+                                ]
                             )
                         }
                     )
