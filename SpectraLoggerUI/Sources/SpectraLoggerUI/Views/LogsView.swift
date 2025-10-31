@@ -191,21 +191,26 @@ struct LogDetailView: View {
                         Text(log.message)
                     }
 
-                    // Error / Stack Trace
+                    // Error / Stack Trace (from throwable or metadata)
                     if let error = log.throwable {
                         ExpandableErrorSection(error: error)
+                    } else if let stackTrace = log.metadata["stack_trace"] {
+                        ExpandableErrorSection(error: stackTrace)
                     }
 
-                    // Metadata
+                    // Metadata (excluding stack_trace if already displayed)
                     if !log.metadata.isEmpty {
-                        DetailSection(title: "Metadata") {
-                            ForEach(Array(log.metadata.keys.sorted()), id: \.self) { key in
-                                HStack(alignment: .top) {
-                                    Text(key)
-                                        .fontWeight(.medium)
-                                    Spacer()
-                                    Text(log.metadata[key] ?? "")
-                                        .foregroundColor(.secondary)
+                        let filteredMetadata = log.metadata.filter { $0.key != "stack_trace" }
+                        if !filteredMetadata.isEmpty {
+                            DetailSection(title: "Metadata") {
+                                ForEach(Array(filteredMetadata.keys.sorted()), id: \.self) { key in
+                                    HStack(alignment: .top) {
+                                        Text(key)
+                                            .fontWeight(.medium)
+                                        Spacer()
+                                        Text(filteredMetadata[key] ?? "")
+                                            .foregroundColor(.secondary)
+                                    }
                                 }
                             }
                         }
