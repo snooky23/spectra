@@ -68,34 +68,29 @@ public struct SpectraLoggerView: View {
     public init() {}
 
     public var body: some View {
-        ZStack {
-            TabView(selection: $selectedTab) {
-                // Logs Tab
-                LogsView()
-                    .tabItem {
-                        Label("Logs", systemImage: "list.bullet.rectangle")
-                    }
-                    .tag(0)
+        TabView(selection: $selectedTab) {
+            // Logs Tab
+            LogsView()
+                .tabItem {
+                    Label("Logs", systemImage: "list.bullet.rectangle")
+                }
+                .tag(0)
 
-                // Network Tab
-                NetworkLogsView()
-                    .tabItem {
-                        Label("Network", systemImage: "network")
-                    }
-                    .tag(1)
+            // Network Tab
+            NetworkLogsView()
+                .tabItem {
+                    Label("Network", systemImage: "network")
+                }
+                .tag(1)
 
-                // Settings Tab
-                SettingsView(viewModel: settingsViewModel)
-                    .tabItem {
-                        Label("Settings", systemImage: "gearshape")
-                    }
-                    .tag(2)
-            }
+            // Settings Tab
+            SettingsView(viewModel: settingsViewModel)
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape")
+                }
+                .tag(2)
         }
         .preferredColorScheme(settingsViewModel.appearanceMode.colorScheme)
-        .onReceive(settingsViewModel.$appearanceMode) { _ in
-            // Ensure view re-evaluates when appearanceMode changes
-        }
     }
 }
 
