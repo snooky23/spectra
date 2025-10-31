@@ -140,6 +140,14 @@ struct SettingsView: View {
     }
 }
 
-#Preview {
+// MARK: - Previews
+
+#Preview("SettingsView - Light") {
     SettingsView()
+        .preferredColorScheme(.light)
+}
+
+#Preview("SettingsView - Dark") {
+    SettingsView()
+        .preferredColorScheme(.dark)
 }
