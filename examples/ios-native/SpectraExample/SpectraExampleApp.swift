@@ -1,4 +1,5 @@
 import SwiftUI
+import SpectraLogger
 
 @main
 struct SpectraExampleApp: App {
@@ -6,7 +7,10 @@ struct SpectraExampleApp: App {
         // Initialize app
         print("Spectra Logger iOS Example Started")
         print("Version: 1.0.0")
-        // TODO: Initialize SpectraLogger when framework is integrated
+
+        // Initialize SpectraLogger with default configuration
+        // SpectraLogger initializes automatically, no explicit init needed
+        print("SpectraLogger version: \(SpectraLogger.shared.getVersion())")
     }
 
     var body: some Scene {

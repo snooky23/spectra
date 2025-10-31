@@ -42,8 +42,10 @@ class SettingsViewModel: ObservableObject {
 
     func loadCounts() {
         Task {
-            logCount = try await logStorage.count()
-            networkLogCount = try await networkStorage.count()
+            let logCountKt = try await logStorage.count()
+            logCount = Int(logCountKt.int32Value)
+            let networkCountKt = try await networkStorage.count()
+            networkLogCount = Int(networkCountKt.int32Value)
         }
     }
 
