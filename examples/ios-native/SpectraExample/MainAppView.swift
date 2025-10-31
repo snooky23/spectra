@@ -154,14 +154,15 @@ struct MainAppView: View {
                             let stackTrace = generateStackTrace()
                             SpectraLogger.shared.e(
                                 tag: "Example",
-                                message: "Fatal error: Attempted to divide by zero\n\(stackTrace)",
+                                message: "Fatal error: Attempted to divide by zero",
                                 throwable: nil,
                                 metadata: [
                                     "operation": "calculateDivision",
                                     "dividend": "10",
                                     "divisor": "0",
                                     "severity": "CRITICAL",
-                                    "error_type": "ArithmeticException"
+                                    "error_type": "ArithmeticException",
+                                    "stack_trace": stackTrace
                                 ]
                             )
                         }
