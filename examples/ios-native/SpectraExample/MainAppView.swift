@@ -148,25 +148,11 @@ struct MainAppView: View {
     }
 }
 
-#Preview("MainAppView - Light") {
-    MainAppView()
-        .preferredColorScheme(.light)
-}
-
-#Preview("MainAppView - Dark") {
-    MainAppView()
-        .preferredColorScheme(.dark)
-}
-
-#Preview("MainAppView - iPhone 14 Pro") {
-    MainAppView()
-        .preferredColorScheme(.light)
-}
-
-#Preview("MainAppView - iPad") {
-    MainAppView()
-        .preferredColorScheme(.light)
-}
+// Full app previews require a running simulator due to KMP framework dependencies.
+// To test the full app:
+// 1. Start a simulator: xcrun simctl boot "iPhone 16 Pro"
+// 2. Run the app: xcodebuild install -scheme SpectraExample -configuration Debug -sdk iphonesimulator -arch arm64
+// For quick UI previews, see Component Previews section below
 
 // MARK: - Component Previews
 
@@ -175,9 +161,7 @@ struct MainAppView: View {
         label: "Tap Me (Generates Log)",
         icon: "hand.tap",
         backgroundColor: .blue,
-        action: {
-            SpectraLogger.shared.i(tag: "Preview", message: "Button tapped", throwable: nil, metadata: [:])
-        }
+        action: {}
     )
     .padding()
 }
@@ -187,9 +171,7 @@ struct MainAppView: View {
         label: "Generate Warning",
         icon: "exclamationmark.triangle",
         backgroundColor: .orange,
-        action: {
-            SpectraLogger.shared.w(tag: "Preview", message: "Warning generated", throwable: nil, metadata: [:])
-        }
+        action: {}
     )
     .padding()
 }
@@ -199,9 +181,7 @@ struct MainAppView: View {
         label: "Generate Error",
         icon: "xmark.circle",
         backgroundColor: .red,
-        action: {
-            SpectraLogger.shared.e(tag: "Preview", message: "Error generated", throwable: nil, metadata: [:])
-        }
+        action: {}
     )
     .padding()
 }
