@@ -41,19 +41,41 @@ To switch to released versions, modify the package dependencies in Xcode project
 
 ## Features Demonstrated
 
-- **Main App Screen**: Example app with button to open Spectra Logger
-- **Deep Linking**: URL scheme support to open logger from other apps
-- **Logging**: All log levels (Verbose, Debug, Info, Warning, Error, Fatal)
-- **Metadata**: Structured logging with key-value pairs
-- **UI Components** (using Compose Multiplatform UI):
-  - Log list screen with search and filtering
-  - Network logs screen
-  - Modern Material 3 UI components
-- **Native SwiftUI Settings**:
-  - Storage management
-  - Log clearing
-  - Export functionality
-- **Framework Integration**: Shows how to use Kotlin Multiplatform framework from Swift
+### Core Logging Features
+- ✅ **All Log Levels**: Verbose, Debug, Info, Warning, Error, Fatal
+- ✅ **Structured Logging**: Key-value metadata support
+- ✅ **Error Tracking**: Full stack trace capture with line numbers
+- ✅ **Error Display**: Expandable error sections with copy functionality
+- ✅ **Session Tracking**: App context with version, build, device info
+
+### UI Features
+- ✅ **Logs Tab**:
+  - Real-time log display and updates
+  - Multi-level filtering (by log level AND tags)
+  - Tag-based grouping with expandable sections
+  - Search with 2+ character minimum
+  - Expandable error sections with stack traces
+  - Copy button for stack traces
+
+- ✅ **Network Tab**:
+  - HTTP request/response logging
+  - Filter by method (GET, POST, PUT, DELETE, PATCH)
+  - Filter by status code ranges
+  - View headers and response bodies
+
+- ✅ **Settings Tab**:
+  - Dark mode control (Light/Dark/System)
+  - Storage statistics
+  - Log clearing with confirmation
+  - Share/export functionality
+
+- ✅ **Native Share Sheet**: Export logs via iOS native sharing
+
+### Advanced Features
+- ✅ **Deep Linking**: URL scheme support (`spectra://` and `spectralogger://`)
+- ✅ **Dark Mode**: Persistent theme selection
+- ✅ **AppContext**: App-level metadata enriching all logs
+- ✅ **Framework Integration**: Demonstrates Kotlin Multiplatform integration from Swift
 
 ## Project Structure
 
@@ -77,54 +99,126 @@ examples/ios-native/
 
 ### 1. Framework Linking
 
-**With CocoaPods**:
-- The framework is managed as a local pod via `Podfile`
-- CocoaPods automatically builds the framework using the `prepare_command` in `SpectraLogger.podspec`
-- Framework is located at `../../shared/build/cocoapods/framework/SpectraLogger.framework`
+This example uses **Swift Package Manager** for dependency management:
+- `SpectraLoggerUI` is a local Swift package (at `../../SpectraLoggerUI`)
+- `SpectraLogger` is a binary XCFramework (at `build/xcframework/SpectraLogger.xcframework`)
 
-**With Direct Linking**:
-- **FRAMEWORK_SEARCH_PATHS**: Points to `../../shared/build/bin/iosSimulatorArm64/debugFramework`
-- **Embedded Framework**: `SpectraLogger.framework` is embedded in the app bundle
+No CocoaPods setup is required!
 
 ### 2. Logger Initialization
 
 In `SpectraExampleApp.swift`:
 ```swift
-SpectraLoggerKt.doInitialize(
-    config: SpectraConfig(
-        minLogLevel: LogLevel.verbose,
-        maxInMemoryLogs: 10000,
-        maxNetworkLogs: 1000,
-        enableConsoleLogging: true
-    )
+import SpectraLogger
+
+@main
+struct SpectraExampleApp: App {
+    init() {
+        // Initialize with app context
+        SpectraLogger.shared.configure { config in
+            config.appContext = AppContext(
+                sessionId: UUID().uuidString,
+                appVersion: "1.0.0",
+                buildNumber: "1",
+                deviceModel: "iPhone",
+                osVersion: "17.0",
+                osName: "iOS",
+                environment: "development"
+            )
+        }
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}
+```
+
+### 3. Basic Logging
+
+```swift
+import SpectraLogger
+
+// Simple info log
+SpectraLogger.shared.i(tag: "Example", message: "App launched")
+
+// Warning with metadata
+SpectraLogger.shared.w(
+    tag: "Performance",
+    message: "Slow operation detected",
+    metadata: ["duration_ms": "500"]
+)
+
+// Error without stack trace
+SpectraLogger.shared.e(
+    tag: "Network",
+    message: "Connection failed"
 )
 ```
 
-### 3. Logging from Swift
+### 4. Error Logging with Stack Traces
+
+The example app demonstrates full error tracking:
 
 ```swift
-SpectraLoggerKt.i(tag: "User", message: "User opened the app")
-SpectraLoggerKt.w(tag: "Performance", message: "Large dataset detected")
-SpectraLoggerKt.e(tag: "Network", message: "Failed to fetch data")
+func generateStackTrace() -> String {
+    let stackTrace = """
+    Fatal error: Attempted to divide by zero
+    Stack trace:
+    0 SpectraExample                    0x0000000104b8e3a0 calculateDivision(_:) + 52
+    1 SpectraExample                    0x0000000104b8e2c8 processUserInput(_:) + 120
+    ... (additional frames)
+    16 dyld                             0x00000001a01b9e94 start + 2220
+    """
+    return stackTrace
+}
 
-// With metadata
-let metadata = ["user_id": "12345", "platform": "iOS"]
-SpectraLoggerKt.i(tag: "User", message: "Login successful", metadata: metadata)
+// Log error with stack trace in metadata
+SpectraLogger.shared.e(
+    tag: "Example",
+    message: "Fatal error: Attempted to divide by zero",
+    throwable: nil,
+    metadata: [
+        "operation": "calculateDivision",
+        "dividend": "10",
+        "divisor": "0",
+        "severity": "CRITICAL",
+        "error_type": "ArithmeticException",
+        "stack_trace": generateStackTrace()
+    ]
+)
 ```
 
-### 4. Compose UI in SwiftUI
+In the UI:
+1. Error appears in the log list with orange "Has Error" badge
+2. Tap the error to open the detail view
+3. Click the "Error / Stack Trace" section to expand
+4. View the full stack trace with line numbers
+5. Tap the copy button to copy trace to clipboard
 
-The log viewer uses Compose Multiplatform UI wrapped in SwiftUI:
+### 5. SwiftUI Integration
+
+The example shows how to present the logger UI from your app:
+
 ```swift
-struct ComposeViewController: UIViewControllerRepresentable {
-    let viewController: UIViewController
+struct MainAppView: View {
+    @State private var showLogger = false
 
-    func makeUIViewController(context: Context) -> UIViewController {
-        return viewController
-    }
+    var body: some View {
+        VStack {
+            Button("Generate Logs") {
+                SpectraLogger.shared.i(tag: "Example", message: "Button tapped")
+            }
 
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        // No updates needed
+            Button("Open Logger") {
+                showLogger = true
+            }
+        }
+        .fullScreenCover(isPresented: $showLogger) {
+            SpectraLoggerView()
+        }
     }
 }
 ```
@@ -282,10 +376,20 @@ Once the app is running in the simulator, test these features:
 - [ ] Tap "Tap Me" button - should generate logs
 - [ ] Tap "Generate Warning" - should add warning log
 - [ ] Tap "Generate Error" - should add error log
-- [ ] Logs appear in real-time
+- [ ] Tap "Error with Stack Trace" - logs with full stack traces
+- [ ] Logs appear in real-time in the list
 - [ ] Tap a log to view full details
-- [ ] Search logs by message
+- [ ] Error logs show orange "Has Error" badge in list
+- [ ] Tap error log to see expandable "Error / Stack Trace" section
+- [ ] Stack trace shows line numbers in monospaced font
+- [ ] Copy button copies entire stack trace to clipboard
+- [ ] Search logs by message (min 2 characters)
 - [ ] Filter logs by level (Verbose, Debug, Info, Warning, Error, Fatal)
+- [ ] Filter logs by tag (if logs have different tags)
+- [ ] Select multiple tags at once
+- [ ] Toggle "Group by Tag" to organize logs into sections
+- [ ] Deselect filters to see all logs again
+- [ ] Share button exports logs via native iOS share sheet
 
 #### Network Logs Tab ✅
 - [ ] Network requests appear (if URLSession is integrated)
@@ -297,13 +401,18 @@ Once the app is running in the simulator, test these features:
 - [ ] Copy cURL command for request
 
 #### Settings Tab ✅
-- [ ] Toggle appearance (Light/Dark/System)
+- [ ] Toggle appearance (Light/Dark/System) - changes all tabs immediately
+- [ ] Light mode shows light colors
+- [ ] Dark mode shows dark colors
+- [ ] System mode follows device settings
+- [ ] Setting persists when closing and reopening app
 - [ ] View app log count
 - [ ] View network log count
 - [ ] Tap "Clear Logs" button
 - [ ] Confirm clear action
 - [ ] Logs are cleared successfully
-- [ ] Export logs (if implemented)
+- [ ] Tab back to Logs - should be empty
+- [ ] Tap "Refresh" to reload logs
 
 #### URL Scheme Deep Linking ✅
 ```bash

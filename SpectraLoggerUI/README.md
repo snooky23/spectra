@@ -112,27 +112,173 @@ NavigationLink("View Logs") {
 }
 ```
 
+## Advanced Usage
+
+### Tag-Based Filtering
+
+Logs can be organized by tags and filtered in the UI:
+
+```swift
+import SpectraLogger
+
+// Log with a tag
+SpectraLogger.shared.i(
+    tag: "Authentication",
+    message: "User login successful",
+    metadata: ["user_id": "12345"]
+)
+
+SpectraLogger.shared.w(
+    tag: "Network",
+    message: "Slow network detected",
+    metadata: ["latency_ms": "500"]
+)
+```
+
+In the UI, users can:
+- **Filter by Tag**: Tap tag chips to show only logs with that tag
+- **Multiple Tags**: Select multiple tags simultaneously (AND filtering)
+- **Group by Tag**: Toggle "Group by Tag" to organize logs into sections
+- **Clear Filters**: Deselect all tag chips to see all logs again
+
+### Error Logging with Stack Traces
+
+Capture detailed error information including full stack traces:
+
+```swift
+import SpectraLogger
+
+func processData() {
+    do {
+        // ... processing
+    } catch {
+        let stackTrace = Thread.callStackSymbols.joined(separator: "\n")
+
+        SpectraLogger.shared.e(
+            tag: "DataProcessor",
+            message: "Failed to process data: \(error.localizedDescription)",
+            throwable: nil,
+            metadata: [
+                "error_type": "\(type(of: error))",
+                "stack_trace": stackTrace,
+                "operation": "processData",
+                "data_size": "1024"
+            ]
+        )
+    }
+}
+```
+
+In the UI:
+- **Error Badge**: Errors show an orange "Has Error" indicator in the list
+- **Expandable Details**: Tap the error log to see full details
+- **Stack Trace View**:
+  - Line numbers for each stack trace line
+  - Monospaced font for readability
+  - Horizontal scroll for long lines
+  - Copy button to copy entire trace to clipboard
+  - Expand/collapse to keep the detail view clean
+
+### Dark Mode Control
+
+The Settings tab provides dark mode control that persists across app sessions:
+
+```swift
+// Users can select in Settings tab:
+// - Light Mode
+// - Dark Mode
+// - System (follows device settings)
+```
+
+The theme is automatically applied to all tabs and persists across app launches.
+
+### Exporting Logs
+
+Users can export logs directly from the UI using native iOS share sheet:
+
+**Manual Export**:
+```swift
+// In your app code, trigger share programmatically:
+SpectraLoggerView() // Has built-in share buttons
+```
+
+**In the UI**:
+- **Share Button**: Tap the share icon in the toolbar
+- **Select Format**: Choose TEXT or JSON (in future versions)
+- **Native Share Sheet**: Share via AirDrop, Email, Messages, etc.
+
+### Application Context
+
+Configure app-level metadata that enriches ALL logs:
+
+```swift
+import SpectraLogger
+
+// Initialize with app context (recommended in AppDelegate/App init)
+SpectraLogger.shared.configure { config in
+    config.appContext = AppContext(
+        sessionId: UUID().uuidString,
+        appVersion: "1.0.0",
+        buildNumber: "42",
+        deviceModel: "iPhone14Pro",
+        osVersion: "17.0",
+        osName: "iOS",
+        userId: "user123",
+        environment: "production"
+    )
+}
+
+// Now ALL logs will include this context in metadata
+SpectraLogger.shared.i(tag: "App", message: "App launched")
+// Metadata will automatically include: session_id, app_version, build_number, etc.
+```
+
+All logs displayed in the UI will automatically include app context in their metadata section.
+
 ## Features
 
 ### Logs Tab
-- ✅ Real-time log updates
-- ✅ Filter by level (Verbose, Debug, Info, Warning, Error, Fatal)
-- ✅ Search by message, tag, or metadata
-- ✅ Tap to see full details including stack traces
+
+#### Core Features
+- ✅ Real-time log updates with automatic refresh
+- ✅ Filter by log level (Verbose, Debug, Info, Warning, Error, Fatal)
+- ✅ Search logs by message, tag, or level (min 2 characters)
+- ✅ Filter by multiple tags simultaneously
+- ✅ Group logs by tag with expandable sections
+- ✅ Tap to see full details including metadata and stack traces
 - ✅ Native iOS design with SF Symbols
 
+#### Stack Trace Viewing
+- ✅ Expandable error sections with line numbers
+- ✅ Monospaced font for code readability
+- ✅ Horizontal scroll for long error lines
+- ✅ Copy-to-clipboard button for entire stack trace
+- ✅ Line count display at a glance
+- ✅ Collapsible error sections to keep list clean
+
+**Example**: Tap on an error log to see the full stack trace with line numbers and copy functionality.
+
 ### Network Tab
-- ✅ All HTTP requests/responses
+- ✅ All HTTP requests/responses captured
 - ✅ Filter by method (GET, POST, PUT, DELETE, PATCH)
 - ✅ Filter by status code (2xx, 3xx, 4xx, 5xx)
-- ✅ View headers and bodies
+- ✅ View detailed headers and response bodies
 - ✅ Request duration tracking
+- ✅ Native share button for exporting network logs
 
 ### Settings Tab
-- ✅ Appearance: Light, Dark, or System mode
-- ✅ Storage statistics
-- ✅ Clear logs
-- ✅ Export functionality (coming soon)
+- ✅ **Appearance Control**: Light, Dark, or System mode
+- ✅ **Storage Statistics**: View current log counts
+- ✅ **Clear Logs**: Remove all logs with confirmation
+- ✅ **Export Functionality**: Share logs via native iOS share sheet
+- ✅ **Dark Mode Persistence**: Settings persist across app launches
+
+### Export & Share
+- ✅ **Native Share Sheet**: Use iOS native sharing interface
+- ✅ **Multiple Formats**: TEXT and JSON export formats
+- ✅ **Share Buttons**: Prominent share buttons in Logs and Network tabs
+- ✅ **Copy to Clipboard**: Copy individual stack traces with one tap
+- ✅ **Format Logs**: Logs include timestamp, level, tag, and message in exports
 
 ## Requirements
 

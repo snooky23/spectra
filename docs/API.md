@@ -101,6 +101,33 @@ SpectraLogger.i(
 )
 ```
 
+#### Error Logging with Stack Traces
+
+```kotlin
+// Log error with full stack trace
+try {
+    riskyOperation()
+} catch (e: Exception) {
+    val stackTrace = e.stackTraceToString()
+
+    SpectraLogger.e(
+        tag = "DataProcessor",
+        message = "Failed to process data: ${e.message}",
+        metadata = mapOf(
+            "error_type" to e.javaClass.simpleName,
+            "stack_trace" to stackTrace,
+            "operation" to "riskyOperation",
+            "severity" to "CRITICAL"
+        )
+    )
+}
+```
+
+In the UI, stack traces can be:
+- **Expanded/collapsed** to keep list clean
+- **Viewed with line numbers** for easier debugging
+- **Copied to clipboard** for sharing with team
+
 ---
 
 ## Configuration
@@ -112,6 +139,17 @@ Configure logger behavior using the DSL:
 ```kotlin
 SpectraLogger.configure {
     minLogLevel = LogLevel.DEBUG
+
+    appContext = AppContext(
+        sessionId = UUID.randomUUID().toString(),
+        appVersion = "1.0.0",
+        buildNumber = "42",
+        deviceModel = "Pixel 6",
+        osVersion = "13",
+        osName = "Android",
+        userId = "user123",
+        environment = "production"
+    )
 
     logStorage {
         maxCapacity = 20_000
@@ -134,6 +172,56 @@ SpectraLogger.configure {
         enablePerformanceMetrics = false
     }
 }
+```
+
+### AppContext
+
+Application-level context captured once and enriched across all logs:
+
+```kotlin
+data class AppContext(
+    val sessionId: String,                           // Required: Session ID for log grouping
+    val appVersion: String? = null,                 // Optional: App version (e.g., "1.0.0")
+    val buildNumber: String? = null,                // Optional: Build number (e.g., "42")
+    val deviceModel: String? = null,                // Optional: Device model (e.g., "iPhone14Pro")
+    val osVersion: String? = null,                  // Optional: OS version (e.g., "17.0")
+    val osName: String? = null,                     // Optional: OS name (e.g., "iOS", "Android")
+    val userId: String? = null,                     // Optional: User ID for user-specific debugging
+    val environment: String = "production",         // Deployment environment
+    val customAttributes: Map<String, String> = emptyMap()  // Custom app-specific context
+)
+```
+
+**Features**:
+- **Session Tracking**: Group related logs within a user session
+- **Device Info**: Model, OS version for environment-specific bugs
+- **Build Metadata**: Version and build number for reproduction
+- **User Context**: Optional user ID for user-specific debugging
+- **Custom Attributes**: Add app-specific context data
+
+**Example**:
+```kotlin
+// Initialize with full context
+SpectraLogger.configure {
+    appContext = AppContext(
+        sessionId = UUID.randomUUID().toString(),
+        appVersion = BuildConfig.VERSION_NAME,
+        buildNumber = BuildConfig.VERSION_CODE.toString(),
+        deviceModel = Build.MODEL,
+        osVersion = Build.VERSION.RELEASE,
+        osName = "Android",
+        userId = getCurrentUserId(),
+        environment = if (BuildConfig.DEBUG) "development" else "production",
+        customAttributes = mapOf(
+            "feature_flags" to getFeatureFlags(),
+            "ab_test_group" to getABTestGroup()
+        )
+    )
+}
+
+// Now all logs automatically include this context in metadata
+SpectraLogger.i("App", "User performed action")
+// Metadata will include: session_id, app_version, build_number, device_model, etc.
 ```
 
 ### Configuration Options
@@ -207,16 +295,55 @@ val errors = SpectraLogger.query(
     filter = LogFilter(levels = setOf(LogLevel.ERROR, LogLevel.FATAL))
 )
 
-// Filter by tag
+// Filter by single tag
 val networkLogs = SpectraLogger.query(
-    filter = LogFilter(tags = setOf("Network", "API"))
+    filter = LogFilter(tags = setOf("Network"))
+)
+
+// Filter by multiple tags (AND logic)
+val criticalLogs = SpectraLogger.query(
+    filter = LogFilter(tags = setOf("Network", "Authentication", "Database"))
 )
 
 // Filter by message pattern
 val authLogs = SpectraLogger.query(
     filter = LogFilter(messagePattern = "auth")
 )
+
+// Combine multiple filters
+val combinedFilter = SpectraLogger.query(
+    filter = LogFilter(
+        levels = setOf(LogLevel.ERROR),
+        tags = setOf("Network"),
+        messagePattern = "timeout"
+    )
+)
 ```
+
+### Tag-Based Organization
+
+Tags help organize and categorize logs:
+
+```kotlin
+// Log with tag for filtering and grouping
+SpectraLogger.i(
+    tag = "Authentication",
+    message = "User login successful",
+    metadata = mapOf("user_id" to "12345")
+)
+
+SpectraLogger.w(
+    tag = "Network",
+    message = "Connection timeout",
+    metadata = mapOf("endpoint" to "api.example.com")
+)
+```
+
+In the UI:
+- **Filter by Tag**: Select tag chips to show only logs with that tag
+- **Multiple Tags**: Select multiple tags simultaneously
+- **Group by Tag**: Organize logs into sections by tag
+- **Auto-detection**: Tags are automatically discovered from logs
 
 ---
 
