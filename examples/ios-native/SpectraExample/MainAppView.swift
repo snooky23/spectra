@@ -166,31 +166,31 @@ struct MainAppView: View {
     .padding()
 }
 
-#Preview("LogButton - Warning") {
-    LogButton(
-        label: "Generate Warning",
-        icon: "exclamationmark.triangle",
-        backgroundColor: .orange,
-        action: {}
-    )
-    .padding()
-}
+//#Preview("LogButton - Warning") {
+//    LogButton(
+//        label: "Generate Warning",
+//        icon: "exclamationmark.triangle",
+//        backgroundColor: .orange,
+//        action: {}
+//    )
+//    .padding()
+//}
+//
+//#Preview("LogButton - Error") {
+//    LogButton(
+//        label: "Generate Error",
+//        icon: "xmark.circle",
+//        backgroundColor: .red,
+//        action: {}
+//    )
+//    .padding()
+//}
+//
+//#Preview("AppBrandingCard") {
+//    AppBrandingCard()
+//}
 
-#Preview("LogButton - Error") {
-    LogButton(
-        label: "Generate Error",
-        icon: "xmark.circle",
-        backgroundColor: .red,
-        action: {}
-    )
-    .padding()
-}
-
-#Preview("AppBrandingCard") {
-    AppBrandingCard()
-}
-
-#Preview("SectionHeader") {
-    SectionHeader(title: "Example Actions")
-        .padding()
-}
+//#Preview("SectionHeader") {
+//    SectionHeader(title: "Example Actions")
+//        .padding()
+//}
