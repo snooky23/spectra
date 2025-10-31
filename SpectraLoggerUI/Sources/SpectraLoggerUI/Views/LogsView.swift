@@ -191,13 +191,9 @@ struct LogDetailView: View {
                         Text(log.message)
                     }
 
-                    // Error
+                    // Error / Stack Trace
                     if let error = log.throwable {
-                        DetailSection(title: "Error") {
-                            Text(error)
-                                .font(.system(.body, design: .monospaced))
-                                .foregroundColor(.red)
-                        }
+                        ExpandableErrorSection(error: error)
                     }
 
                     // Metadata
@@ -297,6 +293,82 @@ struct FilterChip: View {
                 .foregroundColor(isSelected ? color : .primary)
                 .cornerRadius(16)
         }
+    }
+}
+
+/// Expandable error section showing stack trace with line count and copyable content
+struct ExpandableErrorSection: View {
+    let error: String
+    @State private var isExpanded = true
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Header with expand/collapse toggle
+            HStack {
+                Button(action: { isExpanded.toggle() }) {
+                    HStack(spacing: 8) {
+                        Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                            .font(.caption)
+                        Text("Error / Stack Trace")
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                        Spacer()
+                        Text("\(error.split(separator: "\n").count) lines")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                    .foregroundColor(.red)
+                }
+
+                // Copy button
+                Button(action: {
+                    UIPasteboard.general.string = error
+                }) {
+                    Image(systemName: "doc.on.doc")
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                }
+            }
+            .padding(.vertical, 8)
+
+            // Expandable content
+            if isExpanded {
+                ScrollView(.horizontal, showsIndicators: true) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(error.split(separator: "\n", omittingEmptySubsequences: false).indices, id: \.self) { index in
+                            HStack(alignment: .top, spacing: 8) {
+                                // Line number
+                                Text(String(format: "%3d", index + 1))
+                                    .font(.system(.caption, design: .monospaced))
+                                    .foregroundColor(.secondary)
+                                    .frame(width: 30, alignment: .trailing)
+
+                                // Line content
+                                Text(String(error.split(separator: "\n")[index]))
+                                    .font(.system(.caption, design: .monospaced))
+                                    .foregroundColor(.primary)
+                                    .lineLimit(nil)
+
+                                Spacer()
+                            }
+                            .padding(.vertical, 2)
+
+                            if index < error.split(separator: "\n").count - 1 {
+                                Divider()
+                                    .opacity(0.3)
+                            }
+                        }
+                    }
+                    .padding(12)
+                }
+                .background(Color(.systemGray6))
+                .cornerRadius(8)
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.red.opacity(0.05))
+        .cornerRadius(8)
     }
 }
 
