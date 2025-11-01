@@ -69,8 +69,9 @@ object SpectraLogger {
 
     /**
      * Returns the current version of the Spectra Logger framework.
+     * Version is automatically synchronized from gradle.properties during build.
      */
-    fun getVersion(): String = "0.0.1-SNAPSHOT"
+    fun getVersion(): String = Version.LIBRARY_VERSION
 
     /**
      * Log verbose message.
