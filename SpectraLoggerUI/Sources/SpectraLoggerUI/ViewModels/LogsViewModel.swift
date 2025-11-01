@@ -7,12 +7,10 @@ import Combine
 class LogsViewModel: ObservableObject {
     @Published var logs: [LogEntry] = []
     @Published var filteredLogs: [LogEntry] = []
-    @Published var groupedLogs: [String: [LogEntry]] = [:] // Logs grouped by tag
     @Published var isLoading = true
     @Published var searchText = ""
     @Published var selectedLevels: Set<LogLevel> = []
     @Published var selectedTags: Set<String> = []
-    @Published var groupByTag = false
     @Published var availableTags: [String] = []
 
     private let storage: LogStorage
@@ -25,13 +23,13 @@ class LogsViewModel: ObservableObject {
     }
 
     private func setupObservers() {
-        // Observe search text, levels, tags, and grouping changes
-        Publishers.CombineLatest4($searchText, $selectedLevels, $selectedTags, $groupByTag)
+        // Observe search text, levels, and tags changes
+        Publishers.CombineLatest3($searchText, $selectedLevels, $selectedTags)
             .combineLatest($logs)
             .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
             .sink { [weak self] combined, logs in
-                let (searchText, levels, tags, groupByTag) = combined
-                self?.applyFilters(searchText: searchText, levels: levels, tags: tags, groupByTag: groupByTag, logs: logs)
+                let (searchText, levels, tags) = combined
+                self?.applyFilters(searchText: searchText, levels: levels, tags: tags, logs: logs)
             }
             .store(in: &cancellables)
     }
@@ -51,7 +49,6 @@ class LogsViewModel: ObservableObject {
                         searchText: self.searchText,
                         levels: self.selectedLevels,
                         tags: self.selectedTags,
-                        groupByTag: self.groupByTag,
                         logs: result
                     )
                     self.isLoading = false
@@ -74,7 +71,6 @@ class LogsViewModel: ObservableObject {
         searchText: String,
         levels: Set<LogLevel>,
         tags: Set<String>,
-        groupByTag: Bool,
         logs: [LogEntry]
     ) {
         var filtered = logs
@@ -99,13 +95,6 @@ class LogsViewModel: ObservableObject {
         }
 
         filteredLogs = filtered
-
-        // Group by tag if enabled
-        if groupByTag {
-            groupedLogs = Dictionary(grouping: filtered, by: { $0.tag })
-        } else {
-            groupedLogs = [:]
-        }
     }
 
     func toggleLevel(_ level: LogLevel) {
@@ -129,7 +118,6 @@ class LogsViewModel: ObservableObject {
             try await storage.clear()
             logs = []
             filteredLogs = []
-            groupedLogs = [:]
             availableTags = []
         }
     }
