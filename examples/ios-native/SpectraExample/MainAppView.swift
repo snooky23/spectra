@@ -66,6 +66,56 @@ func simulateNetworkRequest(method: String, url: String, statusCode: Int, durati
 
         let durationMs = Int64(duration * 1000)
 
+        // Generate realistic request body based on HTTP method
+        let requestBody: String? = {
+            switch method {
+            case "POST":
+                return "{\"username\": \"testuser\", \"email\": \"test@example.com\", \"timestamp\": \"\(Date().timeIntervalSince1970)\"}"
+            case "PUT":
+                return "{\"id\": \"123\", \"status\": \"updated\", \"timestamp\": \"\(Date().timeIntervalSince1970)\"}"
+            case "DELETE":
+                return "{\"id\": \"123\", \"confirm\": true}"
+            case "PATCH":
+                return "{\"field\": \"value\", \"operation\": \"update\"}"
+            default:
+                return nil
+            }
+        }()
+
+        // Generate realistic response headers based on status code
+        var responseHeaders: [String: String] = [
+            "Content-Type": "application/json",
+            "Server": "Example/1.0",
+            "X-Response-Time": "\(durationMs)ms"
+        ]
+
+        // Add status-specific headers
+        if statusCode >= 200 && statusCode < 300 {
+            responseHeaders["Cache-Control"] = "max-age=3600"
+            responseHeaders["ETag"] = "\"abc123\""
+        } else if statusCode >= 400 {
+            responseHeaders["Cache-Control"] = "no-cache, no-store"
+            responseHeaders["Retry-After"] = statusCode == 429 ? "60" : nil
+        }
+
+        // Generate response body based on status code
+        let responseBody: String = {
+            switch statusCode {
+            case 200:
+                return "{\"success\": true, \"data\": {\"id\": \"123\", \"message\": \"Request completed successfully\"}}"
+            case 201:
+                return "{\"success\": true, \"id\": \"newly-created-id\", \"message\": \"Resource created\"}"
+            case 400:
+                return "{\"error\": \"Bad Request\", \"details\": \"Invalid request parameters\", \"code\": \"INVALID_PARAMS\"}"
+            case 404:
+                return "{\"error\": \"Not Found\", \"details\": \"The requested resource does not exist\", \"code\": \"RESOURCE_NOT_FOUND\"}"
+            case 500:
+                return "{\"error\": \"Internal Server Error\", \"details\": \"An unexpected error occurred\", \"code\": \"INTERNAL_ERROR\", \"requestId\": \"req-\(UUID().uuidString)\"}"
+            default:
+                return "{\"error\": \"HTTP \(statusCode)\", \"message\": \"Request failed with status code \(statusCode)\"}"
+            }
+        }()
+
         // Create a network log entry with proper KMP type conversions
         let networkLogEntry = NetworkLogEntry(
             id: UUID().uuidString,
@@ -76,19 +126,16 @@ func simulateNetworkRequest(method: String, url: String, statusCode: Int, durati
             method: method,
             requestHeaders: [
                 "Content-Type": "application/json",
-                "User-Agent": "SpectraExample/1.0"
+                "User-Agent": "SpectraExample/1.0",
+                "Accept": "application/json",
+                "Authorization": "Bearer token_example_12345"
             ],
-            requestBody: nil,
+            requestBody: requestBody,
             responseCode: KotlinInt(int: Int32(statusCode)),
-            responseHeaders: [
-                "Content-Type": "application/json",
-                "Server": "Example/1.0"
-            ],
-            responseBody: statusCode >= 400
-                ? "{\"error\": \"Request failed with status \(statusCode)\"}"
-                : "{\"success\": true, \"data\": {}}",
+            responseHeaders: responseHeaders,
+            responseBody: responseBody,
             duration: durationMs,
-            error: nil
+            error: statusCode >= 400 ? "HTTP \(statusCode): Request failed" : nil
         )
 
         // Add to network logs storage - KMP suspend functions require main thread
