@@ -63,7 +63,7 @@ import SpectraLogger
 ///
 public struct SpectraLoggerView: View {
     @State private var selectedTab = 0
-    @StateObject private var settingsViewModel = SettingsViewModel()
+    @State private var settingsViewModel = SettingsViewModel()
 
     public init() {}
 
