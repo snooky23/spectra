@@ -18,7 +18,9 @@
       "Bash(open:*)",
       "Bash(lipo -info:*)",
       "Bash(xcrun simctl:*)",
-      "Bash(gh issue list:*)"
+      "Bash(gh issue list:*)",
+      "Bash(find:*)",
+      "Bash(ln:*)"
     ],
     "deny": [],
     "ask": []

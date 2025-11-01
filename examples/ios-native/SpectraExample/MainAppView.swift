@@ -58,58 +58,41 @@ struct SectionHeader: View {
 
 // MARK: - Utility Functions
 
-/// Simulates a network request and logs it via URLSession
+/// Simulates a network request and logs it to the network logs section
 func simulateNetworkRequest(method: String, url: String, statusCode: Int, duration: Double) {
     Task {
-        let startTime = Date()
-
-        // Log the request initiation
-        SpectraLogger.shared.d(
-            tag: "Network",
-            message: "Starting \(method) request to \(url)",
-            throwable: nil,
-            metadata: [
-                "method": method,
-                "url": url,
-                "type": "request"
-            ]
-        )
-
         // Simulate network delay
         try? await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
 
-        let elapsed = Date().timeIntervalSince(startTime)
+        let durationMs = Int64(duration * 1000)
 
-        // Log the response based on status code
-        if statusCode >= 400 {
-            SpectraLogger.shared.w(
-                tag: "Network",
-                message: "\(method) \(url) - Status \(statusCode)",
-                throwable: nil,
-                metadata: [
-                    "method": method,
-                    "url": url,
-                    "status_code": String(statusCode),
-                    "duration_ms": String(format: "%.0f", elapsed * 1000),
-                    "response_size": "2048",
-                    "type": "response"
-                ]
-            )
-        } else {
-            SpectraLogger.shared.i(
-                tag: "Network",
-                message: "\(method) \(url) - Status \(statusCode)",
-                throwable: nil,
-                metadata: [
-                    "method": method,
-                    "url": url,
-                    "status_code": String(statusCode),
-                    "duration_ms": String(format: "%.0f", elapsed * 1000),
-                    "response_size": "2048",
-                    "type": "response"
-                ]
-            )
-        }
+        // Create a network log entry with proper KMP type conversions
+        let networkLogEntry = NetworkLogEntry(
+            id: UUID().uuidString,
+            timestamp: Kotlinx_datetimeInstant.companion.fromEpochMilliseconds(
+                epochMilliseconds: Int64(Date().timeIntervalSince1970 * 1000)
+            ),
+            url: url,
+            method: method,
+            requestHeaders: [
+                "Content-Type": "application/json",
+                "User-Agent": "SpectraExample/1.0"
+            ],
+            requestBody: nil,
+            responseCode: KotlinInt(int: Int32(statusCode)),
+            responseHeaders: [
+                "Content-Type": "application/json",
+                "Server": "Example/1.0"
+            ],
+            responseBody: statusCode >= 400
+                ? "{\"error\": \"Request failed with status \(statusCode)\"}"
+                : "{\"success\": true, \"data\": {}}",
+            duration: durationMs,
+            error: nil
+        )
+
+        // Add to network logs storage
+        try? await SpectraLogger.shared.networkStorage.add(entry: networkLogEntry)
     }
 }
 

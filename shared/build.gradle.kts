@@ -250,7 +250,6 @@ abstract class CreateXCFrameworkTask : DefaultTask() {
                 "-create-xcframework",
                 "-framework", "$buildDir/bin/iosArm64/releaseFramework/$name.framework",
                 "-framework", "$buildDir/bin/iosSimulatorArm64/releaseFramework/$name.framework",
-                "-framework", "$buildDir/bin/iosX64/releaseFramework/$name.framework",
                 "-output", xcframeworkPath,
             )
         }
@@ -266,7 +265,6 @@ tasks.register<CreateXCFrameworkTask>("createXCFramework") {
 
     dependsOn(
         "linkReleaseFrameworkIosArm64",
-        "linkReleaseFrameworkIosX64",
         "linkReleaseFrameworkIosSimulatorArm64",
     )
 }
