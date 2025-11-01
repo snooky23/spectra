@@ -12,6 +12,6 @@ class SpectraLoggerTest {
     fun testGetVersion() {
         val version = SpectraLogger.getVersion()
         assertTrue(version.isNotEmpty(), "Version should not be empty")
-        assertEquals("0.0.1-SNAPSHOT", version)
+        assertEquals(Version.LIBRARY_VERSION, version)
     }
 }

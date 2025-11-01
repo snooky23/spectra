@@ -14,6 +14,32 @@ plugins {
     id("jacoco")
 }
 
+// Generate version file from gradle.properties
+val versionName = project.findProperty("VERSION_NAME") as? String ?: "0.0.1-SNAPSHOT"
+val generateVersionFile =
+    tasks.register("generateVersionFile") {
+        val outputDir = project.layout.buildDirectory.dir("generated/kotlin/com/spectra/logger")
+        outputs.dir(outputDir)
+
+        doLast {
+            val versionFile = file("${outputDir.get().asFile}/Version.kt")
+            versionFile.parentFile.mkdirs()
+            versionFile.writeText(
+                """
+                package com.spectra.logger
+
+                /**
+                 * Auto-generated file from gradle.properties
+                 * Do not edit manually!
+                 */
+                object Version {
+                    const val LIBRARY_VERSION = "$versionName"
+                }
+                """.trimIndent() + "\n",
+            )
+        }
+    }
+
 kotlin {
     // Android target
     androidTarget {
@@ -48,6 +74,7 @@ kotlin {
     sourceSets {
         // Common
         val commonMain by getting {
+            kotlin.srcDir(generateVersionFile)
             dependencies {
                 implementation(libs.bundles.kotlinx)
                 implementation(libs.ktor.client.core)
