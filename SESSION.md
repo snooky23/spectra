@@ -2,7 +2,7 @@
 
 This file tracks the current state, decisions, progress, and context for ongoing development sessions.
 
-**Last Updated**: 2025-10-31 (October 31st - iOS UI Enhancements)
+**Last Updated**: 2025-11-01 (November 1st - iOS Fixes & Version Management)
 
 ---
 
@@ -141,6 +141,108 @@ This file tracks the current state, decisions, progress, and context for ongoing
    - Detailed Usage Guide (docs/USAGE_GUIDE.md)
    - Publishing Guide (docs/PUBLISHING.md)
 10. ✅ Build verification & test fixes (all 58 tests passing)
+
+## Recent Session Work (November 1, 2025)
+
+### iOS Compilation Fixes & Version Management System
+
+**Key Achievements**:
+
+1. ✅ **Fixed iOS Example App Compilation Errors**
+   - **Error 1** (Line 66): Added missing `throwable: nil` parameter to `SpectraLogger.shared.d()` call
+   - **Error 2** (Line 80): Fixed function type signature to use `_` for parameter labels instead of named labels
+   - All logging methods require: `tag`, `message`, `throwable`, and `metadata` parameters
+
+2. ✅ **Implemented Version Alignment System**
+   - **Single Source of Truth**: `gradle.properties` contains VERSION_NAME
+   - **Swift Packages**: Use git tags for versioning (not hard-coded in Package.swift)
+   - **Kotlin Module**: Uses VERSION_NAME from gradle.properties at build time
+
+3. ✅ **Created Version Management Infrastructure**
+   - **sync-versions.sh**: Validates version alignment across all packages
+     - Reads VERSION_NAME from gradle.properties
+     - Validates Package.swift files exist
+     - Displays current version across all packages
+   - **bump-version.py**: Python script for automated version bumping
+     - Supports `--to`, `--major`, `--minor`, `--patch`, `--snapshot` flags
+     - Validates all required files exist
+     - Runs sync-versions.sh validation after bump
+     - Provides clear next steps for release workflow
+
+4. ✅ **Added Version Management Documentation**
+   - **docs/VERSION_MANAGEMENT.md**: Comprehensive version management guide
+     - Semantic versioning strategy (MAJOR.MINOR.PATCH)
+     - Version bump workflow with step-by-step instructions
+     - Explains how versions propagate through git tags and packages
+     - Troubleshooting guide for common version issues
+   - **Updated scripts/README.md**: Added version management sections
+
+5. ✅ **Created SpectraLogger build.gradle.kts**
+   - Gradle wrapper for SpectraLogger Swift package
+   - Reads VERSION_NAME from root gradle.properties
+   - Validates Package.swift consistency
+   - Provides `bumpVersion` task for version management
+
+### Technical Implementation Details
+
+**Version Alignment Architecture**:
+```
+gradle.properties (VERSION_NAME=0.0.1-SNAPSHOT)
+        ↓
+    SpectraLogger (Kotlin)
+    ├── shared/build.gradle.kts (reads VERSION_NAME)
+    └── Published to Maven Central as: com.spectra.logger:logger:0.0.1-SNAPSHOT
+
+    SpectraLogger (Swift Package)
+    ├── Package.swift (no version field)
+    └── Released via git tag: v0.0.1-SNAPSHOT
+
+    SpectraLoggerUI (Swift Package)
+    ├── Package.swift (dependencies use relative path in dev)
+    └── Released via git tag: v0.0.1-SNAPSHOT
+```
+
+**Scripts Workflow**:
+1. `sync-versions.sh` - Validates consistency
+2. `bump-version.py` - Updates VERSION_NAME and validates
+3. `git tag` - Creates release tags matching version
+4. GitHub Release - Published with artifacts
+
+### Commit History
+- **612974e**: fix: resolve iOS example app compilation errors
+  - Fixed missing `throwable` parameter in SpectraLogger.d() call
+  - Fixed function type signature with parameter labels
+  - Added version management infrastructure (sync-versions.sh, bump-version.py)
+  - Added SpectraLogger/build.gradle.kts
+  - Added docs/VERSION_MANAGEMENT.md
+  - Updated scripts/README.md
+
+### How to Use Version Management
+
+**Check Current Version**:
+```bash
+grep VERSION_NAME gradle.properties
+./scripts/sync-versions.sh
+```
+
+**Bump Version** (dry run):
+```bash
+python3 scripts/bump-version.py --patch --dry-run
+```
+
+**Bump Version** (apply):
+```bash
+python3 scripts/bump-version.py --patch
+```
+
+**Create Release**:
+```bash
+git add -A && git commit -m "release: bump to 0.0.2"
+git tag -a v0.0.2 -m "Release v0.0.2"
+git push origin main && git push origin v0.0.2
+```
+
+---
 
 ## Recent Session Work (October 31, 2025)
 
