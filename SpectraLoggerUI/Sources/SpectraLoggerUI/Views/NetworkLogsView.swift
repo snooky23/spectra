@@ -3,7 +3,7 @@ import SpectraLogger
 
 /// Pure SwiftUI Network Logs screen with native iOS design
 struct NetworkLogsView: View {
-    @StateObject private var viewModel = NetworkLogsViewModel()
+    @State private var viewModel = NetworkLogsViewModel()
     @State private var selectedLog: NetworkLogEntry?
     @State private var shareItems: [Any] = []
 

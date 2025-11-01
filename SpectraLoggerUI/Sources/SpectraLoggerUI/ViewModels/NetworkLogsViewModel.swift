@@ -1,43 +1,57 @@
 import SwiftUI
 import SpectraLogger
-import Combine
 
 /// ViewModel for the Network Logs screen, bridging SwiftUI to KMP storage
+@Observable
 @MainActor
-class NetworkLogsViewModel: ObservableObject {
-    @Published var logs: [NetworkLogEntry] = []
-    @Published var filteredLogs: [NetworkLogEntry] = []
-    @Published var isLoading = true
-    @Published var searchText = ""
-    @Published var selectedMethods: Set<String> = []
-    @Published var selectedStatusRanges: Set<String> = []
+final class NetworkLogsViewModel {
+    var logs: [NetworkLogEntry] = [] {
+        didSet { updateFilteredLogs() }
+    }
 
-    private let storage: NetworkLogStorage
-    private var cancellables = Set<AnyCancellable>()
+    var filteredLogs: [NetworkLogEntry] = []
+    var isLoading = true
+
+    var searchText = "" {
+        didSet { updateFilteredLogs() }
+    }
+
+    var selectedMethods: Set<String> = [] {
+        didSet { updateFilteredLogs() }
+    }
+
+    var selectedStatusRanges: Set<String> = [] {
+        didSet { updateFilteredLogs() }
+    }
 
     let availableMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"]
     let availableStatusRanges = ["2xx", "3xx", "4xx", "5xx"]
 
+    private let storage: NetworkLogStorage
+    private var filterTask: Task<Void, Never>?
+
     init(storage: NetworkLogStorage = SpectraLogger.shared.networkStorage) {
         self.storage = storage
-        setupObservers()
         loadLogs()
     }
 
-    private func setupObservers() {
-        // Observe filter changes
-        $searchText
-            .combineLatest($selectedMethods, $selectedStatusRanges, $logs)
-            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
-            .sink { [weak self] searchText, methods, statusRanges, logs in
-                self?.applyFilters(
+    private func updateFilteredLogs() {
+        // Cancel previous task to debounce rapid changes
+        filterTask?.cancel()
+
+        // Schedule new filtering task with debounce
+        filterTask = Task {
+            try? await Task.sleep(nanoseconds: 300_000_000) // 300ms debounce
+
+            if !Task.isCancelled {
+                applyFilters(
                     searchText: searchText,
-                    methods: methods,
-                    statusRanges: statusRanges,
+                    methods: selectedMethods,
+                    statusRanges: selectedStatusRanges,
                     logs: logs
                 )
             }
-            .store(in: &cancellables)
+        }
     }
 
     func loadLogs() {
@@ -55,12 +69,7 @@ class NetworkLogsViewModel: ObservableObject {
                 let result = try await storage.query(filter: noFilter, limit: nil)
                 DispatchQueue.main.async {
                     self.logs = result
-                    self.applyFilters(
-                        searchText: self.searchText,
-                        methods: self.selectedMethods,
-                        statusRanges: self.selectedStatusRanges,
-                        logs: result
-                    )
+                    // applyFilters will be called via didSet on logs
                     self.isLoading = false
                 }
             } catch {
