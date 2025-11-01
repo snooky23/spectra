@@ -267,6 +267,24 @@ struct NetworkRequestsTab: View {
                     Spacer()
                         .frame(height: 20)
 
+                    // App branding
+                    VStack(spacing: 10) {
+                        Image(systemName: "network")
+                            .font(.system(size: 80))
+                            .foregroundColor(.blue)
+
+                        Text("Network Testing")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+
+                        Text("Simulate HTTP requests and responses")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+
+                    Spacer()
+                        .frame(height: 20)
+
                     SectionHeader(title: "Network Requests")
 
                     LogButton(
