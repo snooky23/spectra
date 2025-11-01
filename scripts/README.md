@@ -106,6 +106,76 @@ Cleans all build artifacts.
 
 ---
 
+## Version Management Scripts
+
+### sync-versions.sh
+Validates that all Spectra packages (Core and UI) are properly configured.
+
+```bash
+./scripts/sync-versions.sh
+```
+
+**What it does:**
+- ✅ Reads VERSION_NAME from gradle.properties
+- ✅ Validates Package.swift files exist
+- ✅ Ensures version consistency
+- ✅ Displays current version across all packages
+
+---
+
+### bump-version.py
+Automatically bump version across gradle.properties and validate.
+
+**Syntax:**
+```bash
+python3 scripts/bump-version.py [OPTIONS]
+```
+
+**Options:**
+- `--to VERSION` - Bump to specific version (e.g., `--to 0.0.2`)
+- `--major` - Bump major version (0.0.1 → 1.0.0)
+- `--minor` - Bump minor version (0.0.1 → 0.1.0)
+- `--patch` - Bump patch version (0.0.1 → 0.0.2)
+- `--snapshot` - Bump patch + add -SNAPSHOT (0.0.1 → 0.0.2-SNAPSHOT)
+- `--dry-run` - Show what would change without applying
+
+**Examples:**
+```bash
+# Bump to specific version
+python3 scripts/bump-version.py --to 0.0.2
+
+# Bump minor version (for features)
+python3 scripts/bump-version.py --minor
+
+# Bump patch version (for fixes)
+python3 scripts/bump-version.py --patch
+
+# Dry run to preview changes
+python3 scripts/bump-version.py --patch --dry-run
+```
+
+**Version Management Workflow:**
+```bash
+# 1. Bump version
+python3 scripts/bump-version.py --patch
+
+# 2. Validate
+./scripts/sync-versions.sh
+
+# 3. Build and test
+./scripts/ci.sh
+
+# 4. Commit and tag
+git add -A
+git commit -m "release: bump to 0.0.2"
+git tag -a v0.0.2 -m "Release v0.0.2"
+git push origin main && git push origin v0.0.2
+```
+
+For detailed version management guide, see: [docs/VERSION_MANAGEMENT.md](../docs/VERSION_MANAGEMENT.md)
+
+---
+
 ## Prerequisites
 
 ### Required Tools

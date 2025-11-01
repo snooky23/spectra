@@ -64,6 +64,7 @@ func simulateNetworkRequest(method: String, url: String, statusCode: Int, durati
         SpectraLogger.shared.d(
             tag: "Network",
             message: "Starting \(method) request to \(url)",
+            throwable: nil,
             metadata: [
                 "method": method,
                 "url": url,
@@ -77,7 +78,7 @@ func simulateNetworkRequest(method: String, url: String, statusCode: Int, durati
         let elapsed = Date().timeIntervalSince(startTime)
 
         // Log the response based on status code
-        let logLevel: (tag: String, method: String) -> Void = statusCode >= 400 ? SpectraLogger.shared.w : SpectraLogger.shared.i
+        let logLevel: (_ tag: String, _ message: String, _ throwable: Error?, _ metadata: [String: String]) -> Void = statusCode >= 400 ? SpectraLogger.shared.w : SpectraLogger.shared.i
 
         logLevel(
             "Network",
