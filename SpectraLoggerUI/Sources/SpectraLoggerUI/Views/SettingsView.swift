@@ -3,7 +3,7 @@ import SpectraLogger
 
 /// Pure SwiftUI Settings screen with native iOS design
 struct SettingsView: View {
-    @ObservedObject var viewModel: SettingsViewModel
+    @State var viewModel: SettingsViewModel
 
     var body: some View {
         NavigationView {
