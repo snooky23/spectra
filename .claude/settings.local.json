@@ -1,26 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cat:*)",
-      "Bash(./gradlew:*)",
-      "Bash(__NEW_LINE__ xcodebuild -create-xcframework )",
-      "Bash(./setup-pods.sh:*)",
-      "Bash(pod install)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(git push:*)",
-      "Bash(pod install:*)",
-      "Bash(killall:*)",
-      "Bash(xcodebuild:*)",
-      "Bash(pod lib lint:*)",
-      "Bash(swift package:*)",
-      "Bash(swift build:*)",
-      "Bash(open:*)",
-      "Bash(lipo -info:*)",
-      "Bash(xcrun simctl:*)",
-      "Bash(gh issue list:*)",
-      "Bash(find:*)",
-      "Bash(ln:*)"
+      "Bash(currently supported only on main thread\" by properly isolating the network\nstorage add operation with @MainActor.\n\nChanged from:\n- Task { ... } - executes on default executor (can be background thread)\n- await MainActor.run { ... } - cannot wrap async closure\n\nTo:\n- Task { @MainActor in ... } - creates a task that runs on main thread\n- Maintains async structure for non-blocking behavior\n\nThe @MainActor attribute ensures the entire closure runs on the main thread,\nwhich is required for KMP suspend function interop with Swift.\n\n🤖 Generated with Claude Code\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []
