@@ -55,6 +55,46 @@ struct SectionHeader: View {
 
 // MARK: - Utility Functions
 
+/// Simulates a network request and logs it via URLSession
+func simulateNetworkRequest(method: String, url: String, statusCode: Int, duration: Double) {
+    Task {
+        let startTime = Date()
+
+        // Log the request initiation
+        SpectraLogger.shared.d(
+            tag: "Network",
+            message: "Starting \(method) request to \(url)",
+            metadata: [
+                "method": method,
+                "url": url,
+                "type": "request"
+            ]
+        )
+
+        // Simulate network delay
+        try? await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
+
+        let elapsed = Date().timeIntervalSince(startTime)
+
+        // Log the response based on status code
+        let logLevel: (tag: String, method: String) -> Void = statusCode >= 400 ? SpectraLogger.shared.w : SpectraLogger.shared.i
+
+        logLevel(
+            "Network",
+            "\(method) \(url) - Status \(statusCode)",
+            nil,
+            [
+                "method": method,
+                "url": url,
+                "status_code": String(statusCode),
+                "duration_ms": String(format: "%.0f", elapsed * 1000),
+                "response_size": "2048",
+                "type": "response"
+            ]
+        )
+    }
+}
+
 /// Generates a mock stack trace for demonstrating error logging
 func generateStackTrace() -> String {
     let stackTrace = """
@@ -164,6 +204,71 @@ struct MainAppView: View {
                                     "error_type": "ArithmeticException",
                                     "stack_trace": stackTrace
                                 ]
+                            )
+                        }
+                    )
+                }
+                .padding(.horizontal)
+
+                Spacer()
+                    .frame(height: 10)
+
+                // Network request simulation section
+                VStack(spacing: 20) {
+                    SectionHeader(title: "Network Requests")
+
+                    LogButton(
+                        label: "GET Request (200 OK)",
+                        icon: "arrow.down.circle",
+                        backgroundColor: .green,
+                        action: {
+                            simulateNetworkRequest(
+                                method: "GET",
+                                url: "https://api.example.com/users",
+                                statusCode: 200,
+                                duration: 0.5
+                            )
+                        }
+                    )
+
+                    LogButton(
+                        label: "POST Request (201 Created)",
+                        icon: "plus.circle",
+                        backgroundColor: .green,
+                        action: {
+                            simulateNetworkRequest(
+                                method: "POST",
+                                url: "https://api.example.com/users",
+                                statusCode: 201,
+                                duration: 1.0
+                            )
+                        }
+                    )
+
+                    LogButton(
+                        label: "GET Request (404 Not Found)",
+                        icon: "questionmark.circle",
+                        backgroundColor: .orange,
+                        action: {
+                            simulateNetworkRequest(
+                                method: "GET",
+                                url: "https://api.example.com/users/9999",
+                                statusCode: 404,
+                                duration: 0.3
+                            )
+                        }
+                    )
+
+                    LogButton(
+                        label: "Server Error (500)",
+                        icon: "xmark.circle.fill",
+                        backgroundColor: .red,
+                        action: {
+                            simulateNetworkRequest(
+                                method: "GET",
+                                url: "https://api.example.com/data",
+                                statusCode: 500,
+                                duration: 2.0
                             )
                         }
                     )
