@@ -23,23 +23,26 @@ struct LogButton: View {
     }
 }
 
-/// Info card showing app branding
-struct AppBrandingCard: View {
+/// Reusable branding card component
+struct BrandingCard: View {
+    let icon: String
+    let title: String
+    let subtitle: String
+
     var body: some View {
         VStack(spacing: 10) {
-            Image(systemName: "app.badge.checkmark")
+            Image(systemName: icon)
                 .font(.system(size: 80))
                 .foregroundColor(.blue)
 
-            Text("Example App")
+            Text(title)
                 .font(.largeTitle)
                 .fontWeight(.bold)
 
-            Text("with Spectra Logger Integration")
+            Text(subtitle)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }
-        .padding(.top, 50)
     }
 }
 
@@ -151,7 +154,11 @@ struct ExampleActionsTab: View {
                         .frame(height: 20)
 
                     // App branding
-                    AppBrandingCard()
+                    BrandingCard(
+                        icon: "app.badge.checkmark",
+                        title: "Example App",
+                        subtitle: "with Spectra Logger Integration"
+                    )
 
                     Spacer()
                         .frame(height: 20)
@@ -268,19 +275,11 @@ struct NetworkRequestsTab: View {
                         .frame(height: 20)
 
                     // App branding
-                    VStack(spacing: 10) {
-                        Image(systemName: "network")
-                            .font(.system(size: 80))
-                            .foregroundColor(.blue)
-
-                        Text("Network Testing")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-
-                        Text("Simulate HTTP requests and responses")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
+                    BrandingCard(
+                        icon: "network",
+                        title: "Network Testing",
+                        subtitle: "Simulate HTTP requests and responses"
+                    )
 
                     Spacer()
                         .frame(height: 20)
@@ -431,8 +430,13 @@ struct MainAppView: View {
     .padding()
 }
 
-#Preview("AppBrandingCard") {
-    AppBrandingCard()
+#Preview("BrandingCard") {
+    BrandingCard(
+        icon: "app.badge.checkmark",
+        title: "Example App",
+        subtitle: "with Spectra Logger Integration"
+    )
+    .padding()
 }
 
 #Preview("SectionHeader") {
