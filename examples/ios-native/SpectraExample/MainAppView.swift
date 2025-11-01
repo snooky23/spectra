@@ -57,7 +57,7 @@ struct SectionHeader: View {
 
 /// Simulates a network request and logs it via URLSession
 func simulateNetworkRequest(method: String, url: String, statusCode: Int, duration: Double) {
-    Task.detached { () async -> Void in
+    Task {
         let startTime = Date()
 
         // Log the request initiation
@@ -78,21 +78,35 @@ func simulateNetworkRequest(method: String, url: String, statusCode: Int, durati
         let elapsed = Date().timeIntervalSince(startTime)
 
         // Log the response based on status code
-        let logLevel: (_ tag: String, _ message: String, _ throwable: Error?, _ metadata: [String: String]) -> Void = statusCode >= 400 ? SpectraLogger.shared.w : SpectraLogger.shared.i
-
-        logLevel(
-            "Network",
-            "\(method) \(url) - Status \(statusCode)",
-            nil,
-            [
-                "method": method,
-                "url": url,
-                "status_code": String(statusCode),
-                "duration_ms": String(format: "%.0f", elapsed * 1000),
-                "response_size": "2048",
-                "type": "response"
-            ]
-        )
+        if statusCode >= 400 {
+            SpectraLogger.shared.w(
+                tag: "Network",
+                message: "\(method) \(url) - Status \(statusCode)",
+                throwable: nil,
+                metadata: [
+                    "method": method,
+                    "url": url,
+                    "status_code": String(statusCode),
+                    "duration_ms": String(format: "%.0f", elapsed * 1000),
+                    "response_size": "2048",
+                    "type": "response"
+                ]
+            )
+        } else {
+            SpectraLogger.shared.i(
+                tag: "Network",
+                message: "\(method) \(url) - Status \(statusCode)",
+                throwable: nil,
+                metadata: [
+                    "method": method,
+                    "url": url,
+                    "status_code": String(statusCode),
+                    "duration_ms": String(format: "%.0f", elapsed * 1000),
+                    "response_size": "2048",
+                    "type": "response"
+                ]
+            )
+        }
     }
 }
 
