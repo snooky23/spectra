@@ -53,19 +53,6 @@ struct LogsView: View {
                     .frame(height: 44)
                 }
 
-                // Group by tag toggle
-                if !viewModel.availableTags.isEmpty {
-                    HStack {
-                        Label("Group by Tag", systemImage: "square.grid.2x2")
-                            .font(.caption)
-                        Spacer()
-                        Toggle("", isOn: $viewModel.groupByTag)
-                            .labelsHidden()
-                    }
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
-                }
-
                 Divider()
 
                 // Content
@@ -84,20 +71,6 @@ struct LogsView: View {
                             .foregroundColor(.secondary)
                     }
                     Spacer()
-                } else if viewModel.groupByTag && !viewModel.groupedLogs.isEmpty {
-                    List {
-                        ForEach(viewModel.groupedLogs.keys.sorted(), id: \.self) { tag in
-                            Section(header: Text(tag).fontWeight(.semibold)) {
-                                ForEach(viewModel.groupedLogs[tag] ?? [], id: \.id) { log in
-                                    LogRow(log: log)
-                                        .onTapGesture {
-                                            selectedLog = log
-                                        }
-                                }
-                            }
-                        }
-                    }
-                    .listStyle(.plain)
                 } else {
                     List {
                         ForEach(viewModel.filteredLogs, id: \.id) { log in
