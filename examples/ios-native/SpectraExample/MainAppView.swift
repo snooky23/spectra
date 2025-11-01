@@ -144,107 +144,109 @@ struct ExampleActionsTab: View {
     @State private var showSpectraLogger = false
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                Spacer()
-                    .frame(height: 20)
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(spacing: 20) {
+                    Spacer()
+                        .frame(height: 20)
 
-                // App branding
-                AppBrandingCard()
+                    // App branding
+                    AppBrandingCard()
 
-                Spacer()
-                    .frame(height: 20)
+                    Spacer()
+                        .frame(height: 20)
 
-                SectionHeader(title: "Example Actions")
+                    SectionHeader(title: "Example Actions")
 
-                LogButton(
-                    label: "Tap Me (Generates Log)",
-                    icon: "hand.tap",
-                    backgroundColor: .blue,
-                    action: {
-                        counter += 1
-                        SpectraLogger.shared.i(
-                            tag: "Example",
-                            message: "Button tapped \(counter) times",
-                            throwable: nil,
-                            metadata: [:]
-                        )
-                    }
-                )
+                    LogButton(
+                        label: "Tap Me (Generates Log)",
+                        icon: "hand.tap",
+                        backgroundColor: .blue,
+                        action: {
+                            counter += 1
+                            SpectraLogger.shared.i(
+                                tag: "Example",
+                                message: "Button tapped \(counter) times",
+                                throwable: nil,
+                                metadata: [:]
+                            )
+                        }
+                    )
 
-                LogButton(
-                    label: "Generate Warning",
-                    icon: "exclamationmark.triangle",
-                    backgroundColor: .orange,
-                    action: {
-                        SpectraLogger.shared.w(
-                            tag: "Example",
-                            message: "Warning log generated",
-                            throwable: nil,
-                            metadata: [:]
-                        )
-                    }
-                )
+                    LogButton(
+                        label: "Generate Warning",
+                        icon: "exclamationmark.triangle",
+                        backgroundColor: .orange,
+                        action: {
+                            SpectraLogger.shared.w(
+                                tag: "Example",
+                                message: "Warning log generated",
+                                throwable: nil,
+                                metadata: [:]
+                            )
+                        }
+                    )
 
-                LogButton(
-                    label: "Generate Error",
-                    icon: "xmark.circle",
-                    backgroundColor: .red,
-                    action: {
-                        SpectraLogger.shared.e(
-                            tag: "Example",
-                            message: "Error log generated",
-                            throwable: nil,
-                            metadata: [:]
-                        )
-                    }
-                )
+                    LogButton(
+                        label: "Generate Error",
+                        icon: "xmark.circle",
+                        backgroundColor: .red,
+                        action: {
+                            SpectraLogger.shared.e(
+                                tag: "Example",
+                                message: "Error log generated",
+                                throwable: nil,
+                                metadata: [:]
+                            )
+                        }
+                    )
 
-                LogButton(
-                    label: "Error with Stack Trace",
-                    icon: "exclamationmark.triangle.fill",
-                    backgroundColor: .red,
-                    action: {
-                        let stackTrace = generateStackTrace()
-                        SpectraLogger.shared.e(
-                            tag: "Example",
-                            message: "Fatal error: Attempted to divide by zero",
-                            throwable: nil,
-                            metadata: [
-                                "operation": "calculateDivision",
-                                "dividend": "10",
-                                "divisor": "0",
-                                "severity": "CRITICAL",
-                                "error_type": "ArithmeticException",
-                                "stack_trace": stackTrace
-                            ]
-                        )
-                    }
-                )
+                    LogButton(
+                        label: "Error with Stack Trace",
+                        icon: "exclamationmark.triangle.fill",
+                        backgroundColor: .red,
+                        action: {
+                            let stackTrace = generateStackTrace()
+                            SpectraLogger.shared.e(
+                                tag: "Example",
+                                message: "Fatal error: Attempted to divide by zero",
+                                throwable: nil,
+                                metadata: [
+                                    "operation": "calculateDivision",
+                                    "dividend": "10",
+                                    "divisor": "0",
+                                    "severity": "CRITICAL",
+                                    "error_type": "ArithmeticException",
+                                    "stack_trace": stackTrace
+                                ]
+                            )
+                        }
+                    )
 
-                Spacer()
-                    .frame(height: 20)
-
-                // Open Spectra Logger button
-                Button(action: {
-                    showSpectraLogger = true
-                }) {
-                    HStack {
-                        Image(systemName: "doc.text.magnifyingglass")
-                        Text("Open Spectra Logger")
-                            .fontWeight(.semibold)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.purple)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
+                    Spacer()
+                        .frame(height: 10)
                 }
-
-                Spacer()
-                    .frame(height: 20)
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
+
+            Divider()
+
+            // Open Spectra Logger button - fixed at bottom
+            Button(action: {
+                showSpectraLogger = true
+            }) {
+                HStack {
+                    Image(systemName: "doc.text.magnifyingglass")
+                    Text("Open Spectra Logger")
+                        .fontWeight(.semibold)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.purple)
+                .foregroundColor(.white)
+                .cornerRadius(12)
+            }
+            .padding()
         }
         .sheet(isPresented: $showSpectraLogger) {
             SpectraLoggerView()
@@ -259,92 +261,94 @@ struct NetworkRequestsTab: View {
     @State private var showSpectraLogger = false
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                Spacer()
-                    .frame(height: 20)
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(spacing: 20) {
+                    Spacer()
+                        .frame(height: 20)
 
-                SectionHeader(title: "Network Requests")
+                    SectionHeader(title: "Network Requests")
 
-                LogButton(
-                    label: "GET Request (200 OK)",
-                    icon: "arrow.down.circle",
-                    backgroundColor: .green,
-                    action: {
-                        simulateNetworkRequest(
-                            method: "GET",
-                            url: "https://api.example.com/users",
-                            statusCode: 200,
-                            duration: 0.5
-                        )
-                    }
-                )
+                    LogButton(
+                        label: "GET Request (200 OK)",
+                        icon: "arrow.down.circle",
+                        backgroundColor: .green,
+                        action: {
+                            simulateNetworkRequest(
+                                method: "GET",
+                                url: "https://api.example.com/users",
+                                statusCode: 200,
+                                duration: 0.5
+                            )
+                        }
+                    )
 
-                LogButton(
-                    label: "POST Request (201 Created)",
-                    icon: "plus.circle",
-                    backgroundColor: .green,
-                    action: {
-                        simulateNetworkRequest(
-                            method: "POST",
-                            url: "https://api.example.com/users",
-                            statusCode: 201,
-                            duration: 1.0
-                        )
-                    }
-                )
+                    LogButton(
+                        label: "POST Request (201 Created)",
+                        icon: "plus.circle",
+                        backgroundColor: .green,
+                        action: {
+                            simulateNetworkRequest(
+                                method: "POST",
+                                url: "https://api.example.com/users",
+                                statusCode: 201,
+                                duration: 1.0
+                            )
+                        }
+                    )
 
-                LogButton(
-                    label: "GET Request (404 Not Found)",
-                    icon: "questionmark.circle",
-                    backgroundColor: .orange,
-                    action: {
-                        simulateNetworkRequest(
-                            method: "GET",
-                            url: "https://api.example.com/users/9999",
-                            statusCode: 404,
-                            duration: 0.3
-                        )
-                    }
-                )
+                    LogButton(
+                        label: "GET Request (404 Not Found)",
+                        icon: "questionmark.circle",
+                        backgroundColor: .orange,
+                        action: {
+                            simulateNetworkRequest(
+                                method: "GET",
+                                url: "https://api.example.com/users/9999",
+                                statusCode: 404,
+                                duration: 0.3
+                            )
+                        }
+                    )
 
-                LogButton(
-                    label: "Server Error (500)",
-                    icon: "xmark.circle.fill",
-                    backgroundColor: .red,
-                    action: {
-                        simulateNetworkRequest(
-                            method: "GET",
-                            url: "https://api.example.com/data",
-                            statusCode: 500,
-                            duration: 2.0
-                        )
-                    }
-                )
+                    LogButton(
+                        label: "Server Error (500)",
+                        icon: "xmark.circle.fill",
+                        backgroundColor: .red,
+                        action: {
+                            simulateNetworkRequest(
+                                method: "GET",
+                                url: "https://api.example.com/data",
+                                statusCode: 500,
+                                duration: 2.0
+                            )
+                        }
+                    )
 
-                Spacer()
-                    .frame(height: 20)
-
-                // Open Spectra Logger button
-                Button(action: {
-                    showSpectraLogger = true
-                }) {
-                    HStack {
-                        Image(systemName: "doc.text.magnifyingglass")
-                        Text("Open Spectra Logger")
-                            .fontWeight(.semibold)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.purple)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
+                    Spacer()
+                        .frame(height: 10)
                 }
-
-                Spacer()
-                    .frame(height: 20)
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
+
+            Divider()
+
+            // Open Spectra Logger button - fixed at bottom
+            Button(action: {
+                showSpectraLogger = true
+            }) {
+                HStack {
+                    Image(systemName: "doc.text.magnifyingglass")
+                    Text("Open Spectra Logger")
+                        .fontWeight(.semibold)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.purple)
+                .foregroundColor(.white)
+                .cornerRadius(12)
+            }
+            .padding()
         }
         .sheet(isPresented: $showSpectraLogger) {
             SpectraLoggerView()
