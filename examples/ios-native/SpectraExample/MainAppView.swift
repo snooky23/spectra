@@ -91,8 +91,12 @@ func simulateNetworkRequest(method: String, url: String, statusCode: Int, durati
             error: nil
         )
 
-        // Add to network logs storage
-        try? await SpectraLogger.shared.networkStorage.add(entry: networkLogEntry)
+        // Add to network logs storage - must be on main thread for KMP suspend functions
+        await MainActor.run {
+            Task {
+                try? await SpectraLogger.shared.networkStorage.add(entry: networkLogEntry)
+            }
+        }
     }
 }
 
