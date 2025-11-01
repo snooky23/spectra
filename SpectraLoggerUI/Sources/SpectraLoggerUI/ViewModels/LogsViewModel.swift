@@ -1,37 +1,56 @@
 import SwiftUI
 import SpectraLogger
-import Combine
 
 /// ViewModel for the Logs screen, bridging SwiftUI to KMP storage
+@Observable
 @MainActor
-class LogsViewModel: ObservableObject {
-    @Published var logs: [LogEntry] = []
-    @Published var filteredLogs: [LogEntry] = []
-    @Published var isLoading = true
-    @Published var searchText = ""
-    @Published var selectedLevels: Set<LogLevel> = []
-    @Published var selectedTags: Set<String> = []
-    @Published var availableTags: [String] = []
+final class LogsViewModel {
+    var logs: [LogEntry] = [] {
+        didSet { updateFilteredLogs() }
+    }
+
+    var filteredLogs: [LogEntry] = []
+    var isLoading = true
+
+    var searchText = "" {
+        didSet { updateFilteredLogs() }
+    }
+
+    var selectedLevels: Set<LogLevel> = [] {
+        didSet { updateFilteredLogs() }
+    }
+
+    var selectedTags: Set<String> = [] {
+        didSet { updateFilteredLogs() }
+    }
+
+    var availableTags: [String] = []
 
     private let storage: LogStorage
-    private var cancellables = Set<AnyCancellable>()
+    private var filterTask: Task<Void, Never>?
 
     init(storage: LogStorage = SpectraLogger.shared.logStorage) {
         self.storage = storage
-        setupObservers()
         loadLogs()
     }
 
-    private func setupObservers() {
-        // Observe search text, levels, and tags changes
-        Publishers.CombineLatest3($searchText, $selectedLevels, $selectedTags)
-            .combineLatest($logs)
-            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
-            .sink { [weak self] combined, logs in
-                let (searchText, levels, tags) = combined
-                self?.applyFilters(searchText: searchText, levels: levels, tags: tags, logs: logs)
+    private func updateFilteredLogs() {
+        // Cancel previous task to debounce rapid changes
+        filterTask?.cancel()
+
+        // Schedule new filtering task with debounce
+        filterTask = Task {
+            try? await Task.sleep(nanoseconds: 300_000_000) // 300ms debounce
+
+            if !Task.isCancelled {
+                applyFilters(
+                    searchText: searchText,
+                    levels: selectedLevels,
+                    tags: selectedTags,
+                    logs: logs
+                )
             }
-            .store(in: &cancellables)
+        }
     }
 
     func loadLogs() {

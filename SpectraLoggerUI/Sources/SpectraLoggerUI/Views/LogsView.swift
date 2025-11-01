@@ -3,7 +3,7 @@ import SpectraLogger
 
 /// Pure SwiftUI Logs screen with native iOS design
 struct LogsView: View {
-    @StateObject private var viewModel = LogsViewModel()
+    @State private var viewModel = LogsViewModel()
     @State private var selectedLog: LogEntry?
     @State private var shareItems: [Any] = []
 

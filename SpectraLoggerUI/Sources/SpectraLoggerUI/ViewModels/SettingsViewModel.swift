@@ -1,15 +1,15 @@
 import SwiftUI
 import SpectraLogger
-import Combine
 
 /// ViewModel for the Settings screen, bridging SwiftUI to KMP storage
+@Observable
 @MainActor
-class SettingsViewModel: ObservableObject {
-    @Published var logCount: Int = 0
-    @Published var networkLogCount: Int = 0
-    @Published var showClearLogsAlert = false
-    @Published var showClearNetworkAlert = false
-    @Published var appearanceMode: AppearanceMode = .system
+final class SettingsViewModel {
+    var logCount: Int = 0
+    var networkLogCount: Int = 0
+    var showClearLogsAlert = false
+    var showClearNetworkAlert = false
+    var appearanceMode: AppearanceMode = .system
 
     private let logStorage: LogStorage
     private let networkStorage: NetworkLogStorage

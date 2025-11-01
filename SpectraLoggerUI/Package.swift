@@ -20,7 +20,7 @@ import PackageDescription
 let package = Package(
     name: "SpectraLoggerUI",
     platforms: [
-        .iOS(.v15),
+        .iOS(.v17),
     ],
     products: [
         .library(
