@@ -60,8 +60,8 @@ struct SectionHeader: View {
 
 /// Simulates a network request and logs it to the network logs section
 func simulateNetworkRequest(method: String, url: String, statusCode: Int, duration: Double) {
-    Task {
-        // Simulate network delay
+    Task.detached(priority: .userInitiated) {
+        // Simulate network delay on background thread
         try? await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
 
         let durationMs = Int64(duration * 1000)
@@ -91,11 +91,9 @@ func simulateNetworkRequest(method: String, url: String, statusCode: Int, durati
             error: nil
         )
 
-        // Add to network logs storage - must be on main thread for KMP suspend functions
-        await MainActor.run {
-            Task {
-                try? await SpectraLogger.shared.networkStorage.add(entry: networkLogEntry)
-            }
+        // Add to network logs storage - KMP suspend functions require main thread
+        Task { @MainActor in
+            try? await SpectraLogger.shared.networkStorage.add(entry: networkLogEntry)
         }
     }
 }
