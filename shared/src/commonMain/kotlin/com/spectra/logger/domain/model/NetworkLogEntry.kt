@@ -17,6 +17,8 @@ import kotlinx.serialization.Serializable
  * @property responseBody Response body (truncated if too large)
  * @property duration Request duration in milliseconds
  * @property error Error message if request failed
+ * @property source Package/Bundle ID where the request originated (auto-detected)
+ * @property sourceType Type of source (APP, SDK, PLUGIN) - auto-detected
  */
 @Serializable
 data class NetworkLogEntry(
@@ -31,6 +33,8 @@ data class NetworkLogEntry(
     val responseBody: String? = null,
     val duration: Long = 0,
     val error: String? = null,
+    val source: String = "unknown",
+    val sourceType: SourceType = SourceType.APP,
 ) {
     /**
      * Indicates if the request was successful (2xx response code).

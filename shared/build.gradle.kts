@@ -248,9 +248,12 @@ abstract class CreateXCFrameworkTask : DefaultTask() {
             commandLine(
                 "xcodebuild",
                 "-create-xcframework",
-                "-framework", "$buildDir/bin/iosArm64/releaseFramework/$name.framework",
-                "-framework", "$buildDir/bin/iosSimulatorArm64/releaseFramework/$name.framework",
-                "-output", xcframeworkPath,
+                "-framework",
+                "$buildDir/bin/iosArm64/releaseFramework/$name.framework",
+                "-framework",
+                "$buildDir/bin/iosSimulatorArm64/releaseFramework/$name.framework",
+                "-output",
+                xcframeworkPath,
             )
         }
         println("✅ XCFramework created at: $xcframeworkPath")

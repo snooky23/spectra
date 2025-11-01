@@ -3,6 +3,7 @@ package com.spectra.logger.network
 import com.spectra.logger.domain.model.NetworkLogEntry
 import com.spectra.logger.domain.storage.NetworkLogStorage
 import com.spectra.logger.utils.IdGenerator
+import com.spectra.logger.utils.SourceDetector
 import io.ktor.client.plugins.api.ClientPlugin
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.statement.bodyAsText
@@ -66,6 +67,7 @@ val SpectraNetworkLogger: ClientPlugin<SpectraNetworkLoggerConfig> =
                     "[Unable to read body: ${e.message}]"
                 }
 
+            val (source, sourceType) = SourceDetector.detectSource()
             val entry =
                 NetworkLogEntry(
                     id = IdGenerator.generate(),
@@ -79,6 +81,8 @@ val SpectraNetworkLogger: ClientPlugin<SpectraNetworkLoggerConfig> =
                     responseBody = responseBody,
                     duration = duration,
                     error = null,
+                    source = source,
+                    sourceType = sourceType,
                 )
 
             scope.launch {
