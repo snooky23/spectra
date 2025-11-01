@@ -5,6 +5,7 @@ import com.spectra.logger.domain.model.LogFilter
 import com.spectra.logger.domain.model.LogLevel
 import com.spectra.logger.domain.storage.LogStorage
 import com.spectra.logger.utils.IdGenerator
+import com.spectra.logger.utils.SourceDetector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -101,6 +102,7 @@ class Logger(
 
     /**
      * Core log function. Thread-safe with async storage.
+     * Automatically detects the source (app, SDK, or plugin) from the call stack.
      */
     fun log(
         level: LogLevel,
@@ -111,6 +113,8 @@ class Logger(
     ) {
         if (level.priority < minLevel.priority) return
 
+        val (source, sourceType) = SourceDetector.detectSource()
+
         val entry =
             LogEntry(
                 id = IdGenerator.generate(),
@@ -120,6 +124,8 @@ class Logger(
                 message = message,
                 throwable = throwable?.stackTraceToString(),
                 metadata = metadata,
+                source = source,
+                sourceType = sourceType,
             )
 
         scope.launch {

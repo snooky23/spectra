@@ -3,6 +3,7 @@ package com.spectra.logger.network
 import com.spectra.logger.domain.model.NetworkLogEntry
 import com.spectra.logger.domain.storage.NetworkLogStorage
 import com.spectra.logger.utils.IdGenerator
+import com.spectra.logger.utils.SourceDetector
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
@@ -91,6 +92,7 @@ object SpectraURLSessionLogger {
                 }
             }
 
+        val (source, sourceType) = SourceDetector.detectSource()
         val entry =
             NetworkLogEntry(
                 id = IdGenerator.generate(),
@@ -104,6 +106,8 @@ object SpectraURLSessionLogger {
                 responseBody = responseBody,
                 duration = duration,
                 error = error?.localizedDescription,
+                source = source,
+                sourceType = sourceType,
             )
 
         scope.launch {

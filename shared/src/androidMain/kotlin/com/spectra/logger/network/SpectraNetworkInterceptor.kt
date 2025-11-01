@@ -3,6 +3,7 @@ package com.spectra.logger.network
 import com.spectra.logger.domain.model.NetworkLogEntry
 import com.spectra.logger.domain.storage.NetworkLogStorage
 import com.spectra.logger.utils.IdGenerator
+import com.spectra.logger.utils.SourceDetector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -75,7 +76,8 @@ class SpectraNetworkInterceptor(
                 }
             }
 
-        // Log the network entry
+        // Log the network entry with automatic source detection
+        val (source, sourceType) = SourceDetector.detectSource()
         val entry =
             NetworkLogEntry(
                 id = IdGenerator.generate(),
@@ -89,6 +91,8 @@ class SpectraNetworkInterceptor(
                 responseBody = responseBody,
                 duration = duration,
                 error = error,
+                source = source,
+                sourceType = sourceType,
             )
 
         scope.launch {
