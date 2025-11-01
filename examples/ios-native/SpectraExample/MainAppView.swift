@@ -57,7 +57,7 @@ struct SectionHeader: View {
 
 /// Simulates a network request and logs it via URLSession
 func simulateNetworkRequest(method: String, url: String, statusCode: Int, duration: Double) {
-    Task.detached { () -> Void in
+    Task.detached { () async -> Void in
         let startTime = Date()
 
         // Log the request initiation
