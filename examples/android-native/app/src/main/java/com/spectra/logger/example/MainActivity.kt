@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions", "MagicNumber")
+
 package com.spectra.logger.example
 
 import android.os.Bundle
@@ -500,7 +502,7 @@ fun NetworkRequestCard(index: Int) {
         Column(
             modifier = Modifier.padding(12.dp),
         ) {
-            NetworkRequestHeader(currentMethod, methodColor, index)
+            NetworkRequestHeader(currentMethod, methodColor)
             NetworkRequestDetails(index)
         }
     }
@@ -513,14 +515,13 @@ fun NetworkRequestCard(index: Int) {
 fun NetworkRequestHeader(
     method: String,
     color: androidx.compose.ui.graphics.Color,
-    index: Int,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         MethodBadge(method, color)
-        NetworkRequestMeta(index)
+        NetworkRequestMeta()
     }
 }
 
@@ -550,7 +551,7 @@ fun MethodBadge(
  * Status code and duration metadata
  */
 @Composable
-fun NetworkRequestMeta(index: Int) {
+fun NetworkRequestMeta() {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -666,6 +667,7 @@ fun SettingsSectionTitle(title: String) {
 /**
  * Setting row with toggle
  */
+@Suppress("LongMethod")
 @Composable
 fun SettingRow(
     title: String,
