@@ -7,6 +7,7 @@
     <ID>Indentation:MainAppScreen.kt$ </ID>
     <ID>LongMethod:ExampleApp.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ExampleApp()</ID>
     <ID>LongMethod:MainAppScreen.kt$@Composable fun MainAppScreen()</ID>
+    <ID>MagicNumber:MainActivity.kt$ </ID>
     <ID>TooGenericExceptionCaught:ExampleApp.kt$e: Exception</ID>
     <ID>TooGenericExceptionCaught:MainAppScreen.kt$e: Exception</ID>
     <ID>UseCheckOrError:ExampleApp.kt$throw IllegalStateException("Example exception for logging")</ID>
