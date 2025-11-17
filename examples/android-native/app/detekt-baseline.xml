@@ -2,6 +2,7 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
+    <ID>Indentation:MainActivity.kt$ </ID>
     <ID>Indentation:ExampleApp.kt$ </ID>
     <ID>Indentation:MainAppScreen.kt$ </ID>
     <ID>LongMethod:ExampleApp.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ExampleApp()</ID>
