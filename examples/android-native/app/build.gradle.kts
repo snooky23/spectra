@@ -48,6 +48,9 @@ android {
 }
 
 dependencies {
+    // Spectra Logger (from root shared module)
+    implementation("com.spectra.logger:shared-android:0.0.1-SNAPSHOT")
+
     // AndroidX
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
