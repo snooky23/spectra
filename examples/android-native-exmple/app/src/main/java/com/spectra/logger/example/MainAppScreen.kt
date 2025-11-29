@@ -31,7 +31,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -560,24 +560,6 @@ fun MainAppScreen(onOpenSpectra: () -> Unit) {
         )
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Header with tab name
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = tabs[selectedTabIndex].label,
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-            )
-        }
-
-        Divider()
-
         // Tab content
         Box(
             modifier =
@@ -677,7 +659,7 @@ fun SpectraLoggerScreen(onClose: () -> Unit) {
             )
         }
 
-        Divider()
+        HorizontalDivider()
 
         // Tab content
         Box(
@@ -888,7 +870,7 @@ fun SpectraLogsTab() {
             }
         }
 
-        Divider()
+        HorizontalDivider()
 
         // Logs list
         if (isLoading) {
@@ -1185,7 +1167,7 @@ fun SpectraSettingsTab(onDarkModeChanged: (Boolean) -> Unit = {}) {
                     }
                 }
 
-                Divider()
+                HorizontalDivider()
 
                 // Network Logs
                 Row(
