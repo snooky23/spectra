@@ -27,7 +27,11 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
-                MainAppScreen(onOpenSpectra = { showSpectraLogger.value = true })
+                if (showSpectraLogger.value) {
+                    SpectraLoggerScreen(onClose = { showSpectraLogger.value = false })
+                } else {
+                    MainAppScreen(onOpenSpectra = { showSpectraLogger.value = true })
+                }
             }
         }
     }

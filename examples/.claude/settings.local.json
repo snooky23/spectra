@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git push:*)",
+      "Bash(./gradlew clean:*)",
+      "Bash(chmod:*)",
+      "Bash(./gradlew wrapper:*)",
+      "Bash(gradle --version:*)",
+      "Bash(curl:*)",
+      "Bash(./gradlew shared:publishToMavenLocal:*)",
+      "Bash(adb devices:*)",
+      "Bash(./gradlew:*)",
+      "Bash(ANDROID_SDK_ROOT=/Users/avilevin/Library/Android/sdk ./gradlew installDebug:*)",
+      "Bash(ANDROID_HOME=/Users/avilevin/Library/Android/sdk ./gradlew installDebug:*)",
+      "Bash(adb logcat:*)",
+      "Bash(adb shell:*)",
+      "Bash(tree:*)",
+      "Bash(xargs cat:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat(android-example): create complete iOS-aligned Android test app\n\n- Recreated android-native as identical clone of iOS-native tester\n- Implements tab-based navigation with Actions and Network tabs\n- Actions tab: buttons to generate logs at different levels (info, warning, error)\n- Network tab: buttons to simulate HTTP requests (GET 200, POST 201, GET 404, 500)\n- Reusable UI components: LogButton, BrandingCard, SectionHeader\n- Mock network requests with realistic delays and payloads\n- Stack trace generation for error logging demonstration\n- \"Open Spectra Logger\" button to access the logger modal\n- Configurable logger with circular buffer storage\n- Full Compose UI with Material 3 design system\n- Android builds successfully and ready for emulator testing\n\nBoth iOS and Android test apps now have identical feature parity and UI flow.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(adb uninstall:*)",
+      "Bash(~/Library/Android/sdk/build-tools/35.0.0/aapt:*)",
+      "Bash(echo:*)",
+      "Bash(export ANDROID_SDK_ROOT=/Users/avilevin/Library/Android/sdk)",
+      "Bash(export ANDROID_HOME=/Users/avilevin/Library/Android/sdk)",
+      "Bash(adb pull:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\ndocs(android): add Android Studio setup guide and missing project files\n\n- Add ANDROID_STUDIO_SETUP.md with detailed instructions for opening in Android Studio\n- Add comprehensive README.md documenting features, architecture, and build steps\n- Add app/proguard-rules.pro for ProGuard configuration\n- Add .gitignore for Android project files and build artifacts\n- Add local.properties configuration file for SDK path\n\nThese files enable Android Studio to properly recognize and build the project without configuration errors.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(cat:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nconfigure(android-native): add Android Studio IDE configuration files\n\n- Add .idea/modules.xml for project module configuration\n- Add .idea/misc.xml with Android project settings\n- Add .idea/vcs.xml for Git integration\n- Add .idea/codeStyles/Project.xml for Kotlin code style\n- Add .idea/modules/SpectraLoggerExample.iml root module file\n- Add .idea/modules/app/SpectraLoggerExample.app.iml app module file\n- Update .gitignore to allow committing selective .idea files\n\nThese files help Android Studio properly recognize and open the project without requiring\nmanual configuration. The project can now be opened directly in Android Studio with\nFile > Open > select this directory.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
