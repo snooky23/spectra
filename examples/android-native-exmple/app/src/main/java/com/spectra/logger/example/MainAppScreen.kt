@@ -282,22 +282,6 @@ fun ExampleActionsTab(onOpenSpectra: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         item {
-            Spacer(modifier = Modifier.height(10.dp))
-        }
-
-        item {
-            BrandingCard(
-                icon = Icons.Default.CheckCircle,
-                title = "Example App",
-                subtitle = "with Spectra Logger Integration",
-            )
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        item {
             LogButton(
                 label = "Tap Me (Generates Log)",
                 icon = Icons.Default.CheckCircle,
@@ -385,22 +369,6 @@ fun NetworkRequestsTab(onOpenSpectra: () -> Unit) {
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        item {
-            Spacer(modifier = Modifier.height(10.dp))
-        }
-
-        item {
-            BrandingCard(
-                icon = Icons.Default.Info,
-                title = "Network Testing",
-                subtitle = "Simulate HTTP requests and responses",
-            )
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
         item {
             LogButton(
                 label = "GET Request (200 OK)",
