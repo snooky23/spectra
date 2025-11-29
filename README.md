@@ -93,19 +93,41 @@ pod 'SpectraLogger', '~> 0.0.1'
 
 ## Usage
 
-### Basic Logging
+### Core Logging Functions
+
+Spectra Logger provides a consistent, simple API for logging across all platforms.
 
 ```kotlin
 import com.spectra.logger.SpectraLogger
 
-// Log events (available globally)
-SpectraLogger.v("TAG", "Verbose message")
-SpectraLogger.d("TAG", "Debug message")
-SpectraLogger.i("TAG", "Info message")
-SpectraLogger.w("TAG", "Warning message")
-SpectraLogger.e("TAG", "Error message", throwable = exception)
-SpectraLogger.f("TAG", "Fatal error", metadata = mapOf("userId" to "123"))
+// Log with different levels (all platforms)
+SpectraLogger.v("TAG", "Verbose message")      // Verbose
+SpectraLogger.d("TAG", "Debug message")        // Debug
+SpectraLogger.i("TAG", "Info message")         // Info
+SpectraLogger.w("TAG", "Warning message")      // Warning
+SpectraLogger.e("TAG", "Error message", throwable = exception)  // Error
+SpectraLogger.f("TAG", "Fatal error", metadata = mapOf("userId" to "123"))  // Fatal
+
+// Add context to your logs
+SpectraLogger.d("Auth", "Login attempt", metadata = mapOf(
+    "username" to "user@example.com",
+    "deviceId" to "ABC123"
+))
 ```
+
+**Function Naming Convention:**
+- `v()` - Verbose (lowest priority)
+- `d()` - Debug
+- `i()` - Info
+- `w()` - Warning
+- `e()` - Error
+- `f()` - Fatal (highest priority)
+
+All functions accept:
+- `tag: String` - Category/source of the log
+- `message: String` - The log message
+- `throwable: Throwable?` - Optional exception for error logs
+- `metadata: Map<String, String>` - Optional context data
 
 ### Configuration
 
@@ -245,17 +267,36 @@ SpectraLogger.shared.configure { config in
 
 ### Show Logger UI
 
-#### Android
+The Spectra Logger UI is accessed through a simple, consistent API across all platforms.
 
-**Option 1: Manual**
+#### Basic Usage (All Platforms)
+
 ```kotlin
-import com.spectra.logger.ui.SpectraLoggerUI
+import com.spectra.logger.SpectraLogger
 
-// From any Activity or Context
-SpectraLoggerUI.show(context)
+// Show the logger UI as a modal
+SpectraLogger.showScreen()
+
+// Dismiss the logger UI
+SpectraLogger.dismissScreen()
 ```
 
-**Option 2: Shake Gesture**
+#### Android - Trigger Options
+
+**Option 1: From Activity/Fragment**
+```kotlin
+// On button click
+button.setOnClickListener {
+    SpectraLogger.showScreen()
+}
+
+// From Fragment
+button.setOnClickListener {
+    SpectraLogger.showScreen()
+}
+```
+
+**Option 2: Shake Gesture (Automatic)**
 ```kotlin
 import com.spectra.logger.ui.SpectraLoggerTrigger
 
@@ -280,23 +321,58 @@ SpectraLoggerNotification.show(context, "Debug Mode Active")
 SpectraLoggerNotification.hide(context)
 ```
 
-**Option 4: URL Scheme** (Works from ADB, browser, or other apps)
+**Option 4: URL Scheme**
 ```bash
 # Android - via ADB
 adb shell am start -a android.intent.action.VIEW -d "spectra://open"
-adb shell am start -a android.intent.action.VIEW -d "spectra://logs"
-adb shell am start -a android.intent.action.VIEW -d "spectra://network"
 
-# Android - from browser or webview
+# From browser or webview
 # Simply navigate to: spectra://open
 
 # From Chrome DevTools remote debugging
-window.location = "spectra://network"
+window.location = "spectra://open"
 ```
 
-#### iOS
+#### iOS - Trigger Options
 
-**URL Scheme Setup:**
+**Option 1: From SwiftUI Button**
+```swift
+import SpectraLogger
+
+Button("Show Logs") {
+    SpectraLogger.showScreen()
+}
+```
+
+**Option 2: From UIKit**
+```swift
+import SpectraLogger
+
+button.addTarget(self, action: #selector(showLogs), for: .touchUpInside)
+
+@objc func showLogs() {
+    SpectraLogger.showScreen()
+}
+```
+
+**Option 3: Shake Gesture**
+```swift
+@main
+struct MyApp: App {
+    init() {
+        // Enable shake-to-open logger
+        SpectraLogger.enableShakeGesture()
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}
+```
+
+**Option 4: URL Scheme**
 
 1. Add to `Info.plist`:
 ```xml
@@ -320,7 +396,7 @@ struct MyApp: App {
             ContentView()
                 .onOpenURL { url in
                     if url.scheme == "spectra" {
-                        // Present logger UI
+                        SpectraLogger.showScreen()
                     }
                 }
         }

@@ -11,14 +11,21 @@ import com.spectra.logger.domain.storage.InMemoryLogStorage
 import com.spectra.logger.domain.storage.InMemoryNetworkLogStorage
 import com.spectra.logger.domain.storage.LogStorage
 import com.spectra.logger.domain.storage.NetworkLogStorage
+import com.spectra.logger.ui.SpectraUIManager
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.flow.Flow
 
 /**
  * Main entry point for the Spectra Logger framework.
- * Provides a simple, global API for logging.
+ * Provides a simple, global API for logging, querying, and accessing the debug UI.
  *
- * Initialize with custom configuration:
+ * **Logging:**
+ * ```
+ * SpectraLogger.d("TAG", "Debug message")
+ * SpectraLogger.e("TAG", "Error", throwable = exception)
+ * ```
+ *
+ * **Configuration:**
  * ```
  * SpectraLogger.configure {
  *     minLogLevel = LogLevel.DEBUG
@@ -26,6 +33,12 @@ import kotlinx.coroutines.flow.Flow
  *         maxCapacity = 20_000
  *     }
  * }
+ * ```
+ *
+ * **UI Display:**
+ * ```
+ * SpectraLogger.showScreen()   // Show logger UI as modal
+ * SpectraLogger.dismissScreen() // Dismiss logger UI
  * ```
  *
  * @since 0.0.1
@@ -222,4 +235,55 @@ object SpectraLogger {
                 minLevel = newConfig.minLogLevel,
             )
     }
+
+    // UI Display API
+
+    /**
+     * Show the Spectra Logger debug UI as a modal screen.
+     *
+     * This displays the logger interface above the running app without interrupting
+     * the app's lifecycle. Users can dismiss the UI at any time.
+     *
+     * The UI includes:
+     * - Log viewer with real-time updates
+     * - Network request/response viewer
+     * - Settings and configuration options
+     * - Export and share functionality
+     *
+     * **Platform-specific behavior:**
+     * - **Android**: Shows as a fullscreen modal dialog
+     * - **iOS**: Shows as a modal presentation over the current view
+     *
+     * Example:
+     * ```
+     * // Show on button tap
+     * button.setOnClickListener {
+     *     SpectraLogger.showScreen()
+     * }
+     *
+     * // Show on shake gesture (enable in Activity)
+     * // Show via URL scheme
+     * // Show from settings menu
+     * ```
+     *
+     * @see dismissScreen
+     * @since 0.0.1
+     */
+    fun showScreen() = SpectraUIManager.showScreen()
+
+    /**
+     * Dismiss the Spectra Logger debug UI.
+     *
+     * Closes the modal screen if it is currently shown.
+     * Safe to call even if the screen is not currently visible.
+     *
+     * Example:
+     * ```
+     * SpectraLogger.dismissScreen()
+     * ```
+     *
+     * @see showScreen
+     * @since 0.0.1
+     */
+    fun dismissScreen() = SpectraUIManager.dismissScreen()
 }
