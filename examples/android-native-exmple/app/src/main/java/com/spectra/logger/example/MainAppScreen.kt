@@ -370,6 +370,14 @@ fun NetworkRequestsTab(onOpenSpectra: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         item {
+            BrandingCard(
+                icon = Icons.Default.Info,
+                title = "Network Testing",
+                subtitle = "Simulate HTTP requests and responses",
+            )
+        }
+
+        item {
             LogButton(
                 label = "GET Request (200 OK)",
                 icon = Icons.Default.Info,
