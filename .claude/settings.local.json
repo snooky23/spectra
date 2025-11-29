@@ -2,7 +2,19 @@
   "permissions": {
     "allow": [
       "Read(//private/var/folders/xb/vmsq93014t1g1pyck0sbt9qc0000gn/T/**)",
-      "Bash(xargs cat:*)"
+      "Bash(xargs cat:*)",
+      "Bash(tree:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)",
+      "Bash(./gradlew build:*)",
+      "Bash(./gradlew ktlintFormat:*)",
+      "Bash(./scripts/code-quality.sh:*)",
+      "Bash(git checkout:*)",
+      "Bash(./gradlew:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat(android): implement unified tab navigation UI aligned with iOS\n\nImplemented the main SpectraLoggerScreen with tab-based navigation\nmatching the iOS SwiftUI implementation:\n- Added BottomNavigationBar with three tabs (Logs, Network, Settings)\n- Created placeholder tab screens with descriptive content\n- Used Material3 design system for consistency\n- Navigation uses Scaffold with inner padding for content layout\n- Icons follow Material Design guidelines\n\nThe Android example app now has the same structural alignment as iOS,\nwith tab switching functionality and proper UI composition.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit:*)",
+      "Bash(git restore:*)"
     ],
     "deny": [],
     "ask": []
