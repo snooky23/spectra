@@ -1,34 +1,15 @@
-# Gradle files
-.gradle/
-build/
-*.apk
-*.aar
-
-# Local configuration file (sdk path, etc)
-local.properties
-
-# Android Studio (except .idea config for this example project)
-# .idea/ - We commit selective .idea files for Android Studio compatibility
-*.iws
-*.ipr
-.DS_Store
-
-# Kotlin/Java
-*.class
-*.jar
-*.war
-*.sar
-*.ks
-*.zip
-.classpath
-.project
-.settings
-
-# IDE
-.vscode/
-*.swp
-*.swo
-*~
-
-# Gradle cache
+*.iml
 .gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
