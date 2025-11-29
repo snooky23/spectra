@@ -1,8 +1,5 @@
 # Ignore all files in .idea except the ones we explicitly want
 *
 !.gitignore
-!modules.xml
-!misc.xml
-!vcs.xml
-!codeStyles/
-!codeStyles/Project.xml
+!*.xml
+!caches/
