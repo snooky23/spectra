@@ -279,7 +279,7 @@ fun ExampleActionsTab(onOpenSpectra: () -> Unit) {
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         item {
             Spacer(modifier = Modifier.height(10.dp))
@@ -294,11 +294,7 @@ fun ExampleActionsTab(onOpenSpectra: () -> Unit) {
         }
 
         item {
-            Spacer(modifier = Modifier.height(10.dp))
-        }
-
-        item {
-            SectionHeader("Example Actions")
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         item {
@@ -359,7 +355,7 @@ fun ExampleActionsTab(onOpenSpectra: () -> Unit) {
         }
 
         item {
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         item {
@@ -387,7 +383,7 @@ fun NetworkRequestsTab(onOpenSpectra: () -> Unit) {
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         item {
             Spacer(modifier = Modifier.height(10.dp))
@@ -402,11 +398,7 @@ fun NetworkRequestsTab(onOpenSpectra: () -> Unit) {
         }
 
         item {
-            Spacer(modifier = Modifier.height(10.dp))
-        }
-
-        item {
-            SectionHeader("Network Requests")
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         item {
@@ -486,7 +478,7 @@ fun NetworkRequestsTab(onOpenSpectra: () -> Unit) {
         }
 
         item {
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         item {
@@ -567,35 +559,57 @@ fun MainAppScreen(onOpenSpectra: () -> Unit) {
             ),
         )
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        bottomBar = {
-            NavigationBar {
-                tabs.forEachIndexed { index, tab ->
-                    NavigationBarItem(
-                        icon = {
-                            Icon(
-                                imageVector =
-                                    if (index == selectedTabIndex) {
-                                        tab.selectedIcon
-                                    } else {
-                                        tab.unselectedIcon
-                                    },
-                                contentDescription = tab.contentDescription,
-                            )
-                        },
-                        label = { Text(tab.label) },
-                        selected = index == selectedTabIndex,
-                        onClick = { selectedTabIndex = index },
-                    )
-                }
-            }
-        },
-    ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Header with tab name
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = tabs[selectedTabIndex].label,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+
+        Divider()
+
+        // Tab content
+        Box(
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+        ) {
             when (selectedTabIndex) {
                 0 -> ExampleActionsTab(onOpenSpectra)
                 1 -> NetworkRequestsTab(onOpenSpectra)
+            }
+        }
+
+        // Bottom navigation bar
+        NavigationBar {
+            tabs.forEachIndexed { index, tab ->
+                NavigationBarItem(
+                    icon = {
+                        Icon(
+                            imageVector =
+                                if (index == selectedTabIndex) {
+                                    tab.selectedIcon
+                                } else {
+                                    tab.unselectedIcon
+                                },
+                            contentDescription = tab.contentDescription,
+                        )
+                    },
+                    label = { Text(tab.label) },
+                    selected = index == selectedTabIndex,
+                    onClick = { selectedTabIndex = index },
+                )
             }
         }
     }
