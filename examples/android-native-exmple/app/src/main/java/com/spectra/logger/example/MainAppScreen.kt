@@ -160,25 +160,65 @@ fun SectionHeader(title: String) {
 /**
  * Simulates a network request and logs it to the network logs section
  */
-fun simulateNetworkRequest(
+suspend fun simulateNetworkRequest(
     method: String,
     url: String,
     statusCode: Int,
     duration: Double,
 ) {
-    // Simulate on coroutine scope (this will be called from compose context)
-    // Network request simulation - would be called from viewModel in real app
-    // For now, just log the network event
-    SpectraLogger.i(
-        "NetworkRequest",
-        "$method $url - Status: $statusCode (${duration * 1000}ms)",
-        metadata = mapOf(
-            "method" to method,
-            "url" to url,
-            "statusCode" to statusCode.toString(),
-            "duration_ms" to (duration * 1000).toLong().toString(),
-        ),
+    // Network request simulation - logs to network storage, not application logs
+    val requestHeaders = mapOf(
+        "Content-Type" to "application/json",
+        "User-Agent" to "SpectraExample/1.0",
+        "Accept" to "application/json",
+        "Authorization" to "Bearer token_example_12345"
     )
+
+    val responseHeaders = mutableMapOf(
+        "Content-Type" to "application/json",
+        "Server" to "Example/1.0",
+        "X-Response-Time" to "${(duration * 1000).toLong()}ms"
+    )
+
+    // Add status-specific headers
+    if (statusCode in 200..299) {
+        responseHeaders["Cache-Control"] = "max-age=3600"
+        responseHeaders["ETag"] = "\"abc123\""
+    } else if (statusCode >= 400) {
+        responseHeaders["Cache-Control"] = "no-cache, no-store"
+        if (statusCode == 429) {
+            responseHeaders["Retry-After"] = "60"
+        }
+    }
+
+    // Generate response body based on status code
+    val responseBody = when (statusCode) {
+        200 -> "{\"success\": true, \"data\": {\"id\": \"123\", \"message\": \"Request completed successfully\"}}"
+        201 -> "{\"success\": true, \"id\": \"newly-created-id\", \"message\": \"Resource created\"}"
+        400 -> "{\"error\": \"Bad Request\", \"details\": \"Invalid request parameters\", \"code\": \"INVALID_PARAMS\"}"
+        404 -> "{\"error\": \"Not Found\", \"details\": \"The requested resource does not exist\", \"code\": \"RESOURCE_NOT_FOUND\"}"
+        500 -> "{\"error\": \"Internal Server Error\", \"details\": \"An unexpected error occurred\", \"code\": \"INTERNAL_ERROR\", \"requestId\": \"req-${java.util.UUID.randomUUID()}\"}"
+        else -> "{\"error\": \"HTTP $statusCode\", \"message\": \"Request failed with status code $statusCode\"}"
+    }
+
+    val durationMs = (duration * 1000).toLong()
+
+    val networkLogEntry = com.spectra.logger.domain.model.NetworkLogEntry(
+        id = java.util.UUID.randomUUID().toString(),
+        timestamp = kotlinx.datetime.Clock.System.now(),
+        url = url,
+        method = method,
+        requestHeaders = requestHeaders,
+        requestBody = null,
+        responseCode = statusCode,
+        responseHeaders = responseHeaders,
+        responseBody = responseBody,
+        duration = durationMs,
+        error = if (statusCode >= 400) "HTTP $statusCode: Request failed" else null
+    )
+
+    // Add the network log entry to Spectra Logger's network storage
+    SpectraLogger.networkStorage.add(networkLogEntry)
 }
 
 /**
