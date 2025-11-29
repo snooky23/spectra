@@ -30,72 +30,102 @@ class Logger(
 
     /**
      * Log a verbose message.
+     *
+     * @param tag Category or source of the log
+     * @param message The log message
+     * @param throwable Optional exception (for error logging)
+     * @param metadata Optional context data (nullable, follows industry standard)
      */
     fun v(
         tag: String,
         message: String,
         throwable: Throwable? = null,
-        metadata: Map<String, String> = emptyMap(),
+        metadata: Map<String, String>? = null,
     ) {
         log(LogLevel.VERBOSE, tag, message, throwable, metadata)
     }
 
     /**
      * Log a debug message.
+     *
+     * @param tag Category or source of the log
+     * @param message The log message
+     * @param throwable Optional exception (for error logging)
+     * @param metadata Optional context data (nullable, follows industry standard)
      */
     fun d(
         tag: String,
         message: String,
         throwable: Throwable? = null,
-        metadata: Map<String, String> = emptyMap(),
+        metadata: Map<String, String>? = null,
     ) {
         log(LogLevel.DEBUG, tag, message, throwable, metadata)
     }
 
     /**
      * Log an info message.
+     *
+     * @param tag Category or source of the log
+     * @param message The log message
+     * @param throwable Optional exception (for error logging)
+     * @param metadata Optional context data (nullable, follows industry standard)
      */
     fun i(
         tag: String,
         message: String,
         throwable: Throwable? = null,
-        metadata: Map<String, String> = emptyMap(),
+        metadata: Map<String, String>? = null,
     ) {
         log(LogLevel.INFO, tag, message, throwable, metadata)
     }
 
     /**
      * Log a warning message.
+     *
+     * @param tag Category or source of the log
+     * @param message The log message
+     * @param throwable Optional exception (for error logging)
+     * @param metadata Optional context data (nullable, follows industry standard)
      */
     fun w(
         tag: String,
         message: String,
         throwable: Throwable? = null,
-        metadata: Map<String, String> = emptyMap(),
+        metadata: Map<String, String>? = null,
     ) {
         log(LogLevel.WARNING, tag, message, throwable, metadata)
     }
 
     /**
      * Log an error message.
+     *
+     * @param tag Category or source of the log
+     * @param message The log message
+     * @param throwable Optional exception (for error logging)
+     * @param metadata Optional context data (nullable, follows industry standard)
      */
     fun e(
         tag: String,
         message: String,
         throwable: Throwable? = null,
-        metadata: Map<String, String> = emptyMap(),
+        metadata: Map<String, String>? = null,
     ) {
         log(LogLevel.ERROR, tag, message, throwable, metadata)
     }
 
     /**
      * Log a fatal error message.
+     *
+     * @param tag Category or source of the log
+     * @param message The log message
+     * @param throwable Optional exception (for error logging)
+     * @param metadata Optional context data (nullable, follows industry standard)
      */
     fun f(
         tag: String,
         message: String,
         throwable: Throwable? = null,
-        metadata: Map<String, String> = emptyMap(),
+        metadata: Map<String, String>? = null,
     ) {
         log(LogLevel.FATAL, tag, message, throwable, metadata)
     }
@@ -103,17 +133,22 @@ class Logger(
     /**
      * Core log function. Thread-safe with async storage.
      * Automatically detects the source (app, SDK, or plugin) from the call stack.
+     *
+     * Converts null metadata to empty map internally (following industry standard pattern).
      */
     fun log(
         level: LogLevel,
         tag: String,
         message: String,
         throwable: Throwable? = null,
-        metadata: Map<String, String> = emptyMap(),
+        metadata: Map<String, String>? = null,
     ) {
         if (level.priority < minLevel.priority) return
 
         val (source, sourceType) = SourceDetector.detectSource()
+
+        // Convert null to empty map (industry standard pattern from Firebase, Sentry, etc)
+        val logMetadata = metadata ?: emptyMap()
 
         val entry =
             LogEntry(
@@ -123,7 +158,7 @@ class Logger(
                 tag = tag,
                 message = message,
                 throwable = throwable?.stackTraceToString(),
-                metadata = metadata,
+                metadata = logMetadata,
                 source = source,
                 sourceType = sourceType,
             )
