@@ -7,9 +7,8 @@ build/
 # Local configuration file (sdk path, etc)
 local.properties
 
-# Android Studio
-.idea/
-*.iml
+# Android Studio (except .idea config for this example project)
+# .idea/ - We commit selective .idea files for Android Studio compatibility
 *.iws
 *.ipr
 .DS_Store
@@ -21,11 +20,9 @@ local.properties
 *.sar
 *.ks
 *.zip
-*.zip
 .classpath
 .project
 .settings
-local.properties
 
 # IDE
 .vscode/
