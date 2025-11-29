@@ -1,8 +1,0 @@
-<component name="ProjectCodeStyleConfiguration">
-  <state>
-    <option name="USE_PER_PROJECT_SETTINGS" value="true" />
-    <Kotlin>
-      <option name="CODE_STYLE_DEFAULTS" value="KOTLIN_OFFICIAL" />
-    </Kotlin>
-  </state>
-</component>
