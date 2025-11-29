@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -53,6 +54,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.content.Intent
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 import com.spectra.logger.SpectraLogger
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -156,6 +160,18 @@ fun SectionHeader(title: String) {
 }
 
 // MARK: - Utility Functions
+
+/**
+ * Share text content using native Android share sheet
+ */
+fun shareText(context: Context, text: String, title: String = "Share Logs") {
+    val intent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, text)
+        type = "text/plain"
+    }
+    context.startActivity(Intent.createChooser(intent, title))
+}
 
 /**
  * Simulates a network request and logs it to the network logs section
@@ -593,12 +609,13 @@ fun MainAppScreen(onOpenSpectra: () -> Unit) {
 @Composable
 fun SpectraLoggerScreen(onClose: () -> Unit) {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
+    var isDarkMode by remember { mutableStateOf(false) }
 
     val tabs = listOf(
         TabItem(
             label = "Logs",
-            selectedIcon = Icons.Default.Info,
-            unselectedIcon = Icons.Outlined.Info,
+            selectedIcon = Icons.Default.CheckCircle,
+            unselectedIcon = Icons.Outlined.CheckCircle,
             contentDescription = "Logs",
         ),
         TabItem(
@@ -615,62 +632,72 @@ fun SpectraLoggerScreen(onClose: () -> Unit) {
         ),
     )
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            // Header with close button
-            Row(
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Single header with close button
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = when (selectedTabIndex) {
+                    0 -> "Logs"
+                    1 -> "Network"
+                    2 -> "Settings"
+                    else -> "Spectra Logger"
+                },
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                text = "✕",
+                style = MaterialTheme.typography.headlineSmall,
                 modifier =
                     Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = "Spectra Logger",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                )
-                Text(
-                    text = "✕",
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier =
-                        Modifier
-                            .clickable { onClose() }
-                            .padding(8.dp),
-                    color = MaterialTheme.colorScheme.primary,
-                )
-            }
-        },
-        bottomBar = {
-            NavigationBar {
-                tabs.forEachIndexed { index, tab ->
-                    NavigationBarItem(
-                        icon = {
-                            Icon(
-                                imageVector =
-                                    if (index == selectedTabIndex) {
-                                        tab.selectedIcon
-                                    } else {
-                                        tab.unselectedIcon
-                                    },
-                                contentDescription = tab.contentDescription,
-                            )
-                        },
-                        label = { Text(tab.label) },
-                        selected = index == selectedTabIndex,
-                        onClick = { selectedTabIndex = index },
-                    )
-                }
-            }
-        },
-    ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
+                        .clickable { onClose() }
+                        .padding(8.dp),
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
+
+        Divider()
+
+        // Tab content
+        Box(
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+        ) {
             when (selectedTabIndex) {
                 0 -> SpectraLogsTab()
                 1 -> SpectraNetworkTab()
-                2 -> SpectraSettingsTab()
+                2 -> SpectraSettingsTab(onDarkModeChanged = { isDarkMode = it })
+            }
+        }
+
+        // Single bottom navigation bar
+        NavigationBar {
+            tabs.forEachIndexed { index, tab ->
+                NavigationBarItem(
+                    icon = {
+                        Icon(
+                            imageVector =
+                                if (index == selectedTabIndex) {
+                                    tab.selectedIcon
+                                } else {
+                                    tab.unselectedIcon
+                                },
+                            contentDescription = tab.contentDescription,
+                        )
+                    },
+                    label = { Text(tab.label) },
+                    selected = index == selectedTabIndex,
+                    onClick = { selectedTabIndex = index },
+                )
             }
         }
     }
@@ -689,6 +716,7 @@ fun SpectraLogsTab() {
     var availableTags by remember { mutableStateOf<List<String>>(emptyList()) }
     var selectedTags by remember { mutableStateOf<Set<String>>(emptySet()) }
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     // Load logs on composition
     LaunchedEffect(Unit) {
@@ -715,17 +743,36 @@ fun SpectraLogsTab() {
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Search bar
-        TextField(
-            value = searchText,
-            onValueChange = { searchText = it },
+        // Search bar with share button
+        Row(
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-            placeholder = { Text("Search logs...") },
-            singleLine = true,
-        )
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            TextField(
+                value = searchText,
+                onValueChange = { searchText = it },
+                modifier =
+                    Modifier
+                        .weight(1f),
+                placeholder = { Text("Search logs...") },
+                singleLine = true,
+            )
+            Button(
+                onClick = {
+                    val logsText = filteredLogs.map { log ->
+                        "[${formatTimestamp(log.timestamp)}] ${log.level.name} - ${log.tag}: ${log.message}"
+                    }.joinToString("\n")
+                    shareText(context, logsText.ifEmpty { "No logs to share" }, "Share Logs")
+                },
+                modifier = Modifier.padding(4.dp),
+            ) {
+                Icon(imageVector = Icons.Default.Search, contentDescription = "Share", modifier = Modifier.size(20.dp))
+            }
+        }
 
         // Log Level Filter Chips
         if (com.spectra.logger.domain.model.LogLevel.entries.isNotEmpty()) {
@@ -889,7 +936,9 @@ fun SpectraLogsTab() {
 @Composable
 fun SpectraNetworkTab() {
     var networkLogs by remember { mutableStateOf<List<com.spectra.logger.domain.model.NetworkLogEntry>>(emptyList()) }
+    var searchText by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(true) }
+    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
@@ -899,7 +948,44 @@ fun SpectraNetworkTab() {
         }
     }
 
+    val filteredLogs = remember(networkLogs, searchText) {
+        networkLogs.filter { log ->
+            searchText.isBlank() ||
+                log.url.contains(searchText, ignoreCase = true) ||
+                log.method.contains(searchText, ignoreCase = true)
+        }
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
+        // Search bar with share button
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            TextField(
+                value = searchText,
+                onValueChange = { searchText = it },
+                modifier = Modifier.weight(1f),
+                placeholder = { Text("Search network logs...") },
+                singleLine = true,
+            )
+            Button(
+                onClick = {
+                    val logsText = filteredLogs.map { log ->
+                        "[${formatTimestamp(log.timestamp)}] ${log.method} ${log.responseCode} - ${log.url}"
+                    }.joinToString("\n")
+                    shareText(context, logsText.ifEmpty { "No network logs to share" }, "Share Network Logs")
+                },
+                modifier = Modifier.padding(4.dp),
+            ) {
+                Icon(imageVector = Icons.Default.Search, contentDescription = "Share", modifier = Modifier.size(20.dp))
+            }
+        }
+
         if (isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text("Loading network logs...")
@@ -920,6 +1006,22 @@ fun SpectraNetworkTab() {
                     )
                 }
             }
+        } else if (filteredLogs.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null,
+                        modifier = Modifier.size(64.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(
+                        "No matching network logs",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.headlineSmall,
+                    )
+                }
+            }
         } else {
             LazyColumn(
                 modifier =
@@ -928,8 +1030,8 @@ fun SpectraNetworkTab() {
                         .background(MaterialTheme.colorScheme.background),
                 contentPadding = PaddingValues(8.dp),
             ) {
-                items(networkLogs.size) { index ->
-                    val networkLog = networkLogs[index]
+                items(filteredLogs.size) { index ->
+                    val networkLog = filteredLogs[index]
                     NetworkLogEntryItem(networkLog)
                 }
             }
@@ -938,13 +1040,17 @@ fun SpectraNetworkTab() {
 }
 
 /**
- * Settings tab
+ * Settings tab with appearance, storage, and export options
  */
 @Composable
-fun SpectraSettingsTab() {
+fun SpectraSettingsTab(onDarkModeChanged: (Boolean) -> Unit = {}) {
     var logCount by remember { mutableStateOf(0) }
     var networkLogCount by remember { mutableStateOf(0) }
+    var appearanceMode by remember { mutableStateOf("System") }
+    var showClearLogsDialog by remember { mutableStateOf(false) }
+    var showClearNetworkDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
+    val version = remember { SpectraLogger.getVersion() }
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
@@ -957,66 +1063,248 @@ fun SpectraSettingsTab() {
         modifier =
             Modifier
                 .fillMaxSize()
-                .padding(16.dp)
-                .verticalScroll(androidx.compose.foundation.rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+                .verticalScroll(rememberScrollState()),
     ) {
+        // Appearance Section
         Text(
-            text = "Storage Statistics",
-            style = MaterialTheme.typography.headlineSmall,
+            text = "Appearance",
+            style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         )
 
-        Card(modifier = Modifier.fillMaxWidth()) {
-            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Card(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+        ) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    text = "Choose how Spectra Logger appears",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    Text("Application Logs:")
-                    Text(logCount.toString(), fontWeight = FontWeight.Bold)
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text("Network Logs:")
-                    Text(networkLogCount.toString(), fontWeight = FontWeight.Bold)
+                    listOf("Light", "Dark", "System").forEach { mode ->
+                        Card(
+                            modifier =
+                                Modifier
+                                    .weight(1f)
+                                    .clickable {
+                                        appearanceMode = mode
+                                        if (mode == "Dark") {
+                                            onDarkModeChanged(true)
+                                        } else {
+                                            onDarkModeChanged(false)
+                                        }
+                                    },
+                            colors =
+                                CardDefaults.cardColors(
+                                    containerColor =
+                                        if (appearanceMode == mode) {
+                                            MaterialTheme.colorScheme.primary
+                                        } else {
+                                            MaterialTheme.colorScheme.surfaceVariant
+                                        },
+                                ),
+                        ) {
+                            Text(
+                                text = mode,
+                                modifier = Modifier.padding(8.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                color =
+                                    if (appearanceMode == mode) {
+                                        MaterialTheme.colorScheme.onPrimary
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                    },
+                            )
+                        }
+                    }
                 }
             }
         }
 
+        // Storage Section
         Text(
-            text = "Actions",
-            style = MaterialTheme.typography.headlineSmall,
+            text = "Storage",
+            style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         )
 
-        Button(
-            onClick = {
-                coroutineScope.launch {
-                    SpectraLogger.clear()
-                    logCount = 0
-                }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+        Card(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
         ) {
-            Text("Clear All Logs", color = Color.White)
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                // Application Logs
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column {
+                        Text(
+                            text = "Application Logs",
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        Text(
+                            text = "$logCount logs stored",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Button(
+                        onClick = { showClearLogsDialog = true },
+                        enabled = logCount > 0,
+                        modifier = Modifier.padding(start = 8.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                    ) {
+                        Text("Clear", color = Color.White, style = MaterialTheme.typography.labelSmall)
+                    }
+                }
+
+                Divider()
+
+                // Network Logs
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column {
+                        Text(
+                            text = "Network Logs",
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        Text(
+                            text = "$networkLogCount logs stored",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Button(
+                        onClick = { showClearNetworkDialog = true },
+                        enabled = networkLogCount > 0,
+                        modifier = Modifier.padding(start = 8.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                    ) {
+                        Text("Clear", color = Color.White, style = MaterialTheme.typography.labelSmall)
+                    }
+                }
+            }
         }
 
-        Button(
-            onClick = {
-                coroutineScope.launch {
-                    SpectraLogger.clearNetwork()
-                    networkLogCount = 0
+        // About Section
+        Text(
+            text = "About",
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        )
+
+        Card(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+        ) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = "Version",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Text(
+                        text = version,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = "Framework",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Text(
+                        text = "Spectra Logger",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+
+    // Clear logs confirmation dialog
+    if (showClearLogsDialog) {
+        AlertDialog(
+            onDismissRequest = { showClearLogsDialog = false },
+            title = { Text("Clear Application Logs?") },
+            text = { Text("This will permanently delete all $logCount application logs.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        coroutineScope.launch {
+                            SpectraLogger.clear()
+                            logCount = 0
+                            showClearLogsDialog = false
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                ) {
+                    Text("Clear", color = Color.White)
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-        ) {
-            Text("Clear Network Logs", color = Color.White)
-        }
+            dismissButton = {
+                Button(onClick = { showClearLogsDialog = false }) {
+                    Text("Cancel")
+                }
+            },
+        )
+    }
+
+    // Clear network logs confirmation dialog
+    if (showClearNetworkDialog) {
+        AlertDialog(
+            onDismissRequest = { showClearNetworkDialog = false },
+            title = { Text("Clear Network Logs?") },
+            text = { Text("This will permanently delete all $networkLogCount network logs.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        coroutineScope.launch {
+                            SpectraLogger.clearNetwork()
+                            networkLogCount = 0
+                            showClearNetworkDialog = false
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                ) {
+                    Text("Clear", color = Color.White)
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showClearNetworkDialog = false }) {
+                    Text("Cancel")
+                }
+            },
+        )
     }
 }
 
