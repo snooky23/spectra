@@ -23,6 +23,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Info
@@ -282,13 +283,21 @@ fun ExampleActionsTab(onOpenSpectra: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         item {
+            BrandingCard(
+                icon = Icons.Default.List,
+                title = "Application Logging",
+                subtitle = "Generate logs at different severity levels",
+            )
+        }
+
+        item {
             LogButton(
                 label = "Tap Me (Generates Log)",
                 icon = Icons.Default.CheckCircle,
                 backgroundColor = Color.Blue,
                 action = {
                     counter++
-                    SpectraLogger.i("Example", "Button tapped $counter times")
+                    SpectraLogger.i("UserInteraction", "User button pressed - interaction count: $counter, timestamp: ${System.currentTimeMillis()}")
                 },
             )
         }
@@ -299,7 +308,7 @@ fun ExampleActionsTab(onOpenSpectra: () -> Unit) {
                 icon = Icons.Default.CheckCircle,
                 backgroundColor = Color(0xFFFFA500), // Orange
                 action = {
-                    SpectraLogger.w("Example", "Warning log generated")
+                    SpectraLogger.w("Performance", "Slow operation detected - database query took 1500ms, expected < 500ms")
                 },
             )
         }
@@ -310,7 +319,7 @@ fun ExampleActionsTab(onOpenSpectra: () -> Unit) {
                 icon = Icons.Default.CheckCircle,
                 backgroundColor = Color.Red,
                 action = {
-                    SpectraLogger.e("Example", "Error log generated")
+                    SpectraLogger.e("Authentication", "Login attempt failed - Invalid credentials provided for user@example.com")
                 },
             )
         }
@@ -323,14 +332,17 @@ fun ExampleActionsTab(onOpenSpectra: () -> Unit) {
                 action = {
                     val stackTrace = generateStackTrace()
                     SpectraLogger.e(
-                        "Example",
-                        "Fatal error: Attempted to divide by zero",
+                        "CriticalError",
+                        "Fatal error: Division by zero in payment calculation module",
                         metadata = mapOf(
+                            "module" to "PaymentProcessor",
                             "operation" to "calculateDivision",
-                            "dividend" to "10",
+                            "amount" to "1500.00",
                             "divisor" to "0",
                             "severity" to "CRITICAL",
                             "error_type" to "ArithmeticException",
+                            "user_id" to "usr_12345",
+                            "transaction_id" to "txn_98765",
                             "stack_trace" to stackTrace,
                         ),
                     )
@@ -387,7 +399,7 @@ fun NetworkRequestsTab(onOpenSpectra: () -> Unit) {
                         delay(500) // Simulate network delay
                         simulateNetworkRequest(
                             method = "GET",
-                            url = "https://api.example.com/users",
+                            url = "https://api.example.com/v1/users?limit=50&offset=0",
                             statusCode = 200,
                             duration = 0.5,
                         )
@@ -406,7 +418,7 @@ fun NetworkRequestsTab(onOpenSpectra: () -> Unit) {
                         delay(1000) // Simulate network delay
                         simulateNetworkRequest(
                             method = "POST",
-                            url = "https://api.example.com/users",
+                            url = "https://api.example.com/v1/users/register",
                             statusCode = 201,
                             duration = 1.0,
                         )
@@ -425,7 +437,7 @@ fun NetworkRequestsTab(onOpenSpectra: () -> Unit) {
                         delay(300) // Simulate network delay
                         simulateNetworkRequest(
                             method = "GET",
-                            url = "https://api.example.com/users/9999",
+                            url = "https://api.example.com/v1/users/9999",
                             statusCode = 404,
                             duration = 0.3,
                         )
@@ -444,7 +456,7 @@ fun NetworkRequestsTab(onOpenSpectra: () -> Unit) {
                         delay(2000) // Simulate network delay
                         simulateNetworkRequest(
                             method = "GET",
-                            url = "https://api.example.com/data",
+                            url = "https://api.example.com/v1/database/query",
                             statusCode = 500,
                             duration = 2.0,
                         )
