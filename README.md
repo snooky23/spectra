@@ -95,24 +95,30 @@ pod 'SpectraLogger', '~> 0.0.1'
 
 ### Core Logging Functions
 
-Spectra Logger provides a consistent, simple API for logging across all platforms.
+Spectra Logger provides a consistent, simple API for logging across all platforms, following industry standards from Firebase Crashlytics, Sentry, and Log4j.
 
 ```kotlin
 import com.spectra.logger.SpectraLogger
 
-// Log with different levels (all platforms)
-SpectraLogger.v("TAG", "Verbose message")      // Verbose
-SpectraLogger.d("TAG", "Debug message")        // Debug
-SpectraLogger.i("TAG", "Info message")         // Info
-SpectraLogger.w("TAG", "Warning message")      // Warning
-SpectraLogger.e("TAG", "Error message", throwable = exception)  // Error
-SpectraLogger.f("TAG", "Fatal error", metadata = mapOf("userId" to "123"))  // Fatal
+// Simple logging (metadata is optional)
+SpectraLogger.v("TAG", "Verbose message")
+SpectraLogger.d("TAG", "Debug message")
+SpectraLogger.i("TAG", "Info message")
+SpectraLogger.w("TAG", "Warning message")
+SpectraLogger.e("TAG", "Error message", throwable = exception)
+SpectraLogger.f("TAG", "Fatal error")
 
-// Add context to your logs
+// Add metadata/context (nullable - industry standard)
 SpectraLogger.d("Auth", "Login attempt", metadata = mapOf(
     "username" to "user@example.com",
     "deviceId" to "ABC123"
 ))
+
+// Or explicitly pass null (equivalent to no metadata)
+SpectraLogger.d("TAG", "message", metadata = null)
+
+// Metadata is optional - can be omitted entirely
+SpectraLogger.d("TAG", "message")
 ```
 
 **Function Naming Convention:**
@@ -123,11 +129,13 @@ SpectraLogger.d("Auth", "Login attempt", metadata = mapOf(
 - `e()` - Error
 - `f()` - Fatal (highest priority)
 
-All functions accept:
+**All functions accept:**
 - `tag: String` - Category/source of the log
 - `message: String` - The log message
 - `throwable: Throwable?` - Optional exception for error logs
-- `metadata: Map<String, String>` - Optional context data
+- `metadata: Map<String, String>?` - Optional context data *(nullable, follows industry standard)*
+
+**Design Note:** The metadata parameter follows the industry standard pattern used by Firebase Crashlytics, Sentry, and Log4j, where context data is optional and nullable. Null values are automatically converted to empty maps internally, matching the behavior of professional logging frameworks.
 
 ### Configuration
 

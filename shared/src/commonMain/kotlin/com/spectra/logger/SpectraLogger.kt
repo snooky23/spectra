@@ -88,62 +88,92 @@ object SpectraLogger {
 
     /**
      * Log verbose message.
+     *
+     * @param tag Category or source of the log
+     * @param message The log message
+     * @param throwable Optional exception (for error logging)
+     * @param metadata Optional context data (industry standard: nullable)
      */
     fun v(
         tag: String,
         message: String,
         throwable: Throwable? = null,
-        metadata: Map<String, String> = emptyMap(),
+        metadata: Map<String, String>? = null,
     ) = logger.v(tag, message, throwable, metadata)
 
     /**
      * Log debug message.
+     *
+     * @param tag Category or source of the log
+     * @param message The log message
+     * @param throwable Optional exception (for error logging)
+     * @param metadata Optional context data (industry standard: nullable)
      */
     fun d(
         tag: String,
         message: String,
         throwable: Throwable? = null,
-        metadata: Map<String, String> = emptyMap(),
+        metadata: Map<String, String>? = null,
     ) = logger.d(tag, message, throwable, metadata)
 
     /**
      * Log info message.
+     *
+     * @param tag Category or source of the log
+     * @param message The log message
+     * @param throwable Optional exception (for error logging)
+     * @param metadata Optional context data (industry standard: nullable)
      */
     fun i(
         tag: String,
         message: String,
         throwable: Throwable? = null,
-        metadata: Map<String, String> = emptyMap(),
+        metadata: Map<String, String>? = null,
     ) = logger.i(tag, message, throwable, metadata)
 
     /**
      * Log warning message.
+     *
+     * @param tag Category or source of the log
+     * @param message The log message
+     * @param throwable Optional exception (for error logging)
+     * @param metadata Optional context data (industry standard: nullable)
      */
     fun w(
         tag: String,
         message: String,
         throwable: Throwable? = null,
-        metadata: Map<String, String> = emptyMap(),
+        metadata: Map<String, String>? = null,
     ) = logger.w(tag, message, throwable, metadata)
 
     /**
      * Log error message.
+     *
+     * @param tag Category or source of the log
+     * @param message The log message
+     * @param throwable Optional exception (for error logging)
+     * @param metadata Optional context data (industry standard: nullable)
      */
     fun e(
         tag: String,
         message: String,
         throwable: Throwable? = null,
-        metadata: Map<String, String> = emptyMap(),
+        metadata: Map<String, String>? = null,
     ) = logger.e(tag, message, throwable, metadata)
 
     /**
      * Log fatal error message.
+     *
+     * @param tag Category or source of the log
+     * @param message The log message
+     * @param throwable Optional exception (for error logging)
+     * @param metadata Optional context data (industry standard: nullable)
      */
     fun f(
         tag: String,
         message: String,
         throwable: Throwable? = null,
-        metadata: Map<String, String> = emptyMap(),
+        metadata: Map<String, String>? = null,
     ) = logger.f(tag, message, throwable, metadata)
 
     /**
