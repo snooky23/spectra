@@ -386,12 +386,12 @@ All colors should adapt automatically:
 | Log detail view | ✅ | ⬜ |
 | Stack trace with line numbers | ✅ | ⬜ |
 | Copy stack trace | ✅ | ⬜ |
-| **Filter Screen** | ⬜ | ⬜ |
-| - Tag filters (existing + custom) | ⬜ | ⬜ |
-| - Time range filter | ⬜ | ⬜ |
-| - Metadata filter | ⬜ | ⬜ |
-| - Has error toggle | ⬜ | ⬜ |
-| Active filter badges | ⬜ | ⬜ |
+| **Filter Screen** | ✅ | ⬜ |
+| - Tag filters (existing + custom) | ✅ | ⬜ |
+| - Time range filter | ✅ | ⬜ |
+| - Metadata filter | ✅ | ⬜ |
+| - Has error toggle | ✅ | ⬜ |
+| Active filter badges | ✅ | ⬜ |
 | Network logs list | ✅ | ⬜ |
 | Method/status filters | ✅ | ⬜ |
 | Network detail view | ✅ | ⬜ |
