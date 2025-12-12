@@ -58,7 +58,7 @@ A Kotlin Multiplatform logging framework for mobile applications that works seam
 
 **Next:** Milestone 3 - Advanced Features & Polish
 
-See [TASKS.md](./TASKS.md) for detailed development timeline.
+See [TASKS.md](./docs/TASKS.md) for detailed development timeline.
 
 ## Quick Start
 
@@ -498,18 +498,18 @@ swift test
 ```
 
 For detailed testing guide with troubleshooting, see:
-- **[iOS Testing Guide](./iOS_TESTING_GUIDE.md)** - Quick reference for all iOS testing
+- **[iOS Testing Guide](./docs/iOS_TESTING_GUIDE.md)** - Quick reference for all iOS testing
 - **[iOS Example App README](./examples/ios-native/README.md#testing)** - How to test the example app
 - **[SpectraLoggerUI Testing Guide](./SpectraLoggerUI/TESTING.md)** - Comprehensive testing guide
 
 ## Documentation
 
-- [Product Requirements Document](./PRD.md) - Complete product specification
-- [Technical Planning](./PLANNING.md) - Architecture and design decisions
-- [Task Breakdown](./TASKS.md) - Development timeline and milestones
+- [Product Requirements Document](./docs/PRD.md) - Complete product specification
+- [Technical Planning](./docs/PLANNING.md) - Architecture and design decisions
+- [Task Breakdown](./docs/TASKS.md) - Development timeline and milestones
 - [Claude Code Instructions](./CLAUDE.md) - For AI-assisted development
-- [Session Memory](./SESSION.md) - Current development state
-- [iOS Testing Guide](./iOS_TESTING_GUIDE.md) - Quick reference for iOS testing
+- [Session Memory](./docs/SESSION.md) - Current development state
+- [iOS Testing Guide](./docs/iOS_TESTING_GUIDE.md) - Quick reference for iOS testing
 - [SpectraLoggerUI Documentation](./SpectraLoggerUI/README.md) - SwiftUI package guide
 - [API Reference](./docs/API.md) - Complete API documentation
 - [Usage Guide](./docs/USAGE_GUIDE.md) - How to use Spectra Logger
@@ -621,7 +621,7 @@ See [scripts/README.md](./scripts/README.md) for detailed documentation.
 - [ ] Beta testing
 - [ ] Official release
 
-See [TASKS.md](./TASKS.md) for complete 18-week development plan.
+See [TASKS.md](./docs/TASKS.md) for complete 18-week development plan.
 
 ## License
 
