@@ -368,11 +368,12 @@ All colors should adapt automatically:
 - `preferredColorScheme` for appearance
 - Share via `UIActivityViewController`
 
-### Android (Compose) - To Implement
-- Use `BottomNavigation` with `NavHost`
-- Use `Scaffold` with `TopAppBar`
-- Material3 components for consistency
-- Share via `Intent.ACTION_SEND`
+### Android (Compose) - Implemented ✅
+- Uses `NavigationBar` with `Scaffold`
+- Uses `TopAppBar` with Material3 styling
+- Material3 components (FilterChip, Card, etc.)
+- ModalBottomSheet for filter and detail views
+- Share via `Intent.ACTION_SEND` (TODO: implement)
 
 ---
 
@@ -380,28 +381,28 @@ All colors should adapt automatically:
 
 | Feature | iOS | Android |
 |---------|-----|---------|
-| Logs list with filtering | ✅ | ⬜ |
-| Log level filter chips | ✅ | ⬜ |
-| Search (min 2 chars) | ✅ | ⬜ |
-| Log detail view | ✅ | ⬜ |
-| Stack trace with line numbers | ✅ | ⬜ |
-| Copy stack trace | ✅ | ⬜ |
-| **Filter Screen** | ✅ | ⬜ |
-| - Tag filters (existing + custom) | ✅ | ⬜ |
-| - Time range filter | ✅ | ⬜ |
-| - Metadata filter | ✅ | ⬜ |
-| - Has error toggle | ✅ | ⬜ |
-| Active filter badges | ✅ | ⬜ |
-| Network logs list | ✅ | ⬜ |
-| Method/status filters | ✅ | ⬜ |
-| Network detail view | ✅ | ⬜ |
-| Headers display | ✅ | ⬜ |
-| Request/response body | ✅ | ⬜ |
-| Appearance picker | ✅ | ⬜ |
-| Storage stats | ✅ | ⬜ |
-| Clear logs | ✅ | ⬜ |
+| Logs list with filtering | ✅ | ✅ |
+| Log level filter chips | ✅ | ✅ |
+| Search (min 2 chars) | ✅ | ✅ |
+| Log detail view | ✅ | ✅ |
+| Stack trace with line numbers | ✅ | ✅ |
+| Copy stack trace | ✅ | ✅ |
+| **Filter Screen** | ✅ | ✅ |
+| - Tag filters (existing + custom) | ✅ | ✅ |
+| - Time range filter | ✅ | ✅ |
+| - Metadata filter | ✅ | ✅ |
+| - Has error toggle | ✅ | ✅ |
+| Active filter badges | ✅ | ✅ |
+| Network logs list | ✅ | ✅ |
+| Method/status filters | ✅ | ✅ |
+| Network detail view | ✅ | ✅ |
+| Headers display | ✅ | ✅ |
+| Request/response body | ✅ | ✅ |
+| Appearance picker | ✅ | ✅ |
+| Storage stats | ✅ | ✅ |
+| Clear logs | ✅ | ✅ |
 | Share/export logs | ✅ | ⬜ |
-| Dark mode | ✅ | ⬜ |
+| Dark mode | ✅ | ✅ |
 
 ---
 
