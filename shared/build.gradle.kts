@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.compose.multiplatform)
     id("maven-publish")
     id("jacoco")
 }
@@ -96,6 +97,10 @@ kotlin {
                 implementation(libs.androidx.core.ktx)
                 implementation(libs.kotlinx.coroutines.android)
                 implementation(libs.okhttp)
+                // Compose UI
+                implementation(libs.bundles.compose.ui)
+                implementation(libs.bundles.androidx.compose)
+                implementation(libs.androidx.lifecycle.viewmodel.ktx)
             }
         }
 
@@ -154,6 +159,14 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
 
     packaging {
