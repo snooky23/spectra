@@ -54,13 +54,13 @@ The logger UI uses a **3-tab layout** at the bottom:
 #### Layout
 ```
 ┌─────────────────────────────────────┐
-│  Logs                    [↑] [...] │  <- Navigation bar with Share & Menu
+│  Logs              [⌘] [↑] [...] │  <- Navigation bar: Filter, Share, Menu
 ├─────────────────────────────────────┤
 │  🔍 Search logs (min 2 chars)...   │  <- Search bar
 ├─────────────────────────────────────┤
 │  [Verbose][Debug][Info][Warn]...   │  <- Level filter chips (horizontal scroll)
 ├─────────────────────────────────────┤
-│  [Auth][Network][Database]...      │  <- Tag filter chips (horizontal scroll)
+│  Active Filters: Tag=Auth ✕        │  <- Active filter badges (if any)
 ├─────────────────────────────────────┤
 │                                     │
 │  ┌─────────────────────────────┐   │
@@ -75,10 +75,18 @@ The logger UI uses a **3-tab layout** at the bottom:
 ```
 
 #### Toolbar Actions
+- **Filter button** (⌘): Opens Filter Screen (see below)
 - **Share button** (↑): Exports all logs as text
 - **Menu** (...):
   - Refresh
   - Clear All Logs (destructive)
+
+#### Active Filter Badges
+When filters are active from the Filter Screen, show removable badges:
+- Display as horizontal scrollable row below level chips
+- Each badge shows filter type and value (e.g., "Tag=Auth")
+- Tap ✕ to remove individual filter
+- Only shown when filters are active
 
 #### Log Row Components
 - **Level badge**: Colored background (0.2 opacity), colored text, rounded corners
@@ -99,6 +107,79 @@ Opens as modal sheet when tapping a log row:
   - Monospaced font with line numbers
   - Horizontal scroll for long lines
 - **Metadata section**: Key-value pairs (excludes stack_trace if shown above)
+
+---
+
+### 1b. Logs Filter Screen (Modal)
+
+Opens as a full-screen modal from the Filter button.
+
+#### Layout
+```
+┌─────────────────────────────────────┐
+│  ✕ Filters              [Reset All]│  <- Close button, Reset
+├─────────────────────────────────────┤
+│                                     │
+│  TAGS                               │
+│  ┌─────────────────────────────┐   │
+│  │ [+] Add custom tag...       │   │  <- Text input for new tag
+│  └─────────────────────────────┘   │
+│  ┌─────────────────────────────┐   │
+│  │ ☑ Auth                      │   │  <- Existing tags from logs
+│  │ ☐ Network                   │   │
+│  │ ☐ Database                  │   │
+│  │ ☐ UI                        │   │
+│  │ ☑ MyCustomTag (custom)      │   │  <- User-added custom tag
+│  └─────────────────────────────┘   │
+│                                     │
+│  TIME RANGE                         │
+│  ┌─────────────────────────────┐   │
+│  │ From: [Select date/time]    │   │
+│  │ To:   [Select date/time]    │   │
+│  └─────────────────────────────┘   │
+│                                     │
+│  METADATA                           │
+│  ┌─────────────────────────────┐   │
+│  │ Key:   [    user_id      ]  │   │
+│  │ Value: [    12345        ]  │   │
+│  └─────────────────────────────┘   │
+│                                     │
+│  ┌─────────────────────────────┐   │
+│  │        Apply Filters        │   │  <- Primary action button
+│  └─────────────────────────────┘   │
+│                                     │
+└─────────────────────────────────────┘
+```
+
+#### Filter Options
+
+**1. Tags Section**
+- **Custom tag input**: Text field to add a tag that may not exist yet in logs
+  - Allows filtering for logs that will appear in the future
+  - Added tags appear in the list with "(custom)" label
+- **Existing tags list**: Checkboxes for all tags currently present in logs
+  - Dynamically populated from log storage
+  - Multi-select allowed
+- **Match mode**: Toggle for "Match Any" vs "Match All" tags
+
+**2. Time Range Section**
+- **From date/time**: Start of time range filter
+- **To date/time**: End of time range filter
+- Quick presets: "Last hour", "Today", "Last 24h", "Last 7 days"
+
+**3. Metadata Section** (Advanced)
+- Filter by specific metadata key-value pairs
+- Add multiple key-value conditions
+- Useful for filtering by user_id, session_id, etc.
+
+**4. Has Error Toggle**
+- Show only logs that have an attached throwable/error
+
+#### Behavior
+- Filters persist until explicitly cleared
+- "Reset All" clears all filters
+- "Apply Filters" closes modal and applies filters
+- Filter icon in toolbar shows badge when filters are active
 
 ---
 
@@ -301,11 +382,16 @@ All colors should adapt automatically:
 |---------|-----|---------|
 | Logs list with filtering | ✅ | ⬜ |
 | Log level filter chips | ✅ | ⬜ |
-| Tag filter chips | ✅ | ⬜ |
 | Search (min 2 chars) | ✅ | ⬜ |
 | Log detail view | ✅ | ⬜ |
 | Stack trace with line numbers | ✅ | ⬜ |
 | Copy stack trace | ✅ | ⬜ |
+| **Filter Screen** | ⬜ | ⬜ |
+| - Tag filters (existing + custom) | ⬜ | ⬜ |
+| - Time range filter | ⬜ | ⬜ |
+| - Metadata filter | ⬜ | ⬜ |
+| - Has error toggle | ⬜ | ⬜ |
+| Active filter badges | ⬜ | ⬜ |
 | Network logs list | ✅ | ⬜ |
 | Method/status filters | ✅ | ⬜ |
 | Network detail view | ✅ | ⬜ |
