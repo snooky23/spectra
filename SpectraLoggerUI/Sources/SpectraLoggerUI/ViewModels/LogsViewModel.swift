@@ -20,7 +20,8 @@ final class LogsViewModel {
         didSet { updateFilteredLogs() }
     }
 
-    var selectedTags: Set<String> = [] {
+    /// Advanced filters from Filter Screen
+    var advancedFilter = LogsFilter() {
         didSet { updateFilteredLogs() }
     }
 
@@ -46,7 +47,7 @@ final class LogsViewModel {
                 applyFilters(
                     searchText: searchText,
                     levels: selectedLevels,
-                    tags: selectedTags,
+                    advancedFilter: advancedFilter,
                     logs: logs
                 )
             }
@@ -67,7 +68,7 @@ final class LogsViewModel {
                     self.applyFilters(
                         searchText: self.searchText,
                         levels: self.selectedLevels,
-                        tags: self.selectedTags,
+                        advancedFilter: self.advancedFilter,
                         logs: result
                     )
                     self.isLoading = false
@@ -89,7 +90,7 @@ final class LogsViewModel {
     private func applyFilters(
         searchText: String,
         levels: Set<LogLevel>,
-        tags: Set<String>,
+        advancedFilter: LogsFilter,
         logs: [LogEntry]
     ) {
         var filtered = logs
@@ -99,9 +100,44 @@ final class LogsViewModel {
             filtered = filtered.filter { levels.contains($0.level) }
         }
 
-        // Filter by tags
-        if !tags.isEmpty {
-            filtered = filtered.filter { tags.contains($0.tag) }
+        // Filter by tags (from advanced filter)
+        let allTags = advancedFilter.allSelectedTags
+        if !allTags.isEmpty {
+            filtered = filtered.filter { allTags.contains($0.tag) }
+        }
+
+        // Filter by time range
+        if let fromTimestamp = advancedFilter.fromTimestamp {
+            let fromEpoch = fromTimestamp.timeIntervalSince1970
+            filtered = filtered.filter { log in
+                let logEpoch = Double(log.timestamp.epochSeconds)
+                return logEpoch >= fromEpoch
+            }
+        }
+        
+        if let toTimestamp = advancedFilter.toTimestamp {
+            let toEpoch = toTimestamp.timeIntervalSince1970
+            filtered = filtered.filter { log in
+                let logEpoch = Double(log.timestamp.epochSeconds)
+                return logEpoch <= toEpoch
+            }
+        }
+
+        // Filter by metadata
+        if !advancedFilter.metadataKey.isEmpty && !advancedFilter.metadataValue.isEmpty {
+            filtered = filtered.filter { log in
+                if let value = log.metadata[advancedFilter.metadataKey] {
+                    return value.localizedCaseInsensitiveContains(advancedFilter.metadataValue)
+                }
+                return false
+            }
+        }
+
+        // Filter by has error
+        if advancedFilter.hasErrorOnly {
+            filtered = filtered.filter { log in
+                log.throwable != nil || log.metadata["stack_trace"] != nil
+            }
         }
 
         // Filter by search text (min 2 chars)
@@ -124,12 +160,27 @@ final class LogsViewModel {
         }
     }
 
-    func toggleTag(_ tag: String) {
-        if selectedTags.contains(tag) {
-            selectedTags.remove(tag)
-        } else {
-            selectedTags.insert(tag)
-        }
+    /// Remove a specific tag from the filter
+    func removeTagFilter(_ tag: String) {
+        advancedFilter.selectedTags.remove(tag)
+        advancedFilter.customTags.remove(tag)
+    }
+
+    /// Clear time range filter
+    func clearTimeRangeFilter() {
+        advancedFilter.fromTimestamp = nil
+        advancedFilter.toTimestamp = nil
+    }
+
+    /// Clear metadata filter
+    func clearMetadataFilter() {
+        advancedFilter.metadataKey = ""
+        advancedFilter.metadataValue = ""
+    }
+
+    /// Clear has error filter
+    func clearHasErrorFilter() {
+        advancedFilter.hasErrorOnly = false
     }
 
     func clearLogs() {
@@ -141,3 +192,4 @@ final class LogsViewModel {
         }
     }
 }
+

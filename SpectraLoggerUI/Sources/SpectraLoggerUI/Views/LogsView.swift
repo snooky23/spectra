@@ -6,6 +6,7 @@ struct LogsView: View {
     @State private var viewModel = LogsViewModel()
     @State private var selectedLog: LogEntry?
     @State private var shareItems: [Any] = []
+    @State private var showFilterScreen = false
 
     var body: some View {
         NavigationView {
@@ -34,17 +35,35 @@ struct LogsView: View {
                     .frame(height: 44)
                 }
 
-                // Filter chips - Tags
-                if !viewModel.availableTags.isEmpty {
+                // Active filter badges (from Filter Screen)
+                if viewModel.advancedFilter.hasActiveFilters {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
-                            ForEach(viewModel.availableTags, id: \.self) { tag in
-                                FilterChip(
-                                    title: tag,
-                                    isSelected: viewModel.selectedTags.contains(tag),
-                                    color: .blue
-                                ) {
-                                    viewModel.toggleTag(tag)
+                            // Tag filters
+                            ForEach(Array(viewModel.advancedFilter.allSelectedTags).sorted(), id: \.self) { tag in
+                                ActiveFilterBadge(label: "Tag: \(tag)") {
+                                    viewModel.removeTagFilter(tag)
+                                }
+                            }
+                            
+                            // Time range filter
+                            if viewModel.advancedFilter.fromTimestamp != nil || viewModel.advancedFilter.toTimestamp != nil {
+                                ActiveFilterBadge(label: "Time Range") {
+                                    viewModel.clearTimeRangeFilter()
+                                }
+                            }
+                            
+                            // Metadata filter
+                            if !viewModel.advancedFilter.metadataKey.isEmpty && !viewModel.advancedFilter.metadataValue.isEmpty {
+                                ActiveFilterBadge(label: "\(viewModel.advancedFilter.metadataKey)=\(viewModel.advancedFilter.metadataValue)") {
+                                    viewModel.clearMetadataFilter()
+                                }
+                            }
+                            
+                            // Has error filter
+                            if viewModel.advancedFilter.hasErrorOnly {
+                                ActiveFilterBadge(label: "Errors Only") {
+                                    viewModel.clearHasErrorFilter()
                                 }
                             }
                         }
@@ -87,6 +106,25 @@ struct LogsView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showFilterScreen = true }) {
+                        ZStack(alignment: .topTrailing) {
+                            Image(systemName: "line.3.horizontal.decrease.circle")
+                            
+                            // Badge for active filter count
+                            if viewModel.advancedFilter.activeFilterCount > 0 {
+                                Text("\(viewModel.advancedFilter.activeFilterCount)")
+                                    .font(.caption2)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.white)
+                                    .padding(4)
+                                    .background(Color.red)
+                                    .clipShape(Circle())
+                                    .offset(x: 8, y: -8)
+                            }
+                        }
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: shareAllLogs) {
                         Image(systemName: "square.and.arrow.up")
                     }
@@ -108,12 +146,19 @@ struct LogsView: View {
             .sheet(item: $selectedLog) { log in
                 LogDetailView(log: log)
             }
+            .sheet(isPresented: $showFilterScreen) {
+                LogsFilterView(
+                    filter: $viewModel.advancedFilter,
+                    availableTags: viewModel.availableTags,
+                    onApply: {}
+                )
+            }
         }
     }
 
     private func shareAllLogs() {
         let logsText = viewModel.logs.map { log in
-            "[\\(log.level.name.uppercased())] \\(DateFormattingUtilities.formatFullTimestamp(log.timestamp)) - \\(log.tag): \\(log.message)"
+            "[\(log.level.name.uppercased())] \(DateFormattingUtilities.formatFullTimestamp(log.timestamp)) - \(log.tag): \(log.message)"
         }.joined(separator: "\n")
 
         let textToShare = logsText.isEmpty ? "No logs to share" : logsText
@@ -121,6 +166,7 @@ struct LogsView: View {
     }
 
 }
+
 
 /// Single log entry row
 struct LogRow: View {
