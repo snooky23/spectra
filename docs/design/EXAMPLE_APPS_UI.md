@@ -116,6 +116,61 @@ All requests include:
 
 ---
 
+## Additional Use Cases (Recommended)
+
+### Batch Logging Section
+Demonstrate performance with bulk operations:
+
+| Button | Action | Count |
+|--------|--------|-------|
+| Generate 10 Logs | Mixed levels across tags | 10 logs |
+| Generate 100 Logs | Stress test logging | 100 logs |
+| Generate 1000 Logs | Performance demo | 1000 logs |
+
+### Real-Time Updates Demo
+Show logs appearing live while logger is open:
+
+```
+┌───────────────────────────────────────┐
+│  ⚡ Real-Time Demo                    │
+│  ─────────────────────────────────────│
+│  │ ● Start Background Logging     │  │  ← Starts timer
+│  │ ● Stop Background Logging      │  │  ← Stops timer
+│  ─────────────────────────────────────│
+│  Logs every 2 seconds while running   │
+└───────────────────────────────────────┘
+```
+
+### Filtering Demos
+Demonstrate Spectra Logger filtering capabilities:
+
+| Scenario | What to Generate |
+|----------|------------------|
+| Tag filtering | Logs with tags: `Auth`, `Network`, `UI`, `Database` |
+| Level filtering | Equal mix of all 6 log levels |
+| Search demo | Logs containing searchable keywords |
+| Time range | Logs spread across different timestamps |
+
+### Export/Share Scenarios
+
+| Format | Contents |
+|--------|----------|
+| Filtered logs | Only currently visible logs |
+| All logs | Complete log history |
+| JSON export | Structured data format |
+| Plain text | Human-readable format |
+
+### Developer Triggers
+
+| Trigger | Platform | Description |
+|---------|----------|-------------|
+| Shake to open | Both | Shake device to open logger |
+| URL scheme | iOS | `spectra://open` deep link |
+| Notification | Android | Persistent debug notification |
+| Floating button | Android | Optional overlay button |
+
+---
+
 ## Spectra Logger Modal
 
 Opens as a full-screen modal with 3 tabs.
@@ -139,6 +194,31 @@ Opens as a full-screen modal with 3 tabs.
 │    Logs    │   Network   │  Settings   │
 └─────────────────────────────────────────┘
 ```
+
+---
+
+## Settings Tab Use Cases
+
+| Setting | Purpose |
+|---------|---------|
+| Log count display | Show current log/network counts |
+| Clear logs button | Demo clearing logs |
+| Clear network button | Demo clearing network logs |
+| Version info | Display Spectra version |
+| Max capacity info | Show storage limits |
+
+---
+
+## Error Scenarios to Demo
+
+| Scenario | Purpose |
+|----------|---------|
+| Empty state | Show UI when no logs exist |
+| No search results | Show "No matches" state |
+| No network logs | Empty network tab state |
+| Large log message | Handle very long messages |
+| Many metadata fields | Handle extensive metadata |
+| Deep stack trace | Long stack trace display |
 
 ---
 
@@ -172,9 +252,12 @@ Opens as a full-screen modal with 3 tabs.
 - Jetpack Compose UI
 - NavigationBar for tabs
 - ModalBottomSheet for Spectra Logger
+- ShakeDetector for shake-to-open
 
 ### iOS
 - SwiftUI native components
 - TabView for navigation
 - Sheet presentation for Spectra Logger
 - SF Symbols for icons
+- CMMotionManager for shake detection
+
