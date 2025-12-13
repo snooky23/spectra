@@ -19,7 +19,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun SettingsScreen(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = viewModel(),
-    onDismiss: () -> Unit = {}
+    onDismiss: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showClearLogsDialog by remember { mutableStateOf(false) }
@@ -34,16 +34,17 @@ fun SettingsScreen(
                     IconButton(onClick = { viewModel.refresh() }) {
                         Icon(Icons.Default.Refresh, contentDescription = "Refresh")
                     }
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
             // Appearance Section
             SettingsSection(title = "APPEARANCE") {
@@ -51,20 +52,21 @@ fun SettingsScreen(
                     text = "Choose how Spectra Logger appears",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = 8.dp),
                 )
-                
+
                 SingleChoiceSegmentedButtonRow(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     AppearanceMode.entries.forEachIndexed { index, mode ->
                         SegmentedButton(
-                            shape = SegmentedButtonDefaults.itemShape(
-                                index = index,
-                                count = AppearanceMode.entries.size
-                            ),
+                            shape =
+                                SegmentedButtonDefaults.itemShape(
+                                    index = index,
+                                    count = AppearanceMode.entries.size,
+                                ),
                             onClick = { viewModel.setAppearanceMode(mode) },
-                            selected = uiState.appearanceMode == mode
+                            selected = uiState.appearanceMode == mode,
                         ) {
                             Text(mode.label)
                         }
@@ -78,74 +80,76 @@ fun SettingsScreen(
                     text = "Manage stored logs to free space",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = 8.dp),
                 )
-                
+
                 // Application Logs
                 Card(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Column {
                             Text(
                                 text = "Application Logs",
-                                style = MaterialTheme.typography.bodyLarge
+                                style = MaterialTheme.typography.bodyLarge,
                             )
                             Text(
                                 text = "${uiState.applicationLogCount} logs stored",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                         IconButton(
-                            onClick = { showClearLogsDialog = true }
+                            onClick = { showClearLogsDialog = true },
                         ) {
                             Icon(
                                 Icons.Default.Delete,
                                 contentDescription = "Clear",
-                                tint = MaterialTheme.colorScheme.error
+                                tint = MaterialTheme.colorScheme.error,
                             )
                         }
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 // Network Logs
                 Card(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Column {
                             Text(
                                 text = "Network Logs",
-                                style = MaterialTheme.typography.bodyLarge
+                                style = MaterialTheme.typography.bodyLarge,
                             )
                             Text(
                                 text = "${uiState.networkLogCount} logs stored",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                         IconButton(
-                            onClick = { showClearNetworkDialog = true }
+                            onClick = { showClearNetworkDialog = true },
                         ) {
                             Icon(
                                 Icons.Default.Delete,
                                 contentDescription = "Clear",
-                                tint = MaterialTheme.colorScheme.error
+                                tint = MaterialTheme.colorScheme.error,
                             )
                         }
                     }
@@ -158,12 +162,12 @@ fun SettingsScreen(
                     text = "Export all logs to share",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = 8.dp),
                 )
-                
+
                 OutlinedButton(
                     onClick = { /* Export */ },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Icon(Icons.Default.Share, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
@@ -174,30 +178,30 @@ fun SettingsScreen(
             // About Section
             SettingsSection(title = "ABOUT") {
                 Card(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(16.dp),
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             Text("Version")
                             Text(
                                 text = uiState.version,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             Text("Framework")
                             Text(
                                 text = "Spectra Logger",
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                     }
@@ -209,7 +213,7 @@ fun SettingsScreen(
             // Close button
             Button(
                 onClick = onDismiss,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text("Close Logger")
             }
@@ -221,13 +225,17 @@ fun SettingsScreen(
         AlertDialog(
             onDismissRequest = { showClearLogsDialog = false },
             title = { Text("Clear Application Logs?") },
-            text = { Text("This will permanently delete all ${uiState.applicationLogCount} logs. This action cannot be undone.") },
+            text = {
+                Text(
+                    "This will permanently delete all ${uiState.applicationLogCount} logs. This action cannot be undone.",
+                )
+            },
             confirmButton = {
                 TextButton(
                     onClick = {
                         viewModel.clearApplicationLogs()
                         showClearLogsDialog = false
-                    }
+                    },
                 ) {
                     Text("Clear", color = MaterialTheme.colorScheme.error)
                 }
@@ -236,7 +244,7 @@ fun SettingsScreen(
                 TextButton(onClick = { showClearLogsDialog = false }) {
                     Text("Cancel")
                 }
-            }
+            },
         )
     }
 
@@ -245,13 +253,17 @@ fun SettingsScreen(
         AlertDialog(
             onDismissRequest = { showClearNetworkDialog = false },
             title = { Text("Clear Network Logs?") },
-            text = { Text("This will permanently delete all ${uiState.networkLogCount} logs. This action cannot be undone.") },
+            text = {
+                Text(
+                    "This will permanently delete all ${uiState.networkLogCount} logs. This action cannot be undone.",
+                )
+            },
             confirmButton = {
                 TextButton(
                     onClick = {
                         viewModel.clearNetworkLogs()
                         showClearNetworkDialog = false
-                    }
+                    },
                 ) {
                     Text("Clear", color = MaterialTheme.colorScheme.error)
                 }
@@ -260,7 +272,7 @@ fun SettingsScreen(
                 TextButton(onClick = { showClearNetworkDialog = false }) {
                     Text("Cancel")
                 }
-            }
+            },
         )
     }
 }
@@ -268,14 +280,14 @@ fun SettingsScreen(
 @Composable
 private fun SettingsSection(
     title: String,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     Column {
         Text(
             text = title,
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier.padding(bottom = 8.dp),
         )
         content()
     }
@@ -284,5 +296,5 @@ private fun SettingsSection(
 enum class AppearanceMode(val label: String) {
     LIGHT("Light"),
     DARK("Dark"),
-    SYSTEM("System")
+    SYSTEM("System"),
 }

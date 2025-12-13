@@ -25,54 +25,57 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 fun NetworkDetailSheet(
     log: NetworkLogEntry,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 32.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 32.dp),
         ) {
             // Header
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 IconButton(onClick = onDismiss) {
                     Icon(Icons.Default.Close, contentDescription = "Close")
                 }
-                
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     MethodBadge(method = log.method)
                     log.responseCode?.let { StatusCodeBadge(statusCode = it) }
                 }
-                
+
                 Spacer(modifier = Modifier.width(48.dp))
             }
 
             HorizontalDivider()
 
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
-                    .padding(vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                        .padding(vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 // URL section
                 DetailSection(title = "URL") {
                     Text(
                         text = log.url,
-                        fontFamily = FontFamily.Monospace
+                        fontFamily = FontFamily.Monospace,
                     )
                 }
 
@@ -95,17 +98,17 @@ fun NetworkDetailSheet(
                             log.requestHeaders.forEach { (key, value) ->
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
+                                    horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {
                                     Text(
                                         text = key,
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.primary
+                                        color = MaterialTheme.colorScheme.primary,
                                     )
                                     Text(
                                         text = value,
                                         style = MaterialTheme.typography.bodySmall,
-                                        fontFamily = FontFamily.Monospace
+                                        fontFamily = FontFamily.Monospace,
                                     )
                                 }
                             }
@@ -118,12 +121,12 @@ fun NetworkDetailSheet(
                     if (body.isNotEmpty()) {
                         DetailSection(title = "Request Body") {
                             Box(
-                                modifier = Modifier.horizontalScroll(rememberScrollState())
+                                modifier = Modifier.horizontalScroll(rememberScrollState()),
                             ) {
                                 Text(
                                     text = body,
                                     fontFamily = FontFamily.Monospace,
-                                    style = MaterialTheme.typography.bodySmall
+                                    style = MaterialTheme.typography.bodySmall,
                                 )
                             }
                         }
@@ -137,17 +140,17 @@ fun NetworkDetailSheet(
                             log.responseHeaders.forEach { (key, value) ->
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
+                                    horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {
                                     Text(
                                         text = key,
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.primary
+                                        color = MaterialTheme.colorScheme.primary,
                                     )
                                     Text(
                                         text = value,
                                         style = MaterialTheme.typography.bodySmall,
-                                        fontFamily = FontFamily.Monospace
+                                        fontFamily = FontFamily.Monospace,
                                     )
                                 }
                             }
@@ -160,12 +163,12 @@ fun NetworkDetailSheet(
                     if (body.isNotEmpty()) {
                         DetailSection(title = "Response Body") {
                             Box(
-                                modifier = Modifier.horizontalScroll(rememberScrollState())
+                                modifier = Modifier.horizontalScroll(rememberScrollState()),
                             ) {
                                 Text(
                                     text = body,
                                     fontFamily = FontFamily.Monospace,
-                                    style = MaterialTheme.typography.bodySmall
+                                    style = MaterialTheme.typography.bodySmall,
                                 )
                             }
                         }
@@ -177,7 +180,7 @@ fun NetworkDetailSheet(
                     DetailSection(title = "Error") {
                         Text(
                             text = error,
-                            color = MaterialTheme.colorScheme.error
+                            color = MaterialTheme.colorScheme.error,
                         )
                     }
                 }
@@ -195,6 +198,6 @@ private fun formatFullTime(timestamp: kotlinx.datetime.Instant): String {
         localDateTime.dayOfMonth,
         localDateTime.hour,
         localDateTime.minute,
-        localDateTime.second
+        localDateTime.second,
     )
 }
