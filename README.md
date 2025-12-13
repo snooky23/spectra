@@ -168,6 +168,7 @@ See working examples in:
 
 ## Documentation
 
+- [Changelog](CHANGELOG.md) - Release notes and version history
 - [UI Design](docs/design/UI_DESIGN.md) - Log viewer screens and components
 - [API Reference](docs/API.md) - Complete API documentation
 - [Future Enhancements](docs/design/FUTURE_ENHANCEMENTS.md) - Roadmap
