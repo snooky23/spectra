@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import com.spectra.logger.network.NetworkLogEntry
+import com.spectra.logger.domain.model.NetworkLogEntry
 import com.spectra.logger.ui.compose.components.DetailSection
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -53,7 +53,7 @@ fun NetworkDetailSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     MethodBadge(method = log.method)
-                    log.statusCode?.let { StatusCodeBadge(statusCode = it) }
+                    log.responseCode?.let { StatusCodeBadge(statusCode = it) }
                 }
                 
                 Spacer(modifier = Modifier.width(48.dp))
@@ -81,10 +81,10 @@ fun NetworkDetailSheet(
                     Text(text = formatFullTime(log.timestamp))
                 }
 
-                // Duration (if available)
-                log.duration?.let { duration ->
+                // Duration
+                if (log.duration > 0) {
                     DetailSection(title = "Duration") {
-                        Text(text = "${duration}ms")
+                        Text(text = "${log.duration}ms")
                     }
                 }
 

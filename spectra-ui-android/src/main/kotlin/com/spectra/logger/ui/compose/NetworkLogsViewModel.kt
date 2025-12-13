@@ -3,7 +3,7 @@ package com.spectra.logger.ui.compose
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spectra.logger.SpectraLogger
-import com.spectra.logger.network.NetworkLogEntry
+import com.spectra.logger.domain.model.NetworkLogEntry
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
  */
 class NetworkLogsViewModel : ViewModel() {
     
-    private val storage = SpectraLogger.networkLogStorage
+    private val storage = SpectraLogger.networkStorage
     
     private val _uiState = MutableStateFlow(NetworkLogsUiState())
     val uiState: StateFlow<NetworkLogsUiState> = _uiState.asStateFlow()
@@ -28,8 +28,8 @@ class NetworkLogsViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                val logs = storage.queryAll()
-                val availableMethods = logs.map { it.method }.distinct().sorted()
+                val logs = storage.query()
+                val availableMethods = logs.map { log -> log.method }.distinct().sorted()
                 
                 _uiState.update { state ->
                     state.copy(
@@ -95,7 +95,7 @@ class NetworkLogsViewModel : ViewModel() {
             // Filter by status code range
             if (state.selectedStatusRanges.isNotEmpty()) {
                 filtered = filtered.filter { log ->
-                    val status = log.statusCode ?: return@filter false
+                    val status = log.responseCode ?: return@filter false
                     state.selectedStatusRanges.any { range ->
                         when (range) {
                             "2xx" -> status in 200..299
