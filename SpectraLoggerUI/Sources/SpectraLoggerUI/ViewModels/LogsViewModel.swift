@@ -26,6 +26,16 @@ final class LogsViewModel {
     }
 
     var availableTags: [String] = []
+    
+    /// Check if any filters are active (levels or advanced)
+    var hasActiveFilters: Bool {
+        !selectedLevels.isEmpty || advancedFilter.hasActiveFilters
+    }
+    
+    /// Total count of all active filters for badge display
+    var totalActiveFilterCount: Int {
+        selectedLevels.count + advancedFilter.activeFilterCount
+    }
 
     private let storage: LogStorage
     private var filterTask: Task<Void, Never>?

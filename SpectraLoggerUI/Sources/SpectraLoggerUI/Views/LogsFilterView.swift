@@ -50,6 +50,7 @@ struct LogsFilter: Equatable {
 /// Full-screen modal for advanced log filtering
 struct LogsFilterView: View {
     @Binding var filter: LogsFilter
+    @Binding var selectedLevels: Set<LogLevel>
     let availableTags: [String]
     let onApply: () -> Void
     
@@ -68,6 +69,29 @@ struct LogsFilterView: View {
     var body: some View {
         NavigationView {
             Form {
+                // MARK: - Log Levels Section
+                Section {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(LogLevel.entries, id: \.self) { level in
+                                FilterChip(
+                                    title: level.name,
+                                    isSelected: selectedLevels.contains(level),
+                                    color: ColorUtilities.colorForLogLevel(level)
+                                ) {
+                                    toggleLevel(level)
+                                }
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                } header: {
+                    Text("Log Levels")
+                } footer: {
+                    Text("Select which log levels to display")
+                }
+                
                 // MARK: - Tags Section
                 Section {
                     // Custom tag input
@@ -241,6 +265,7 @@ struct LogsFilterView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Reset") {
                         filter.reset()
+                        selectedLevels.removeAll()
                     }
                     .foregroundColor(.red)
                 }
@@ -274,6 +299,14 @@ struct LogsFilterView: View {
             filter.selectedTags.remove(tag)
         } else {
             filter.selectedTags.insert(tag)
+        }
+    }
+    
+    private func toggleLevel(_ level: LogLevel) {
+        if selectedLevels.contains(level) {
+            selectedLevels.remove(level)
+        } else {
+            selectedLevels.insert(level)
         }
     }
 }
@@ -314,6 +347,7 @@ extension Date {
 #Preview("LogsFilterView") {
     LogsFilterView(
         filter: .constant(LogsFilter()),
+        selectedLevels: .constant([]),
         availableTags: ["Auth", "Network", "Database", "UI"],
         onApply: {}
     )
