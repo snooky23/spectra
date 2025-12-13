@@ -7,8 +7,8 @@ import PackageDescription
 // This package can be used in two ways:
 //
 // 1. LOCAL DEVELOPMENT (default)
-//    Uses local spectra-core package for debugging
-//    Relative path: ../spectra-core
+//    Uses local Spectra package from the root directory
+//    Relative path: ../ (root Package.swift provides SpectraLogger XCFramework)
 //    When: Working on both packages together in the same workspace
 //
 // 2. RELEASE MODE
@@ -29,9 +29,9 @@ let package = Package(
         ),
     ],
     dependencies: [
-        // LOCAL DEVELOPMENT MODE (uncomment for local development)
-        // This uses the local spectra-core package from the same workspace
-        .package(path: "../spectra-core"),
+        // LOCAL DEVELOPMENT MODE (default)
+        // Uses the root Package.swift which provides SpectraLogger XCFramework
+        .package(path: ".."),
 
         // RELEASE MODE (uncomment after packages are published)
         // GitHub release:
@@ -45,7 +45,7 @@ let package = Package(
         .target(
             name: "SpectraUI",
             dependencies: [
-                .product(name: "SpectraLogger", package: "spectra-core")
+                .product(name: "SpectraLogger", package: "Spectra")
             ],
             path: "Sources/SpectraLoggerUI"
         ),
