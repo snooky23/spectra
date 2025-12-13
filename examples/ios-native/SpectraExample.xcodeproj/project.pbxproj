@@ -10,7 +10,7 @@
 		00000000000000000000000000000111 /* SpectraExample/SpectraExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000000000211 /* SpectraExample/SpectraExampleApp.swift */; };
 		00000000000000000000000000000112 /* SpectraExample/MainAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000000000212 /* SpectraExample/MainAppView.swift */; };
 		00000000000000000000000000000113 /* SpectraExample/SpectraLoggerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000000000213 /* SpectraExample/SpectraLoggerView.swift */; };
-		00000000000000000000000000000114 /* SpectraLoggerUI in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000000000000310 /* SpectraLoggerUI */; };
+		00000000000000000000000000000114 /* SpectraUI in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000000000000310 /* SpectraUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,7 +25,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00000000000000000000000000000114 /* SpectraLoggerUI in Frameworks */,
+				00000000000000000000000000000114 /* SpectraUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,7 +74,7 @@
 			);
 			name = SpectraExample;
 			packageProductDependencies = (
-				00000000000000000000000000000310 /* SpectraLoggerUI */,
+				00000000000000000000000000000310 /* SpectraUI */,
 			);
 			productName = SpectraExample;
 			productReference = 00000000000000000000000000000001 /* SpectraExample.app */;
@@ -105,7 +105,7 @@
 			);
 			mainGroup = 00000000000000000000000000000501;
 			packageReferences = (
-				00000000000000000000000000000320 /* XCLocalSwiftPackageReference "../../SpectraLoggerUI" */,
+				00000000000000000000000000000320 /* XCLocalSwiftPackageReference "../../spectra-ui-ios" */,
 			);
 			projectDirPath = "";
 			projectRoot = "";
@@ -331,17 +331,17 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		00000000000000000000000000000320 /* XCLocalSwiftPackageReference "../../SpectraLoggerUI" */ = {
+		00000000000000000000000000000320 /* XCLocalSwiftPackageReference "../../spectra-ui-ios" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../SpectraLoggerUI;
+			relativePath = ../../spectra-ui-ios;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		00000000000000000000000000000310 /* SpectraLoggerUI */ = {
+		00000000000000000000000000000310 /* SpectraUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 00000000000000000000000000000320 /* XCLocalSwiftPackageReference "../../SpectraLoggerUI" */;
-			productName = SpectraLoggerUI;
+			package = 00000000000000000000000000000320 /* XCLocalSwiftPackageReference "../../spectra-ui-ios" */;
+			productName = SpectraUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -9,11 +9,15 @@ import Foundation
 //   SPECTRA_LOCAL_DEV=1 swift build    → Uses local XCFramework
 //   swift build                        → Uses GitHub release (default for consumers)
 //
-// Industry standard: Check for local XCFramework, fall back to remote
+// NOTE: For local development, the XCFramework must exist at build/xcframework/
 
+// Get the directory containing this Package.swift
+let packageDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
 let localXCFrameworkPath = "build/xcframework/SpectraLogger.xcframework"
+let absoluteLocalPath = packageDir + "/" + localXCFrameworkPath
+
 let useLocalDev = ProcessInfo.processInfo.environment["SPECTRA_LOCAL_DEV"] != nil
-    || FileManager.default.fileExists(atPath: localXCFrameworkPath)
+    || FileManager.default.fileExists(atPath: absoluteLocalPath)
 
 let package = Package(
     name: "Spectra",
@@ -40,3 +44,4 @@ let package = Package(
             )
     ]
 )
+
