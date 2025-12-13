@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
@@ -367,6 +368,122 @@ fun ExampleActionsTab(onOpenSpectra: () -> Unit) {
             )
         }
 
+        // Batch Logging Section
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+            SectionHeader(title = "Batch Logging")
+        }
+
+        item {
+            LogButton(
+                label = "Generate 10 Logs",
+                icon = Icons.Default.List,
+                backgroundColor = Color(0xFF9C27B0), // Purple
+                action = {
+                    val tags = listOf("Auth", "Network", "UI", "Database")
+                    val levels = listOf("d", "i", "w", "e")
+                    repeat(10) { i ->
+                        val tag = tags[i % tags.size]
+                        when (levels[i % levels.size]) {
+                            "d" -> SpectraLogger.d(tag, "Debug log entry #${i + 1}")
+                            "i" -> SpectraLogger.i(tag, "Info log entry #${i + 1}")
+                            "w" -> SpectraLogger.w(tag, "Warning log entry #${i + 1}")
+                            else -> SpectraLogger.e(tag, "Error log entry #${i + 1}")
+                        }
+                    }
+                },
+            )
+        }
+
+        item {
+            LogButton(
+                label = "Generate 100 Logs",
+                icon = Icons.Default.List,
+                backgroundColor = Color(0xFF9C27B0),
+                action = {
+                    val tags = listOf("Auth", "Network", "UI", "Database", "Cache", "API")
+                    repeat(100) { i ->
+                        val tag = tags[i % tags.size]
+                        SpectraLogger.i(tag, "Batch log entry #${i + 1} - stress test")
+                    }
+                },
+            )
+        }
+
+        // Real-Time Demo Section
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+            SectionHeader(title = "Real-Time Demo")
+        }
+
+        item {
+            var isRunning by remember { mutableStateOf(false) }
+            val coroutineScope = rememberCoroutineScope()
+
+            Column {
+                LogButton(
+                    label = if (isRunning) "⏹ Stop Background Logging" else "▶ Start Background Logging",
+                    icon = if (isRunning) Icons.Default.Close else Icons.Default.CheckCircle,
+                    backgroundColor = if (isRunning) Color.Red else Color.Green,
+                    action = {
+                        isRunning = !isRunning
+                        if (isRunning) {
+                            coroutineScope.launch {
+                                var count = 0
+                                while (isRunning) {
+                                    count++
+                                    SpectraLogger.i("BackgroundTask", "Real-time log #$count at ${System.currentTimeMillis()}")
+                                    delay(2000)
+                                }
+                            }
+                        }
+                    },
+                )
+                Text(
+                    text = "Logs every 2 seconds while running",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 16.dp, top = 4.dp),
+                )
+            }
+        }
+
+        // Filtering Demo Section
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+            SectionHeader(title = "Filtering Demos")
+        }
+
+        item {
+            LogButton(
+                label = "Generate All Log Levels",
+                icon = Icons.Default.List,
+                backgroundColor = Color(0xFF607D8B), // Blue Grey
+                action = {
+                    SpectraLogger.v("LevelDemo", "This is a VERBOSE message")
+                    SpectraLogger.d("LevelDemo", "This is a DEBUG message")
+                    SpectraLogger.i("LevelDemo", "This is an INFO message")
+                    SpectraLogger.w("LevelDemo", "This is a WARNING message")
+                    SpectraLogger.e("LevelDemo", "This is an ERROR message")
+                    SpectraLogger.f("LevelDemo", "This is a FATAL message")
+                },
+            )
+        }
+
+        item {
+            LogButton(
+                label = "Generate Searchable Logs",
+                icon = Icons.Default.Search,
+                backgroundColor = Color(0xFF607D8B),
+                action = {
+                    SpectraLogger.i("SearchDemo", "Order #12345 placed successfully")
+                    SpectraLogger.i("SearchDemo", "User john@example.com logged in")
+                    SpectraLogger.w("SearchDemo", "Payment processing delayed for order #12345")
+                    SpectraLogger.e("SearchDemo", "Failed to send email to john@example.com")
+                },
+            )
+        }
+
         item {
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -477,6 +594,98 @@ fun NetworkRequestsTab(onOpenSpectra: () -> Unit) {
                             statusCode = 500,
                             duration = 2.0,
                         )
+                    }
+                },
+            )
+        }
+
+        // More HTTP Methods
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+            SectionHeader(title = "More HTTP Methods")
+        }
+
+        item {
+            LogButton(
+                label = "PUT Request (200 OK)",
+                icon = Icons.Default.Info,
+                backgroundColor = Color.Green,
+                action = {
+                    coroutineScope.launch {
+                        delay(600)
+                        simulateNetworkRequest(
+                            method = "PUT",
+                            url = "https://api.example.com/v1/users/123",
+                            statusCode = 200,
+                            duration = 0.6,
+                        )
+                    }
+                },
+            )
+        }
+
+        item {
+            LogButton(
+                label = "DELETE Request (204 No Content)",
+                icon = Icons.Default.Info,
+                backgroundColor = Color.Green,
+                action = {
+                    coroutineScope.launch {
+                        delay(400)
+                        simulateNetworkRequest(
+                            method = "DELETE",
+                            url = "https://api.example.com/v1/users/456",
+                            statusCode = 204,
+                            duration = 0.4,
+                        )
+                    }
+                },
+            )
+        }
+
+        item {
+            LogButton(
+                label = "Rate Limited (429)",
+                icon = Icons.Default.Info,
+                backgroundColor = Color(0xFFFFA500),
+                action = {
+                    coroutineScope.launch {
+                        delay(100)
+                        simulateNetworkRequest(
+                            method = "POST",
+                            url = "https://api.example.com/v1/bulk-upload",
+                            statusCode = 429,
+                            duration = 0.1,
+                        )
+                    }
+                },
+            )
+        }
+
+        // Batch Network
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+            SectionHeader(title = "Batch Network")
+        }
+
+        item {
+            LogButton(
+                label = "Simulate 10 API Calls",
+                icon = Icons.Default.List,
+                backgroundColor = Color(0xFF9C27B0),
+                action = {
+                    coroutineScope.launch {
+                        val endpoints = listOf("users", "orders", "products", "inventory", "analytics")
+                        val statuses = listOf(200, 200, 200, 404, 500)
+                        repeat(10) { i ->
+                            delay(200)
+                            simulateNetworkRequest(
+                                method = if (i % 3 == 0) "POST" else "GET",
+                                url = "https://api.example.com/v1/${endpoints[i % endpoints.size]}",
+                                statusCode = statuses[i % statuses.size],
+                                duration = 0.2 + (i * 0.1),
+                            )
+                        }
                     }
                 },
             )
