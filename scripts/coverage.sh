@@ -18,17 +18,17 @@ chmod +x gradlew
 # Generate coverage report
 echo ""
 echo "📈 Running tests with coverage..."
-./gradlew :shared:jacocoTestReport --no-daemon
+./gradlew :spectra-core:jacocoTestReport --no-daemon
 
 echo ""
 echo "✅ Coverage report generated!"
 echo ""
 echo "📄 View report at:"
-echo "   shared/build/reports/jacoco/jacocoTestReport/html/index.html"
+echo "   spectra-core/build/reports/jacoco/jacocoTestReport/html/index.html"
 echo ""
 
 # Open report in browser if available
 if command -v open &> /dev/null; then
     echo "🌐 Opening report in browser..."
-    open shared/build/reports/jacoco/jacocoTestReport/html/index.html
+    open spectra-core/build/reports/jacoco/jacocoTestReport/html/index.html
 fi

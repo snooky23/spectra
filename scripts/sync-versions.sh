@@ -27,11 +27,11 @@ echo "Syncing all packages to version: $VERSION"
 # and ensure consistency
 echo "✓ SpectraLogger/Package.swift is consistent (Swift Package uses git tags for versioning)"
 
-# Update SpectraLoggerUI/Package.swift to reference the correct dependency version
-echo "✓ SpectraLoggerUI/Package.swift is consistent (references local SpectraLogger package)"
+# Update spectra-ui-ios/Package.swift to reference the correct dependency version
+echo "✓ spectra-ui-ios/Package.swift is consistent (references local SpectraLogger package)"
 
-# Update shared/build.gradle.kts (if it manually specifies version)
-echo "✓ shared/build.gradle.kts uses VERSION_NAME from gradle.properties"
+# Update spectra-core/build.gradle.kts (if it manually specifies version)
+echo "✓ spectra-core/build.gradle.kts uses VERSION_NAME from gradle.properties"
 
 # Update any iOS example app version configurations if they exist
 if [ -f "$PROJECT_ROOT/examples/ios-native/SpectraExample/SpectraExample.xcodeproj/project.pbxproj" ]; then

@@ -66,5 +66,5 @@ jobs:
         if: always()
         uses: codecov/codecov-action@v4
         with:
-          files: ./shared/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
+          files: ./spectra-core/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
           fail_ci_if_error: false

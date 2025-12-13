@@ -18,11 +18,11 @@ echo "🧹 Cleaning previous builds..."
 
 # Build for all platforms
 echo "📦 Building for Android..."
-./gradlew :shared:assembleRelease
+./gradlew :spectra-core:assembleRelease
 
 echo "📦 Building for iOS..."
-./gradlew :shared:linkReleaseFrameworkIosArm64 \
-         :shared:linkReleaseFrameworkIosSimulatorArm64 \
-         :shared:linkReleaseFrameworkIosX64
+./gradlew :spectra-core:linkReleaseFrameworkIosArm64 \
+         :spectra-core:linkReleaseFrameworkIosSimulatorArm64 \
+         :spectra-core:linkReleaseFrameworkIosX64
 
 echo "✅ KMP build completed successfully!"

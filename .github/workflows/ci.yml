@@ -81,7 +81,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: SpectraLogger-xcframework
-          path: shared/build/XCFrameworks/release/SpectraLogger.xcframework
+          path: spectra-core/build/XCFrameworks/release/SpectraLogger.xcframework
 
   # Build Android
   android:

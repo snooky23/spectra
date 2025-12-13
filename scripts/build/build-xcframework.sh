@@ -21,16 +21,16 @@ cd "$PROJECT_ROOT"
 echo "📱 Building iOS targets..."
 if [ "$BUILD_TYPE" == "Release" ]; then
     ./gradlew \
-        :shared:linkReleaseFrameworkIosArm64 \
-        :shared:linkReleaseFrameworkIosX64 \
-        :shared:linkReleaseFrameworkIosSimulatorArm64
+        :spectra-core:linkReleaseFrameworkIosArm64 \
+        :spectra-core:linkReleaseFrameworkIosX64 \
+        :spectra-core:linkReleaseFrameworkIosSimulatorArm64
 
     FRAMEWORK_PATH="releaseFramework"
 else
     ./gradlew \
-        :shared:linkDebugFrameworkIosArm64 \
-        :shared:linkDebugFrameworkIosX64 \
-        :shared:linkDebugFrameworkIosSimulatorArm64
+        :spectra-core:linkDebugFrameworkIosArm64 \
+        :spectra-core:linkDebugFrameworkIosX64 \
+        :spectra-core:linkDebugFrameworkIosSimulatorArm64
 
     FRAMEWORK_PATH="debugFramework"
 fi
@@ -48,8 +48,8 @@ fi
 
 # Create fat binary for simulator (combines x86_64 and arm64)
 echo "🔨 Creating simulator fat binary..."
-BUILD_DIR="$PROJECT_ROOT/shared/build/bin"
-TEMP_SIMULATOR_DIR="$PROJECT_ROOT/shared/build/temp-simulator"
+BUILD_DIR="$PROJECT_ROOT/spectra-core/build/bin"
+TEMP_SIMULATOR_DIR="$PROJECT_ROOT/spectra-core/build/temp-simulator"
 rm -rf "$TEMP_SIMULATOR_DIR"
 mkdir -p "$TEMP_SIMULATOR_DIR/$FRAMEWORK_NAME.framework"
 
