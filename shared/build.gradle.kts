@@ -10,7 +10,6 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.compose.multiplatform)
     id("maven-publish")
     id("jacoco")
 }
@@ -100,7 +99,6 @@ kotlin {
                 // Compose UI
                 implementation(libs.bundles.compose.ui)
                 implementation(libs.bundles.androidx.compose)
-                implementation(libs.androidx.lifecycle.viewmodel.ktx)
             }
         }
 
