@@ -2,6 +2,18 @@
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
+import Foundation
+
+// MARK: - Configuration
+// Use environment variable to control local vs release mode:
+//   SPECTRA_LOCAL_DEV=1 swift build    → Uses local XCFramework
+//   swift build                        → Uses GitHub release (default for consumers)
+//
+// Industry standard: Check for local XCFramework, fall back to remote
+
+let localXCFrameworkPath = "build/xcframework/SpectraLogger.xcframework"
+let useLocalDev = ProcessInfo.processInfo.environment["SPECTRA_LOCAL_DEV"] != nil
+    || FileManager.default.fileExists(atPath: localXCFrameworkPath)
 
 let package = Package(
     name: "Spectra",
@@ -15,26 +27,16 @@ let package = Package(
         )
     ],
     targets: [
-        // Binary target for XCFramework
-        //
-        // For local development (building from source):
-        //   Uncomment the path-based target below and comment out the URL-based target
-        //
-        // For distribution (using released binary):
-        //   Use the URL-based target (default)
-
-        // LOCAL DEVELOPMENT: Uncomment for local builds
-        .binaryTarget(
-            name: "SpectraLogger",
-            path: "spectra-core/build/xcframework/SpectraLogger.xcframework"
-        )
-
-        // DISTRIBUTION: Released binary from GitHub Releases
-        // Uncomment for distribution builds
-        // .binaryTarget(
-        //     name: "SpectraLogger",
-        //     url: "https://github.com/snooky23/spectra/releases/download/v1.0.0/SpectraLogger.xcframework.zip",
-        //     checksum: "2d1892d4f8836ab59e0a5bb8c4e1de06af1ef96fbae357923126f08cfa8b7bef"
-        // )
+        // Dynamic target: local dev if XCFramework exists, otherwise release URL
+        useLocalDev
+            ? .binaryTarget(
+                name: "SpectraLogger",
+                path: localXCFrameworkPath
+            )
+            : .binaryTarget(
+                name: "SpectraLogger",
+                url: "https://github.com/snooky23/spectra/releases/download/v0.0.1/SpectraLogger.xcframework.zip",
+                checksum: "PLACEHOLDER_CHECKSUM"
+            )
     ]
 )
