@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- SpectraLogger Core Library - No permissions or UI components required -->
-    <!-- This is a pure logging library. UI components should be in separate modules. -->
-</manifest>

@@ -17,10 +17,13 @@ dependencyResolutionManagement {
     }
 }
 
-// Core shared module
-include(":shared")
+// Core KMP module (logging functionality)
+include(":spectra-core")
 
-// Example applications (temporarily disabled due to module naming conflict)
+// UI module for Android
+include(":spectra-ui-android")
+
+// Example applications
 include(":examples:android-native:app")
 // include(":examples:kmp-app:shared")
 // include(":examples:kmp-app:androidApp")

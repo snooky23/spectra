@@ -18,23 +18,23 @@
 
 ```
 Spectra/
-├── shared/                      # Core KMP module (Kotlin)
+├── spectra-core/                # Core KMP module (Kotlin)
 │   └── src/
 │       ├── commonMain/          # Shared business logic
 │       ├── androidMain/         # Android-specific implementations
 │       ├── iosMain/             # iOS-specific implementations
 │       └── commonTest/          # Shared tests
 │
-├── SpectraLogger/               # iOS Swift Package (distribution)
-│   ├── Package.swift            # SPM manifest
-│   └── XCFrameworks/            # Pre-built frameworks
-│
-├── SpectraLoggerUI/             # iOS SwiftUI Package
+├── spectra-ui-ios/              # iOS SwiftUI Package
 │   ├── Package.swift
 │   └── Sources/SpectraLoggerUI/
 │       ├── Views/               # SwiftUI views
 │       ├── ViewModels/          # MVVM view models
 │       └── Components/          # Reusable UI components
+│
+├── spectra-ui-android/          # Android Compose UI module
+│   └── src/main/kotlin/
+│       └── com/spectra/logger/ui/compose/
 │
 ├── examples/                    # Example apps
 │   ├── android-native/          # Native Android demo
@@ -47,12 +47,10 @@ Spectra/
 │   └── bump-version.py          # Version management
 │
 └── docs/                        # Documentation
-    ├── PLANNING.md              # Architecture decisions
-    ├── TASKS.md                 # Development timeline
-    ├── SESSION.md               # Current state/progress
-    ├── ARCHITECTURE.md          # Technical architecture
-    ├── API.md                   # API reference
-    └── ...                      # Other guides
+    ├── guides/                  # User guides
+    ├── design/                  # Design specs
+    ├── release/                 # Release notes
+    └── internal/                # Internal docs
 ```
 
 ---
@@ -96,22 +94,26 @@ Auto-fix formatting:
 ./scripts/ci.sh
 
 # iOS Swift package tests
-cd SpectraLoggerUI && swift test
+cd spectra-ui-ios && swift test
 ```
 
 ---
 
 ## Architecture Notes
 
-### KMP Code (shared/)
+### KMP Code (spectra-core/)
 - **Clean Architecture**: Domain → Data → Platform layers
 - **MVVM** for UI state management
 - **expect/actual** for platform-specific code
 - Domain layer has no platform dependencies
 
-### Swift Packages (iOS)
-- `SpectraLogger/` - Distribution package with XCFrameworks
-- `SpectraLoggerUI/` - SwiftUI components for log viewer
+### iOS UI (spectra-ui-ios/)
+- SwiftUI Package with views and ViewModels
+- Depends on spectra-core via local path
+
+### Android UI (spectra-ui-android/)
+- Jetpack Compose module
+- Depends on spectra-core via Gradle project reference
 
 ### Key Patterns
 - Circular buffers for bounded memory
