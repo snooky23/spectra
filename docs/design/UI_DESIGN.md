@@ -199,18 +199,21 @@ Opens as a full-screen modal from the Filter button.
 #### Layout
 ```
 ┌─────────────────────────────────────┐
-│  Network                 [↑] [...] │  <- Navigation bar
+│  Network           [⌘] [↑] [...] │  <- Navigation bar: Filter, Share, Menu
 ├─────────────────────────────────────┤
-│  🔍 Search...                      │  <- Search bar
+│  🔍 Search URL or host...          │  <- Search bar
 ├─────────────────────────────────────┤
 │  [GET][POST][PUT][DELETE][PATCH]   │  <- Method filter chips
 ├─────────────────────────────────────┤
 │  [2xx][3xx][4xx][5xx]              │  <- Status range filter chips
 ├─────────────────────────────────────┤
+│  Active Filters: Host=api.* ✕      │  <- Active filter badges (if any)
+├─────────────────────────────────────┤
 │                                     │
 │  ┌─────────────────────────────┐   │
 │  │ [POST] [201]       12:34:56 │   │  <- Network row
 │  │ https://api.example.com/... │   │
+│  │ ⏱️ 423ms                    │   │  <- Duration (if available)
 │  └─────────────────────────────┘   │
 │                                     │
 │  ... (scrollable list)              │
@@ -218,21 +221,113 @@ Opens as a full-screen modal from the Filter button.
 └─────────────────────────────────────┘
 ```
 
+#### Toolbar Actions
+- **Filter button** (⌘): Opens Network Filter Screen (see below)
+  - Badge shows active filter count (red number)
+- **Share button** (↑): Opens share action sheet with options:
+  - **"Share Filtered Logs (X items)"** - Exports only currently filtered network logs
+  - **"Share All Logs (Y items)"** - Exports all network logs regardless of filters
+  - **Cancel**
+- **Menu** (...):
+  - Refresh
+  - Clear All Network Logs (destructive)
+
+#### Active Filter Indicators (How Users Know Filters Are Active)
+1. **Filter Button Badge** (red circle): Shows count of active advanced filters
+2. **Selected Method/Status Chips**: Highlighted chips show which are included
+3. **Active Filter Badges Row**: Removable pills below status chips showing each filter:
+   - `Host: api.* ✕` | `Time Range ✕` | `Slow Requests ✕` | `Errors Only ✕`
+   - Tap ✕ to remove individual filter
+4. **Different Counts in Share Sheet**: When sharing, user sees filtered vs all counts
+5. **Empty State Message**: If no matches, shows "No matching logs" (not "No network logs")
+
 #### Network Row Components
 - **Method badge**: Blue background (0.2 opacity), blue text
 - **Status code badge**: Color based on range (green/blue/orange/red)
 - **Timestamp**: Caption size, secondary color
 - **URL**: Body font, max 2 lines
+- **Duration** (if available): Shows response time with clock icon
 
 #### Network Detail Sheet
 Opens as modal sheet when tapping a row:
-- Method badge + Status badge
+- Method badge + Status badge + Duration
 - **URL section**: Monospaced font
 - **Request Headers section**: Key-value list (if not empty)
 - **Request Body section**: Monospaced, scrollable (if not empty)
 - **Response Headers section**: Key-value list (if not empty)
 - **Response Body section**: Monospaced, scrollable (if not empty)
 - **Error section**: Red text (if error present)
+
+---
+
+### 2b. Network Filter Screen (Modal)
+
+Opens as a full-screen modal from the Filter button.
+
+#### Layout
+```
+┌─────────────────────────────────────┐
+│  ✕ Network Filters       [Reset All]│  <- Close button, Reset
+├─────────────────────────────────────┤
+│                                     │
+│  HOST / DOMAIN                      │
+│  ┌─────────────────────────────┐   │
+│  │ Filter by host pattern...   │   │  <- Text input (supports wildcards)
+│  │ e.g., "api.*" or "*.example.com" │
+│  └─────────────────────────────┘   │
+│                                     │
+│  TIME RANGE                         │
+│  ┌─────────────────────────────┐   │
+│  │ From: [Select date/time]    │   │
+│  │ To:   [Select date/time]    │   │
+│  └─────────────────────────────┘   │
+│  [Last hour] [Today] [Last 24h]    │  <- Quick presets
+│                                     │
+│  RESPONSE TIME                      │
+│  ┌─────────────────────────────┐   │
+│  │ ☐ > 100ms (moderate)        │   │
+│  │ ☐ > 500ms (slow)            │   │
+│  │ ☐ > 1000ms (very slow)      │   │
+│  └─────────────────────────────┘   │
+│                                     │
+│  ERRORS                             │
+│  ┌─────────────────────────────┐   │
+│  │ Show only failed requests   │ ○ │  <- Toggle
+│  │ (4xx, 5xx, or error)        │   │
+│  └─────────────────────────────┘   │
+│                                     │
+│  ┌─────────────────────────────┐   │
+│  │        Apply Filters        │   │  <- Primary action button
+│  └─────────────────────────────┘   │
+│                                     │
+└─────────────────────────────────────┘
+```
+
+#### Filter Options
+
+**1. Host/Domain Section**
+- Text input for filtering by URL host
+- Supports wildcard patterns: `api.*`, `*.example.com`
+- Case insensitive matching
+
+**2. Time Range Section**
+- Same as Logs filter: From/To date pickers
+- Quick presets: "Last hour", "Today", "Last 24h", "Last 7 days"
+
+**3. Response Time Section**
+- Filter slow requests by duration threshold
+- Options: >100ms, >500ms, >1000ms
+- Multi-select allowed (shows requests exceeding ANY selected threshold)
+
+**4. Errors Only Toggle**
+- Show only failed requests
+- Matches: 4xx status, 5xx status, or error field present
+
+#### Behavior
+- Filters persist until explicitly cleared
+- "Reset All" clears all advanced filters
+- "Apply Filters" closes modal and applies filters
+- Filter icon in toolbar shows badge when filters are active
 
 ---
 
@@ -404,17 +499,24 @@ All colors should adapt automatically:
 | - Metadata filter | ✅ | ✅ |
 | - Has error toggle | ✅ | ✅ |
 | Active filter badges | ✅ | ✅ |
+| Smart share (filtered/all) | ✅ | ⬜ |
 | Network logs list | ✅ | ✅ |
 | Method/status filters | ✅ | ✅ |
 | Network detail view | ✅ | ✅ |
 | Headers display | ✅ | ✅ |
 | Request/response body | ✅ | ✅ |
+| **Network Filter Screen** | ⬜ | ⬜ |
+| - Host/domain filter | ⬜ | ⬜ |
+| - Time range filter | ⬜ | ⬜ |
+| - Response time filter | ⬜ | ⬜ |
+| - Errors only toggle | ⬜ | ⬜ |
+| Network active filter badges | ⬜ | ⬜ |
+| Network smart share | ⬜ | ⬜ |
 | Appearance picker | ✅ | ✅ |
 | Storage stats | ✅ | ✅ |
 | Clear logs | ✅ | ✅ |
-| Share/export logs | ✅ | ⬜ |
 | Dark mode | ✅ | ✅ |
 
 ---
 
-**Last Updated**: 2025-12-12
+**Last Updated**: 2025-12-13
