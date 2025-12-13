@@ -58,9 +58,7 @@ The logger UI uses a **3-tab layout** at the bottom:
 ├─────────────────────────────────────┤
 │  🔍 Search logs (min 2 chars)...   │  <- Search bar
 ├─────────────────────────────────────┤
-│  [Verbose][Debug][Info][Warn]...   │  <- Level filter chips (horizontal scroll)
-├─────────────────────────────────────┤
-│  Active Filters: Tag=Auth ✕        │  <- Active filter badges (if any)
+│  Active: [INFO ✕] [Tag:Auth ✕]     │  <- Active filter badges (if any)
 ├─────────────────────────────────────┤
 │                                     │
 │  ┌─────────────────────────────┐   │
@@ -73,6 +71,8 @@ The logger UI uses a **3-tab layout** at the bottom:
 │                                     │
 └─────────────────────────────────────┘
 ```
+
+> **Design Decision**: All filter controls (log levels, tags, time, metadata) are in the Filter modal. Main screen stays clean with only search and active filter badges.
 
 #### Toolbar Actions
 - **Filter button** (⌘): Opens Filter Screen (see below)
@@ -131,6 +131,10 @@ Opens as a full-screen modal from the Filter button.
 │  ✕ Filters              [Reset All]│  <- Close button, Reset
 ├─────────────────────────────────────┤
 │                                     │
+│  LOG LEVELS                         │
+│  [Verbose][Debug][Info][Warn][Error]│  <- Multi-select chips
+│  [Fatal]                            │
+│                                     │
 │  TAGS                               │
 │  ┌─────────────────────────────┐   │
 │  │ [+] Add custom tag...       │   │  <- Text input for new tag
@@ -139,11 +143,10 @@ Opens as a full-screen modal from the Filter button.
 │  │ ☑ Auth                      │   │  <- Existing tags from logs
 │  │ ☐ Network                   │   │
 │  │ ☐ Database                  │   │
-│  │ ☐ UI                        │   │
-│  │ ☑ MyCustomTag (custom)      │   │  <- User-added custom tag
 │  └─────────────────────────────┘   │
 │                                     │
 │  TIME RANGE                         │
+│  [Last hour] [Today] [Last 24h]    │  <- Quick presets
 │  ┌─────────────────────────────┐   │
 │  │ From: [Select date/time]    │   │
 │  │ To:   [Select date/time]    │   │
@@ -154,6 +157,8 @@ Opens as a full-screen modal from the Filter button.
 │  │ Key:   [    user_id      ]  │   │
 │  │ Value: [    12345        ]  │   │
 │  └─────────────────────────────┘   │
+│                                     │
+│  ☐ Show only logs with errors      │  <- Has error toggle
 │                                     │
 │  ┌─────────────────────────────┐   │
 │  │        Apply Filters        │   │  <- Primary action button
@@ -203,11 +208,7 @@ Opens as a full-screen modal from the Filter button.
 ├─────────────────────────────────────┤
 │  🔍 Search URL or host...          │  <- Search bar
 ├─────────────────────────────────────┤
-│  [GET][POST][PUT][DELETE][PATCH]   │  <- Method filter chips
-├─────────────────────────────────────┤
-│  [2xx][3xx][4xx][5xx]              │  <- Status range filter chips
-├─────────────────────────────────────┤
-│  Active Filters: Host=api.* ✕      │  <- Active filter badges (if any)
+│  Active: [POST ✕] [4xx ✕]          │  <- Active filter badges (if any)
 ├─────────────────────────────────────┤
 │                                     │
 │  ┌─────────────────────────────┐   │
@@ -220,6 +221,8 @@ Opens as a full-screen modal from the Filter button.
 │                                     │
 └─────────────────────────────────────┘
 ```
+
+> **Design Decision**: All filter controls (methods, status codes, host, time, response time) are in the Filter modal. Main screen stays clean with only search and active filter badges.
 
 #### Toolbar Actions
 - **Filter button** (⌘): Opens Network Filter Screen (see below)
@@ -270,31 +273,29 @@ Opens as a full-screen modal from the Filter button.
 │  ✕ Network Filters       [Reset All]│  <- Close button, Reset
 ├─────────────────────────────────────┤
 │                                     │
+│  HTTP METHODS                       │
+│  [GET][POST][PUT][DELETE][PATCH]   │  <- Multi-select chips
+│  [HEAD][OPTIONS]                   │
+│                                     │
+│  STATUS CODES                       │
+│  [2xx ✓][3xx][4xx][5xx]            │  <- Multi-select chips
+│                                     │
 │  HOST / DOMAIN                      │
 │  ┌─────────────────────────────┐   │
-│  │ Filter by host pattern...   │   │  <- Text input (supports wildcards)
-│  │ e.g., "api.*" or "*.example.com" │
+│  │ Filter by host pattern...   │   │  <- Text input (wildcards ok)
 │  └─────────────────────────────┘   │
 │                                     │
 │  TIME RANGE                         │
+│  [Last hour] [Today] [Last 24h]    │  <- Quick presets
 │  ┌─────────────────────────────┐   │
 │  │ From: [Select date/time]    │   │
 │  │ To:   [Select date/time]    │   │
 │  └─────────────────────────────┘   │
-│  [Last hour] [Today] [Last 24h]    │  <- Quick presets
 │                                     │
 │  RESPONSE TIME                      │
-│  ┌─────────────────────────────┐   │
-│  │ ☐ > 100ms (moderate)        │   │
-│  │ ☐ > 500ms (slow)            │   │
-│  │ ☐ > 1000ms (very slow)      │   │
-│  └─────────────────────────────┘   │
+│  ☐ > 100ms   ☐ > 500ms   ☐ > 1s   │  <- Slow request filters
 │                                     │
-│  ERRORS                             │
-│  ┌─────────────────────────────┐   │
-│  │ Show only failed requests   │ ○ │  <- Toggle
-│  │ (4xx, 5xx, or error)        │   │
-│  └─────────────────────────────┘   │
+│  ☐ Show only failed requests       │  <- Errors toggle (4xx/5xx)
 │                                     │
 │  ┌─────────────────────────────┐   │
 │  │        Apply Filters        │   │  <- Primary action button
