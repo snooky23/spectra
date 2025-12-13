@@ -1,8 +1,0 @@
-framework module SpectraLogger {
-    umbrella header "SpectraLogger.h"
-
-    export *
-    module * { export * }
-
-    use Foundation
-}

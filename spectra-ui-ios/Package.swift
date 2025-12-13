@@ -7,31 +7,31 @@ import PackageDescription
 // This package can be used in two ways:
 //
 // 1. LOCAL DEVELOPMENT (default)
-//    Uses local SpectraLogger package for debugging
-//    Relative path: ../SpectraLogger
+//    Uses local spectra-core package for debugging
+//    Relative path: ../spectra-core
 //    When: Working on both packages together in the same workspace
 //
 // 2. RELEASE MODE
-//    Uses published SpectraLogger from Swift Package Registry or GitHub
+//    Uses published Spectra from Swift Package Registry or GitHub
 //    When: Using released versions, after packages are published
 //
 // To switch between modes, modify the dependencies array below
 
 let package = Package(
-    name: "SpectraLoggerUI",
+    name: "spectra-ui-ios",
     platforms: [
         .iOS(.v17),
     ],
     products: [
         .library(
-            name: "SpectraLoggerUI",
-            targets: ["SpectraLoggerUI"]
+            name: "SpectraUI",
+            targets: ["SpectraUI"]
         ),
     ],
     dependencies: [
         // LOCAL DEVELOPMENT MODE (uncomment for local development)
-        // This uses the local SpectraLogger package from the same workspace
-        .package(path: "../SpectraLogger"),
+        // This uses the local spectra-core package from the same workspace
+        .package(path: "../spectra-core"),
 
         // RELEASE MODE (uncomment after packages are published)
         // GitHub release:
@@ -43,16 +43,16 @@ let package = Package(
     targets: [
         // SwiftUI views and ViewModels for iOS
         .target(
-            name: "SpectraLoggerUI",
+            name: "SpectraUI",
             dependencies: [
-                .product(name: "SpectraLogger", package: "SpectraLogger")
+                .product(name: "SpectraLogger", package: "spectra-core")
             ],
             path: "Sources/SpectraLoggerUI"
         ),
 
         .testTarget(
-            name: "SpectraLoggerUITests",
-            dependencies: ["SpectraLoggerUI"]
+            name: "SpectraUITests",
+            dependencies: ["SpectraUI"]
         ),
     ]
 )

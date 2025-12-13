@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "SpectraLogger",
+    name: "Spectra",
     platforms: [
         .iOS(.v15)
     ],
@@ -26,7 +26,7 @@ let package = Package(
         // LOCAL DEVELOPMENT: Uncomment for local builds
         .binaryTarget(
             name: "SpectraLogger",
-            path: "build/xcframework/SpectraLogger.xcframework"
+            path: "spectra-core/build/xcframework/SpectraLogger.xcframework"
         )
 
         // DISTRIBUTION: Released binary from GitHub Releases
