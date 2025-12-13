@@ -1,5 +1,6 @@
 package com.spectra.logger.ui.compose
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.spectra.logger.domain.model.LogLevel
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlin.time.Duration.Companion.days
@@ -27,11 +29,14 @@ import kotlin.time.Duration.Companion.hours
 @Composable
 fun LogsFilterSheet(
     filter: AdvancedFilter,
+    selectedLevels: Set<LogLevel>,
     availableTags: List<String>,
     onFilterChange: (AdvancedFilter) -> Unit,
+    onLevelsChange: (Set<LogLevel>) -> Unit,
     onDismiss: () -> Unit
 ) {
     var localFilter by remember { mutableStateOf(filter) }
+    var localLevels by remember { mutableStateOf(selectedLevels) }
     var customTagInput by remember { mutableStateOf("") }
 
     ModalBottomSheet(
@@ -59,7 +64,10 @@ fun LogsFilterSheet(
                     style = MaterialTheme.typography.titleLarge
                 )
                 TextButton(
-                    onClick = { localFilter = AdvancedFilter() }
+                    onClick = { 
+                        localFilter = AdvancedFilter()
+                        localLevels = emptySet()
+                    }
                 ) {
                     Text("Reset", color = MaterialTheme.colorScheme.error)
                 }
@@ -72,12 +80,47 @@ fun LogsFilterSheet(
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
             ) {
+                // Log Levels Section
+                Text(
+                    text = "LOG LEVELS",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(16.dp)
+                )
+
+                Row(
+                    modifier = Modifier
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    LogLevel.entries.forEach { level ->
+                        FilterChip(
+                            selected = localLevels.contains(level),
+                            onClick = {
+                                localLevels = if (localLevels.contains(level)) {
+                                    localLevels - level
+                                } else {
+                                    localLevels + level
+                                }
+                            },
+                            label = { Text(level.name) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = colorForLogLevel(level).copy(alpha = 0.2f),
+                                selectedLabelColor = colorForLogLevel(level)
+                            )
+                        )
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
                 // Tags Section
                 Text(
                     text = "TAGS",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
 
                 // Custom tag input
@@ -283,6 +326,7 @@ fun LogsFilterSheet(
             Button(
                 onClick = {
                     onFilterChange(localFilter)
+                    onLevelsChange(localLevels)
                     onDismiss()
                 },
                 modifier = Modifier
