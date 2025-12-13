@@ -1,6 +1,0 @@
-/Users/avilevin/Workspace/Personal/Spectra/examples/ios-native/SpectraExample/LogsViewModel.swift
-/Users/avilevin/Workspace/Personal/Spectra/examples/ios-native/SpectraExample/NetworkLogsViewModel.swift
-/Users/avilevin/Workspace/Personal/Spectra/examples/ios-native/SpectraExample/SettingsViewModel.swift
-/Users/avilevin/Workspace/Personal/Spectra/examples/ios-native/SpectraExample/LogsView.swift
-/Users/avilevin/Workspace/Personal/Spectra/examples/ios-native/SpectraExample/NetworkLogsView.swift
-/Users/avilevin/Workspace/Personal/Spectra/examples/ios-native/SpectraExample/SettingsView.swift
