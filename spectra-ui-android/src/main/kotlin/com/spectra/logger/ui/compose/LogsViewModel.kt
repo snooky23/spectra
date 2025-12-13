@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.spectra.logger.SpectraLogger
 import com.spectra.logger.domain.model.LogEntry
 import com.spectra.logger.domain.model.LogLevel
-import com.spectra.logger.domain.storage.LogFilter
+import com.spectra.logger.domain.model.LogFilter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

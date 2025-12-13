@@ -18,9 +18,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.spectra.logger.network.NetworkLogEntry
+import com.spectra.logger.domain.model.NetworkLogEntry
 import com.spectra.logger.ui.compose.components.EmptyState
 import com.spectra.logger.ui.compose.components.SearchBar
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 /**
  * Network logs screen displaying HTTP request/response logs.
@@ -201,7 +203,7 @@ fun NetworkLogRow(
                 MethodBadge(method = log.method)
                 
                 // Status code badge
-                log.statusCode?.let { code ->
+                log.responseCode?.let { code ->
                     StatusCodeBadge(statusCode = code)
                 }
             }

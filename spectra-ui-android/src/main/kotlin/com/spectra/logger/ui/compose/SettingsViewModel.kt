@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spectra.logger.SpectraLogger
 import com.spectra.logger.Version
-import com.spectra.logger.domain.storage.LogFilter
+import com.spectra.logger.domain.model.LogFilter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 class SettingsViewModel : ViewModel() {
     
     private val logStorage = SpectraLogger.logStorage
-    private val networkStorage = SpectraLogger.networkLogStorage
+    private val networkStorage = SpectraLogger.networkStorage
     
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
@@ -37,7 +37,7 @@ class SettingsViewModel : ViewModel() {
                     toTimestamp = null
                 )
                 val logCount = logStorage.query(filter = noFilter, limit = null).size
-                val networkCount = networkStorage.queryAll().size
+                val networkCount = networkStorage.count()
                 
                 _uiState.update {
                     it.copy(

@@ -90,8 +90,8 @@ fun LogDetailSheet(
                 }
 
                 // Stack trace section (if present)
-                val stackTrace = log.throwable?.let { formatStackTrace(it) }
-                    ?: log.metadata["stack_trace"]
+                // throwable is stored as a pre-formatted String
+                val stackTrace = log.throwable ?: log.metadata["stack_trace"]
                 
                 if (stackTrace != null) {
                     ExpandableStackTraceSection(
