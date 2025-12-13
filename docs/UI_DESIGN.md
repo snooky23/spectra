@@ -86,12 +86,18 @@ The logger UI uses a **3-tab layout** at the bottom:
   - Refresh
   - Clear All Logs (destructive)
 
-#### Active Filter Badges
-When filters are active from the Filter Screen, show removable badges:
-- Display as horizontal scrollable row below level chips
-- Each badge shows filter type and value (e.g., "Tag=Auth")
-- Tap ✕ to remove individual filter
-- Only shown when filters are active
+#### Active Filter Indicators (How Users Know Filters Are Active)
+1. **Filter Button Badge** (red circle): Shows count of active advanced filters (tags, time, metadata, errors)
+2. **Selected Level Chips**: Highlighted level chips show which log levels are included
+3. **Active Filter Badges Row**: Removable pills below level chips showing each filter:
+   - `Tag: Auth ✕` | `Time Range ✕` | `Errors Only ✕`
+   - Tap ✕ to remove individual filter
+4. **Different Counts in Share Sheet**: When sharing, user sees:
+   - "Share Filtered Logs **(47 items)**"
+   - "Share All Logs **(1,234 items)**"
+   
+   > If these numbers differ, users immediately know filters are reducing results.
+5. **Empty State Message**: If no matches, shows "No matching logs" (not "No logs")
 
 #### Log Row Components
 - **Level badge**: Colored background (0.2 opacity), colored text, rounded corners
