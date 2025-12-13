@@ -7,6 +7,7 @@ struct LogsView: View {
     @State private var selectedLog: LogEntry?
     @State private var shareItems: [Any] = []
     @State private var showFilterScreen = false
+    @State private var showShareOptions = false
 
     var body: some View {
         NavigationView {
@@ -16,29 +17,17 @@ struct LogsView: View {
                     .padding(.horizontal)
                     .padding(.top, 8)
 
-                // Filter chips - Log Levels
-                if !LogLevel.entries.isEmpty {
+                // Active filter badges (including level filters)
+                if viewModel.hasActiveFilters {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
-                            ForEach(LogLevel.entries, id: \.self) { level in
-                                FilterChip(
-                                    title: level.name,
-                                    isSelected: viewModel.selectedLevels.contains(level),
-                                    color: ColorUtilities.colorForLogLevel(level)
-                                ) {
+                            // Level filters
+                            ForEach(Array(viewModel.selectedLevels).sorted { $0.ordinal < $1.ordinal }, id: \.self) { level in
+                                ActiveFilterBadge(label: level.name) {
                                     viewModel.toggleLevel(level)
                                 }
                             }
-                        }
-                        .padding(.horizontal)
-                    }
-                    .frame(height: 44)
-                }
-
-                // Active filter badges (from Filter Screen)
-                if viewModel.advancedFilter.hasActiveFilters {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
+                            
                             // Tag filters
                             ForEach(Array(viewModel.advancedFilter.allSelectedTags).sorted(), id: \.self) { tag in
                                 ActiveFilterBadge(label: "Tag: \(tag)") {
@@ -111,8 +100,9 @@ struct LogsView: View {
                             Image(systemName: "line.3.horizontal.decrease.circle")
                             
                             // Badge for active filter count
-                            if viewModel.advancedFilter.activeFilterCount > 0 {
-                                Text("\(viewModel.advancedFilter.activeFilterCount)")
+                            let filterCount = viewModel.totalActiveFilterCount
+                            if filterCount > 0 {
+                                Text("\(filterCount)")
                                     .font(.caption2)
                                     .fontWeight(.bold)
                                     .foregroundColor(.white)
@@ -125,7 +115,7 @@ struct LogsView: View {
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: shareAllLogs) {
+                    Button(action: { showShareOptions = true }) {
                         Image(systemName: "square.and.arrow.up")
                     }
                 }
@@ -149,15 +139,25 @@ struct LogsView: View {
             .sheet(isPresented: $showFilterScreen) {
                 LogsFilterView(
                     filter: $viewModel.advancedFilter,
+                    selectedLevels: $viewModel.selectedLevels,
                     availableTags: viewModel.availableTags,
                     onApply: {}
                 )
             }
+            .confirmationDialog("Share Logs", isPresented: $showShareOptions, titleVisibility: .visible) {
+                Button("Share Filtered Logs (\(viewModel.filteredLogs.count) items)") {
+                    shareLogs(viewModel.filteredLogs)
+                }
+                Button("Share All Logs (\(viewModel.logs.count) items)") {
+                    shareLogs(viewModel.logs)
+                }
+                Button("Cancel", role: .cancel) {}
+            }
         }
     }
 
-    private func shareAllLogs() {
-        let logsText = viewModel.logs.map { log in
+    private func shareLogs(_ logs: [LogEntry]) {
+        let logsText = logs.map { log in
             "[\(log.level.name.uppercased())] \(DateFormattingUtilities.formatFullTimestamp(log.timestamp)) - \(log.tag): \(log.message)"
         }.joined(separator: "\n")
 
