@@ -177,6 +177,8 @@ func generateStackTrace() -> String {
 struct ExampleActionsTab: View {
     @State private var counter = 0
     @State private var showSpectraLogger = false
+    @State private var isBackgroundLogging = false
+    @State private var backgroundLogCount = 0
 
     var body: some View {
         VStack(spacing: 0) {
@@ -262,6 +264,91 @@ struct ExampleActionsTab: View {
                         }
                     )
 
+                    // MARK: Batch Logging Section
+                    Spacer().frame(height: 16)
+                    SectionHeader(title: "Batch Logging")
+
+                    LogButton(
+                        label: "Generate 10 Logs",
+                        icon: "list.bullet",
+                        backgroundColor: .purple,
+                        action: {
+                            let tags = ["Auth", "Network", "UI", "Database"]
+                            for i in 0..<10 {
+                                let tag = tags[i % tags.count]
+                                switch i % 4 {
+                                case 0: SpectraLogger.shared.d(tag: tag, message: "Debug log entry #\(i + 1)", throwable: nil, metadata: [:])
+                                case 1: SpectraLogger.shared.i(tag: tag, message: "Info log entry #\(i + 1)", throwable: nil, metadata: [:])
+                                case 2: SpectraLogger.shared.w(tag: tag, message: "Warning log entry #\(i + 1)", throwable: nil, metadata: [:])
+                                default: SpectraLogger.shared.e(tag: tag, message: "Error log entry #\(i + 1)", throwable: nil, metadata: [:])
+                                }
+                            }
+                        }
+                    )
+
+                    LogButton(
+                        label: "Generate 100 Logs",
+                        icon: "list.bullet.rectangle",
+                        backgroundColor: .purple,
+                        action: {
+                            let tags = ["Auth", "Network", "UI", "Database", "Cache", "API"]
+                            for i in 0..<100 {
+                                let tag = tags[i % tags.count]
+                                SpectraLogger.shared.i(tag: tag, message: "Batch log entry #\(i + 1) - stress test", throwable: nil, metadata: [:])
+                            }
+                        }
+                    )
+
+                    // MARK: Real-Time Demo Section
+                    Spacer().frame(height: 16)
+                    SectionHeader(title: "Real-Time Demo")
+
+                    LogButton(
+                        label: isBackgroundLogging ? "⏹ Stop Background Logging" : "▶ Start Background Logging",
+                        icon: isBackgroundLogging ? "stop.circle" : "play.circle",
+                        backgroundColor: isBackgroundLogging ? .red : .green,
+                        action: {
+                            isBackgroundLogging.toggle()
+                            if isBackgroundLogging {
+                                startBackgroundLogging()
+                            }
+                        }
+                    )
+
+                    Text("Logs every 2 seconds while running")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+
+                    // MARK: Filtering Demo Section
+                    Spacer().frame(height: 16)
+                    SectionHeader(title: "Filtering Demos")
+
+                    LogButton(
+                        label: "Generate All Log Levels",
+                        icon: "slider.horizontal.3",
+                        backgroundColor: Color(red: 0.38, green: 0.49, blue: 0.55),
+                        action: {
+                            SpectraLogger.shared.v(tag: "LevelDemo", message: "This is a VERBOSE message", throwable: nil, metadata: [:])
+                            SpectraLogger.shared.d(tag: "LevelDemo", message: "This is a DEBUG message", throwable: nil, metadata: [:])
+                            SpectraLogger.shared.i(tag: "LevelDemo", message: "This is an INFO message", throwable: nil, metadata: [:])
+                            SpectraLogger.shared.w(tag: "LevelDemo", message: "This is a WARNING message", throwable: nil, metadata: [:])
+                            SpectraLogger.shared.e(tag: "LevelDemo", message: "This is an ERROR message", throwable: nil, metadata: [:])
+                            SpectraLogger.shared.f(tag: "LevelDemo", message: "This is a FATAL message", throwable: nil, metadata: [:])
+                        }
+                    )
+
+                    LogButton(
+                        label: "Generate Searchable Logs",
+                        icon: "magnifyingglass",
+                        backgroundColor: Color(red: 0.38, green: 0.49, blue: 0.55),
+                        action: {
+                            SpectraLogger.shared.i(tag: "SearchDemo", message: "Order #12345 placed successfully", throwable: nil, metadata: [:])
+                            SpectraLogger.shared.i(tag: "SearchDemo", message: "User john@example.com logged in", throwable: nil, metadata: [:])
+                            SpectraLogger.shared.w(tag: "SearchDemo", message: "Payment processing delayed for order #12345", throwable: nil, metadata: [:])
+                            SpectraLogger.shared.e(tag: "SearchDemo", message: "Failed to send email to john@example.com", throwable: nil, metadata: [:])
+                        }
+                    )
+
                     Spacer()
                         .frame(height: 10)
                 }
@@ -289,6 +376,21 @@ struct ExampleActionsTab: View {
         }
         .sheet(isPresented: $showSpectraLogger) {
             SpectraLoggerView()
+        }
+        .onChange(of: isBackgroundLogging) { oldValue, newValue in
+            if !newValue {
+                backgroundLogCount = 0
+            }
+        }
+    }
+
+    private func startBackgroundLogging() {
+        Task {
+            while isBackgroundLogging {
+                backgroundLogCount += 1
+                SpectraLogger.shared.i(tag: "BackgroundTask", message: "Real-time log #\(backgroundLogCount) at \(Date())", throwable: nil, metadata: [:])
+                try? await Task.sleep(nanoseconds: 2_000_000_000)
+            }
         }
     }
 }
@@ -371,6 +473,77 @@ struct NetworkRequestsTab: View {
                                 statusCode: 500,
                                 duration: 2.0
                             )
+                        }
+                    )
+
+                    // MARK: More HTTP Methods
+                    Spacer().frame(height: 16)
+                    SectionHeader(title: "More HTTP Methods")
+
+                    LogButton(
+                        label: "PUT Request (200 OK)",
+                        icon: "arrow.up.circle",
+                        backgroundColor: .green,
+                        action: {
+                            simulateNetworkRequest(
+                                method: "PUT",
+                                url: "https://api.example.com/users/123",
+                                statusCode: 200,
+                                duration: 0.6
+                            )
+                        }
+                    )
+
+                    LogButton(
+                        label: "DELETE Request (204 No Content)",
+                        icon: "trash.circle",
+                        backgroundColor: .green,
+                        action: {
+                            simulateNetworkRequest(
+                                method: "DELETE",
+                                url: "https://api.example.com/users/456",
+                                statusCode: 204,
+                                duration: 0.4
+                            )
+                        }
+                    )
+
+                    LogButton(
+                        label: "Rate Limited (429)",
+                        icon: "clock.badge.exclamationmark",
+                        backgroundColor: .orange,
+                        action: {
+                            simulateNetworkRequest(
+                                method: "POST",
+                                url: "https://api.example.com/bulk-upload",
+                                statusCode: 429,
+                                duration: 0.1
+                            )
+                        }
+                    )
+
+                    // MARK: Batch Network
+                    Spacer().frame(height: 16)
+                    SectionHeader(title: "Batch Network")
+
+                    LogButton(
+                        label: "Simulate 10 API Calls",
+                        icon: "list.bullet.rectangle",
+                        backgroundColor: .purple,
+                        action: {
+                            let endpoints = ["users", "orders", "products", "inventory", "analytics"]
+                            let statuses = [200, 200, 200, 404, 500]
+                            for i in 0..<10 {
+                                Task {
+                                    try? await Task.sleep(nanoseconds: UInt64(200_000_000 * i))
+                                    simulateNetworkRequest(
+                                        method: i % 3 == 0 ? "POST" : "GET",
+                                        url: "https://api.example.com/\(endpoints[i % endpoints.count])",
+                                        statusCode: statuses[i % statuses.count],
+                                        duration: 0.2 + Double(i) * 0.1
+                                    )
+                                }
+                            }
                         }
                     )
 
