@@ -10,7 +10,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 echo "🎨 Building iOS UI Swift Package..."
 
 # Ensure XCFramework is built first
-if [ ! -d "$PROJECT_ROOT/shared/build/XCFrameworks/release/SpectraLogger.xcframework" ]; then
+if [ ! -d "$PROJECT_ROOT/spectra-core/build/XCFrameworks/release/SpectraLogger.xcframework" ]; then
     echo "⚠️  XCFramework not found. Building it first..."
     "$SCRIPT_DIR/build-ios-xcframework.sh"
 fi

@@ -8,7 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 FRAMEWORK_NAME="SpectraLogger"
-BUILD_DIR="$PROJECT_ROOT/shared/build"
+BUILD_DIR="$PROJECT_ROOT/spectra-core/build"
 XCFRAMEWORK_PATH="$BUILD_DIR/XCFrameworks/release/$FRAMEWORK_NAME.xcframework"
 
 echo "🍎 Building iOS XCFramework..."

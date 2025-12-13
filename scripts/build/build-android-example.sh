@@ -16,7 +16,7 @@ cd "$PROJECT_ROOT"
 
 # Build the shared module first
 echo "📦 Building shared module..."
-./gradlew :shared:assembleRelease
+./gradlew :spectra-core:assembleRelease
 
 # Build Android example
 echo "📱 Building Android app..."

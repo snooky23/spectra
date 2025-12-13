@@ -218,28 +218,28 @@ jobs:
           echo "📦 Publishing to CocoaPods..."
 
           # Verify file exists
-          if [ ! -f "shared/SpectraLogger.podspec" ]; then
-            echo "❌ Error: shared/SpectraLogger.podspec not found!"
-            ls -la shared/
+          if [ ! -f "spectra-core/SpectraLogger.podspec" ]; then
+            echo "❌ Error: spectra-core/SpectraLogger.podspec not found!"
+            ls -la spectra-core/
             exit 1
           fi
 
           echo "🔍 Before update:"
-          grep -E "(s\.version|:sha256)" shared/SpectraLogger.podspec
+          grep -E "(s\.version|:sha256)" spectra-core/SpectraLogger.podspec
 
           # Update podspec version and checksum
           CHECKSUM="${{ steps.build.outputs.checksum }}"
           echo "🔍 Updating with checksum: $CHECKSUM"
 
           # Use perl with explicit in-place editing
-          perl -i.backup -pe "s/s\.version\s*=\s*'[^']*'/s.version = '${{ steps.version.outputs.version }}'/" shared/SpectraLogger.podspec
-          perl -i.backup -pe "s/:sha256\s*=>\s*'[^']*'/:sha256 => '${CHECKSUM}'/" shared/SpectraLogger.podspec
+          perl -i.backup -pe "s/s\.version\s*=\s*'[^']*'/s.version = '${{ steps.version.outputs.version }}'/" spectra-core/SpectraLogger.podspec
+          perl -i.backup -pe "s/:sha256\s*=>\s*'[^']*'/:sha256 => '${CHECKSUM}'/" spectra-core/SpectraLogger.podspec
 
           # Remove backup files
-          rm -f shared/SpectraLogger.podspec.backup
+          rm -f spectra-core/SpectraLogger.podspec.backup
 
           echo "🔍 After update:"
-          grep -E "(s\.version|:sha256)" shared/SpectraLogger.podspec
+          grep -E "(s\.version|:sha256)" spectra-core/SpectraLogger.podspec
 
           # Publish to CocoaPods
           cd shared

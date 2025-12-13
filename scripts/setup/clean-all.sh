@@ -25,10 +25,10 @@ fi
 
 # Clean XCFrameworks
 echo "🗑️  Cleaning XCFrameworks..."
-rm -rf "$PROJECT_ROOT/shared/build/XCFrameworks"
+rm -rf "$PROJECT_ROOT/spectra-core/build/XCFrameworks"
 
 # Clean Swift Package build
 echo "🗑️  Cleaning Swift Package builds..."
-rm -rf "$PROJECT_ROOT/SpectraLoggerUI/.build"
+rm -rf "$PROJECT_ROOT/spectra-ui-ios/.build"
 
 echo "✅ All artifacts cleaned!"

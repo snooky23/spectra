@@ -13,6 +13,6 @@ cd "$PROJECT_ROOT"
 
 # Run common tests
 echo "📋 Running common tests..."
-./gradlew :shared:allTests
+./gradlew :spectra-core:allTests
 
 echo "✅ All KMP tests passed!"
