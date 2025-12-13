@@ -16,7 +16,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        mavenLocal()  // For local SNAPSHOT builds of Spectra Logger
+        mavenLocal() // For local SNAPSHOT builds of Spectra Logger
     }
 }
 

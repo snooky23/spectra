@@ -1,13 +1,11 @@
 package com.spectra.logger.ui.compose
 
-import android.content.Context
-import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spectra.logger.SpectraLogger
 import com.spectra.logger.domain.model.LogEntry
-import com.spectra.logger.domain.model.LogLevel
 import com.spectra.logger.domain.model.LogFilter
+import com.spectra.logger.domain.model.LogLevel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,9 +17,8 @@ import kotlinx.datetime.Instant
  * ViewModel for the Logs screen
  */
 class LogsViewModel : ViewModel() {
-    
     private val storage = SpectraLogger.logStorage
-    
+
     private val _uiState = MutableStateFlow(LogsUiState())
     val uiState: StateFlow<LogsUiState> = _uiState.asStateFlow()
 
@@ -33,21 +30,22 @@ class LogsViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                val noFilter = LogFilter(
-                    levels = null,
-                    tags = null,
-                    searchText = null,
-                    fromTimestamp = null,
-                    toTimestamp = null
-                )
+                val noFilter =
+                    LogFilter(
+                        levels = null,
+                        tags = null,
+                        searchText = null,
+                        fromTimestamp = null,
+                        toTimestamp = null,
+                    )
                 val logs = storage.query(filter = noFilter, limit = null)
                 val availableTags = logs.map { it.tag }.distinct().sorted()
-                
+
                 _uiState.update { state ->
                     state.copy(
                         logs = logs,
                         availableTags = availableTags,
-                        isLoading = false
+                        isLoading = false,
                     )
                 }
                 applyFilters()
@@ -64,16 +62,17 @@ class LogsViewModel : ViewModel() {
 
     fun toggleLevel(level: LogLevel) {
         _uiState.update { state ->
-            val newLevels = if (state.selectedLevels.contains(level)) {
-                state.selectedLevels - level
-            } else {
-                state.selectedLevels + level
-            }
+            val newLevels =
+                if (state.selectedLevels.contains(level)) {
+                    state.selectedLevels - level
+                } else {
+                    state.selectedLevels + level
+                }
             state.copy(selectedLevels = newLevels)
         }
         applyFilters()
     }
-    
+
     fun updateLevels(levels: Set<LogLevel>) {
         _uiState.update { it.copy(selectedLevels = levels) }
         applyFilters()
@@ -87,10 +86,11 @@ class LogsViewModel : ViewModel() {
     fun removeTagFilter(tag: String) {
         _uiState.update { state ->
             state.copy(
-                advancedFilter = state.advancedFilter.copy(
-                    selectedTags = state.advancedFilter.selectedTags - tag,
-                    customTags = state.advancedFilter.customTags - tag
-                )
+                advancedFilter =
+                    state.advancedFilter.copy(
+                        selectedTags = state.advancedFilter.selectedTags - tag,
+                        customTags = state.advancedFilter.customTags - tag,
+                    ),
             )
         }
         applyFilters()
@@ -99,10 +99,11 @@ class LogsViewModel : ViewModel() {
     fun clearTimeRangeFilter() {
         _uiState.update { state ->
             state.copy(
-                advancedFilter = state.advancedFilter.copy(
-                    fromTimestamp = null,
-                    toTimestamp = null
-                )
+                advancedFilter =
+                    state.advancedFilter.copy(
+                        fromTimestamp = null,
+                        toTimestamp = null,
+                    ),
             )
         }
         applyFilters()
@@ -111,7 +112,7 @@ class LogsViewModel : ViewModel() {
     fun clearHasErrorFilter() {
         _uiState.update { state ->
             state.copy(
-                advancedFilter = state.advancedFilter.copy(hasErrorOnly = false)
+                advancedFilter = state.advancedFilter.copy(hasErrorOnly = false),
             )
         }
         applyFilters()
@@ -125,13 +126,14 @@ class LogsViewModel : ViewModel() {
             }
         }
     }
-    
+
     fun shareLogs(logs: List<LogEntry>) {
         // TODO: Implement actual sharing via Intent
         // This would require context access, typically done via Application class or passed in
-        val logsText = logs.joinToString("\n") { log ->
-            "[${log.level.name}] ${log.timestamp} - ${log.tag}: ${log.message}"
-        }
+        val logsText =
+            logs.joinToString("\n") { log ->
+                "[${log.level.name}] ${log.timestamp} - ${log.tag}: ${log.message}"
+            }
         // For now, we just prepare the text. Actual sharing would be done in the UI layer.
         println("Share logs: $logsText")
     }
@@ -161,19 +163,21 @@ class LogsViewModel : ViewModel() {
 
             // Filter by has error
             if (state.advancedFilter.hasErrorOnly) {
-                filtered = filtered.filter { 
-                    it.throwable != null || it.metadata.containsKey("stack_trace")
-                }
+                filtered =
+                    filtered.filter {
+                        it.throwable != null || it.metadata.containsKey("stack_trace")
+                    }
             }
 
             // Filter by search text (min 2 chars)
             if (state.searchText.length >= 2) {
                 val query = state.searchText.lowercase()
-                filtered = filtered.filter { log ->
-                    log.message.lowercase().contains(query) ||
-                    log.tag.lowercase().contains(query) ||
-                    log.level.name.lowercase().contains(query)
-                }
+                filtered =
+                    filtered.filter { log ->
+                        log.message.lowercase().contains(query) ||
+                            log.tag.lowercase().contains(query) ||
+                            log.level.name.lowercase().contains(query)
+                    }
             }
 
             state.copy(filteredLogs = filtered)
@@ -191,26 +195,26 @@ data class LogsUiState(
     val searchText: String = "",
     val selectedLevels: Set<LogLevel> = emptySet(),
     val availableTags: List<String> = emptyList(),
-    val advancedFilter: AdvancedFilter = AdvancedFilter()
+    val advancedFilter: AdvancedFilter = AdvancedFilter(),
 ) {
     val hasActiveFilters: Boolean
         get() = advancedFilter.hasActiveFilters
-    
+
     val hasAnyActiveFilters: Boolean
         get() = selectedLevels.isNotEmpty() || advancedFilter.hasActiveFilters
-    
+
     val activeFilterCount: Int
         get() = advancedFilter.activeFilterCount
-    
+
     val totalActiveFilterCount: Int
         get() = selectedLevels.size + advancedFilter.activeFilterCount
-    
+
     val selectedTags: Set<String>
         get() = advancedFilter.allSelectedTags
-    
+
     val hasTimeRangeFilter: Boolean
         get() = advancedFilter.fromTimestamp != null || advancedFilter.toTimestamp != null
-    
+
     val hasErrorOnly: Boolean
         get() = advancedFilter.hasErrorOnly
 }
@@ -225,19 +229,20 @@ data class AdvancedFilter(
     val toTimestamp: Instant? = null,
     val metadataKey: String = "",
     val metadataValue: String = "",
-    val hasErrorOnly: Boolean = false
+    val hasErrorOnly: Boolean = false,
 ) {
     val allSelectedTags: Set<String>
         get() = selectedTags + customTags
-    
+
     val hasActiveFilters: Boolean
-        get() = selectedTags.isNotEmpty() ||
+        get() =
+            selectedTags.isNotEmpty() ||
                 customTags.isNotEmpty() ||
                 fromTimestamp != null ||
                 toTimestamp != null ||
                 (metadataKey.isNotEmpty() && metadataValue.isNotEmpty()) ||
                 hasErrorOnly
-    
+
     val activeFilterCount: Int
         get() {
             var count = 0

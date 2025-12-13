@@ -1,6 +1,5 @@
 package com.spectra.logger.ui.compose
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -33,7 +32,7 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 fun LogsScreen(
     modifier: Modifier = Modifier,
-    viewModel: LogsViewModel = viewModel()
+    viewModel: LogsViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showFilterSheet by remember { mutableStateOf(false) }
@@ -52,24 +51,24 @@ fun LogsScreen(
                             if (uiState.totalActiveFilterCount > 0) {
                                 Badge { Text("${uiState.totalActiveFilterCount}") }
                             }
-                        }
+                        },
                     ) {
                         IconButton(onClick = { showFilterSheet = true }) {
                             Icon(Icons.Default.FilterList, contentDescription = "Filter")
                         }
                     }
-                    
+
                     IconButton(onClick = { showShareDialog = true }) {
                         Icon(Icons.Default.Share, contentDescription = "Share")
                     }
-                    
+
                     var showMenu by remember { mutableStateOf(false) }
                     IconButton(onClick = { showMenu = true }) {
                         Icon(Icons.Default.MoreVert, contentDescription = "More")
                     }
                     DropdownMenu(
                         expanded = showMenu,
-                        onDismissRequest = { showMenu = false }
+                        onDismissRequest = { showMenu = false },
                     ) {
                         DropdownMenuItem(
                             text = { Text("Refresh") },
@@ -77,7 +76,7 @@ fun LogsScreen(
                                 viewModel.loadLogs()
                                 showMenu = false
                             },
-                            leadingIcon = { Icon(Icons.Default.Refresh, null) }
+                            leadingIcon = { Icon(Icons.Default.Refresh, null) },
                         )
                         DropdownMenuItem(
                             text = { Text("Clear All Logs") },
@@ -85,59 +84,62 @@ fun LogsScreen(
                                 viewModel.clearLogs()
                                 showMenu = false
                             },
-                            leadingIcon = { Icon(Icons.Default.Delete, null) }
+                            leadingIcon = { Icon(Icons.Default.Delete, null) },
                         )
                     }
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
         ) {
             // Search bar
             SearchBar(
                 query = uiState.searchText,
                 onQueryChange = viewModel::onSearchTextChanged,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
             )
 
             // Active filter badges (including levels)
             if (uiState.hasAnyActiveFilters) {
                 Row(
-                    modifier = Modifier
-                        .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier =
+                        Modifier
+                            .horizontalScroll(rememberScrollState())
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     // Level badges
                     uiState.selectedLevels.sortedBy { it.ordinal }.forEach { level ->
                         ActiveFilterBadge(
                             label = level.name,
-                            onRemove = { viewModel.toggleLevel(level) }
+                            onRemove = { viewModel.toggleLevel(level) },
                         )
                     }
                     // Tag badges
                     uiState.selectedTags.forEach { tag ->
                         ActiveFilterBadge(
                             label = "Tag: $tag",
-                            onRemove = { viewModel.removeTagFilter(tag) }
+                            onRemove = { viewModel.removeTagFilter(tag) },
                         )
                     }
                     if (uiState.hasTimeRangeFilter) {
                         ActiveFilterBadge(
                             label = "Time Range",
-                            onRemove = { viewModel.clearTimeRangeFilter() }
+                            onRemove = { viewModel.clearTimeRangeFilter() },
                         )
                     }
                     if (uiState.hasErrorOnly) {
                         ActiveFilterBadge(
                             label = "Errors Only",
-                            onRemove = { viewModel.clearHasErrorFilter() }
+                            onRemove = { viewModel.clearHasErrorFilter() },
                         )
                     }
                 }
@@ -150,7 +152,7 @@ fun LogsScreen(
                 uiState.isLoading -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         CircularProgressIndicator()
                     }
@@ -158,17 +160,17 @@ fun LogsScreen(
                 uiState.filteredLogs.isEmpty() -> {
                     EmptyState(
                         icon = if (uiState.logs.isEmpty()) Icons.Default.Inbox else Icons.Default.Search,
-                        message = if (uiState.logs.isEmpty()) "No logs to display" else "No matching logs"
+                        message = if (uiState.logs.isEmpty()) "No logs to display" else "No matching logs",
                     )
                 }
                 else -> {
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
                     ) {
                         items(uiState.filteredLogs, key = { it.id }) { log ->
                             LogRow(
                                 log = log,
-                                onClick = { selectedLog = log }
+                                onClick = { selectedLog = log },
                             )
                             HorizontalDivider()
                         }
@@ -186,7 +188,7 @@ fun LogsScreen(
             availableTags = uiState.availableTags,
             onFilterChange = viewModel::updateFilter,
             onLevelsChange = viewModel::updateLevels,
-            onDismiss = { showFilterSheet = false }
+            onDismiss = { showFilterSheet = false },
         )
     }
 
@@ -194,10 +196,10 @@ fun LogsScreen(
     selectedLog?.let { log ->
         LogDetailSheet(
             log = log,
-            onDismiss = { selectedLog = null }
+            onDismiss = { selectedLog = null },
         )
     }
-    
+
     // Share dialog
     if (showShareDialog) {
         AlertDialog(
@@ -209,7 +211,7 @@ fun LogsScreen(
                     onClick = {
                         viewModel.shareLogs(uiState.filteredLogs)
                         showShareDialog = false
-                    }
+                    },
                 ) {
                     Text("Share Filtered (${uiState.filteredLogs.size} items)")
                 }
@@ -219,11 +221,11 @@ fun LogsScreen(
                     onClick = {
                         viewModel.shareLogs(uiState.logs)
                         showShareDialog = false
-                    }
+                    },
                 ) {
                     Text("Share All (${uiState.logs.size} items)")
                 }
-            }
+            },
         )
     }
 }
@@ -235,39 +237,40 @@ fun LogsScreen(
 fun LogRow(
     log: LogEntry,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 // Level badge
                 LogLevelBadge(level = log.level)
-                
+
                 // Tag
                 Text(
                     text = log.tag,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            
+
             // Timestamp
             Text(
                 text = formatShortTime(log.timestamp),
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
 
@@ -278,7 +281,7 @@ fun LogRow(
             text = log.message,
             style = MaterialTheme.typography.bodyMedium,
             maxLines = 2,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
         )
 
         // Error indicator
@@ -286,18 +289,18 @@ fun LogRow(
             Spacer(modifier = Modifier.height(4.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Icon(
                     Icons.Default.Warning,
                     contentDescription = null,
                     modifier = Modifier.size(14.dp),
-                    tint = Color(0xFFFF9800)
+                    tint = Color(0xFFFF9800),
                 )
                 Text(
                     text = "Has Error",
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color(0xFFFF9800)
+                    color = Color(0xFFFF9800),
                 )
             }
         }
@@ -310,17 +313,17 @@ fun LogRow(
 @Composable
 fun LogLevelBadge(level: LogLevel) {
     val color = colorForLogLevel(level)
-    
+
     Surface(
         shape = RoundedCornerShape(4.dp),
-        color = color.copy(alpha = 0.2f)
+        color = color.copy(alpha = 0.2f),
     ) {
         Text(
             text = level.name,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.SemiBold,
-            color = color
+            color = color,
         )
     }
 }
@@ -345,6 +348,6 @@ private fun formatShortTime(timestamp: kotlinx.datetime.Instant): String {
         "%02d:%02d:%02d",
         localDateTime.hour,
         localDateTime.minute,
-        localDateTime.second
+        localDateTime.second,
     )
 }

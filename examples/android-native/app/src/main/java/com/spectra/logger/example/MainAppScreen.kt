@@ -2,6 +2,8 @@
 
 package com.spectra.logger.example
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,7 +39,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -52,12 +53,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import android.content.Intent
-import android.content.Context
-import androidx.compose.ui.platform.LocalContext
 import com.spectra.logger.SpectraLogger
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -165,12 +163,17 @@ fun SectionHeader(title: String) {
 /**
  * Share text content using native Android share sheet
  */
-fun shareText(context: Context, text: String, title: String = "Share Logs") {
-    val intent = Intent().apply {
-        action = Intent.ACTION_SEND
-        putExtra(Intent.EXTRA_TEXT, text)
-        type = "text/plain"
-    }
+fun shareText(
+    context: Context,
+    text: String,
+    title: String = "Share Logs",
+) {
+    val intent =
+        Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, text)
+            type = "text/plain"
+        }
     context.startActivity(Intent.createChooser(intent, title))
 }
 
@@ -184,18 +187,20 @@ suspend fun simulateNetworkRequest(
     duration: Double,
 ) {
     // Network request simulation - logs to network storage, not application logs
-    val requestHeaders = mapOf(
-        "Content-Type" to "application/json",
-        "User-Agent" to "SpectraExample/1.0",
-        "Accept" to "application/json",
-        "Authorization" to "Bearer token_example_12345"
-    )
+    val requestHeaders =
+        mapOf(
+            "Content-Type" to "application/json",
+            "User-Agent" to "SpectraExample/1.0",
+            "Accept" to "application/json",
+            "Authorization" to "Bearer token_example_12345",
+        )
 
-    val responseHeaders = mutableMapOf(
-        "Content-Type" to "application/json",
-        "Server" to "Example/1.0",
-        "X-Response-Time" to "${(duration * 1000).toLong()}ms"
-    )
+    val responseHeaders =
+        mutableMapOf(
+            "Content-Type" to "application/json",
+            "Server" to "Example/1.0",
+            "X-Response-Time" to "${(duration * 1000).toLong()}ms",
+        )
 
     // Add status-specific headers
     if (statusCode in 200..299) {
@@ -209,30 +214,32 @@ suspend fun simulateNetworkRequest(
     }
 
     // Generate response body based on status code
-    val responseBody = when (statusCode) {
-        200 -> "{\"success\": true, \"data\": {\"id\": \"123\", \"message\": \"Request completed successfully\"}}"
-        201 -> "{\"success\": true, \"id\": \"newly-created-id\", \"message\": \"Resource created\"}"
-        400 -> "{\"error\": \"Bad Request\", \"details\": \"Invalid request parameters\", \"code\": \"INVALID_PARAMS\"}"
-        404 -> "{\"error\": \"Not Found\", \"details\": \"The requested resource does not exist\", \"code\": \"RESOURCE_NOT_FOUND\"}"
-        500 -> "{\"error\": \"Internal Server Error\", \"details\": \"An unexpected error occurred\", \"code\": \"INTERNAL_ERROR\", \"requestId\": \"req-${java.util.UUID.randomUUID()}\"}"
-        else -> "{\"error\": \"HTTP $statusCode\", \"message\": \"Request failed with status code $statusCode\"}"
-    }
+    val responseBody =
+        when (statusCode) {
+            200 -> "{\"success\": true, \"data\": {\"id\": \"123\", \"message\": \"Request completed successfully\"}}"
+            201 -> "{\"success\": true, \"id\": \"newly-created-id\", \"message\": \"Resource created\"}"
+            400 -> "{\"error\": \"Bad Request\", \"details\": \"Invalid request parameters\", \"code\": \"INVALID_PARAMS\"}"
+            404 -> "{\"error\": \"Not Found\", \"details\": \"The requested resource does not exist\", \"code\": \"RESOURCE_NOT_FOUND\"}"
+            500 -> "{\"error\": \"Internal Server Error\", \"details\": \"An unexpected error occurred\", \"code\": \"INTERNAL_ERROR\", \"requestId\": \"req-${java.util.UUID.randomUUID()}\"}"
+            else -> "{\"error\": \"HTTP $statusCode\", \"message\": \"Request failed with status code $statusCode\"}"
+        }
 
     val durationMs = (duration * 1000).toLong()
 
-    val networkLogEntry = com.spectra.logger.domain.model.NetworkLogEntry(
-        id = java.util.UUID.randomUUID().toString(),
-        timestamp = kotlinx.datetime.Clock.System.now(),
-        url = url,
-        method = method,
-        requestHeaders = requestHeaders,
-        requestBody = null,
-        responseCode = statusCode,
-        responseHeaders = responseHeaders,
-        responseBody = responseBody,
-        duration = durationMs,
-        error = if (statusCode >= 400) "HTTP $statusCode: Request failed" else null
-    )
+    val networkLogEntry =
+        com.spectra.logger.domain.model.NetworkLogEntry(
+            id = java.util.UUID.randomUUID().toString(),
+            timestamp = kotlinx.datetime.Clock.System.now(),
+            url = url,
+            method = method,
+            requestHeaders = requestHeaders,
+            requestBody = null,
+            responseCode = statusCode,
+            responseHeaders = responseHeaders,
+            responseBody = responseBody,
+            duration = durationMs,
+            error = if (statusCode >= 400) "HTTP $statusCode: Request failed" else null,
+        )
 
     // Add the network log entry to Spectra Logger's network storage
     SpectraLogger.networkStorage.add(networkLogEntry)
@@ -262,7 +269,7 @@ fun generateStackTrace(): String {
         14 UIKitCore                        0x00000001a01b1268 UIApplicationMain + 340
         15 SpectraExample                   0x0000000104b8e000 main + 8
         16 dyld                             0x00000001a01b9e94 start + 2220
-    """.trimIndent()
+        """.trimIndent()
 }
 
 // MARK: - Tab: Example Actions
@@ -297,7 +304,10 @@ fun ExampleActionsTab(onOpenSpectra: () -> Unit) {
                 backgroundColor = Color.Blue,
                 action = {
                     counter++
-                    SpectraLogger.i("UserInteraction", "User button pressed - interaction count: $counter, timestamp: ${System.currentTimeMillis()}")
+                    SpectraLogger.i(
+                        "UserInteraction",
+                        "User button pressed - interaction count: $counter, timestamp: ${System.currentTimeMillis()}",
+                    )
                 },
             )
         }
@@ -308,7 +318,10 @@ fun ExampleActionsTab(onOpenSpectra: () -> Unit) {
                 icon = Icons.Default.CheckCircle,
                 backgroundColor = Color(0xFFFFA500), // Orange
                 action = {
-                    SpectraLogger.w("Performance", "Slow operation detected - database query took 1500ms, expected < 500ms")
+                    SpectraLogger.w(
+                        "Performance",
+                        "Slow operation detected - database query took 1500ms, expected < 500ms",
+                    )
                 },
             )
         }
@@ -319,7 +332,10 @@ fun ExampleActionsTab(onOpenSpectra: () -> Unit) {
                 icon = Icons.Default.CheckCircle,
                 backgroundColor = Color.Red,
                 action = {
-                    SpectraLogger.e("Authentication", "Login attempt failed - Invalid credentials provided for user@example.com")
+                    SpectraLogger.e(
+                        "Authentication",
+                        "Login attempt failed - Invalid credentials provided for user@example.com",
+                    )
                 },
             )
         }
@@ -334,17 +350,18 @@ fun ExampleActionsTab(onOpenSpectra: () -> Unit) {
                     SpectraLogger.e(
                         "CriticalError",
                         "Fatal error: Division by zero in payment calculation module",
-                        metadata = mapOf(
-                            "module" to "PaymentProcessor",
-                            "operation" to "calculateDivision",
-                            "amount" to "1500.00",
-                            "divisor" to "0",
-                            "severity" to "CRITICAL",
-                            "error_type" to "ArithmeticException",
-                            "user_id" to "usr_12345",
-                            "transaction_id" to "txn_98765",
-                            "stack_trace" to stackTrace,
-                        ),
+                        metadata =
+                            mapOf(
+                                "module" to "PaymentProcessor",
+                                "operation" to "calculateDivision",
+                                "amount" to "1500.00",
+                                "divisor" to "0",
+                                "severity" to "CRITICAL",
+                                "error_type" to "ArithmeticException",
+                                "user_id" to "usr_12345",
+                                "transaction_id" to "txn_98765",
+                                "stack_trace" to stackTrace,
+                            ),
                     )
                 },
             )
@@ -595,26 +612,27 @@ fun SpectraLoggerScreen(onClose: () -> Unit) {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     var isDarkMode by remember { mutableStateOf(false) }
 
-    val tabs = listOf(
-        TabItem(
-            label = "Logs",
-            selectedIcon = Icons.Default.CheckCircle,
-            unselectedIcon = Icons.Outlined.CheckCircle,
-            contentDescription = "Logs",
-        ),
-        TabItem(
-            label = "Network",
-            selectedIcon = Icons.Default.Info,
-            unselectedIcon = Icons.Outlined.Info,
-            contentDescription = "Network",
-        ),
-        TabItem(
-            label = "Settings",
-            selectedIcon = Icons.Default.Info,
-            unselectedIcon = Icons.Outlined.Info,
-            contentDescription = "Settings",
-        ),
-    )
+    val tabs =
+        listOf(
+            TabItem(
+                label = "Logs",
+                selectedIcon = Icons.Default.CheckCircle,
+                unselectedIcon = Icons.Outlined.CheckCircle,
+                contentDescription = "Logs",
+            ),
+            TabItem(
+                label = "Network",
+                selectedIcon = Icons.Default.Info,
+                unselectedIcon = Icons.Outlined.Info,
+                contentDescription = "Network",
+            ),
+            TabItem(
+                label = "Settings",
+                selectedIcon = Icons.Default.Info,
+                unselectedIcon = Icons.Outlined.Info,
+                contentDescription = "Settings",
+            ),
+        )
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Single header with close button
@@ -627,12 +645,13 @@ fun SpectraLoggerScreen(onClose: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = when (selectedTabIndex) {
-                    0 -> "Logs"
-                    1 -> "Network"
-                    2 -> "Settings"
-                    else -> "Spectra Logger"
-                },
+                text =
+                    when (selectedTabIndex) {
+                        0 -> "Logs"
+                        1 -> "Network"
+                        2 -> "Settings"
+                        else -> "Spectra Logger"
+                    },
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
             )
@@ -714,16 +733,18 @@ fun SpectraLogsTab() {
 
     // Update filtered logs when search or filters change
     LaunchedEffect(searchText, selectedLevels, selectedTags, logs) {
-        filteredLogs = logs.filter { log ->
-            val matchesSearch = searchText.isBlank() ||
-                log.message.contains(searchText, ignoreCase = true) ||
-                log.tag.contains(searchText, ignoreCase = true)
+        filteredLogs =
+            logs.filter { log ->
+                val matchesSearch =
+                    searchText.isBlank() ||
+                        log.message.contains(searchText, ignoreCase = true) ||
+                        log.tag.contains(searchText, ignoreCase = true)
 
-            val matchesLevel = selectedLevels.isEmpty() || log.level in selectedLevels
-            val matchesTag = selectedTags.isEmpty() || log.tag in selectedTags
+                val matchesLevel = selectedLevels.isEmpty() || log.level in selectedLevels
+                val matchesTag = selectedTags.isEmpty() || log.tag in selectedTags
 
-            matchesSearch && matchesLevel && matchesTag
-        }
+                matchesSearch && matchesLevel && matchesTag
+            }
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -747,9 +768,10 @@ fun SpectraLogsTab() {
             )
             Button(
                 onClick = {
-                    val logsText = filteredLogs.map { log ->
-                        "[${formatTimestamp(log.timestamp)}] ${log.level.name} - ${log.tag}: ${log.message}"
-                    }.joinToString("\n")
+                    val logsText =
+                        filteredLogs.map { log ->
+                            "[${formatTimestamp(log.timestamp)}] ${log.level.name} - ${log.tag}: ${log.message}"
+                        }.joinToString("\n")
                     shareText(context, logsText.ifEmpty { "No logs to share" }, "Share Logs")
                 },
                 modifier = Modifier.padding(4.dp),
@@ -932,13 +954,14 @@ fun SpectraNetworkTab() {
         }
     }
 
-    val filteredLogs = remember(networkLogs, searchText) {
-        networkLogs.filter { log ->
-            searchText.isBlank() ||
-                log.url.contains(searchText, ignoreCase = true) ||
-                log.method.contains(searchText, ignoreCase = true)
+    val filteredLogs =
+        remember(networkLogs, searchText) {
+            networkLogs.filter { log ->
+                searchText.isBlank() ||
+                    log.url.contains(searchText, ignoreCase = true) ||
+                    log.method.contains(searchText, ignoreCase = true)
+            }
         }
-    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Search bar with share button
@@ -959,9 +982,10 @@ fun SpectraNetworkTab() {
             )
             Button(
                 onClick = {
-                    val logsText = filteredLogs.map { log ->
-                        "[${formatTimestamp(log.timestamp)}] ${log.method} ${log.responseCode} - ${log.url}"
-                    }.joinToString("\n")
+                    val logsText =
+                        filteredLogs.map { log ->
+                            "[${formatTimestamp(log.timestamp)}] ${log.method} ${log.responseCode} - ${log.url}"
+                        }.joinToString("\n")
                     shareText(context, logsText.ifEmpty { "No network logs to share" }, "Share Network Logs")
                 },
                 modifier = Modifier.padding(4.dp),

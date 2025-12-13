@@ -29,55 +29,58 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 fun LogDetailSheet(
     log: LogEntry,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     val clipboardManager = LocalClipboardManager.current
     var stackTraceExpanded by remember { mutableStateOf(true) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 32.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 32.dp),
         ) {
             // Header
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 IconButton(onClick = onDismiss) {
                     Icon(Icons.Default.Close, contentDescription = "Close")
                 }
-                
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     LogLevelBadge(level = log.level)
                     Text(
                         text = formatFullTime(log.timestamp),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.width(48.dp)) // Balance the close button
             }
 
             HorizontalDivider()
 
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
-                    .padding(vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                        .padding(vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 // Tag section
                 DetailSection(title = "Tag") {
@@ -92,7 +95,7 @@ fun LogDetailSheet(
                 // Stack trace section (if present)
                 // throwable is stored as a pre-formatted String
                 val stackTrace = log.throwable ?: log.metadata["stack_trace"]
-                
+
                 if (stackTrace != null) {
                     ExpandableStackTraceSection(
                         stackTrace = stackTrace,
@@ -100,7 +103,7 @@ fun LogDetailSheet(
                         onToggle = { stackTraceExpanded = !stackTraceExpanded },
                         onCopy = {
                             clipboardManager.setText(AnnotatedString(stackTrace))
-                        }
+                        },
                     )
                 }
 
@@ -112,17 +115,17 @@ fun LogDetailSheet(
                             displayMetadata.forEach { (key, value) ->
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
+                                    horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {
                                     Text(
                                         text = key,
                                         style = MaterialTheme.typography.bodySmall,
-                                        fontWeight = FontWeight.SemiBold
+                                        fontWeight = FontWeight.SemiBold,
                                     )
                                     Text(
                                         text = value,
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )
                                 }
                             }
@@ -142,32 +145,33 @@ private fun ExpandableStackTraceSection(
     stackTrace: String,
     expanded: Boolean,
     onToggle: () -> Unit,
-    onCopy: () -> Unit
+    onCopy: () -> Unit,
 ) {
     val lines = stackTrace.lines()
-    
+
     Column(modifier = Modifier.fillMaxWidth()) {
         // Header
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             TextButton(onClick = onToggle) {
                 Text(
                     text = "STACK TRACE (${lines.size} lines)",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
                 )
             }
-            
+
             IconButton(onClick = onCopy) {
                 Icon(
                     Icons.Default.ContentCopy,
                     contentDescription = "Copy",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -175,39 +179,41 @@ private fun ExpandableStackTraceSection(
         // Content
         if (expanded) {
             Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 shape = MaterialTheme.shapes.small,
-                color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
+                color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f),
             ) {
                 Row(
-                    modifier = Modifier
-                        .horizontalScroll(rememberScrollState())
-                        .padding(12.dp)
+                    modifier =
+                        Modifier
+                            .horizontalScroll(rememberScrollState())
+                            .padding(12.dp),
                 ) {
                     // Line numbers
                     Column(
                         modifier = Modifier.padding(end = 12.dp),
-                        horizontalAlignment = Alignment.End
+                        horizontalAlignment = Alignment.End,
                     ) {
                         lines.forEachIndexed { index, _ ->
                             Text(
                                 text = String.format("%3d", index + 1),
                                 style = MaterialTheme.typography.bodySmall,
                                 fontFamily = FontFamily.Monospace,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                     }
-                    
+
                     // Stack trace content
                     Column {
                         lines.forEach { line ->
                             Text(
                                 text = line,
                                 style = MaterialTheme.typography.bodySmall,
-                                fontFamily = FontFamily.Monospace
+                                fontFamily = FontFamily.Monospace,
                             )
                         }
                     }
@@ -226,7 +232,7 @@ private fun formatFullTime(timestamp: kotlinx.datetime.Instant): String {
         localDateTime.dayOfMonth,
         localDateTime.hour,
         localDateTime.minute,
-        localDateTime.second
+        localDateTime.second,
     )
 }
 

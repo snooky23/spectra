@@ -15,10 +15,9 @@ import kotlinx.coroutines.launch
  * ViewModel for the Settings screen
  */
 class SettingsViewModel : ViewModel() {
-    
     private val logStorage = SpectraLogger.logStorage
     private val networkStorage = SpectraLogger.networkStorage
-    
+
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
@@ -29,20 +28,21 @@ class SettingsViewModel : ViewModel() {
     fun refresh() {
         viewModelScope.launch {
             try {
-                val noFilter = LogFilter(
-                    levels = null,
-                    tags = null,
-                    searchText = null,
-                    fromTimestamp = null,
-                    toTimestamp = null
-                )
+                val noFilter =
+                    LogFilter(
+                        levels = null,
+                        tags = null,
+                        searchText = null,
+                        fromTimestamp = null,
+                        toTimestamp = null,
+                    )
                 val logCount = logStorage.query(filter = noFilter, limit = null).size
                 val networkCount = networkStorage.count()
-                
+
                 _uiState.update {
                     it.copy(
                         applicationLogCount = logCount,
-                        networkLogCount = networkCount
+                        networkLogCount = networkCount,
                     )
                 }
             } catch (e: Exception) {
@@ -78,5 +78,5 @@ data class SettingsUiState(
     val appearanceMode: AppearanceMode = AppearanceMode.SYSTEM,
     val applicationLogCount: Int = 0,
     val networkLogCount: Int = 0,
-    val version: String = Version.LIBRARY_VERSION
+    val version: String = Version.LIBRARY_VERSION,
 )

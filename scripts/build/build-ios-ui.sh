@@ -15,7 +15,7 @@ if [ ! -d "$PROJECT_ROOT/spectra-core/build/XCFrameworks/release/SpectraLogger.x
     "$SCRIPT_DIR/build-ios-xcframework.sh"
 fi
 
-cd "$PROJECT_ROOT/SpectraLoggerUI"
+cd "$PROJECT_ROOT/spectra-ui-ios"
 
 # Swift build doesn't work well with binary targets from command line
 # So we'll open it in Xcode for validation instead

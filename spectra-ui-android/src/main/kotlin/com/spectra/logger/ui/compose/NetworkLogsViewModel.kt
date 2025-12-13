@@ -14,9 +14,8 @@ import kotlinx.coroutines.launch
  * ViewModel for the Network Logs screen
  */
 class NetworkLogsViewModel : ViewModel() {
-    
     private val storage = SpectraLogger.networkStorage
-    
+
     private val _uiState = MutableStateFlow(NetworkLogsUiState())
     val uiState: StateFlow<NetworkLogsUiState> = _uiState.asStateFlow()
 
@@ -30,12 +29,12 @@ class NetworkLogsViewModel : ViewModel() {
             try {
                 val logs = storage.query()
                 val availableMethods = logs.map { log -> log.method }.distinct().sorted()
-                
+
                 _uiState.update { state ->
                     state.copy(
                         logs = logs,
                         availableMethods = availableMethods,
-                        isLoading = false
+                        isLoading = false,
                     )
                 }
                 applyFilters()
@@ -52,11 +51,12 @@ class NetworkLogsViewModel : ViewModel() {
 
     fun toggleMethod(method: String) {
         _uiState.update { state ->
-            val newMethods = if (state.selectedMethods.contains(method)) {
-                state.selectedMethods - method
-            } else {
-                state.selectedMethods + method
-            }
+            val newMethods =
+                if (state.selectedMethods.contains(method)) {
+                    state.selectedMethods - method
+                } else {
+                    state.selectedMethods + method
+                }
             state.copy(selectedMethods = newMethods)
         }
         applyFilters()
@@ -64,11 +64,12 @@ class NetworkLogsViewModel : ViewModel() {
 
     fun toggleStatusRange(range: String) {
         _uiState.update { state ->
-            val newRanges = if (state.selectedStatusRanges.contains(range)) {
-                state.selectedStatusRanges - range
-            } else {
-                state.selectedStatusRanges + range
-            }
+            val newRanges =
+                if (state.selectedStatusRanges.contains(range)) {
+                    state.selectedStatusRanges - range
+                } else {
+                    state.selectedStatusRanges + range
+                }
             state.copy(selectedStatusRanges = newRanges)
         }
         applyFilters()
@@ -94,27 +95,29 @@ class NetworkLogsViewModel : ViewModel() {
 
             // Filter by status code range
             if (state.selectedStatusRanges.isNotEmpty()) {
-                filtered = filtered.filter { log ->
-                    val status = log.responseCode ?: return@filter false
-                    state.selectedStatusRanges.any { range ->
-                        when (range) {
-                            "2xx" -> status in 200..299
-                            "3xx" -> status in 300..399
-                            "4xx" -> status in 400..499
-                            "5xx" -> status in 500..599
-                            else -> false
+                filtered =
+                    filtered.filter { log ->
+                        val status = log.responseCode ?: return@filter false
+                        state.selectedStatusRanges.any { range ->
+                            when (range) {
+                                "2xx" -> status in 200..299
+                                "3xx" -> status in 300..399
+                                "4xx" -> status in 400..499
+                                "5xx" -> status in 500..599
+                                else -> false
+                            }
                         }
                     }
-                }
             }
 
             // Filter by search text
             if (state.searchText.isNotEmpty()) {
                 val query = state.searchText.lowercase()
-                filtered = filtered.filter { log ->
-                    log.url.lowercase().contains(query) ||
-                    log.method.lowercase().contains(query)
-                }
+                filtered =
+                    filtered.filter { log ->
+                        log.url.lowercase().contains(query) ||
+                            log.method.lowercase().contains(query)
+                    }
             }
 
             state.copy(filteredLogs = filtered)
@@ -132,5 +135,5 @@ data class NetworkLogsUiState(
     val searchText: String = "",
     val selectedMethods: Set<String> = emptySet(),
     val selectedStatusRanges: Set<String> = emptySet(),
-    val availableMethods: List<String> = emptyList()
+    val availableMethods: List<String> = emptyList(),
 )
