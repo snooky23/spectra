@@ -1,5 +1,7 @@
 package com.spectra.logger.ui.compose
 
+import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spectra.logger.SpectraLogger
@@ -71,6 +73,11 @@ class LogsViewModel : ViewModel() {
         }
         applyFilters()
     }
+    
+    fun updateLevels(levels: Set<LogLevel>) {
+        _uiState.update { it.copy(selectedLevels = levels) }
+        applyFilters()
+    }
 
     fun updateFilter(filter: AdvancedFilter) {
         _uiState.update { it.copy(advancedFilter = filter) }
@@ -117,6 +124,16 @@ class LogsViewModel : ViewModel() {
                 it.copy(logs = emptyList(), filteredLogs = emptyList(), availableTags = emptyList())
             }
         }
+    }
+    
+    fun shareLogs(logs: List<LogEntry>) {
+        // TODO: Implement actual sharing via Intent
+        // This would require context access, typically done via Application class or passed in
+        val logsText = logs.joinToString("\n") { log ->
+            "[${log.level.name}] ${log.timestamp} - ${log.tag}: ${log.message}"
+        }
+        // For now, we just prepare the text. Actual sharing would be done in the UI layer.
+        println("Share logs: $logsText")
     }
 
     private fun applyFilters() {
@@ -179,8 +196,14 @@ data class LogsUiState(
     val hasActiveFilters: Boolean
         get() = advancedFilter.hasActiveFilters
     
+    val hasAnyActiveFilters: Boolean
+        get() = selectedLevels.isNotEmpty() || advancedFilter.hasActiveFilters
+    
     val activeFilterCount: Int
         get() = advancedFilter.activeFilterCount
+    
+    val totalActiveFilterCount: Int
+        get() = selectedLevels.size + advancedFilter.activeFilterCount
     
     val selectedTags: Set<String>
         get() = advancedFilter.allSelectedTags

@@ -36,6 +36,7 @@ fun LogsScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showFilterSheet by remember { mutableStateOf(false) }
     var selectedLog by remember { mutableStateOf<LogEntry?>(null) }
+    var showShareDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
@@ -46,8 +47,8 @@ fun LogsScreen(
                     // Filter button with badge
                     BadgedBox(
                         badge = {
-                            if (uiState.activeFilterCount > 0) {
-                                Badge { Text("${uiState.activeFilterCount}") }
+                            if (uiState.totalActiveFilterCount > 0) {
+                                Badge { Text("${uiState.totalActiveFilterCount}") }
                             }
                         }
                     ) {
@@ -56,7 +57,7 @@ fun LogsScreen(
                         }
                     }
                     
-                    IconButton(onClick = { /* Share */ }) {
+                    IconButton(onClick = { showShareDialog = true }) {
                         Icon(Icons.Default.Share, contentDescription = "Share")
                     }
                     
@@ -103,34 +104,22 @@ fun LogsScreen(
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             )
 
-            // Log level filter chips
-            Row(
-                modifier = Modifier
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                LogLevel.entries.forEach { level ->
-                    FilterChip(
-                        selected = uiState.selectedLevels.contains(level),
-                        onClick = { viewModel.toggleLevel(level) },
-                        label = { Text(level.name) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = colorForLogLevel(level).copy(alpha = 0.2f),
-                            selectedLabelColor = colorForLogLevel(level)
-                        )
-                    )
-                }
-            }
-
-            // Active filter badges
-            if (uiState.hasActiveFilters) {
+            // Active filter badges (including levels)
+            if (uiState.hasAnyActiveFilters) {
                 Row(
                     modifier = Modifier
                         .horizontalScroll(rememberScrollState())
                         .padding(horizontal = 16.dp, vertical = 4.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    // Level badges
+                    uiState.selectedLevels.sortedBy { it.ordinal }.forEach { level ->
+                        ActiveFilterBadge(
+                            label = level.name,
+                            onRemove = { viewModel.toggleLevel(level) }
+                        )
+                    }
+                    // Tag badges
                     uiState.selectedTags.forEach { tag ->
                         ActiveFilterBadge(
                             label = "Tag: $tag",
@@ -191,8 +180,10 @@ fun LogsScreen(
     if (showFilterSheet) {
         LogsFilterSheet(
             filter = uiState.advancedFilter,
+            selectedLevels = uiState.selectedLevels,
             availableTags = uiState.availableTags,
             onFilterChange = viewModel::updateFilter,
+            onLevelsChange = viewModel::updateLevels,
             onDismiss = { showFilterSheet = false }
         )
     }
@@ -202,6 +193,35 @@ fun LogsScreen(
         LogDetailSheet(
             log = log,
             onDismiss = { selectedLog = null }
+        )
+    }
+    
+    // Share dialog
+    if (showShareDialog) {
+        AlertDialog(
+            onDismissRequest = { showShareDialog = false },
+            title = { Text("Share Logs") },
+            text = { Text("Choose which logs to share") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.shareLogs(uiState.filteredLogs)
+                        showShareDialog = false
+                    }
+                ) {
+                    Text("Share Filtered (${uiState.filteredLogs.size} items)")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.shareLogs(uiState.logs)
+                        showShareDialog = false
+                    }
+                ) {
+                    Text("Share All (${uiState.logs.size} items)")
+                }
+            }
         )
     }
 }
