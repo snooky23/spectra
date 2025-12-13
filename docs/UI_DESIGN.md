@@ -76,7 +76,12 @@ The logger UI uses a **3-tab layout** at the bottom:
 
 #### Toolbar Actions
 - **Filter button** (⌘): Opens Filter Screen (see below)
-- **Share button** (↑): Exports all logs as text
+  - Badge shows active filter count (red number)
+- **Share button** (↑): Opens share action sheet with options:
+  - **"Share Filtered Logs (X items)"** - Exports only currently filtered logs
+  - **"Share All Logs (Y items)"** - Exports all logs regardless of filters
+  - **Cancel**
+  > **UX Rationale**: Single button triggers action sheet for clarity. Count indicators help users understand exactly what they're sharing. This follows iOS/Android design patterns used in Safari, Mail, and Photos apps.
 - **Menu** (...):
   - Refresh
   - Clear All Logs (destructive)
