@@ -236,6 +236,40 @@ Configurable log storage limits.
 
 ---
 
+## 11. KMP Example App (Compose Multiplatform)
+
+**Priority:** 📋 Medium  
+**Effort:** Medium  
+**Status:** Scaffold exists, implementation pending
+
+Complete the `examples/kmp-app` with fully shared Compose Multiplatform UI.
+
+### Current State
+- ✅ Directory structure in place
+- ✅ Build configuration files exist
+- ❌ No source code implemented
+- ❌ Commented out in `settings.gradle.kts`
+
+### Proposed Implementation
+| Component | Description |
+|-----------|-------------|
+| **shared/commonMain** | Full Compose Multiplatform UI (App.kt, screens) |
+| **shared/androidMain** | Android activity wrapper |
+| **shared/iosMain** | iOS UIKit integration |
+| **androidApp** | Thin Android app shell |
+| **iosApp** | Thin iOS app shell |
+
+### Features to Demonstrate
+- Shared logging logic across platforms
+- Shared network logging with platform interceptors
+- Compose Multiplatform UI components
+- `expect`/`actual` for platform-specific features
+
+### Why It Matters
+Shows the full power of Spectra Logger in a true KMP codebase where UI is also shared - the recommended architecture for new multiplatform projects.
+
+---
+
 ## Decision Log
 
 | Date | Decision | Rationale |
@@ -243,6 +277,7 @@ Configurable log storage limits.
 | 2025-12-13 | Keep 3-tab structure for v1.0 | Simplicity, focus on core features |
 | 2025-12-13 | WebView: integrate with Logs tag | Avoids tab proliferation |
 | 2025-12-13 | Performance: defer to v2.0 | High complexity, platform-specific |
+| 2025-12-13 | KMP Example: defer to next version | Native examples working, KMP needs more effort |
 
 ---
 
