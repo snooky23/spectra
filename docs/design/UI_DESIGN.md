@@ -458,6 +458,199 @@ Display alert/dialog before clearing:
 
 ---
 
+## Share/Export Formats
+
+### Default Export Format: JSON
+
+JSON is the industry standard for log exports (used by Firebase, Sentry, Datadog).
+
+#### Application Logs Export
+```json
+{
+  "exportDate": "2025-12-13T15:00:00Z",
+  "appVersion": "1.0.0",
+  "deviceInfo": "iPhone 15 Pro, iOS 18.0",
+  "logsCount": 1234,
+  "filters": {
+    "levels": ["INFO", "WARN", "ERROR"],
+    "tags": ["Auth"],
+    "timeRange": { "from": "...", "to": "..." }
+  },
+  "logs": [
+    {
+      "id": "uuid",
+      "timestamp": "2025-12-13T14:30:00Z",
+      "level": "ERROR",
+      "tag": "Auth",
+      "message": "Login failed",
+      "metadata": { "userId": "123" },
+      "stackTrace": "..."
+    }
+  ]
+}
+```
+
+#### Network Logs Export
+```json
+{
+  "exportDate": "2025-12-13T15:00:00Z",
+  "logsCount": 567,
+  "networkLogs": [
+    {
+      "id": "uuid",
+      "timestamp": "2025-12-13T14:30:00Z",
+      "method": "POST",
+      "url": "https://api.example.com/login",
+      "statusCode": 401,
+      "durationMs": 423,
+      "requestHeaders": {},
+      "requestBody": "...",
+      "responseHeaders": {},
+      "responseBody": "...",
+      "error": null
+    }
+  ]
+}
+```
+
+### Alternative Formats (via Settings)
+| Format | Use Case | File Extension |
+|--------|----------|----------------|
+| **JSON** (default) | Machine-readable, import to other tools | `.json` |
+| **Plain Text** | Human-readable, email sharing | `.txt` |
+| **CSV** | Spreadsheet analysis | `.csv` |
+
+---
+
+## Accessibility
+
+Following WCAG 2.1 AA and platform guidelines (iOS HIG, Material Design).
+
+### Minimum Touch Targets
+- **iOS**: 44×44 pt minimum
+- **Android**: 48×48 dp minimum
+- All buttons, chips, and interactive elements meet this requirement
+
+### VoiceOver / TalkBack Labels
+| Element | Accessibility Label |
+|---------|---------------------|
+| Filter button | "Filter logs, X active filters" |
+| Share button | "Share logs" |
+| Log row | "{Level} log from {Tag} at {Time}: {Message}" |
+| Network row | "{Method} request to {Host}, status {Code}" |
+| Clear badge | "Remove {Filter} filter" |
+
+### Color Contrast
+- All text on colored badges meets 4.5:1 contrast ratio
+- Error states use icons in addition to color (not color alone)
+
+### Dynamic Type Support
+- **iOS**: All text respects user's Dynamic Type settings
+- **Android**: All text respects user's font scale settings
+- Layout adapts gracefully to larger text sizes
+
+### Reduce Motion
+- When "Reduce Motion" is enabled:
+  - Sheet presentations use fade instead of slide
+  - No bouncy animations
+
+---
+
+## Loading States
+
+### Initial Load
+```
+┌─────────────────────────────────────┐
+│  Logs              [⌘] [↑] [...] │
+├─────────────────────────────────────┤
+│  🔍 Search logs...                 │
+├─────────────────────────────────────┤
+│                                     │
+│  ┌─────────────────────────────┐   │
+│  │ ████████████  ████  ████   │   │   <- Skeleton
+│  │ ████████████████████████   │   │
+│  └─────────────────────────────┘   │
+│  ┌─────────────────────────────┐   │
+│  │ ████████████  ████  ████   │   │
+│  │ ████████████████████████   │   │
+│  └─────────────────────────────┘   │
+│                                     │
+└─────────────────────────────────────┘
+```
+
+### Loading Behavior
+- Show skeleton placeholders (3-5 rows) during initial load
+- Skeleton uses `systemGray5` animated with shimmer effect
+- Load should complete in <500ms for typical log counts
+- If >1 second, show subtle spinner in nav bar
+
+### Refresh Loading
+- Toolbar refresh button shows spinner while loading
+- List remains visible during refresh (no full-screen loader)
+
+---
+
+## Error States
+
+### Storage Errors
+| Error | Message | Recovery |
+|-------|---------|----------|
+| Storage full | "Storage limit reached. Clear old logs to continue." | Show Settings → Storage |
+| Read failed | "Unable to load logs. Please try again." | Retry button |
+| Write failed | "Unable to save log. Check available storage." | Silent (logged internally) |
+
+### Export Errors
+| Error | Message | Recovery |
+|-------|---------|----------|
+| No logs | "No logs to export." | Dismiss |
+| Export failed | "Export failed. Please try again." | Retry button |
+| Share cancelled | (No message) | Dismiss sheet |
+
+### Network (for Network Logs)
+| Error | Message | Recovery |
+|-------|---------|----------|
+| Interceptor failed | "Network logging temporarily unavailable." | Auto-retry |
+
+### Error Display
+- Non-blocking errors: Toast/snackbar at bottom (auto-dismiss 3s)
+- Blocking errors: Alert dialog with action buttons
+- All errors logged internally for debugging
+
+---
+
+## Animations & Transitions
+
+### Sheet Presentations
+- **iOS**: Native sheet animation (slide up from bottom)
+- **Android**: Material BottomSheet animation
+
+### List Animations
+- **Insert**: Fade in + slide from top (150ms)
+- **Remove**: Fade out (100ms)
+- **Refresh**: No animation (instant update)
+
+### Filter Chips
+- **Select**: Scale bounce (0.95 → 1.0) + color transition (200ms)
+- **Deselect**: Color transition only (150ms)
+
+### Active Filter Badges
+- **Appear**: Fade in + scale (0 → 1.0, 200ms)
+- **Remove**: Shrink + fade out (150ms)
+
+### Skeleton Loading
+- Shimmer animation: Left-to-right gradient sweep (1.5s loop)
+
+### Timing Guidelines
+| Animation | Duration | Easing |
+|-----------|----------|--------|
+| Sheet appear | 300ms | easeOut |
+| Sheet dismiss | 250ms | easeIn |
+| List insert | 150ms | easeOut |
+| Chip toggle | 200ms | spring |
+| Badge appear | 200ms | spring |
+
+---
+
 ## Dark Mode Support
 
 All colors should adapt automatically:
