@@ -1,5 +1,5 @@
 import SwiftUI
-import SpectraLoggerUI
+import SpectraUI
 import SpectraLogger
 
 // MARK: - Reusable Components
@@ -135,7 +135,9 @@ func simulateNetworkRequest(method: String, url: String, statusCode: Int, durati
             responseHeaders: responseHeaders,
             responseBody: responseBody,
             duration: durationMs,
-            error: statusCode >= 400 ? "HTTP \(statusCode): Request failed" : nil
+            error: statusCode >= 400 ? "HTTP \(statusCode): Request failed" : nil,
+            source: "SpectraExample",
+            sourceType: SourceType.app
         )
 
         // Add to network logs storage - KMP suspend functions require main thread
