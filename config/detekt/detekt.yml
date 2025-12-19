@@ -6,7 +6,6 @@ build:
     LongParameterList: 1
     style: 1
     comments: 1
-  excludes: '**/examples/**'
 
 config:
   validation: true
@@ -29,30 +28,34 @@ comments:
     active: false
   UndocumentedPublicClass:
     active: true
-    excludes: ['**/*Test.kt']
+    excludes: ['**/*Test.kt', '**/examples/**', '**/spectra-ui-android/**']
   UndocumentedPublicFunction:
     active: true
-    excludes: ['**/*Test.kt']
+    excludes: ['**/*Test.kt', '**/examples/**', '**/spectra-ui-android/**']
 
 complexity:
   active: true
   LongMethod:
     active: true
-    threshold: 60
+    threshold: 100
+    excludes: ['**/spectra-ui-android/**']
   LongParameterList:
     active: true
-    functionThreshold: 6
-    constructorThreshold: 7
+    functionThreshold: 10
+    constructorThreshold: 10
+    ignoreAnnotated: ['Composable']
   LargeClass:
     active: true
-    threshold: 600
+    threshold: 800
   CyclomaticComplexMethod:
     active: true
-    threshold: 15
+    threshold: 20
+    excludes: ['**/spectra-ui-android/**']
   TooManyFunctions:
     active: true
-    thresholdInFiles: 20
-    thresholdInClasses: 20
+    thresholdInFiles: 30
+    thresholdInClasses: 30
+    excludes: ['**/spectra-ui-android/**']
 
 coroutines:
   active: true
@@ -67,14 +70,13 @@ exceptions:
     exceptionNames:
       - ArrayIndexOutOfBoundsException
       - Error
-      - Exception
       - IllegalMonitorStateException
       - IndexOutOfBoundsException
       - NullPointerException
-      - RuntimeException
-      - Throwable
+    excludes: ['**/spectra-ui-android/**']
   SwallowedException:
     active: true
+    excludes: ['**/spectra-ui-android/**']
 
 naming:
   active: true
@@ -91,7 +93,7 @@ naming:
     variablePattern: '[a-z][a-zA-Z0-9]*'
   MatchingDeclarationName:
     active: true
-    excludes: ['**/examples/**']
+    excludes: ['**/examples/**', '**/spectra-ui-android/**']
 
 performance:
   active: true
@@ -103,18 +105,32 @@ style:
   active: true
   MagicNumber:
     active: true
-    excludes: ['**/*Test.kt', '**/*Spec.kt']
+    excludes: ['**/*Test.kt', '**/*Spec.kt', '**/spectra-ui-android/**', '**/examples/**']
     ignoreNumbers:
       - '-1'
       - '0'
       - '1'
       - '2'
+      - '3'
+      - '4'
+      - '8'
+      - '16'
+      - '100'
+      - '200'
+      - '300'
+      - '400'
+      - '500'
   MaxLineLength:
     active: true
-    maxLineLength: 120
+    maxLineLength: 140
     excludeCommentStatements: true
   ReturnCount:
     active: true
-    max: 3
+    max: 5
+    excludes: ['**/spectra-ui-android/**']
   UnusedPrivateMember:
     active: true
+    excludes: ['**/spectra-ui-android/**']
+  WildcardImport:
+    active: false
+

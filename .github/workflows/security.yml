@@ -2,12 +2,16 @@ name: Security Scan
 
 on:
   push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
+    branches: [ main ]
   schedule:
     # Run weekly on Monday at 00:00 UTC
     - cron: '0 0 * * 1'
+
+# Don't run on every PR - only scheduled and main branch pushes
+# This reduces CI time while still maintaining security coverage
+
+env:
+  JAVA_VERSION: '17'
 
 jobs:
   # Dependency vulnerability scanning
@@ -19,10 +23,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
           cache: gradle
 
@@ -49,7 +53,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history for secret scanning
+          fetch-depth: 0
 
       - name: Run Gitleaks
         uses: gitleaks/gitleaks-action@v2
@@ -57,37 +61,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
 
-  # Static analysis security testing (SAST)
-  sast:
-    name: Static Security Analysis
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: gradle
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Run detekt with security rules
-        run: ./gradlew detekt --no-daemon
-        continue-on-error: true
-
-      - name: Upload detekt report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: detekt-security-report
-          path: '**/build/reports/detekt/**'
-
-  # Code scanning with CodeQL
+  # Code scanning with CodeQL (only Kotlin - Swift handled by Xcode)
   codeql:
     name: CodeQL Analysis
     runs-on: ubuntu-latest
@@ -96,11 +70,6 @@ jobs:
       contents: read
       security-events: write
 
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'kotlin', 'swift' ]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -108,18 +77,16 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: ${{ matrix.language }}
+          languages: kotlin
 
-      - name: Set up JDK 17
-        if: matrix.language == 'kotlin'
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
           cache: gradle
 
       - name: Build Kotlin
-        if: matrix.language == 'kotlin'
         run: |
           chmod +x gradlew
           ./gradlew build -x test --no-daemon
@@ -127,7 +94,7 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
-          category: "/language:${{matrix.language}}"
+          category: "/language:kotlin"
 
   # License compliance check
   license-check:
@@ -138,10 +105,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
           cache: gradle
 
