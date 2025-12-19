@@ -6,6 +6,8 @@ struct NetworkLogsView: View {
     @State private var viewModel = NetworkLogsViewModel()
     @State private var selectedLog: NetworkLogEntry?
     @State private var shareItems: [Any] = []
+    @State private var showFilterModal = false
+    @State private var pendingFilter = NetworkFilter()
 
     var body: some View {
         NavigationView {
@@ -15,39 +17,52 @@ struct NetworkLogsView: View {
                     .padding(.horizontal)
                     .padding(.top, 8)
 
-                // Method filters
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(viewModel.availableMethods, id: \.self) { method in
-                            FilterChip(
-                                title: method,
-                                isSelected: viewModel.selectedMethods.contains(method),
-                                color: .blue
-                            ) {
-                                viewModel.toggleMethod(method)
+                // Active filter badges row (when filters are active)
+                if viewModel.hasActiveFilters {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            // Method filters
+                            ForEach(Array(viewModel.selectedMethods), id: \.self) { method in
+                                ActiveFilterBadge(label: method) {
+                                    viewModel.selectedMethods.remove(method)
+                                }
+                            }
+                            // Status range filters
+                            ForEach(Array(viewModel.selectedStatusRanges), id: \.self) { range in
+                                ActiveFilterBadge(label: range) {
+                                    viewModel.selectedStatusRanges.remove(range)
+                                }
+                            }
+                            // Host filter
+                            if !viewModel.advancedFilter.hostPattern.isEmpty {
+                                ActiveFilterBadge(label: "Host: \(viewModel.advancedFilter.hostPattern)") {
+                                    viewModel.advancedFilter.hostPattern = ""
+                                }
+                            }
+                            // Time range filter
+                            if viewModel.advancedFilter.fromTimestamp != nil || viewModel.advancedFilter.toTimestamp != nil {
+                                ActiveFilterBadge(label: "Time Range") {
+                                    viewModel.advancedFilter.fromTimestamp = nil
+                                    viewModel.advancedFilter.toTimestamp = nil
+                                }
+                            }
+                            // Response time filter
+                            if let threshold = viewModel.advancedFilter.responseTimeThreshold {
+                                ActiveFilterBadge(label: threshold.rawValue) {
+                                    viewModel.advancedFilter.responseTimeThreshold = nil
+                                }
+                            }
+                            // Failed only filter
+                            if viewModel.advancedFilter.showOnlyFailed {
+                                ActiveFilterBadge(label: "Errors Only") {
+                                    viewModel.advancedFilter.showOnlyFailed = false
+                                }
                             }
                         }
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
+                    .frame(height: 40)
                 }
-                .frame(height: 44)
-
-                // Status range filters
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(viewModel.availableStatusRanges, id: \.self) { range in
-                            FilterChip(
-                                title: range,
-                                isSelected: viewModel.selectedStatusRanges.contains(range),
-                                color: ColorUtilities.colorForStatusRange(range)
-                            ) {
-                                viewModel.toggleStatusRange(range)
-                            }
-                        }
-                    }
-                    .padding(.horizontal)
-                }
-                .frame(height: 44)
 
                 Divider()
 
@@ -83,6 +98,27 @@ struct NetworkLogsView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
+                    // Filter button with badge
+                    Button(action: {
+                        pendingFilter = viewModel.advancedFilter
+                        showFilterModal = true
+                    }) {
+                        ZStack(alignment: .topTrailing) {
+                            Image(systemName: "line.3.horizontal.decrease.circle")
+                            if viewModel.totalActiveFilterCount > 0 {
+                                Text("\(viewModel.totalActiveFilterCount)")
+                                    .font(.caption2)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.white)
+                                    .padding(4)
+                                    .background(Color.red)
+                                    .clipShape(Circle())
+                                    .offset(x: 8, y: -8)
+                            }
+                        }
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: shareAllLogs) {
                         Image(systemName: "square.and.arrow.up")
                     }
@@ -103,6 +139,14 @@ struct NetworkLogsView: View {
             .shareSheet(items: $shareItems)
             .sheet(item: $selectedLog) { log in
                 NetworkLogDetailView(log: log)
+            }
+            .sheet(isPresented: $showFilterModal) {
+                NetworkFilterView(
+                    filter: $pendingFilter,
+                    onApply: {
+                        viewModel.applyAdvancedFilter(pendingFilter)
+                    }
+                )
             }
         }
     }
