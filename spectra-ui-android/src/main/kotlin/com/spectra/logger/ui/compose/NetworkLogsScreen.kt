@@ -36,6 +36,7 @@ fun NetworkLogsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var selectedLog by remember { mutableStateOf<NetworkLogEntry?>(null) }
+    var showFilterSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
@@ -43,6 +44,19 @@ fun NetworkLogsScreen(
             TopAppBar(
                 title = { Text("Network") },
                 actions = {
+                    // Filter button with badge
+                    BadgedBox(
+                        badge = {
+                            if (uiState.totalActiveFilterCount > 0) {
+                                Badge { Text("${uiState.totalActiveFilterCount}") }
+                            }
+                        },
+                    ) {
+                        IconButton(onClick = { showFilterSheet = true }) {
+                            Icon(Icons.Default.FilterList, contentDescription = "Filter")
+                        }
+                    }
+
                     IconButton(onClick = { /* Share */ }) {
                         Icon(Icons.Default.Share, contentDescription = "Share")
                     }
@@ -93,47 +107,59 @@ fun NetworkLogsScreen(
                         .padding(horizontal = 16.dp, vertical = 8.dp),
             )
 
-            // Method filter chips
-            Row(
-                modifier =
-                    Modifier
-                        .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                uiState.availableMethods.forEach { method ->
-                    FilterChip(
-                        selected = uiState.selectedMethods.contains(method),
-                        onClick = { viewModel.toggleMethod(method) },
-                        label = { Text(method) },
-                        colors =
-                            FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = Color(0xFF2196F3).copy(alpha = 0.2f),
-                                selectedLabelColor = Color(0xFF2196F3),
-                            ),
-                    )
-                }
-            }
-
-            // Status code filter chips
-            Row(
-                modifier =
-                    Modifier
-                        .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                listOf("2xx", "3xx", "4xx", "5xx").forEach { range ->
-                    FilterChip(
-                        selected = uiState.selectedStatusRanges.contains(range),
-                        onClick = { viewModel.toggleStatusRange(range) },
-                        label = { Text(range) },
-                        colors =
-                            FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = colorForStatusRange(range).copy(alpha = 0.2f),
-                                selectedLabelColor = colorForStatusRange(range),
-                            ),
-                    )
+            // Active filter badges (when filters are active)
+            if (uiState.hasActiveFilters) {
+                Row(
+                    modifier =
+                        Modifier
+                            .horizontalScroll(rememberScrollState())
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    // Method filters
+                    uiState.selectedMethods.forEach { method ->
+                        ActiveFilterBadge(
+                            label = method,
+                            onRemove = { viewModel.removeMethodFilter(method) },
+                        )
+                    }
+                    // Status range filters
+                    uiState.selectedStatusRanges.forEach { range ->
+                        ActiveFilterBadge(
+                            label = range,
+                            onRemove = { viewModel.removeStatusRangeFilter(range) },
+                        )
+                    }
+                    // Host filter
+                    if (uiState.advancedFilter.hostPattern.isNotEmpty()) {
+                        ActiveFilterBadge(
+                            label = "Host: ${uiState.advancedFilter.hostPattern}",
+                            onRemove = { viewModel.clearHostFilter() },
+                        )
+                    }
+                    // Time range filter
+                    if (uiState.advancedFilter.fromTimestamp != null ||
+                        uiState.advancedFilter.toTimestamp != null
+                    ) {
+                        ActiveFilterBadge(
+                            label = "Time Range",
+                            onRemove = { viewModel.clearTimeRangeFilter() },
+                        )
+                    }
+                    // Response time filter
+                    uiState.advancedFilter.responseTimeThreshold?.let { threshold ->
+                        ActiveFilterBadge(
+                            label = threshold.label,
+                            onRemove = { viewModel.clearResponseTimeFilter() },
+                        )
+                    }
+                    // Failed only filter
+                    if (uiState.advancedFilter.showOnlyFailed) {
+                        ActiveFilterBadge(
+                            label = "Errors Only",
+                            onRemove = { viewModel.clearFailedOnlyFilter() },
+                        )
+                    }
                 }
             }
 
@@ -177,6 +203,15 @@ fun NetworkLogsScreen(
         NetworkDetailSheet(
             log = log,
             onDismiss = { selectedLog = null },
+        )
+    }
+
+    // Network filter sheet
+    if (showFilterSheet) {
+        NetworkFilterSheet(
+            filter = uiState.advancedFilter,
+            onFilterChange = { viewModel.updateAdvancedFilter(it) },
+            onDismiss = { showFilterSheet = false },
         )
     }
 }
