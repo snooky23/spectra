@@ -1,7 +1,11 @@
 # Spectra Logger
 
-[![Build](https://github.com/snooky23/spectra/actions/workflows/build.yml/badge.svg)](https://github.com/snooky23/spectra/actions/workflows/build.yml)
+[![CI](https://github.com/snooky23/spectra/actions/workflows/ci.yml/badge.svg)](https://github.com/snooky23/spectra/actions/workflows/ci.yml)
+[![Security](https://github.com/snooky23/spectra/actions/workflows/security.yml/badge.svg)](https://github.com/snooky23/spectra/actions/workflows/security.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-iOS%20%7C%20Android-lightgrey.svg)]()
+[![Swift](https://img.shields.io/badge/Swift-5.9+-orange.svg)](https://swift.org)
+[![Kotlin](https://img.shields.io/badge/Kotlin-1.9+-purple.svg)](https://kotlinlang.org)
 
 A lightweight, on-device logging framework for iOS and Android with a built-in viewer UI.
 
