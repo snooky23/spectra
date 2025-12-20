@@ -156,6 +156,11 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
@@ -165,7 +170,7 @@ jobs:
         run: chmod +x gradlew scripts/**/*.sh
 
       - name: Build iOS XCFramework
-        run: ./gradlew :spectra-core:assembleXCFramework
+        run: ./gradlew :spectra-core:createXCFramework
 
       - name: Build iOS UI Package
         run: |
