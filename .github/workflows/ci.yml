@@ -172,10 +172,15 @@ jobs:
       - name: Build iOS XCFramework
         run: ./gradlew :spectra-core:createXCFramework
 
+      - name: Copy XCFramework to expected location
+        run: |
+          mkdir -p build/xcframework
+          cp -R spectra-core/build/XCFrameworks/release/SpectraLogger.xcframework build/xcframework/
+
       - name: Build iOS UI Package
         run: |
           cd spectra-ui-ios
-          swift build
+          SPECTRA_LOCAL_DEV=1 swift build
 
       - name: Build iOS Example
         run: |
@@ -185,7 +190,7 @@ jobs:
       - name: Run iOS Tests
         run: |
           cd spectra-ui-ios
-          swift test
+          SPECTRA_LOCAL_DEV=1 swift test
 
       - name: Upload XCFramework
         uses: actions/upload-artifact@v4
