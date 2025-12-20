@@ -212,8 +212,7 @@ object SpectraLogger {
     /**
      * Observe network logs as a flow.
      */
-    fun observeNetwork(filter: NetworkLogFilter = NetworkLogFilter.NONE): Flow<NetworkLogEntry> =
-        networkStorage.observe(filter)
+    fun observeNetwork(filter: NetworkLogFilter = NetworkLogFilter.NONE): Flow<NetworkLogEntry> = networkStorage.observe(filter)
 
     /**
      * Get total network log count.

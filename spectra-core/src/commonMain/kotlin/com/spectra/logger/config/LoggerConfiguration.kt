@@ -195,5 +195,4 @@ class FeatureFlagsBuilder(
  * }
  * ```
  */
-fun configure(block: LoggerConfigurationBuilder.() -> Unit): LoggerConfiguration =
-    LoggerConfigurationBuilder().apply(block).build()
+fun configure(block: LoggerConfigurationBuilder.() -> Unit): LoggerConfiguration = LoggerConfigurationBuilder().apply(block).build()

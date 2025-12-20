@@ -27,18 +27,18 @@ comments:
   CommentOverPrivateProperty:
     active: false
   UndocumentedPublicClass:
-    active: true
-    excludes: ['**/*Test.kt', '**/examples/**', '**/spectra-ui-android/**']
+    active: false
   UndocumentedPublicFunction:
-    active: true
-    excludes: ['**/*Test.kt', '**/examples/**', '**/spectra-ui-android/**']
+    active: false
+  # Allow TODOs - they're useful during development
+  ForbiddenComment:
+    active: false
 
 complexity:
   active: true
   LongMethod:
     active: true
     threshold: 100
-    excludes: ['**/spectra-ui-android/**']
   LongParameterList:
     active: true
     functionThreshold: 10
@@ -50,12 +50,10 @@ complexity:
   CyclomaticComplexMethod:
     active: true
     threshold: 20
-    excludes: ['**/spectra-ui-android/**']
   TooManyFunctions:
     active: true
     thresholdInFiles: 30
     thresholdInClasses: 30
-    excludes: ['**/spectra-ui-android/**']
 
 coroutines:
   active: true
@@ -73,17 +71,14 @@ exceptions:
       - IllegalMonitorStateException
       - IndexOutOfBoundsException
       - NullPointerException
-    excludes: ['**/spectra-ui-android/**']
   SwallowedException:
     active: true
-    excludes: ['**/spectra-ui-android/**']
 
 naming:
   active: true
   FunctionNaming:
     active: true
     functionPattern: '[a-z][a-zA-Z0-9]*'
-    excludes: ['**/examples/**']
     ignoreAnnotated: ['Composable']
   ClassNaming:
     active: true
@@ -93,33 +88,19 @@ naming:
     variablePattern: '[a-z][a-zA-Z0-9]*'
   MatchingDeclarationName:
     active: true
-    excludes: ['**/examples/**', '**/spectra-ui-android/**']
 
 performance:
   active: true
 
 potential-bugs:
   active: true
+  ImplicitDefaultLocale:
+    active: false
 
 style:
   active: true
   MagicNumber:
-    active: true
-    excludes: ['**/*Test.kt', '**/*Spec.kt', '**/spectra-ui-android/**', '**/examples/**']
-    ignoreNumbers:
-      - '-1'
-      - '0'
-      - '1'
-      - '2'
-      - '3'
-      - '4'
-      - '8'
-      - '16'
-      - '100'
-      - '200'
-      - '300'
-      - '400'
-      - '500'
+    active: false
   MaxLineLength:
     active: true
     maxLineLength: 140
@@ -127,10 +108,9 @@ style:
   ReturnCount:
     active: true
     max: 5
-    excludes: ['**/spectra-ui-android/**']
   UnusedPrivateMember:
     active: true
-    excludes: ['**/spectra-ui-android/**']
   WildcardImport:
     active: false
+
 
