@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.serialization)
     id("maven-publish")
+    id("signing")
     id("jacoco")
 }
 
@@ -179,7 +180,7 @@ publishing {
     publications {
         create<MavenPublication>("release") {
             groupId = project.findProperty("GROUP") as String
-            artifactId = "logger"
+            artifactId = "spectra-core"
             version = project.findProperty("VERSION_NAME") as String
 
             pom {
@@ -215,6 +216,26 @@ publishing {
             name = "local"
             url = uri(layout.buildDirectory.dir("repo"))
         }
+        maven {
+            name = "MavenCentral"
+            url = uri("https://central.sonatype.com/api/v1/publisher/upload")
+            credentials {
+                username = project.findProperty("mavenCentralUsername") as? String ?: ""
+                password = project.findProperty("mavenCentralPassword") as? String ?: ""
+            }
+        }
+    }
+}
+
+// Signing configuration for Maven Central
+signing {
+    val signingKeyId = project.findProperty("signingKeyId") as? String
+    val signingKey = project.findProperty("signingKey") as? String
+    val signingPassword = project.findProperty("signingPassword") as? String
+    
+    if (signingKey != null && signingPassword != null) {
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        sign(publishing.publications["release"])
     }
 }
 
