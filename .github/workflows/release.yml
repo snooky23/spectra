@@ -273,9 +273,9 @@ jobs:
       #   run: |
       #     echo "CocoaPods publishing disabled - podspec files not configured"
 
-      # Publish to Maven Central
+      # Publish to Maven Central (Android only - iOS uses XCFramework via SPM)
       - name: Publish to Maven Central
-        run: ./gradlew :spectra-core:publishAllPublicationsToMavenCentralRepository
+        run: ./gradlew :spectra-core:publishReleasePublicationToMavenCentralRepository
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OSSRH_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.OSSRH_PASSWORD }}
