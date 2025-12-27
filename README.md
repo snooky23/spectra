@@ -47,7 +47,7 @@ dependencies {
 Or in `Package.swift`:
 ```swift
 dependencies: [
-    .package(url: "https://github.com/snooky23/spectra", from: "0.0.1")
+    .package(url: "https://github.com/snooky23/spectra", from: "1.0.1")
 ]
 ```
 
