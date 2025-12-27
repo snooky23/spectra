@@ -183,7 +183,7 @@ jobs:
       - name: Build iOS Example App
         run: |
           cd examples/ios-native
-          xcodebuild -scheme "Spectra iOS Example" \
+          xcodebuild -scheme "SpectraExample" \
             -destination 'platform=iOS Simulator,name=iPhone 16' \
             build CODE_SIGNING_ALLOWED=NO
 
