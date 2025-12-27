@@ -12,6 +12,7 @@ jobs:
   release:
     name: Create Release
     runs-on: macos-15  # Use macOS 15 (Sequoia) for best Apple Silicon support
+    environment: Sonatype  # Access secrets from Sonatype environment
 
     steps:
       - name: Checkout code
