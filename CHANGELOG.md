@@ -50,13 +50,13 @@ First public release of Spectra Logger - a lightweight, on-device logging framew
 #### iOS (Swift Package Manager)
 ```swift
 dependencies: [
-    .package(url: "https://github.com/snooky23/spectra", from: "0.1.0")
+    .package(url: "https://github.com/snooky23/spectra", from: "1.0.1")
 ]
 ```
 
 #### Android (Gradle)
 ```kotlin
-implementation("io.github.snooky23:spectra-core:0.1.0")
+implementation("io.github.snooky23:spectra-core:1.0.1")
 ```
 
 ### 🔧 Requirements

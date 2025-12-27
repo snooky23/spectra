@@ -10,7 +10,7 @@
 - On-device UI for viewing/filtering logs
 - Export functionality
 
-**Current Status**: v0.0.1-SNAPSHOT (under active development)
+**Current Status**: v1.0.1
 
 ---
 
