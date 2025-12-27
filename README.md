@@ -1,5 +1,6 @@
 # Spectra Logger
 
+[![Version](https://img.shields.io/github/v/release/snooky23/spectra?label=Version&color=brightgreen)](https://github.com/snooky23/spectra/releases)
 [![CI](https://github.com/snooky23/spectra/actions/workflows/ci.yml/badge.svg)](https://github.com/snooky23/spectra/actions/workflows/ci.yml)
 [![Security](https://github.com/snooky23/spectra/actions/workflows/security.yml/badge.svg)](https://github.com/snooky23/spectra/actions/workflows/security.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
