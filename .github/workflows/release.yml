@@ -264,45 +264,14 @@ jobs:
           echo "2. Commit and push the Package.swift changes"
           echo "3. Announce the release!"
 
-      # Publish to CocoaPods
-      - name: Publish to CocoaPods Trunk
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-        env:
-          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
-        run: |
-          VERSION="${{ steps.get_version.outputs.VERSION }}"
-
-          # Update podspec versions (replace placeholder)
-          sed -i '' "s/YOUR_USERNAME/${{ github.repository_owner }}/g" spectra-core/SpectraLogger.podspec
-          sed -i '' "s/YOUR_USERNAME/${{ github.repository_owner }}/g" spectra-ui-ios/SpectraLoggerUI.podspec
-
-          echo "📦 Publishing to CocoaPods..."
-
-          # Validate podspecs
-          echo "✅ Validating SpectraLogger.podspec..."
-          pod spec lint spectra-core/SpectraLogger.podspec --allow-warnings
-
-          echo "✅ Validating SpectraLoggerUI.podspec..."
-          pod spec lint spectra-ui-ios/SpectraLoggerUI.podspec --allow-warnings
-
-          # Publish to CocoaPods Trunk (if token is available)
-          if [ -n "$COCOAPODS_TRUNK_TOKEN" ]; then
-            echo "🚀 Publishing SpectraLogger to CocoaPods..."
-            pod trunk push spectra-core/SpectraLogger.podspec --allow-warnings
-
-            echo "🚀 Publishing SpectraLoggerUI to CocoaPods..."
-            pod trunk push spectra-ui-ios/SpectraLoggerUI.podspec --allow-warnings
-
-            echo "✅ Published to CocoaPods!"
-          else
-            echo "⚠️  COCOAPODS_TRUNK_TOKEN not set. Skipping CocoaPods publish."
-            echo "To publish to CocoaPods:"
-            echo "1. Run: pod trunk register your@email.com 'Your Name'"
-            echo "2. Get token: pod trunk me"
-            echo "3. Add COCOAPODS_TRUNK_TOKEN secret to GitHub"
-            echo "4. Then run: pod trunk push spectra-core/SpectraLogger.podspec --allow-warnings"
-            echo "5. Then run: pod trunk push spectra-ui-ios/SpectraLoggerUI.podspec --allow-warnings"
-          fi
+      # Publish to CocoaPods (skipped - podspec files not set up yet)
+      # To enable: create spectra-core/SpectraLogger.podspec and spectra-ui-ios/SpectraLoggerUI.podspec
+      # - name: Publish to CocoaPods Trunk
+      #   if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+      #   env:
+      #     COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+      #   run: |
+      #     echo "CocoaPods publishing disabled - podspec files not configured"
 
       # Publish to Maven Central
       - name: Publish to Maven Central
