@@ -17,6 +17,7 @@ struct SpectraExampleApp: App {
         WindowGroup {
             MainAppView()
                 .statusBar(hidden: true)
+                .onShakeToRevealSpectraLogger()
                 .onOpenURL { url in
                     handleURL(url)
                 }
