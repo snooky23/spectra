@@ -33,6 +33,19 @@ class SpectraNetworkInterceptor(
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
+        val url = request.url
+
+        val config = com.spectra.logger.SpectraLogger.configuration.enabledFeatures
+        val isIgnoredDomain = config.networkIgnoredDomains.any { url.host.contains(it, ignoreCase = true) }
+        val isIgnoredExtension = config.networkIgnoredExtensions.any {
+            val extension = url.pathSegments.lastOrNull()?.substringAfterLast('.', "") ?: ""
+            extension.equals(it, ignoreCase = true)
+        }
+        
+        if (isIgnoredDomain || isIgnoredExtension) {
+            return chain.proceed(request)
+        }
+
         val startTime = System.currentTimeMillis()
 
         // Capture request details
