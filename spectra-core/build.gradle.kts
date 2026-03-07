@@ -10,8 +10,7 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.serialization)
-    id("maven-publish")
-    id("signing")
+    alias(libs.plugins.vanniktech.publish)
     id("jacoco")
 }
 
@@ -175,69 +174,43 @@ android {
     }
 }
 
-// Publishing configuration
-publishing {
-    publications {
-        create<MavenPublication>("release") {
-            groupId = project.findProperty("GROUP") as String
-            artifactId = "spectra-core"
-            version = project.findProperty("VERSION_NAME") as String
+// Publishing configuration via Vanniktech Maven Publish Plugin
+// Reads metadata from gradle.properties (GROUP, VERSION_NAME, POM_* keys)
+// Signs with in-memory PGP keys when signingKey env var is set (CI)
+mavenPublishing {
+    publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
 
-            pom {
-                name.set("Spectra Logger")
-                description.set(project.findProperty("POM_DESCRIPTION") as String)
-                url.set(project.findProperty("POM_URL") as String)
+    coordinates(
+        groupId = project.findProperty("GROUP") as String,
+        artifactId = "spectra-core",
+        version = project.findProperty("VERSION_NAME") as String,
+    )
 
-                licenses {
-                    license {
-                        name.set(project.findProperty("POM_LICENCE_NAME") as String)
-                        url.set(project.findProperty("POM_LICENCE_URL") as String)
-                    }
-                }
+    pom {
+        name.set("Spectra Logger")
+        description.set(project.findProperty("POM_DESCRIPTION") as String)
+        url.set(project.findProperty("POM_URL") as String)
 
-                developers {
-                    developer {
-                        id.set(project.findProperty("POM_DEVELOPER_ID") as String)
-                        name.set(project.findProperty("POM_DEVELOPER_NAME") as String)
-                    }
-                }
-
-                scm {
-                    connection.set(project.findProperty("POM_SCM_CONNECTION") as String)
-                    developerConnection.set(project.findProperty("POM_SCM_DEV_CONNECTION") as String)
-                    url.set(project.findProperty("POM_SCM_URL") as String)
-                }
+        licenses {
+            license {
+                name.set(project.findProperty("POM_LICENCE_NAME") as String)
+                url.set(project.findProperty("POM_LICENCE_URL") as String)
             }
         }
-    }
 
-    repositories {
-        maven {
-            name = "local"
-            url = uri(layout.buildDirectory.dir("repo"))
-        }
-        maven {
-            name = "MavenCentral"
-            val releasesUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            val snapshotsUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-            url = if ((version as String).endsWith("SNAPSHOT")) snapshotsUrl else releasesUrl
-            credentials {
-                username = project.findProperty("mavenCentralUsername") as? String ?: ""
-                password = project.findProperty("mavenCentralPassword") as? String ?: ""
+        developers {
+            developer {
+                id.set(project.findProperty("POM_DEVELOPER_ID") as String)
+                name.set(project.findProperty("POM_DEVELOPER_NAME") as String)
             }
         }
-    }
-}
 
-// Signing configuration for Maven Central
-signing {
-    val signingKeyId = project.findProperty("signingKeyId") as? String
-    val signingKey = project.findProperty("signingKey") as? String
-    val signingPassword = project.findProperty("signingPassword") as? String
-
-    if (signingKey != null && signingPassword != null) {
-        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-        sign(publishing.publications["release"])
+        scm {
+            connection.set(project.findProperty("POM_SCM_CONNECTION") as String)
+            developerConnection.set(project.findProperty("POM_SCM_DEV_CONNECTION") as String)
+            url.set(project.findProperty("POM_SCM_URL") as String)
+        }
     }
 }
 
