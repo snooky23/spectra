@@ -40,7 +40,7 @@ let package = Package(
             : .binaryTarget(
                 name: "SpectraLogger",
                 url: "https://github.com/snooky23/spectra/releases/download/v1.0.1/SpectraLogger.xcframework.zip",
-                checksum: "PLACEHOLDER_CHECKSUM"
+                checksum: "625e779de233b3fe204fed14e8c75d6cca06beb31917aaa0820143dade1c07f5"
             )
     ]
 )
