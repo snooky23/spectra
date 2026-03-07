@@ -130,6 +130,25 @@ Spectra/  (Monorepo)
 - **Minimum SDK**: 24 (Android 7.0)
 - **Distribution**: Maven Central / JitPack
 
+## Clean Architecture Principles
+
+Spectra Logger follows **Clean Architecture** principles to separate concerns, ensure testing flexibility, and allow platform-specific UI bindings while maintaining a single shared business logic core.
+
+### 1. Presentation Layer (`spectra-ui-android`, `spectra-ui-ios`)
+- **Responsibility**: Rendering states, observing data flows, and routing user interactions.
+- **Implementation**: Utilizes declarative native frameworks (Jetpack Compose and SwiftUI) for the best possible user experience. ViewModels and StateHolders coordinate between the UI components and the core framework. This layer also provides developer access mechanisms (e.g., `SpectraLoggerFabOverlay` for Android, `.onShakeToRevealSpectraLogger()` for iOS) and the `SettingsScreen` to configure the SDK at runtime.
+- **Dependency**: Depends on the Domain Layer. It knows nothing about how data is stored or intercepted.
+
+### 2. Domain Layer (`spectra-core/src/commonMain/kotlin/com/spectra/logger/domain`)
+- **Responsibility**: Encapsulating the pure business rules and core entities of the logger (e.g., `LogEntry`, `NetworkLogEntry`).
+- **Implementation**: Written in pure Kotlin Multiplatform (KMP), agnostic to Android or iOS specific APIs. Exposes core interfaces (e.g., `LogStorage`) that define the contract for manipulating logs.
+- **Dependency**: The core, innermost layer. It has no dependencies on the Data or Presentation layers.
+
+### 3. Data / Storage Layer (`spectra-core/src/commonMain/kotlin/com/spectra/logger/domain/storage`)
+- **Responsibility**: Implementing the interfaces defined in the Domain layer to actually store, retrieve, and filter data (e.g., `InMemoryBuffer`).
+- **Implementation**: Concrete implementations of Data layer abstractions. It manages circular buffers, file system IO (`FileLogStorage`), and thread-safe data access mechanics. File persistence is managed concurrently and buffered lazily to avoid locking the UI thread.
+- **Dependency**: Depends on the Domain layer interfaces it implements.
+
 ## Key Design Decisions
 
 ### 1. Two-Layer SDK Architecture

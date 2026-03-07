@@ -154,6 +154,7 @@ SpectraLogger.configure {
     logStorage {
         maxCapacity = 20_000
         enablePersistence = true
+        fileLogLevel = LogLevel.INFO
     }
 
     networkStorage {
@@ -170,6 +171,8 @@ SpectraLogger.configure {
         enableNetworkLogging = true
         enableCrashReporting = false
         enablePerformanceMetrics = false
+        networkIgnoredDomains = listOf("analytics.google.com")
+        networkIgnoredExtensions = listOf("png", "jpg")
     }
 }
 ```
@@ -229,6 +232,7 @@ SpectraLogger.i("App", "User performed action")
 #### Storage Configuration
 - `maxCapacity: Int` - Maximum number of logs to store (default: 10,000)
 - `enablePersistence: Boolean` - Enable file-based persistence (default: false)
+- `fileLogLevel: LogLevel` - Minimum severity required to commit a log to disk (default: INFO)
 
 #### Performance Configuration
 - `flowBufferCapacity: Int` - Flow buffer size (default: 64)
@@ -239,6 +243,8 @@ SpectraLogger.i("App", "User performed action")
 - `enableNetworkLogging: Boolean` - Enable network interception (default: true)
 - `enableCrashReporting: Boolean` - Enable crash reporting (default: false)
 - `enablePerformanceMetrics: Boolean` - Enable perf metrics (default: false)
+- `networkIgnoredDomains: List<String>` - Request domains to skip (default: empty)
+- `networkIgnoredExtensions: List<String>` - File extensions to skip (default: ["png", "jpg", "jpeg", "gif", "svg", "ico"])
 
 ---
 
@@ -482,20 +488,15 @@ struct MyApp: App {
 ```kotlin
 @Composable
 fun App() {
-    MaterialTheme {
-        var selectedScreen by remember { mutableStateOf("logs") }
+    SpectraLoggerFabOverlay(enabled = BuildConfig.DEBUG) {
+        MaterialTheme {
+            var selectedScreen by remember { mutableStateOf("logs") }
 
-        when (selectedScreen) {
-            "logs" -> LogListScreen(storage = SpectraLogger.logStorage)
-            "network" -> NetworkLogScreen(storage = SpectraLogger.networkStorage)
-            "settings" -> SettingsScreen(
-                logStorage = SpectraLogger.logStorage,
-                networkLogStorage = SpectraLogger.networkStorage,
-                currentMinLevel = SpectraLogger.configuration.minLogLevel,
-                onMinLevelChange = { level ->
-                    SpectraLogger.configure { minLogLevel = level }
-                }
-            )
+            when (selectedScreen) {
+                "logs" -> LogListScreen(storage = SpectraLogger.logStorage)
+                "network" -> NetworkLogScreen(storage = SpectraLogger.networkStorage)
+                "settings" -> SettingsScreen() // Note: No longer needs dependencies passed manually
+            }
         }
     }
 }
