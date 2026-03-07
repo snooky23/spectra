@@ -29,6 +29,7 @@ data class LoggerConfiguration(
 data class StorageConfiguration(
     val maxCapacity: Int = 10_000,
     val enablePersistence: Boolean = false,
+    val fileLogLevel: LogLevel = LogLevel.DEBUG,
 )
 
 /**
@@ -49,6 +50,8 @@ data class FeatureFlags(
     val enableNetworkLogging: Boolean = true,
     val enableCrashReporting: Boolean = false,
     val enablePerformanceMetrics: Boolean = false,
+    val networkIgnoredDomains: List<String> = emptyList(),
+    val networkIgnoredExtensions: List<String> = listOf("png", "jpg", "jpeg", "gif", "svg", "ico"),
 )
 
 /**
@@ -117,11 +120,13 @@ class LoggerConfigurationBuilder {
 class StorageConfigurationBuilder(
     var maxCapacity: Int = 10_000,
     var enablePersistence: Boolean = false,
+    var fileLogLevel: LogLevel = LogLevel.DEBUG,
 ) {
     internal fun build(): StorageConfiguration =
         StorageConfiguration(
             maxCapacity = maxCapacity,
             enablePersistence = enablePersistence,
+            fileLogLevel = fileLogLevel,
         )
 }
 
@@ -150,12 +155,16 @@ class FeatureFlagsBuilder(
     var enableNetworkLogging: Boolean = true,
     var enableCrashReporting: Boolean = false,
     var enablePerformanceMetrics: Boolean = false,
+    var networkIgnoredDomains: List<String> = emptyList(),
+    var networkIgnoredExtensions: List<String> = listOf("png", "jpg", "jpeg", "gif", "svg", "ico"),
 ) {
     internal fun build(): FeatureFlags =
         FeatureFlags(
             enableNetworkLogging = enableNetworkLogging,
             enableCrashReporting = enableCrashReporting,
             enablePerformanceMetrics = enablePerformanceMetrics,
+            networkIgnoredDomains = networkIgnoredDomains,
+            networkIgnoredExtensions = networkIgnoredExtensions,
         )
 }
 

@@ -74,6 +74,17 @@ object SpectraURLSessionLogger {
         duration: Long,
         storage: NetworkLogStorage,
     ) {
+        val config = com.spectra.logger.SpectraLogger.configuration.enabledFeatures
+        val isIgnoredDomain = config.networkIgnoredDomains.any { url.contains(it, ignoreCase = true) }
+        val isIgnoredExtension = config.networkIgnoredExtensions.any {
+            val extension = url.substringAfterLast('/', "").substringAfterLast('.', "")
+            extension.equals(it, ignoreCase = true)
+        }
+        
+        if (isIgnoredDomain || isIgnoredExtension) {
+            return
+        }
+
         // Extract response details
         val httpResponse = response as? NSHTTPURLResponse
         val responseCode = httpResponse?.statusCode?.toInt()

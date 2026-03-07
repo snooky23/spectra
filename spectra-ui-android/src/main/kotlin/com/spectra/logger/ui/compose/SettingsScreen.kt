@@ -74,6 +74,92 @@ fun SettingsScreen(
                 }
             }
 
+            // Configuration Section
+            SettingsSection(title = "CONFIGURATION") {
+                Text(
+                    text = "Core features and overrides",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                )
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        // File Persistence
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f).padding(end = 16.dp)) {
+                                Text(
+                                    text = "Enable File Persistence",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                )
+                                Text(
+                                    text = "Write application logs to file storage",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                            Switch(
+                                checked = uiState.isFilePersistenceEnabled,
+                                onCheckedChange = { viewModel.toggleFilePersistence(it) }
+                            )
+                        }
+
+                        Divider(color = MaterialTheme.colorScheme.surfaceVariant)
+
+                        // Network Logging
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f).padding(end = 16.dp)) {
+                                Text(
+                                    text = "Enable Network Logging",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                )
+                                Text(
+                                    text = "Automatically track HTTP requests (requires restart)",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                            Switch(
+                                checked = uiState.isNetworkLoggingEnabled,
+                                onCheckedChange = { viewModel.toggleNetworkLogging(it) }
+                            )
+                        }
+
+                        Divider(color = MaterialTheme.colorScheme.surfaceVariant)
+
+                        // Ignored Domains
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = "Ignored Domains (Comma separated)",
+                                style = MaterialTheme.typography.bodyLarge,
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedTextField(
+                                value = uiState.ignoredDomainsText,
+                                onValueChange = { viewModel.updateIgnoredDomains(it) },
+                                modifier = Modifier.fillMaxWidth(),
+                                placeholder = { Text("e.g. google.com, api.example.com") },
+                                singleLine = true
+                            )
+                        }
+                    }
+                }
+            }
+
             // Storage Section
             SettingsSection(title = "STORAGE") {
                 Text(

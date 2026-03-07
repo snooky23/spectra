@@ -23,6 +23,7 @@ class SettingsViewModel : ViewModel() {
 
     init {
         refresh()
+        refreshConfigState()
     }
 
     fun refresh() {
@@ -69,6 +70,60 @@ class SettingsViewModel : ViewModel() {
             _uiState.update { it.copy(networkLogCount = 0) }
         }
     }
+
+    // --- Configuration Mutators --- //
+
+    fun toggleNetworkLogging(enabled: Boolean) {
+        val currentFeatures = SpectraLogger.configuration.enabledFeatures
+        SpectraLogger.configure {
+            features {
+                enableNetworkLogging = enabled
+                enableCrashReporting = currentFeatures.enableCrashReporting
+                enablePerformanceMetrics = currentFeatures.enablePerformanceMetrics
+                networkIgnoredDomains = currentFeatures.networkIgnoredDomains
+                networkIgnoredExtensions = currentFeatures.networkIgnoredExtensions
+            }
+        }
+        refreshConfigState()
+    }
+
+    fun toggleFilePersistence(enabled: Boolean) {
+        val currentStorage = SpectraLogger.configuration.logStorageConfig
+        SpectraLogger.configure {
+            logStorage {
+                maxCapacity = currentStorage.maxCapacity
+                enablePersistence = enabled
+                fileLogLevel = currentStorage.fileLogLevel
+            }
+        }
+        refreshConfigState()
+    }
+
+    fun updateIgnoredDomains(domains: String) {
+        val list = domains.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+        val currentFeatures = SpectraLogger.configuration.enabledFeatures
+        SpectraLogger.configure {
+            features {
+                enableNetworkLogging = currentFeatures.enableNetworkLogging
+                enableCrashReporting = currentFeatures.enableCrashReporting
+                enablePerformanceMetrics = currentFeatures.enablePerformanceMetrics
+                networkIgnoredDomains = list
+                networkIgnoredExtensions = currentFeatures.networkIgnoredExtensions
+            }
+        }
+        refreshConfigState()
+    }
+
+    private fun refreshConfigState() {
+        val config = SpectraLogger.configuration
+        _uiState.update {
+            it.copy(
+                isNetworkLoggingEnabled = config.enabledFeatures.enableNetworkLogging,
+                isFilePersistenceEnabled = config.logStorageConfig.enablePersistence,
+                ignoredDomainsText = config.enabledFeatures.networkIgnoredDomains.joinToString(", ")
+            )
+        }
+    }
 }
 
 /**
@@ -79,4 +134,7 @@ data class SettingsUiState(
     val applicationLogCount: Int = 0,
     val networkLogCount: Int = 0,
     val version: String = Version.LIBRARY_VERSION,
+    val isNetworkLoggingEnabled: Boolean = true,
+    val isFilePersistenceEnabled: Boolean = false,
+    val ignoredDomainsText: String = "",
 )
