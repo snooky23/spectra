@@ -27,10 +27,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
-                if (showSpectraLogger.value) {
-                    SpectraLoggerScreen(onClose = { showSpectraLogger.value = false })
-                } else {
-                    MainAppScreen(onOpenSpectra = { showSpectraLogger.value = true })
+                com.spectra.logger.ui.compose.SpectraLoggerFabOverlay {
+                    MainAppScreen(onOpenSpectra = { com.spectra.logger.ui.SpectraUIManager.showScreen() })
                 }
             }
         }
