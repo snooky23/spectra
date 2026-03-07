@@ -181,12 +181,6 @@ mavenPublishing {
     publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
 
-    coordinates(
-        groupId = project.findProperty("GROUP") as String,
-        artifactId = "spectra-core",
-        version = project.findProperty("VERSION_NAME") as String,
-    )
-
     pom {
         name.set("Spectra Logger")
         description.set(project.findProperty("POM_DESCRIPTION") as String)
