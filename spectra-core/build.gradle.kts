@@ -218,7 +218,9 @@ publishing {
         }
         maven {
             name = "MavenCentral"
-            url = uri("https://central.sonatype.com/api/v1/publisher/upload")
+            val releasesUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            val snapshotsUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            url = if ((version as String).endsWith("SNAPSHOT")) snapshotsUrl else releasesUrl
             credentials {
                 username = project.findProperty("mavenCentralUsername") as? String ?: ""
                 password = project.findProperty("mavenCentralPassword") as? String ?: ""
