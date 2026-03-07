@@ -38,6 +38,7 @@ fun NetworkLogsScreen(
     val uiState by viewModel.uiState.collectAsState()
     var selectedLog by remember { mutableStateOf<NetworkLogEntry?>(null) }
     var showFilterSheet by remember { mutableStateOf(false) }
+    var showShareDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
@@ -58,7 +59,7 @@ fun NetworkLogsScreen(
                         }
                     }
 
-                    IconButton(onClick = { /* Share */ }) {
+                    IconButton(onClick = { showShareDialog = true }) {
                         Icon(Icons.Default.Share, contentDescription = "Share")
                     }
 
@@ -215,6 +216,35 @@ fun NetworkLogsScreen(
             onDismiss = { showFilterSheet = false },
         )
     }
+
+    // Share dialog
+    if (showShareDialog) {
+        AlertDialog(
+            onDismissRequest = { showShareDialog = false },
+            title = { Text("Share Network Logs") },
+            text = { Text("Choose which network logs to share") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.shareLogs(uiState.filteredLogs)
+                        showShareDialog = false
+                    },
+                ) {
+                    Text("Share Filtered (${uiState.filteredLogs.size} items)")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.shareLogs(uiState.logs)
+                        showShareDialog = false
+                    },
+                ) {
+                    Text("Share All (${uiState.logs.size} items)")
+                }
+            },
+        )
+    }
 }
 
 /**
@@ -261,12 +291,19 @@ fun NetworkLogRow(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        // URL
+        // URL and duration
         Text(
             text = log.url,
             style = MaterialTheme.typography.bodyMedium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
+        )
+        
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = "⏱️ ${log.duration}ms",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
