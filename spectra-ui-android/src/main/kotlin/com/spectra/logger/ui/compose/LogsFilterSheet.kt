@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.spectra.logger.domain.model.LogLevel
+import com.spectra.logger.ui.compose.components.DateTimePickerRow
 import kotlinx.datetime.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
@@ -277,6 +278,23 @@ fun LogsFilterSheet(
                         label = { Text("Clear") },
                     )
                 }
+
+                // Explicit From/To Pickers
+                DateTimePickerRow(
+                    label = "From",
+                    timestamp = localFilter.fromTimestamp,
+                    onTimestampSelected = { timestamp ->
+                        localFilter = localFilter.copy(fromTimestamp = timestamp)
+                    }
+                )
+
+                DateTimePickerRow(
+                    label = "To",
+                    timestamp = localFilter.toTimestamp,
+                    onTimestampSelected = { timestamp ->
+                        localFilter = localFilter.copy(toTimestamp = timestamp)
+                    }
+                )
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 

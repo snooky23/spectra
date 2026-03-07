@@ -209,16 +209,13 @@ struct NetworkLogRow: View {
                 .lineLimit(2)
 
             // Duration if available
-            // TODO: Add duration display when API is finalized
-            /*if let duration = log.durationMs?.int64Value {
-                HStack(spacing: 4) {
-                    Image(systemName: "clock")
-                        .font(.caption2)
-                    Text("\(duration)ms")
-                        .font(.caption2)
-                }
-                .foregroundColor(.secondary)
-            }*/
+            HStack(spacing: 4) {
+                Image(systemName: "clock")
+                    .font(.caption2)
+                Text("\(log.duration)ms")
+                    .font(.caption2)
+            }
+            .foregroundColor(.secondary)
         }
         .padding(.vertical, 4)
     }
@@ -256,12 +253,9 @@ struct NetworkLogDetailView: View {
 
                         Spacer()
 
-                        // TODO: Show duration when API is finalized
-                        /*if let duration = log.durationMs?.int64Value {
-                            Text("\(duration)ms")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }*/
+                        Text("\(log.duration)ms")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
 
                     // URL

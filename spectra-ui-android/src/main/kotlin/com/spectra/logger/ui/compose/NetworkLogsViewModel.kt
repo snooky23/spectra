@@ -138,6 +138,17 @@ class NetworkLogsViewModel : ViewModel() {
         }
     }
 
+    fun shareLogs(logs: List<NetworkLogEntry>) {
+        // TODO: Implement actual sharing via Intent
+        // This would require context access, typically done via Application class or passed in
+        val logsText =
+            logs.joinToString("\n") { log ->
+                "[${log.method}] ${log.responseCode ?: "N/A"} ${log.url} - ${log.duration}ms"
+            }
+        // For now, we just prepare the text. Actual sharing would be done in the UI layer.
+        println("Share network logs: $logsText")
+    }
+
     private fun applyFilters() {
         _uiState.update { state ->
             var filtered = state.logs
