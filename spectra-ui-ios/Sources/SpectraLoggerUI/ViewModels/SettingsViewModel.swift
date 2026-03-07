@@ -10,6 +10,17 @@ final class SettingsViewModel {
     var showClearLogsAlert = false
     var showClearNetworkAlert = false
     var appearanceMode: AppearanceMode = .system
+    
+    // Core Configurations
+    var isNetworkLoggingEnabled: Bool = true {
+        didSet { toggleNetworkLogging(enabled: isNetworkLoggingEnabled) }
+    }
+    var isFilePersistenceEnabled: Bool = false {
+        didSet { toggleFilePersistence(enabled: isFilePersistenceEnabled) }
+    }
+    var ignoredDomainsText: String = "" {
+        didSet { updateIgnoredDomains(domains: ignoredDomainsText) }
+    }
 
     private let logStorage: LogStorage
     private let networkStorage: NetworkLogStorage
@@ -38,6 +49,7 @@ final class SettingsViewModel {
         self.networkStorage = networkStorage
         loadCounts()
         loadAppearanceMode()
+        loadCoreConfigurations()
     }
 
     func loadCounts() {
@@ -80,5 +92,52 @@ final class SettingsViewModel {
     func saveAppearanceMode(_ mode: AppearanceMode) {
         appearanceMode = mode
         UserDefaults.standard.set(mode.rawValue, forKey: "appearanceMode")
+    }
+
+    // MARK: - Core Configuration Mutators
+
+    private func loadCoreConfigurations() {
+        let config = SpectraLogger.shared.configuration
+        isNetworkLoggingEnabled = config.enabledFeatures.enableNetworkLogging
+        isFilePersistenceEnabled = config.logStorageConfig.enablePersistence
+        ignoredDomainsText = config.enabledFeatures.networkIgnoredDomains.joined(separator: ", ")
+    }
+
+    private func toggleNetworkLogging(enabled: Bool) {
+        let currentFeatures = SpectraLogger.shared.configuration.enabledFeatures
+        SpectraLogger.shared.configure { builder in 
+            builder.features { features in
+                features.enableNetworkLogging = enabled
+                features.enableCrashReporting = currentFeatures.enableCrashReporting
+                features.enablePerformanceMetrics = currentFeatures.enablePerformanceMetrics
+                features.networkIgnoredDomains = currentFeatures.networkIgnoredDomains
+                features.networkIgnoredExtensions = currentFeatures.networkIgnoredExtensions
+            }
+        }
+    }
+
+    private func toggleFilePersistence(enabled: Bool) {
+        let currentStorage = SpectraLogger.shared.configuration.logStorageConfig
+        SpectraLogger.shared.configure { builder in
+            builder.logStorage { storage in
+                storage.maxCapacity = currentStorage.maxCapacity
+                storage.enablePersistence = enabled
+                storage.fileLogLevel = currentStorage.fileLogLevel
+            }
+        }
+    }
+
+    private func updateIgnoredDomains(domains: String) {
+        let list = domains.split(separator: ",").map { String($0).trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+        let currentFeatures = SpectraLogger.shared.configuration.enabledFeatures
+        SpectraLogger.shared.configure { builder in
+            builder.features { features in
+                features.enableNetworkLogging = currentFeatures.enableNetworkLogging
+                features.enableCrashReporting = currentFeatures.enableCrashReporting
+                features.enablePerformanceMetrics = currentFeatures.enablePerformanceMetrics
+                features.networkIgnoredDomains = list
+                features.networkIgnoredExtensions = currentFeatures.networkIgnoredExtensions
+            }
+        }
     }
 }

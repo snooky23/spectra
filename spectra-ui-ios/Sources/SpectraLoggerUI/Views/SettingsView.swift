@@ -25,6 +25,46 @@ struct SettingsView: View {
                     Text("Choose how Spectra Logger appears on your device")
                 }
 
+                // Configuration Section
+                Section {
+                    // File Persistence
+                    Toggle(isOn: $viewModel.isFilePersistenceEnabled) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Enable File Persistence")
+                                .font(.body)
+                            Text("Write application logs to file storage")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+
+                    // Network Logging
+                    Toggle(isOn: $viewModel.isNetworkLoggingEnabled) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Enable Network Logging")
+                                .font(.body)
+                            Text("Automatically track HTTP requests (requires restart)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+
+                    // Ignored Domains
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Ignored Domains (Comma separated)")
+                            .font(.body)
+                        TextField("e.g. google.com, api.example.com", text: $viewModel.ignoredDomainsText)
+                            .font(.caption)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                    }
+                    .padding(.vertical, 4)
+
+                } header: {
+                    Text("Configuration")
+                } footer: {
+                    Text("Core features and overrides")
+                }
+
                 // Storage Section
                 Section {
                     // Application Logs
