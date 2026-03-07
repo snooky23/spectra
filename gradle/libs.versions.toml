@@ -38,6 +38,9 @@ mockk = "1.13.9"
 ktlint = "12.1.0"
 detekt = "1.23.5"
 
+# Publishing
+vanniktech-publish = "0.30.0"
+
 # Documentation
 dokka = "1.9.10"
 
@@ -95,6 +98,7 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+vanniktech-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-publish" }
 
 [bundles]
 # Common Kotlinx dependencies for all modules
