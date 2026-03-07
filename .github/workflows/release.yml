@@ -259,11 +259,32 @@ jobs:
           echo "🔐 Checksum: $CHECKSUM"
           echo "🔗 Release URL: https://github.com/${{ github.repository }}/releases/tag/v$VERSION"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo ""
-          echo "⚠️  Next steps:"
-          echo "1. Update Package.swift with the URL and checksum above"
-          echo "2. Commit and push the Package.swift changes"
-          echo "3. Announce the release!"
+
+      - name: Update Package.swift with new checksum
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          CHECKSUM="${{ steps.package.outputs.CHECKSUM }}"
+          REPO="${{ github.repository }}"
+          NEW_URL="https://github.com/${REPO}/releases/download/v${VERSION}/SpectraLogger.xcframework.zip"
+
+          # Update URL and checksum in Package.swift
+          sed -i '' "s|url: \"https://github.com/.*/releases/download/.*/SpectraLogger.xcframework.zip\"|url: \"${NEW_URL}\"|g" Package.swift
+          sed -i '' "s|checksum: \".*\"|checksum: \"${CHECKSUM}\"|g" Package.swift
+
+          echo "✅ Package.swift updated"
+          echo "  URL: $NEW_URL"
+          echo "  Checksum: $CHECKSUM"
+
+      - name: Commit and push Package.swift
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Package.swift
+          git diff --staged --quiet || git commit -m "chore: update Package.swift for v${VERSION} [skip ci]"
+          git push origin HEAD:main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Publish to CocoaPods (skipped - podspec files not set up yet)
       # To enable: create spectra-core/SpectraLogger.podspec and spectra-ui-ios/SpectraLoggerUI.podspec
