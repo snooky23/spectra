@@ -30,10 +30,10 @@ A lightweight, on-device logging framework for iOS and Android with a built-in v
 // build.gradle.kts
 dependencies {
     // Core SDK (required)
-    implementation("com.spectra.logger:spectra-core:0.0.1")
+    implementation("io.github.snooky23:spectra-core:1.0.3")
     
     // UI SDK (optional - adds log viewer)
-    implementation("com.spectra.logger:spectra-ui-android:0.0.1")
+    implementation("io.github.snooky23:spectra-ui-android:1.0.3")
 }
 ```
 
@@ -48,7 +48,7 @@ dependencies {
 Or in `Package.swift`:
 ```swift
 dependencies: [
-    .package(url: "https://github.com/snooky23/spectra", from: "1.0.1")
+    .package(url: "https://github.com/snooky23/spectra", from: "1.0.3")
 ]
 ```
 
