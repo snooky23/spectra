@@ -32,7 +32,7 @@ struct ShakeToRevealModifier: ViewModifier {
                 }
             }
             .sheet(isPresented: $isPresented) {
-                SpectraLogger.shared.view()
+                SpectraLoggerView()
             }
     }
 }
