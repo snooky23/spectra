@@ -7,17 +7,31 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		00000000000000000000000000000111 /* SpectraExample/SpectraExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000000000211 /* SpectraExample/SpectraExampleApp.swift */; };
-		00000000000000000000000000000112 /* SpectraExample/MainAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000000000212 /* SpectraExample/MainAppView.swift */; };
-		00000000000000000000000000000113 /* SpectraExample/SpectraLoggerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000000000213 /* SpectraExample/SpectraLoggerView.swift */; };
+		00000000000000000000000000000111 /* SpectraExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000000000211 /* SpectraExampleApp.swift */; };
+		00000000000000000000000000000112 /* MainAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000000000212 /* MainAppView.swift */; };
+		00000000000000000000000000000113 /* SpectraLoggerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000000000213 /* SpectraLoggerView.swift */; };
 		00000000000000000000000000000114 /* SpectraUI in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000000000000310 /* SpectraUI */; };
+		1CEF023B2A4EEC76D9A4E879 /* SharedComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C9B388399DA5BDCA2727D86 /* SharedComponents.swift */; };
+		4299320EEAA12EB313ACFC4B /* MockDataGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDBE7870D90C9FD8EDD3F83A /* MockDataGenerator.swift */; };
+		93CF305A31E1AD634B6E8C95 /* NetworkRequestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A83D6C31B6A54E439052F7 /* NetworkRequestsView.swift */; };
+		A21E2294CCF36CA090B1D7E6 /* NetworkTestingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0218D627ACE7D8D56C2F187A /* NetworkTestingViewModel.swift */; };
+		B5F293B2D1A8EA01AA0E24A4 /* ActionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA60BA7549A50F38219A5A6 /* ActionsViewModel.swift */; };
+		BA4AC2B0EE000894FEEDB0BE /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 779F7ACC8AF2287DCBE7ADCF /* AppLogger.swift */; };
+		DA9EF6831ECF6AF7BDED76A7 /* ExampleActionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A08BB694CB17BBFDBC4EEC3 /* ExampleActionsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		00000000000000000000000000000001 /* SpectraExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpectraExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		00000000000000000000000000000211 /* SpectraExample/SpectraExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectraExample/SpectraExampleApp.swift; sourceTree = SOURCE_ROOT; };
-		00000000000000000000000000000212 /* SpectraExample/MainAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectraExample/MainAppView.swift; sourceTree = SOURCE_ROOT; };
-		00000000000000000000000000000213 /* SpectraExample/SpectraLoggerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectraExample/SpectraLoggerView.swift; sourceTree = SOURCE_ROOT; };
+		00000000000000000000000000000211 /* SpectraExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectraExample/SpectraExampleApp.swift; sourceTree = SOURCE_ROOT; };
+		00000000000000000000000000000212 /* MainAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectraExample/MainAppView.swift; sourceTree = SOURCE_ROOT; };
+		00000000000000000000000000000213 /* SpectraLoggerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpectraExample/SpectraLoggerView.swift; sourceTree = SOURCE_ROOT; };
+		0218D627ACE7D8D56C2F187A /* NetworkTestingViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworkTestingViewModel.swift; sourceTree = "<group>"; };
+		1A08BB694CB17BBFDBC4EEC3 /* ExampleActionsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExampleActionsView.swift; sourceTree = "<group>"; };
+		2C9B388399DA5BDCA2727D86 /* SharedComponents.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SharedComponents.swift; sourceTree = "<group>"; };
+		4CA60BA7549A50F38219A5A6 /* ActionsViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ActionsViewModel.swift; sourceTree = "<group>"; };
+		779F7ACC8AF2287DCBE7ADCF /* AppLogger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
+		84A83D6C31B6A54E439052F7 /* NetworkRequestsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworkRequestsView.swift; sourceTree = "<group>"; };
+		FDBE7870D90C9FD8EDD3F83A /* MockDataGenerator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MockDataGenerator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,9 +57,12 @@
 		00000000000000000000000000000601 /* SpectraExample */ = {
 			isa = PBXGroup;
 			children = (
-				00000000000000000000000000000211 /* SpectraExample/SpectraExampleApp.swift */,
-				00000000000000000000000000000212 /* SpectraExample/MainAppView.swift */,
-				00000000000000000000000000000213 /* SpectraExample/SpectraLoggerView.swift */,
+				00000000000000000000000000000211 /* SpectraExampleApp.swift */,
+				00000000000000000000000000000212 /* MainAppView.swift */,
+				00000000000000000000000000000213 /* SpectraLoggerView.swift */,
+				866E45DD6ADE78CF56355229 /* Services */,
+				3DB281B5947031EF50BA26DC /* ViewModels */,
+				76B0C95886CA07FB94D50129 /* Views */,
 			);
 			path = SpectraExample;
 			sourceTree = SOURCE_ROOT;
@@ -56,6 +73,55 @@
 				00000000000000000000000000000001 /* SpectraExample.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		3DB281B5947031EF50BA26DC /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				4CA60BA7549A50F38219A5A6 /* ActionsViewModel.swift */,
+				0218D627ACE7D8D56C2F187A /* NetworkTestingViewModel.swift */,
+			);
+			name = ViewModels;
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		76B0C95886CA07FB94D50129 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				82780C4B5D3A99D9D4143144 /* Components */,
+				7A9B7370B15E7094FE4CCE54 /* Tabs */,
+			);
+			name = Views;
+			path = Views;
+			sourceTree = "<group>";
+		};
+		7A9B7370B15E7094FE4CCE54 /* Tabs */ = {
+			isa = PBXGroup;
+			children = (
+				1A08BB694CB17BBFDBC4EEC3 /* ExampleActionsView.swift */,
+				84A83D6C31B6A54E439052F7 /* NetworkRequestsView.swift */,
+			);
+			name = Tabs;
+			path = Tabs;
+			sourceTree = "<group>";
+		};
+		82780C4B5D3A99D9D4143144 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				2C9B388399DA5BDCA2727D86 /* SharedComponents.swift */,
+			);
+			name = Components;
+			path = Components;
+			sourceTree = "<group>";
+		};
+		866E45DD6ADE78CF56355229 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				779F7ACC8AF2287DCBE7ADCF /* AppLogger.swift */,
+				FDBE7870D90C9FD8EDD3F83A /* MockDataGenerator.swift */,
+			);
+			name = Services;
+			path = Services;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -105,8 +171,9 @@
 			);
 			mainGroup = 00000000000000000000000000000501;
 			packageReferences = (
-				00000000000000000000000000000320 /* XCLocalSwiftPackageReference "../../spectra-ui-ios" */,
+				00000000000000000000000000000320 /* XCLocalSwiftPackageReference "spectra-ui-ios" */,
 			);
+			productRefGroup = 00000000000000000000000000000701 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -120,9 +187,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00000000000000000000000000000111 /* SpectraExample/SpectraExampleApp.swift in Sources */,
-				00000000000000000000000000000112 /* SpectraExample/MainAppView.swift in Sources */,
-				00000000000000000000000000000113 /* SpectraExample/SpectraLoggerView.swift in Sources */,
+				00000000000000000000000000000111 /* SpectraExampleApp.swift in Sources */,
+				00000000000000000000000000000112 /* MainAppView.swift in Sources */,
+				00000000000000000000000000000113 /* SpectraLoggerView.swift in Sources */,
+				BA4AC2B0EE000894FEEDB0BE /* AppLogger.swift in Sources */,
+				4299320EEAA12EB313ACFC4B /* MockDataGenerator.swift in Sources */,
+				B5F293B2D1A8EA01AA0E24A4 /* ActionsViewModel.swift in Sources */,
+				A21E2294CCF36CA090B1D7E6 /* NetworkTestingViewModel.swift in Sources */,
+				1CEF023B2A4EEC76D9A4E879 /* SharedComponents.swift in Sources */,
+				DA9EF6831ECF6AF7BDED76A7 /* ExampleActionsView.swift in Sources */,
+				93CF305A31E1AD634B6E8C95 /* NetworkRequestsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -331,16 +405,16 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		00000000000000000000000000000320 /* XCLocalSwiftPackageReference "../../spectra-ui-ios" */ = {
+		00000000000000000000000000000320 /* XCLocalSwiftPackageReference "spectra-ui-ios" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../spectra-ui-ios;
+			relativePath = "../../spectra-ui-ios";
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		00000000000000000000000000000310 /* SpectraUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 00000000000000000000000000000320 /* XCLocalSwiftPackageReference "../../spectra-ui-ios" */;
+			package = 00000000000000000000000000000320 /* XCLocalSwiftPackageReference "spectra-ui-ios" */;
 			productName = SpectraUI;
 		};
 /* End XCSwiftPackageProductDependency section */
