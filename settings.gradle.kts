@@ -20,7 +20,10 @@ dependencyResolutionManagement {
 // Core KMP module (logging functionality)
 include(":spectra-core")
 
-// UI module for Android
+// Unified UI module (Compose Multiplatform)
+include(":spectra-ui")
+
+// UI module for Android (Deprecated)
 include(":spectra-ui-android")
 
 // Example applications

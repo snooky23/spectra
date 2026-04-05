@@ -13,6 +13,8 @@ atomicfu = "0.26.1"
 
 # Build Tools
 agp = "9.1.0"
+compose-multiplatform = "1.10.3"
+material3-adaptive = "1.3.0-alpha03"
 
 # Compose (Android only now)
 compose-ui = "1.7.6"
@@ -87,6 +89,12 @@ compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview"
 compose-material-icons = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose-ui" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 
+# Compose Multiplatform - Adaptive
+compose-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "material3-adaptive" }
+compose-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version.ref = "material3-adaptive" }
+compose-adaptive-navigation = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation", version.ref = "material3-adaptive" }
+compose-adaptive-navigation-suite = { module = "org.jetbrains.compose.material3:material3-adaptive-navigation-suite", version.ref = "compose-multiplatform" }
+
 # Testing - Unit Testing
 junit = { module = "junit:junit", version.ref = "junit" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
@@ -100,6 +108,7 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
@@ -136,6 +145,14 @@ compose-ui = [
     "compose-ui-tooling-preview",
     "compose-material-icons",
     "androidx-lifecycle-viewmodel-compose"
+]
+
+# Compose Multiplatform UI bundle
+compose-multiplatform-ui = [
+    "compose-adaptive",
+    "compose-adaptive-layout",
+    "compose-adaptive-navigation",
+    "compose-adaptive-navigation-suite"
 ]
 
 # Ktor client dependencies
