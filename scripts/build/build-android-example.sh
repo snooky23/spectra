@@ -14,9 +14,9 @@ echo "   Variant: $VARIANT"
 
 cd "$PROJECT_ROOT"
 
-# Build the shared module first
-echo "📦 Building shared module..."
-./gradlew :spectra-core:assembleRelease
+# Build the shared modules first
+echo "📦 Building shared modules..."
+./gradlew :spectra-core:assembleRelease :spectra-ui:assembleRelease
 
 # Build Android example
 echo "📱 Building Android app..."

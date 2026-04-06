@@ -150,6 +150,9 @@ class Logger(
         // Convert null to empty map (industry standard pattern from Firebase, Sentry, etc)
         val logMetadata = metadata ?: emptyMap()
 
+        // Extract stack trace from metadata if throwable is null (industry standard fallback)
+        val stackTrace = throwable?.stackTraceToString() ?: logMetadata["stack_trace"]
+
         val entry =
             LogEntry(
                 id = IdGenerator.generate(),
@@ -157,7 +160,7 @@ class Logger(
                 level = level,
                 tag = tag,
                 message = message,
-                throwable = throwable?.stackTraceToString(),
+                throwable = stackTrace,
                 metadata = logMetadata,
                 source = source,
                 sourceType = sourceType,
