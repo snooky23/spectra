@@ -1,7 +1,7 @@
 import SwiftUI
 import UIKit
-import SpectraLogger // Business logic and UIManager
-import SpectraLoggerUI // The new KMP UI module framework
+import SpectraLogger
+import SpectraLoggerUI
 
 /**
  * A SwiftUI wrapper for the Compose Multiplatform Spectra Logger UI.
