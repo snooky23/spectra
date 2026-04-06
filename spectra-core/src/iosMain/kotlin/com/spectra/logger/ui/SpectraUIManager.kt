@@ -1,37 +1,41 @@
 package com.spectra.logger.ui
 
+import platform.UIKit.UIApplication
+import platform.UIKit.UIViewController
+
 /**
  * iOS implementation of the Spectra Logger UI manager.
- *
- * Manages showing and dismissing the logger UI as a modal presentation.
- *
- * Implementation details:
- * - Shows as a modal presentation over the current view controller
- * - Preserves app lifecycle (doesn't affect ViewController state)
- * - Safe to call repeatedly (idempotent)
- *
- * @since 0.0.1
  */
 actual object SpectraUIManager {
-    /**
-     * Show the Spectra Logger debug UI as a modal presentation.
-     *
-     * Presents the logger UI as a modal over the current view controller.
-     * Safe to call multiple times (subsequent calls are ignored if already shown).
-     */
-    actual fun showScreen() {
-        // TODO: Implement iOS UI modal presentation using UIViewController or SwiftUI
-        // This will present the logger UI as a modal over the current view
-    }
+    private var controllerProvider: (() -> UIViewController)? = null
+    private var currentController: UIViewController? = null
 
     /**
-     * Dismiss the Spectra Logger debug UI.
-     *
-     * Dismisses the modal presentation if shown.
-     * Safe to call even if not currently shown.
+     * Registers a provider for the Spectra Logger UIViewController.
+     * This is typically called by the UI module during initialization.
      */
+    fun registerControllerProvider(provider: () -> UIViewController) {
+        this.controllerProvider = provider
+    }
+
+    actual fun showScreen() {
+        if (currentController != null) return
+        
+        val provider = controllerProvider ?: return
+        val controller = provider()
+        currentController = controller
+        
+        val root = UIApplication.sharedApplication.keyWindow?.rootViewController ?: return
+        var top = root
+        while (top.presentedViewController != null) {
+            top = top.presentedViewController!!
+        }
+        
+        top.presentViewController(controller, animated = true, completion = null)
+    }
+
     actual fun dismissScreen() {
-        // TODO: Implement iOS UI dismissal
-        // This will dismiss the modal view controller
+        currentController?.dismissViewControllerAnimated(true, completion = null)
+        currentController = null
     }
 }
