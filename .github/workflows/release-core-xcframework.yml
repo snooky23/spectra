@@ -1,4 +1,4 @@
-name: Release Core XCFramework
+name: Release XCFrameworks
 
 on:
   workflow_dispatch:
@@ -46,87 +46,36 @@ jobs:
         run: |
           VERSION="${{ github.event.inputs.version }}"
           TAG_NAME="v${VERSION}"
-
           echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-          echo "📋 Version: $VERSION"
-          echo "📋 Tag: $TAG_NAME"
-
-      - name: Validate version format
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "❌ Error: Invalid version format. Expected: X.Y.Z (e.g., 1.0.0)"
-            exit 1
-          fi
-
-      - name: Build XCFramework and calculate checksum
+      - name: Build XCFrameworks
         id: build
         run: |
           ./scripts/release/create-release.sh ${{ steps.version.outputs.version }}
-
-          # Read the checksum
-          CHECKSUM=$(cat build/releases/${{ steps.version.outputs.version }}/checksum.txt)
-          echo "checksum=$CHECKSUM" >> $GITHUB_OUTPUT
-          echo "✅ Checksum: $CHECKSUM"
+          
+          CORE_CHECKSUM=$(cat build/releases/${{ steps.version.outputs.version }}/SpectraLogger-checksum.txt)
+          UI_CHECKSUM=$(cat build/releases/${{ steps.version.outputs.version }}/SpectraLoggerUI-checksum.txt)
+          
+          echo "core_checksum=$CORE_CHECKSUM" >> $GITHUB_OUTPUT
+          echo "ui_checksum=$UI_CHECKSUM" >> $GITHUB_OUTPUT
 
       - name: Update and commit Package.swift
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          TAG_NAME="${{ steps.version.outputs.tag }}"
-          CHECKSUM="${{ steps.build.outputs.checksum }}"
+          CORE_CHECKSUM="${{ steps.build.outputs.core_checksum }}"
+          UI_CHECKSUM="${{ steps.build.outputs.ui_checksum }}"
 
-          # Update Package.swift with the correct URL and checksum
-          sed -i.bak \
-            -e "s|url: \"https://github.com/snooky23/spectra/releases/download/v.*\.xcframework\.zip\"|url: \"https://github.com/snooky23/spectra/releases/download/v${VERSION}/SpectraLogger.xcframework.zip\"|" \
-            -e "s|checksum: \".*\"|checksum: \"${CHECKSUM}\"|" \
-            Package.swift
+          # Update Core target
+          perl -i -pe "s|name: \"SpectraLogger\",\s*url: \"https://github.com/snooky23/spectra/releases/download/v.*/SpectraLogger.xcframework.zip\",\s*checksum: \".*\"|name: \"SpectraLogger\", url: \"https://github.com/snooky23/spectra/releases/download/v${VERSION}/SpectraLogger.xcframework.zip\", checksum: \"${CORE_CHECKSUM}\"|g" Package.swift
+          
+          # Update UI target (Note: This might need more precise regex based on the file content)
+          perl -i -pe "s|name: \"SpectraLoggerUI\",\s*url: \"https://github.com/snooky23/spectra/releases/download/v.*/SpectraLoggerUI.xcframework.zip\",\s*checksum: \".*\"|name: \"SpectraLoggerUI\", url: \"https://github.com/snooky23/spectra/releases/download/v${VERSION}/SpectraLoggerUI.xcframework.zip\", checksum: \"${UI_CHECKSUM}\"|g" Package.swift
 
-          rm Package.swift.bak
-
-          echo "✅ Updated Package.swift"
-          cat Package.swift
-
-          # Commit changes
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
           git add Package.swift
-          git commit -m "chore: update Package.swift for v${VERSION}" \
-            -m "Updated XCFramework URL and checksum for release v${VERSION}" \
-            -m "Checksum: ${CHECKSUM}"
-
-          echo "✅ Package.swift committed"
-
-      - name: Create and push tag
-        run: |
-          TAG_NAME="${{ steps.version.outputs.tag }}"
-          VERSION="${{ steps.version.outputs.version }}"
-          CHECKSUM="${{ steps.build.outputs.checksum }}"
-
-          # Create annotated tag with multi-line message
-          git tag -a "$TAG_NAME" \
-            -m "Release ${VERSION} - Production-ready logging framework" \
-            -m "" \
-            -m "🚀 SpectraLogger v${VERSION}" \
-            -m "" \
-            -m "## Core Framework" \
-            -m "- High-performance logging with < 0.1ms capture time" \
-            -m "- Network request/response interception" \
-            -m "- Thread-safe operations" \
-            -m "- Cross-platform (iOS 13.0+ & Android 7.0+)" \
-            -m "" \
-            -m "## Installation" \
-            -m "See release notes for Swift Package Manager and CocoaPods instructions." \
-            -m "" \
-            -m "Checksum: ${CHECKSUM}"
-
-          # Push commit and tag
-          git push origin main
-          git push origin "$TAG_NAME"
-
-          echo "✅ Tag $TAG_NAME created and pushed"
+          git commit -m "chore: update Package.swift for v${VERSION}"
 
       - name: Create GitHub Release
         env:
@@ -134,139 +83,14 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           TAG_NAME="${{ steps.version.outputs.tag }}"
-          ZIP_PATH="build/releases/${VERSION}/SpectraLogger.xcframework.zip"
-          CHECKSUM="${{ steps.build.outputs.checksum }}"
-
-          # Create release notes using heredoc
-          cat > release_notes.md << EOF
-          Release ${VERSION} - Production-ready logging framework
-
-          ## What's Included
-
-          ### Core Framework (SpectraLogger)
-          - High-performance logging with < 0.1ms capture time
-          - Network request/response interception
-          - Circular buffer storage with automatic pruning
-          - Thread-safe operations for multi-threaded apps
-          - Cross-platform support (iOS 13.0+ & Android 7.0+)
-
-          ### iOS UI Companion (SpectraLoggerUI)
-          - Native SwiftUI log viewer
-          - Real-time log streaming
-          - Advanced filtering and search
-          - Network traffic inspector
-          - Export capabilities (JSON, Text, CSV)
-
-          ## Installation
-
-          ### Swift Package Manager
-
-          Add to your \`Package.swift\`:
-
-          \`\`\`swift
-          dependencies: [
-              .package(url: "https://github.com/snooky23/spectra.git", from: "${VERSION}")
-          ]
-          \`\`\`
-
-          Or use the binary target directly:
-
-          \`\`\`swift
-          .binaryTarget(
-              name: "SpectraLogger",
-              url: "https://github.com/snooky23/spectra/releases/download/v${VERSION}/SpectraLogger.xcframework.zip",
-              checksum: "${CHECKSUM}"
-          )
-          \`\`\`
-
-          ### CocoaPods
-          \`\`\`ruby
-          pod 'SpectraLogger', '~> ${VERSION}'
-          pod 'SpectraLoggerUI', '~> ${VERSION}'  # Optional: SwiftUI UI
-          \`\`\`
-
-          ## Verification
-
-          XCFramework SHA256 checksum:
-          \`\`\`
-          ${CHECKSUM}
-          \`\`\`
-
-          ## Documentation
-          - [Installation Guide](https://github.com/snooky23/spectra/blob/main/docs/INSTALLATION.md)
-          - [CocoaPods Guide](https://github.com/snooky23/spectra/blob/main/docs/COCOAPODS_GUIDE.md)
-          - [SPM Distribution Guide](https://github.com/snooky23/spectra/blob/main/docs/SPM_DISTRIBUTION_GUIDE.md)
-
-          🎉 Ready for production use!
-          EOF
-
+          
           gh release create "${TAG_NAME}" \
-            "$ZIP_PATH" \
+            build/releases/${VERSION}/SpectraLogger.xcframework.zip \
+            build/releases/${VERSION}/SpectraLoggerUI.xcframework.zip \
             --title "Release ${VERSION}" \
-            --notes-file release_notes.md
+            --generate-notes
 
-      - name: Publish to CocoaPods
-        env:
-          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+      - name: Create and push tag
         run: |
-          # Check if CocoaPods token is set
-          if [ -z "$COCOAPODS_TRUNK_TOKEN" ]; then
-            echo "⏭️  Skipping CocoaPods publishing (no COCOAPODS_TRUNK_TOKEN secret set)"
-            exit 0
-          fi
-
-          echo "📦 Publishing to CocoaPods..."
-
-          # Verify file exists
-          if [ ! -f "spectra-core/SpectraLogger.podspec" ]; then
-            echo "❌ Error: spectra-core/SpectraLogger.podspec not found!"
-            ls -la spectra-core/
-            exit 1
-          fi
-
-          echo "🔍 Before update:"
-          grep -E "(s\.version|:sha256)" spectra-core/SpectraLogger.podspec
-
-          # Update podspec version and checksum
-          CHECKSUM="${{ steps.build.outputs.checksum }}"
-          echo "🔍 Updating with checksum: $CHECKSUM"
-
-          # Use perl with explicit in-place editing
-          perl -i.backup -pe "s/s\.version\s*=\s*'[^']*'/s.version = '${{ steps.version.outputs.version }}'/" spectra-core/SpectraLogger.podspec
-          perl -i.backup -pe "s/:sha256\s*=>\s*'[^']*'/:sha256 => '${CHECKSUM}'/" spectra-core/SpectraLogger.podspec
-
-          # Remove backup files
-          rm -f spectra-core/SpectraLogger.podspec.backup
-
-          echo "🔍 After update:"
-          grep -E "(s\.version|:sha256)" spectra-core/SpectraLogger.podspec
-
-          # Publish to CocoaPods
-          cd shared
-          echo "🔍 About to push podspec from $(pwd):"
-          grep -E "(s\.version|:sha256)" SpectraLogger.podspec
-          pod trunk push SpectraLogger.podspec --allow-warnings
-
-          echo "✅ Published to CocoaPods successfully!"
-
-      - name: Summary
-        run: |
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "✅ Release v${{ steps.version.outputs.version }} completed successfully!"
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo ""
-          echo "📦 Release URL: https://github.com/snooky23/spectra/releases/tag/v${{ steps.version.outputs.version }}"
-          echo "📋 Checksum: ${{ steps.build.outputs.checksum }}"
-          echo ""
-          echo "✅ Completed:"
-          echo "  1. Built XCFramework for all iOS targets"
-          echo "  2. Created GitHub Release with binary"
-          echo "  3. Generated installation instructions"
-          if [ -n "${{ secrets.COCOAPODS_TRUNK_TOKEN }}" ]; then
-            echo "  4. Published to CocoaPods"
-          else
-            echo "  4. ⏭️  CocoaPods publishing skipped (no token set)"
-          fi
-          echo ""
-          echo "📝 Installation instructions are in the release notes"
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          git push origin main
+          git push origin "${{ steps.version.outputs.tag }}"
