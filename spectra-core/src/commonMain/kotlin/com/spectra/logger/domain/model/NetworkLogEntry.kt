@@ -43,10 +43,10 @@ data class NetworkLogEntry(
         get() = responseCode in 200..299
 
     /**
-     * Indicates if the request failed (no response or error).
+     * Indicates if the request failed (no response, error, or 4xx/5xx code).
      */
     val isFailed: Boolean
-        get() = error != null || responseCode == null
+        get() = error != null || responseCode == null || responseCode >= 400
 
     companion object {
         const val MAX_BODY_SIZE = 10_000 // 10KB max for body storage
@@ -69,6 +69,7 @@ data class NetworkLogEntry(
  * @property urlPattern Filter by URL pattern (contains)
  * @property statusCodes Filter by response status codes
  * @property minDuration Filter requests taking longer than this (ms)
+ * @property searchText Filter by URL or method content
  * @property showOnlyErrors Show only failed requests
  */
 data class NetworkLogFilter(
@@ -76,6 +77,7 @@ data class NetworkLogFilter(
     val urlPattern: String? = null,
     val statusCodes: Set<Int>? = null,
     val minDuration: Long? = null,
+    val searchText: String? = null,
     val showOnlyErrors: Boolean = false,
 ) {
     /**
@@ -86,6 +88,10 @@ data class NetworkLogFilter(
         if (urlPattern != null && !entry.url.contains(urlPattern, ignoreCase = true)) return false
         if (statusCodes != null && entry.responseCode !in statusCodes) return false
         if (minDuration != null && entry.duration < minDuration) return false
+        if (searchText != null) {
+            val query = searchText.lowercase()
+            if (!entry.url.lowercase().contains(query) && !entry.method.lowercase().contains(query)) return false
+        }
         if (showOnlyErrors && !entry.isFailed) return false
         return true
     }

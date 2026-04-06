@@ -17,7 +17,7 @@ echo "Step 1/4: Building KMP Shared Library..."
 # 2. Build iOS XCFramework
 echo ""
 echo "Step 2/4: Building iOS XCFramework..."
-"$SCRIPT_DIR/build-ios-xcframework.sh"
+"$SCRIPT_DIR/build-xcframework.sh"
 
 # 3. Build iOS example
 echo ""

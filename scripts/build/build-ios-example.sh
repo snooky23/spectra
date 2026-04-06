@@ -17,9 +17,9 @@ echo "   Scheme: $SCHEME"
 echo "   SDK: $SDK"
 echo "   Configuration: $CONFIGURATION"
 
-# Ensure XCFramework exists
-if [ ! -d "$PROJECT_ROOT/build/xcframework/SpectraLogger.xcframework" ]; then
-    echo "⚠️  XCFramework not found. Building it first..."
+# Ensure XCFrameworks exist
+if [ ! -d "$PROJECT_ROOT/build/xcframework/SpectraLogger.xcframework" ] || [ ! -d "$PROJECT_ROOT/build/xcframework/SpectraLoggerUI.xcframework" ]; then
+    echo "⚠️  XCFrameworks not found. Building them first..."
     "$SCRIPT_DIR/build-xcframework.sh"
 fi
 

@@ -118,6 +118,22 @@ class LoggerTest {
         }
 
     @Test
+    fun testLoggingWithStackTraceInMetadata() =
+        runBlocking {
+            val storage = InMemoryLogStorage()
+            val logger = createTestLogger(storage)
+
+            val stackTrace = "Mock stack trace string"
+            logger.e("Error", "Message", metadata = mapOf("stack_trace" to stackTrace))
+
+            delay(100)
+
+            val logs = storage.query()
+            assertEquals(1, logs.size)
+            assertEquals(stackTrace, logs.first().throwable)
+        }
+
+    @Test
     fun testQuery() =
         runBlocking {
             val storage = InMemoryLogStorage()

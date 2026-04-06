@@ -14,7 +14,8 @@ atomicfu = "0.26.1"
 # Build Tools
 agp = "9.1.0"
 compose-multiplatform = "1.10.3"
-material3-adaptive = "1.2.0"
+material3-adaptive = "1.3.0-alpha03"
+material3-adaptive-nav-suite = "1.11.0-alpha05"
 
 # Compose (Android only now)
 
@@ -94,7 +95,7 @@ androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-
 compose-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "material3-adaptive" }
 compose-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version.ref = "material3-adaptive" }
 compose-adaptive-navigation = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation", version.ref = "material3-adaptive" }
-compose-adaptive-navigation-suite = { module = "androidx.compose.material3:material3-adaptive-navigation-suite", version = "1.0.0" }
+compose-adaptive-navigation-suite = { module = "org.jetbrains.compose.material3:material3-adaptive-navigation-suite", version.ref = "material3-adaptive" }
 
 # Testing - Unit Testing
 junit = { module = "junit:junit", version.ref = "junit" }

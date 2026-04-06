@@ -143,4 +143,35 @@ class InMemoryNetworkLogStorageTest {
             assertEquals("2", results[1].id)
             assertEquals("1", results[2].id)
         }
+
+    @Test
+    fun testQueryWithFailedRequests() =
+        runTest {
+            val storage = InMemoryNetworkLogStorage()
+            storage.add(createEntry("1", responseCode = 200))
+            storage.add(createEntry("2", responseCode = 500))
+            storage.add(createEntry("3", responseCode = 201))
+
+            val filter = NetworkLogFilter(showOnlyErrors = true)
+            val results = storage.query(filter)
+
+            assertEquals(1, results.size)
+            assertEquals("2", results.first().id)
+        }
+
+    @Test
+    fun testQueryWithSearchText() =
+        runTest {
+            val storage = InMemoryNetworkLogStorage()
+            storage.add(createEntry("1", url = "https://example.com/login"))
+            storage.add(createEntry("2", url = "https://google.com/search"))
+            storage.add(createEntry("3", url = "https://example.com/logout"))
+
+            val filter = NetworkLogFilter(searchText = "example")
+            val results = storage.query(filter)
+
+            assertEquals(2, results.size)
+            assertTrue(results.any { it.id == "1" })
+            assertTrue(results.any { it.id == "3" })
+        }
 }
