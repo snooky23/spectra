@@ -46,9 +46,9 @@ kotlin {
 }
 
 dependencies {
-    // Spectra Logger (local project dependencies)
+    // Spectra Logger (Unified KMP UI)
+    implementation(project(":spectra-ui"))
     implementation(project(":spectra-core"))
-    implementation(project(":spectra-ui-android"))
 
     // AndroidX
     implementation(libs.androidx.core.ktx)

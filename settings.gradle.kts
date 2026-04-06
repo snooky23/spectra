@@ -23,9 +23,6 @@ include(":spectra-core")
 // Unified UI module (Compose Multiplatform)
 include(":spectra-ui")
 
-// UI module for Android (Deprecated)
-include(":spectra-ui-android")
-
 // Example applications
 include(":examples:android-native:app")
 // include(":examples:kmp-app:shared")
