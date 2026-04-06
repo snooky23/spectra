@@ -7,19 +7,18 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-iOS%20%7C%20Android-lightgrey.svg)]()
 [![Swift](https://img.shields.io/badge/Swift-5.9+-orange.svg)](https://swift.org)
-[![Kotlin](https://img.shields.io/badge/Kotlin-1.9+-purple.svg)](https://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.2+-purple.svg)](https://kotlinlang.org)
 
-A lightweight, on-device logging framework for iOS and Android with a built-in viewer UI.
+A lightweight, on-device logging framework for iOS and Android with a unified, adaptive Compose Multiplatform viewer UI.
 
 ## What's Included
 
 | Module | Purpose | Dependency |
 |--------|---------|------------|
 | **spectra-core** | Logging engine, storage, network interceptors | Required |
-| **spectra-ui-android** | Compose UI viewer for Android | Optional |
-| **spectra-ui-ios** | SwiftUI viewer for iOS | Optional |
+| **spectra-ui** | Unified Compose Multiplatform viewer SDK | Optional |
 
-> **Core-only usage**: Use `spectra-core` for headless logging (CI/tests, background services). Add the UI module when you need an on-device log viewer.
+> **Adaptive UI**: The new UI SDK automatically adapts to all screen sizes, providing side-by-side list-detail layouts on tablets and foldables (Android 17+ compliant).
 
 ---
 
@@ -31,10 +30,10 @@ A lightweight, on-device logging framework for iOS and Android with a built-in v
 // build.gradle.kts
 dependencies {
     // Core SDK (required)
-    implementation("io.github.snooky23:spectra-core:1.0.4")
+    implementation("io.github.snooky23:spectra-core:1.0.5")
     
-    // UI SDK (optional - adds log viewer)
-    implementation("io.github.snooky23:spectra-ui-android:1.0.4")
+    // Unified UI SDK (optional - adds adaptive log viewer)
+    implementation("io.github.snooky23:spectra-ui:1.0.5")
 }
 ```
 
@@ -44,14 +43,7 @@ dependencies {
 2. Enter: `https://github.com/snooky23/spectra`
 3. Select products:
    - `SpectraLogger` (Core SDK - required)
-   - `SpectraUI` (UI SDK - optional)
-
-Or in `Package.swift`:
-```swift
-dependencies: [
-    .package(url: "https://github.com/snooky23/spectra", from: "1.0.4")
-]
-```
+   - `SpectraLoggerUI` (Unified UI SDK - optional binary target)
 
 ---
 
@@ -65,7 +57,6 @@ import com.spectra.logger.SpectraLogger
 
 SpectraLogger.d("Auth", "User logged in")
 SpectraLogger.w("Network", "Slow response: 2.5s")
-SpectraLogger.e("Payment", "Transaction failed", metadata = mapOf("orderId" to "12345"))
 ```
 
 ```swift
@@ -73,57 +64,24 @@ SpectraLogger.e("Payment", "Transaction failed", metadata = mapOf("orderId" to "
 import SpectraLogger
 
 SpectraLogger.shared.d(tag: "Auth", message: "User logged in", throwable: nil, metadata: [:])
-SpectraLogger.shared.e(tag: "Payment", message: "Transaction failed", throwable: nil, metadata: ["orderId": "12345"])
 ```
 
-### 2. Log Network Requests
+### 2. Show the Log Viewer (UI SDK)
 
-**Android (OkHttp):**
-```kotlin
-import com.spectra.logger.network.SpectraNetworkInterceptor
-
-val client = OkHttpClient.Builder()
-    .addInterceptor(SpectraNetworkInterceptor(SpectraLogger.networkStorage))
-    .build()
-```
-
-**iOS (URLSession):**
-```swift
-import SpectraLogger
-
-let storage = SpectraLogger.shared.networkStorage
-SpectraURLSessionLogger.logRequest(
-    url: url,
-    method: "GET",
-    response: response,
-    data: data,
-    error: error,
-    duration: durationMs,
-    storage: storage
-)
-```
-
-### 3. Show the Log Viewer (UI SDK)
-
-**Android:**
+**Android (Compose):**
 ```kotlin
 import com.spectra.logger.ui.compose.SpectraLoggerScreen
 
-// In your Composable
-var showLogger by remember { mutableStateOf(false) }
-
-Button(onClick = { showLogger = true }) {
-    Text("Open Logs")
-}
-
-if (showLogger) {
-    SpectraLoggerScreen(onDismiss = { showLogger = false })
+// Wrap your root with the debug FAB overlay
+SpectraLoggerFabOverlay(enabled = BuildConfig.DEBUG) {
+    MyAppContent()
 }
 ```
 
-**iOS:**
+**iOS (SwiftUI):**
 ```swift
-import SpectraUI
+import SwiftUI
+import SpectraLoggerUI
 
 struct ContentView: View {
     @State private var showLogger = false
@@ -131,6 +89,7 @@ struct ContentView: View {
     var body: some View {
         Button("Open Logs") { showLogger = true }
             .sheet(isPresented: $showLogger) {
+                // Wrapper for the Compose Multiplatform UI
                 SpectraLoggerView()
             }
     }
@@ -139,61 +98,11 @@ struct ContentView: View {
 
 ---
 
-## Log Levels
-
-| Level | Function | Use Case |
-|-------|----------|----------|
-| VERBOSE | `v()` | Detailed tracing |
-| DEBUG | `d()` | Development info |
-| INFO | `i()` | General events |
-| WARNING | `w()` | Potential issues |
-| ERROR | `e()` | Failures |
-| FATAL | `f()` | Critical errors |
-
----
-
-## Configuration (Optional)
-
-```kotlin
-SpectraLogger.configure {
-    minLogLevel = LogLevel.DEBUG
-    logStorage { maxCapacity = 20_000 }
-    networkStorage { maxCapacity = 2_000 }
-}
-```
-
----
-
-## Example Apps
-
-See working examples in:
-- [`examples/android-native`](examples/android-native) - Native Android with Compose
-- [`examples/ios-native`](examples/ios-native) - Native iOS with SwiftUI
-
----
-
 ## Documentation
 
-- [Changelog](CHANGELOG.md) - Release notes and version history
-- [UI Design](docs/design/UI_DESIGN.md) - Log viewer screens and components
+- [KMP UI Migration Spec](docs/design/KMP_UI_ADAPTIVE_SPEC.md) - Architectural details of the unified UI
+- [Adaptive UI Guide](docs/design/UI_DESIGN.md) - Screen layouts and behaviors
 - [API Reference](docs/API.md) - Complete API documentation
-- [Future Enhancements](docs/design/FUTURE_ENHANCEMENTS.md) - Roadmap
-
----
-
-## Building from Source
-
-```bash
-# Clone
-git clone https://github.com/snooky23/spectra.git
-cd spectra
-
-# Build Android
-./gradlew build
-
-# Build iOS XCFramework
-./scripts/build/build-xcframework.sh
-```
 
 ---
 

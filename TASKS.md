@@ -53,13 +53,13 @@ This document tracks the implementation progress of Spectra Logger against the f
 
 ## Phase 7: KMP UI SDK Migration & Android 17 Compliance
 See `docs/design/KMP_UI_ADAPTIVE_SPEC.md` for full architectural details.
-- [ ] **Phase 1: KMP UI Module Foundation**
+- [x] **Phase 1: KMP UI Module Foundation**
   - Create the `spectra-ui` module, configure CMP dependencies, and implement `@CommonParcelize`.
-- [ ] **Phase 2: UI Migration & Refactoring**
+- [x] **Phase 2: UI Migration & Refactoring**
   - Port existing Compose screens, implement `NavigationSuiteScaffold` and `NavigableListDetailPaneScaffold`.
-- [ ] **Phase 3: Platform Integration & Bridging**
+- [x] **Phase 3: Platform Integration & Bridging**
   - Implement `SpectraLoggerFabOverlay` (Android) and `ComposeUIViewController` (iOS) with SKIE enhancements.
-- [ ] **Phase 4: Host App Updates & Cleanup**
+- [x] **Phase 4: Host App Updates & Cleanup**
   - Update example apps to use the unified SDK and delete the deprecated native UI modules (`spectra-ui-android`, `spectra-ui-ios`).
-- [ ] **Phase 5: Documentation & Release Preparation**
+- [x] **Phase 5: Documentation & Release Preparation**
   - Update READMEs, CI/CD GitHub Actions, and `Package.swift` for binary distribution. Drop CocoaPods support.
