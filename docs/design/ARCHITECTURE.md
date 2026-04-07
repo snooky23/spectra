@@ -1,10 +1,10 @@
 # Spectra Logger Architecture
 
-> **Last Updated**: 2025-10-07
+> **Last Updated**: 2026-04-07
 
 ## Overview
 
-Spectra Logger is a cross-platform logging framework built with Kotlin Multiplatform, featuring native UI experiences for iOS and Android.
+Spectra Logger is a cross-platform logging framework built with Kotlin Multiplatform, featuring a unified adaptive UI experience for iOS and Android using Compose Multiplatform.
 
 ## Architecture Layers
 
@@ -14,25 +14,25 @@ Spectra Logger is a cross-platform logging framework built with Kotlin Multiplat
 │         (iOS Apps / Android Apps)           │
 └────────────┬────────────────────────────────┘
              │
-             ├─────────────────┬──────────────┐
-             │                 │              │
-┌────────────▼──────┐  ┌──────▼─────┐  ┌────▼────────┐
-│  SpectraLoggerUI  │  │ Android UI │  │   Core API  │
-│  (Swift Package)  │  │  (Compose) │  │   (KMP)     │
-│                   │  │            │  │             │
-│  - SwiftUI Views  │  │ - Compose  │  │ - Logging   │
-│  - ViewModels     │  │ - Material │  │ - Storage   │
-│  - iOS Native     │  │   Design   │  │ - Models    │
-└────────────┬──────┘  └──────┬─────┘  └────┬────────┘
-             │                 │              │
-             └─────────────────┴──────────────┘
+             ├────────────────────────────────┐
+             │                                │
+┌────────────▼──────┐                ┌────────▼────────┐
+│    Spectra UI     │                │    Core API     │
+│ (Compose Multiplatform)            │      (KMP)      │
+│                   │                │                 │
+│ - Shared UI Logic │                │ - Logging       │
+│ - Adaptive Nav    │                │ - Storage       │
+│ - Platform Bridge │                │ - Models        │
+└────────────┬──────┘                └────────┬────────┘
+             │                                │
+             └────────────────────────────────┘
                             │
              ┌──────────────▼──────────────┐
              │   SpectraLogger.xcframework │
-             │   (Kotlin Multiplatform)    │
+             │   SpectraLoggerUI.xcframework│
              │                             │
              │   - Business Logic          │
-             │   - Data Layer              │
+             │   - Unified UI Components   │
              │   - Platform Abstractions   │
              └─────────────────────────────┘
 ```
@@ -44,227 +44,94 @@ Spectra Logger is a cross-platform logging framework built with Kotlin Multiplat
 ```
 Spectra/  (Monorepo)
 │
-├── shared/                          ← KMP Core (Kotlin)
+├── spectra-core/                    ← KMP Core (Kotlin)
 │   ├── src/
 │   │   ├── commonMain/             ← Shared business logic
 │   │   ├── androidMain/            ← Android-specific
 │   │   └── iosMain/                ← iOS-specific
-│   ├── build.gradle.kts
-│   └── build/
-│       └── XCFrameworks/           ← Compiled iOS frameworks
-│           └── release/
-│               └── SpectraLogger.xcframework
+│   └── build.gradle.kts
 │
-├── SpectraLoggerUI/                 ← iOS UI (Swift Package)
-│   ├── Package.swift
-│   ├── Sources/
-│   │   └── SpectraLoggerUI/
-│   │       ├── SpectraLoggerView.swift  ← Public API
-│   │       ├── Views/              ← SwiftUI screens
-│   │       │   ├── LogsView.swift
-│   │       │   ├── NetworkLogsView.swift
-│   │       │   └── SettingsView.swift
-│   │       └── ViewModels/         ← Swift ViewModels
-│   │           ├── LogsViewModel.swift
-│   │           ├── NetworkLogsViewModel.swift
-│   │           └── SettingsViewModel.swift
-│   └── README.md
+├── spectra-ui/                      ← Unified UI (Compose Multiplatform)
+│   ├── src/
+│   │   ├── commonMain/             ← Shared UI & Adaptive Navigation
+│   │   ├── androidMain/            ← Android FAB & Overlay
+│   │   └── iosMain/                ← SwiftUI Bridge (SKIE)
+│   └── build.gradle.kts
 │
 ├── examples/
-│   ├── ios-native/                 ← iOS example app
-│   │   └── SpectraExample.xcodeproj
-│   └── android/                    ← Android example app
-│       └── build.gradle.kts
+│   ├── ios-native/                 ← iOS example app (uses SPM binaries)
+│   └── android-native/             ← Android example app (uses Gradle modules)
 │
 ├── scripts/                         ← Build & CI/CD scripts
-│   ├── build/                      ← Build scripts
-│   │   ├── build-kmp.sh
-│   │   ├── build-ios-xcframework.sh
-│   │   ├── build-ios-example.sh
-│   │   ├── build-android-example.sh
-│   │   └── build-all.sh
+│   ├── build/                      ← Modular build scripts
 │   ├── test/                       ← Test scripts
-│   │   ├── test-kmp.sh
-│   │   ├── test-ios.sh
-│   │   ├── test-android.sh
-│   │   └── test-all.sh
 │   ├── setup/                      ← Setup scripts
-│   │   ├── setup-dev.sh
-│   │   └── clean-all.sh
-│   ├── ci/                         ← CI utilities
-│   │   └── pre-commit.sh
-│   └── SCRIPTS_README.md
-│
-├── .github/
-│   └── workflows/                  ← GitHub Actions
-│       ├── ci.yml                  ← Main CI pipeline
-│       ├── release.yml             ← Release automation
-│       └── pr-check.yml            ← PR quality checks
+│   └── sync-versions.sh
 │
 ├── docs/                           ← Documentation
-├── gradle/                         ← Gradle wrapper
+├── gradle/                         ← Gradle wrapper & version catalog
 ├── build.gradle.kts                ← Root build file
 ├── settings.gradle.kts
-├── ARCHITECTURE.md                 ← This file
 └── README.md
 ```
 
 ## Technology Stack
 
 ### Core (KMP)
-- **Language**: Kotlin 1.9+
+- **Language**: Kotlin 2.x
 - **Platforms**: Android, iOS
 - **Frameworks**:
   - Kotlin Coroutines
   - Kotlin Serialization
-  - Compose Multiplatform (for Android UI)
+  - Ktor (for types)
 
-### iOS
-- **UI Framework**: SwiftUI
-- **Language**: Swift 5.9+
-- **Minimum iOS**: 15.0
-- **Distribution**: Swift Package Manager
-
-### Android
-- **UI Framework**: Jetpack Compose
-- **Minimum SDK**: 24 (Android 7.0)
-- **Distribution**: Maven Central / JitPack
+### UI (Compose Multiplatform)
+- **Framework**: JetBrains Compose Multiplatform
+- **Adaptive**: Material 3 Adaptive (Navigation Suite, List-Detail Pane)
+- **Lifecycle**: JetBrains Lifecycle (ViewModel)
+- **iOS Bridging**: SKIE (Swift-Kotlin Interface Enhancer)
 
 ## Clean Architecture Principles
 
-Spectra Logger follows **Clean Architecture** principles to separate concerns, ensure testing flexibility, and allow platform-specific UI bindings while maintaining a single shared business logic core.
+Spectra Logger follows **Clean Architecture** principles to separate concerns, ensure testing flexibility, and allow a single shared UI codebase while maintaining platform-specific accessibility.
 
-### 1. Presentation Layer (`spectra-ui-android`, `spectra-ui-ios`)
-- **Responsibility**: Rendering states, observing data flows, and routing user interactions.
-- **Implementation**: Utilizes declarative native frameworks (Jetpack Compose and SwiftUI) for the best possible user experience. ViewModels and StateHolders coordinate between the UI components and the core framework. This layer also provides developer access mechanisms (e.g., `SpectraLoggerFabOverlay` for Android, `.onShakeToRevealSpectraLogger()` for iOS) and the `SettingsScreen` to configure the SDK at runtime.
+### 1. Presentation Layer (`spectra-ui`)
+- **Responsibility**: Rendering states, observing data flows, and routing user interactions using Compose Multiplatform.
+- **Implementation**: Single UI implementation for both platforms with adaptive layouts for tablets/phones. Provides developer access mechanisms (e.g., `SpectraLoggerFabOverlay` for Android, `SpectraLoggerView` SwiftUI wrapper for iOS).
 - **Dependency**: Depends on the Domain Layer. It knows nothing about how data is stored or intercepted.
 
 ### 2. Domain Layer (`spectra-core/src/commonMain/kotlin/com/spectra/logger/domain`)
 - **Responsibility**: Encapsulating the pure business rules and core entities of the logger (e.g., `LogEntry`, `NetworkLogEntry`).
-- **Implementation**: Written in pure Kotlin Multiplatform (KMP), agnostic to Android or iOS specific APIs. Exposes core interfaces (e.g., `LogStorage`) that define the contract for manipulating logs.
+- **Implementation**: Written in pure Kotlin Multiplatform (KMP), agnostic to Android or iOS specific APIs.
 - **Dependency**: The core, innermost layer. It has no dependencies on the Data or Presentation layers.
 
 ### 3. Data / Storage Layer (`spectra-core/src/commonMain/kotlin/com/spectra/logger/domain/storage`)
-- **Responsibility**: Implementing the interfaces defined in the Domain layer to actually store, retrieve, and filter data (e.g., `InMemoryBuffer`).
-- **Implementation**: Concrete implementations of Data layer abstractions. It manages circular buffers, file system IO (`FileLogStorage`), and thread-safe data access mechanics. File persistence is managed concurrently and buffered lazily to avoid locking the UI thread.
+- **Responsibility**: Implementing the interfaces defined in the Domain layer to actually store, retrieve, and filter data.
+- **Implementation**: Concrete implementations managing circular buffers, file system IO, and thread-safe data access mechanics.
 - **Dependency**: Depends on the Domain layer interfaces it implements.
 
 ## Key Design Decisions
 
-### 1. Two-Layer SDK Architecture
+### 1. Unified UI Architecture
 
-**Decision**: Split into core (KMP) and UI (platform-specific) layers
-
-**Rationale**:
-- ✅ Native look & feel per platform
-- ✅ Users can use core without UI
-- ✅ Easier to maintain platform-specific designs
-- ✅ Industry standard (Firebase, Stripe, Amplify pattern)
-
-**Trade-offs**:
-- More complexity than single-layer
-- UI code not shared (intentional for native experience)
-
-### 2. Monorepo vs Multi-Repo
-
-**Decision**: Monorepo
+**Decision**: Migrate from native UI modules to a single Compose Multiplatform module (`spectra-ui`).
 
 **Rationale**:
-- ✅ Single source of truth
-- ✅ Atomic commits across layers
-- ✅ Simpler CI/CD
-- ✅ Easier for contributors
+- ✅ 100% logic and UI reuse across iOS/Android.
+- ✅ Consistent feature set and styling.
+- ✅ Faster development cycle for new UI features.
+- ✅ Adaptive layouts built-in for all form factors.
 
-**Examples**: Firebase, Stripe, Sentry all use monorepos
+### 2. XCFramework Distribution
 
-### 3. Swift Package for iOS UI
-
-**Decision**: Swift Package Manager (not CocoaPods/Carthage)
+**Decision**: Distribute as binary XCFrameworks for Core and UI.
 
 **Rationale**:
-- ✅ Apple's recommended approach
-- ✅ Modern, built into Xcode
-- ✅ Source-based distribution
-- ✅ Better for monorepos
-
-### 4. XCFramework for KMP
-
-**Decision**: Binary XCFramework (not source)
-
-**Rationale**:
-- ✅ Compiles once, reuse everywhere
-- ✅ Faster builds for consumers
-- ✅ Hides Kotlin implementation details
-- ✅ Standard iOS distribution format
-
-## Data Flow
-
-### iOS
-
-```
-┌──────────────────┐
-│   User Action    │
-│   (SwiftUI)      │
-└────────┬─────────┘
-         │
-┌────────▼─────────┐
-│  LogsViewModel   │  ← Swift
-│  (ObservableObj) │
-└────────┬─────────┘
-         │
-┌────────▼─────────┐
-│  LogStorage      │  ← KMP (from XCFramework)
-│  (Kotlin)        │
-└────────┬─────────┘
-         │
-┌────────▼─────────┐
-│  InMemoryBuffer  │  ← KMP
-│  (Circular)      │
-└──────────────────┘
-```
-
-### Android
-
-```
-┌──────────────────┐
-│   User Action    │
-│   (Compose)      │
-└────────┬─────────┘
-         │
-┌────────▼─────────┐
-│  ViewModel       │  ← Android
-│  (StateFlow)     │
-└────────┬─────────┘
-         │
-┌────────▼─────────┐
-│  LogStorage      │  ← KMP
-│  (Kotlin)        │
-└────────┬─────────┘
-         │
-┌────────▼─────────┐
-│  InMemoryBuffer  │  ← KMP
-│  (Circular)      │
-└──────────────────┘
-```
+- ✅ Faster builds for consumers.
+- ✅ Hides Kotlin implementation details.
+- ✅ Standard iOS distribution format via SPM.
 
 ## Build Process
-
-### Development Build
-
-```mermaid
-graph TD
-    A[Developer] --> B[./scripts/setup/setup-dev.sh]
-    B --> C[Build KMP]
-    C --> D[Create XCFramework]
-    D --> E[Ready for Development]
-
-    F[iOS Dev] --> G[Open Xcode]
-    G --> H[Uses SpectraLoggerUI Package]
-    H --> I[Imports XCFramework]
-
-    J[Android Dev] --> K[Open Android Studio]
-    K --> L[Uses shared module]
-```
 
 ### CI/CD Pipeline
 
@@ -274,19 +141,16 @@ graph TD
     B -->|main/develop| C[CI Workflow]
     B -->|tag v*| D[Release Workflow]
 
-    C --> E[Build KMP]
-    C --> F[Build iOS]
-    C --> G[Build Android]
-    E --> H[Run Tests]
-    F --> H
-    G --> H
-    H --> I{Pass?}
-    I -->|Yes| J[✅ Success]
-    I -->|No| K[❌ Fail]
+    C --> E[Build Core + UI]
+    C --> F[Build iOS XCFrameworks]
+    C --> G[Build Android APK]
+    E --> H[Run KMP Tests]
+    F --> I[Build iOS Example]
+    G --> J[Run Android Tests]
 
-    D --> L[Build All]
+    D --> L[Build Release Artifacts]
     L --> M[Create GitHub Release]
-    M --> N[Upload XCFramework]
+    M --> N[Upload XCFrameworks]
     N --> O[Publish to Maven]
 ```
 
@@ -297,16 +161,9 @@ graph TD
 **Swift Package Manager** (Recommended)
 
 ```swift
-// Add to Package.swift or Xcode
 dependencies: [
-    .package(url: "https://github.com/yourname/Spectra", from: "1.0.0")
+    .package(url: "https://github.com/snooky23/Spectra", from: "1.0.4")
 ]
-```
-
-**CocoaPods** (Coming Soon)
-
-```ruby
-pod 'SpectraLoggerUI', '~> 1.0'
 ```
 
 ### Android
@@ -315,44 +172,13 @@ pod 'SpectraLoggerUI', '~> 1.0'
 
 ```kotlin
 dependencies {
-    implementation("com.spectra.logger:spectra-logger:1.0.0")
+    implementation("io.github.snooky23:spectra-core:1.0.4")
+    implementation("io.github.snooky23:spectra-ui:1.0.4")
 }
 ```
 
-## Performance Characteristics
-
-| Operation | Target | Critical Threshold |
-|-----------|--------|-------------------|
-| Log Capture | < 0.1ms | < 1ms |
-| Network Intercept | < 5ms | < 20ms |
-| UI Scroll (60 FPS) | 16ms/frame | 33ms/frame |
-| Memory (10K logs) | < 50MB | < 100MB |
-
-## Security Considerations
-
-- No sensitive data logging by default
-- Optional encryption for persistent storage
-- Network logs exclude sensitive headers (Authorization, etc.)
-- Compliance with GDPR/CCPA for data retention
-
-## Future Enhancements
-
-- [ ] Web platform support (Kotlin/JS)
-- [ ] Desktop support (JVM)
-- [ ] Remote logging backend
-- [ ] Log encryption
-- [ ] Analytics integration
-- [ ] Crash reporting integration
-
-## References
-
-- [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html)
-- [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/)
-- [Swift Package Manager](https://swift.org/package-manager/)
-- [Firebase Architecture](https://firebase.google.com/docs/ios/setup)
-
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2025-10-07
+**Document Version**: 1.1
+**Last Updated**: 2026-04-07
 **Maintainer**: Spectra Team

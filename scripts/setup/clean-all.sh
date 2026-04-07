@@ -23,12 +23,13 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     rm -rf ~/Library/Developer/Xcode/DerivedData/SpectraExample-*
 fi
 
-# Clean XCFrameworks
-echo "🗑️  Cleaning XCFrameworks..."
-rm -rf "$PROJECT_ROOT/spectra-core/build/XCFrameworks"
+# Clean Centralized XCFrameworks
+echo "🗑️  Cleaning Centralized XCFrameworks..."
+rm -rf "$PROJECT_ROOT/build/xcframework"
 
-# Clean Swift Package build
-echo "🗑️  Cleaning Swift Package builds..."
-rm -rf "$PROJECT_ROOT/spectra-ui-ios/.build"
+# Clean Module XCFrameworks
+echo "🗑️  Cleaning Module XCFrameworks..."
+rm -rf "$PROJECT_ROOT/spectra-core/build/XCFrameworks"
+rm -rf "$PROJECT_ROOT/spectra-ui/build/XCFrameworks"
 
 echo "✅ All artifacts cleaned!"

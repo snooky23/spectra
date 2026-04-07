@@ -7,10 +7,10 @@
 **Spectra Logger** is a KMP logging framework for mobile apps (iOS + Android). It provides:
 - Application event logging with severity levels
 - Network request/response logging  
-- On-device UI for viewing/filtering logs
+- Unified on-device UI (Compose Multiplatform) for viewing/filtering logs
 - Export functionality
 
-**Current Status**: v1.0.1
+**Current Status**: v1.0.4
 
 ---
 
@@ -18,32 +18,28 @@
 
 ```
 Spectra/
-├── spectra-core/                # Core KMP module (Kotlin)
+├── spectra-core/                # Core KMP module (Kotlin) - Logic & Storage
 │   └── src/
 │       ├── commonMain/          # Shared business logic
 │       ├── androidMain/         # Android-specific implementations
 │       ├── iosMain/             # iOS-specific implementations
 │       └── commonTest/          # Shared tests
 │
-├── spectra-ui-ios/              # iOS SwiftUI Package
-│   ├── Package.swift
-│   └── Sources/SpectraLoggerUI/
-│       ├── Views/               # SwiftUI views
-│       ├── ViewModels/          # MVVM view models
-│       └── Components/          # Reusable UI components
-│
-├── spectra-ui-android/          # Android Compose UI module
-│   └── src/main/kotlin/
-│       └── com/spectra/logger/ui/compose/
+├── spectra-ui/                  # Unified UI module (Compose Multiplatform)
+│   └── src/
+│       ├── commonMain/          # Shared UI (Adaptive Navigation, Detail Panes)
+│       ├── androidMain/         # Android integration (FAB, Overlay)
+│       └── iosMain/             # iOS integration (SwiftUI Bridge)
 │
 ├── examples/                    # Example apps
-│   ├── android-native/          # Native Android demo
-│   ├── ios-native/              # Native iOS demo
+│   ├── android-native/          # Native Android demo using spectra-ui
+│   ├── ios-native/              # Native iOS demo using SpectraLoggerUI.xcframework
 │   └── kmp-app/                 # KMP demo
 │
 ├── scripts/                     # Build & CI scripts
+│   ├── build/                   # Modular build scripts (KMP, XCFramework, etc)
 │   ├── code-quality.sh          # ktlint + detekt
-│   ├── build.sh, test.sh, ci.sh
+│   ├── ci.sh, test.sh
 │   └── bump-version.py          # Version management
 │
 └── docs/                        # Documentation
@@ -61,9 +57,10 @@ When starting work, check these files in `docs/`:
 
 | File | Purpose |
 |------|---------|
-| `docs/SESSION.md` | Current progress, what was done last, blockers |
-| `docs/TASKS.md` | Task breakdown and milestones |
-| `docs/PLANNING.md` | Architecture decisions and design |
+| `docs/internal/SESSION.md` | Current progress, what was done last, blockers |
+| `TASKS.md` | Project tasks and milestones tracking (Root) |
+| `docs/internal/PLANNING.md` | Architecture decisions and design |
+| `docs/design/KMP_UI_ADAPTIVE_SPEC.md` | Unified UI Architecture specification |
 
 ---
 
@@ -71,7 +68,7 @@ When starting work, check these files in `docs/`:
 
 **Always run before committing:**
 ```bash
-./scripts/code-quality.sh
+./gradlew ktlintCheck detekt
 ```
 
 Auto-fix formatting:
@@ -84,41 +81,36 @@ Auto-fix formatting:
 ## Build & Test
 
 ```bash
-# Build everything
-./gradlew build
+# Build KMP modules
+./gradlew :spectra-core:assemble :spectra-ui:assemble
 
-# Run tests
-./gradlew test
+# Build iOS XCFrameworks (Device + Simulator)
+./scripts/build/build-xcframework.sh
 
-# Full CI pipeline
+# Run all tests
+./gradlew :spectra-core:allTests :spectra-ui:allTests
+
+# Full CI pipeline simulation
 ./scripts/ci.sh
-
-# iOS Swift package tests
-cd spectra-ui-ios && swift test
 ```
 
 ---
 
 ## Architecture Notes
 
-### KMP Code (spectra-core/)
+### Unified UI (spectra-ui/)
+- **Compose Multiplatform**: Single UI implementation for both platforms.
+- **Adaptive UI**: Uses `NavigationSuiteScaffold` and `NavigableListDetailPaneScaffold` for large-screen support.
+- **Platform Bridging**:
+  - Android: `SpectraLoggerFabOverlay` for easy integration.
+  - iOS: `ComposeUIViewController` wrapped for SwiftUI via SKIE.
+
+### Architecture
 - **Clean Architecture**: Domain → Data → Platform layers
-- **MVVM** for UI state management
+- **MVVM** for UI state management (Jetbrains Lifecycle)
 - **expect/actual** for platform-specific code
-- Domain layer has no platform dependencies
-
-### iOS UI (spectra-ui-ios/)
-- SwiftUI Package with views and ViewModels
-- Depends on spectra-core via local path
-
-### Android UI (spectra-ui-android/)
-- Jetpack Compose module
-- Depends on spectra-core via Gradle project reference
-
-### Key Patterns
 - Circular buffers for bounded memory
 - Thread-safe logging (atomic operations)
-- Flow/StateFlow for reactive updates
 
 ---
 
@@ -127,22 +119,11 @@ cd spectra-ui-ios && swift test
 Use [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
-feat(core): add log rotation support
-fix(android): resolve threading issue in interceptor  
-docs(readme): update installation instructions
-test(domain): add FilterLogsUseCase tests
+feat(ui): add search filtering to network logs
+fix(android): resolve memory leak in FAB overlay
+perf: enable Gradle configuration cache
+docs: update integration guide for v1.0.4
 ```
-
----
-
-## Performance Targets
-
-| Operation | Target | Critical |
-|-----------|--------|----------|
-| Log capture | < 0.1ms | < 1ms |
-| Network intercept | < 5ms | < 20ms |
-| UI scroll | 60 FPS | - |
-| Memory (10K logs) | < 50MB | - |
 
 ---
 
@@ -155,12 +136,20 @@ SpectraLogger.e("TAG", "Error", throwable = exception)
 SpectraLogger.i("TAG", "Info", metadata = mapOf("key" to "value"))
 ```
 
-### Show Logger UI
+### Show Logger UI (Kotlin/Android)
 ```kotlin
-SpectraLogger.showScreen()
-SpectraLogger.dismissScreen()
+SpectraLogger.showScreen() // Or use SpectraLoggerFabOverlay
+```
+
+### Show Logger UI (Swift/iOS)
+```swift
+import SpectraUI
+// ...
+.sheet(isPresented: $showLogs) {
+    SpectraLoggerView()
+}
 ```
 
 ---
 
-**Last Updated**: 2025-12-12
+**Last Updated**: 2026-04-07
