@@ -19,8 +19,8 @@ Add the unified KMP UI and Core SDKs to your `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("io.github.snooky23:spectra-core:1.0.5")
-    implementation("io.github.snooky23:spectra-ui:1.0.5")
+    implementation("io.github.snooky23:spectra-core:1.0.4")
+    implementation("io.github.snooky23:spectra-ui:1.0.4")
 }
 ```
 

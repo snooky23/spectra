@@ -9,6 +9,7 @@ scripts/
 ├── build/          # Build scripts for all platforms
 ├── test/           # Test scripts
 ├── setup/          # Development environment setup
+├── release/        # Release automation
 ├── ci/             # CI/CD utility scripts
 └── README.md       # This file
 ```
@@ -42,7 +43,7 @@ scripts/
 
 ### `build-kmp.sh`
 
-Builds the Kotlin Multiplatform shared library for all platforms.
+Builds the Kotlin Multiplatform shared modules for all platforms.
 
 ```bash
 ./scripts/build/build-kmp.sh
@@ -50,36 +51,54 @@ Builds the Kotlin Multiplatform shared library for all platforms.
 
 **What it does:**
 - Cleans previous builds
-- Builds Android release variant
-- Builds iOS frameworks (arm64, simulator-arm64, x64)
+- Builds Android variants for Core and UI
+- Builds iOS frameworks for both modules
 
 **Output:**
-- `shared/build/bin/iosArm64/releaseFramework/SpectraLogger.framework`
-- `shared/build/bin/iosSimulatorArm64/releaseFramework/SpectraLogger.framework`
-- `shared/build/bin/iosX64/releaseFramework/SpectraLogger.framework`
-- `shared/build/outputs/aar/shared-release.aar`
+- `spectra-core/build/outputs/aar/spectra-core-release.aar`
+- `spectra-ui/build/outputs/aar/spectra-ui-release.aar`
 
 ---
 
-### `build-ios-xcframework.sh`
+### `build-xcframework.sh`
 
-Creates a universal iOS XCFramework from the KMP frameworks.
+Creates universal iOS XCFrameworks using the official KMP Gradle tasks.
 
 ```bash
-./scripts/build/build-ios-xcframework.sh
+./scripts/build/build-xcframework.sh [Release|Debug]
 ```
 
 **What it does:**
-1. Builds KMP frameworks (calls `build-kmp.sh`)
-2. Combines simulator architectures into FAT binary
-3. Creates XCFramework with device + simulator support
+1. Runs official `assembleXCFramework` tasks for both Core and UI
+2. Centralizes the output into `build/xcframework/`
 
 **Output:**
-- `shared/build/XCFrameworks/release/SpectraLogger.xcframework`
+- `build/xcframework/SpectraLogger.xcframework`
+- `build/xcframework/SpectraLoggerUI.xcframework`
 
 **Used by:**
-- SpectraLoggerUI Swift Package (as binary dependency)
-- Distribution via SPM/CocoaPods
+- iOS Native Example App (via root `Package.swift`)
+- Distribution via Swift Package Manager
+
+---
+
+## Utility Scripts
+
+### `sync-version.sh`
+
+Syncs the version number from `gradle.properties` to all READMEs, documentation, and the `Package.swift` file.
+
+```bash
+./scripts/sync-version.sh [new_version]
+```
+
+### `clean-all.sh`
+
+Removes all build artifacts, including Gradle caches, XCFrameworks, and derived data.
+
+```bash
+./scripts/setup/clean-all.sh
+```
 
 ---
 

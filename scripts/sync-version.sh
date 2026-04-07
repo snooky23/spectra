@@ -20,7 +20,11 @@ NC='\033[0m'
 if [ -n "$1" ]; then
     NEW_VERSION="$1"
     echo -e "${BLUE}Setting version to: $NEW_VERSION${NC}"
-    sed -i '' "s/^VERSION_NAME=.*/VERSION_NAME=$NEW_VERSION/" "$PROJECT_ROOT/gradle.properties"
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i '' "s/^VERSION_NAME=.*/VERSION_NAME=$NEW_VERSION/" "$PROJECT_ROOT/gradle.properties"
+    else
+        sed -i "s/^VERSION_NAME=.*/VERSION_NAME=$NEW_VERSION/" "$PROJECT_ROOT/gradle.properties"
+    fi
 fi
 
 # Read version from gradle.properties (source of truth)
@@ -28,22 +32,39 @@ VERSION=$(grep "^VERSION_NAME=" "$PROJECT_ROOT/gradle.properties" | cut -d'=' -f
 echo -e "${GREEN}Syncing version: $VERSION${NC}"
 
 # Update README.md
-sed -i '' "s|io\.github\.snooky23:spectra-core:[0-9.]*|io.github.snooky23:spectra-core:$VERSION|g" "$PROJECT_ROOT/README.md"
-sed -i '' "s|from: \"[0-9.]*\"|from: \"$VERSION\"|g" "$PROJECT_ROOT/README.md"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "s|io\.github\.snooky23:spectra-core:[0-9.]*|io.github.snooky23:spectra-core:$VERSION|g" "$PROJECT_ROOT/README.md"
+    sed -i '' "s|from: \"[0-9.]*\"|from: \"$VERSION\"|g" "$PROJECT_ROOT/README.md"
+else
+    sed -i "s|io\.github\.snooky23:spectra-core:[0-9.]*|io.github.snooky23:spectra-core:$VERSION|g" "$PROJECT_ROOT/README.md"
+    sed -i "s|from: \"[0-9.]*\"|from: \"$VERSION\"|g" "$PROJECT_ROOT/README.md"
+fi
 echo "✓ README.md"
 
 # Update Package.swift (binary target URL)
-sed -i '' "s|/releases/download/v[0-9.]*/|/releases/download/v$VERSION/|g" "$PROJECT_ROOT/Package.swift"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "s|releases/download/v[0-9.]*|releases/download/v$VERSION|g" "$PROJECT_ROOT/Package.swift"
+else
+    sed -i "s|releases/download/v[0-9.]*|releases/download/v$VERSION|g" "$PROJECT_ROOT/Package.swift"
+fi
 echo "✓ Package.swift"
 
 # Update CHANGELOG.md installation examples
-sed -i '' "s|io\.github\.snooky23:spectra-core:[0-9.]*|io.github.snooky23:spectra-core:$VERSION|g" "$PROJECT_ROOT/CHANGELOG.md"
-sed -i '' "s|from: \"[0-9.]*\"|from: \"$VERSION\"|g" "$PROJECT_ROOT/CHANGELOG.md"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "s|io\.github\.snooky23:spectra-core:[0-9.]*|io.github.snooky23:spectra-core:$VERSION|g" "$PROJECT_ROOT/CHANGELOG.md"
+    sed -i '' "s|from: \"[0-9.]*\"|from: \"$VERSION\"|g" "$PROJECT_ROOT/CHANGELOG.md"
+else
+    sed -i "s|io\.github\.snooky23:spectra-core:[0-9.]*|io.github.snooky23:spectra-core:$VERSION|g" "$PROJECT_ROOT/CHANGELOG.md"
+    sed -i "s|from: \"[0-9.]*\"|from: \"$VERSION\"|g" "$PROJECT_ROOT/CHANGELOG.md"
+fi
 echo "✓ CHANGELOG.md"
 
 # Update CLAUDE.md
-sed -i '' "s|v[0-9.]*-SNAPSHOT|v$VERSION|g" "$PROJECT_ROOT/CLAUDE.md"
-sed -i '' "s|v[0-9.]* (under active development)|v$VERSION|g" "$PROJECT_ROOT/CLAUDE.md"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "s|**Current Status**: v[0-9.]*|**Current Status**: v$VERSION|g" "$PROJECT_ROOT/CLAUDE.md"
+else
+    sed -i "s|**Current Status**: v[0-9.]*|**Current Status**: v$VERSION|g" "$PROJECT_ROOT/CLAUDE.md"
+fi
 echo "✓ CLAUDE.md"
 
 echo -e "\n${GREEN}✅ All files synced to version $VERSION${NC}"
@@ -51,4 +72,4 @@ echo -e "${BLUE}Next steps:${NC}"
 echo "  git add -A"
 echo "  git commit -m \"chore: bump version to $VERSION\""
 echo "  git tag v$VERSION"
-echo "  git push origin main v$VERSION"
+echo "  git push origin main --tags"
