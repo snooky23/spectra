@@ -8,99 +8,92 @@ on:
     - cron: '0 0 * * 1'
 
 # Don't run on every PR - only scheduled and main branch pushes
-# This reduces CI time while still maintaining security coverage
-
-env:
-  JAVA_VERSION: '17'
+# This reduces CI time while maintaining security oversight
+concurrency:
+  group: security-scan-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  # Dependency vulnerability scanning
-  dependency-scan:
-    name: Dependency Vulnerability Scan
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: 'temurin'
-          cache: gradle
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Run Gradle dependency check
-        run: ./gradlew dependencyCheckAnalyze --no-daemon || true
-        continue-on-error: true
-
-      - name: Upload dependency check report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dependency-check-report
-          path: '**/build/reports/dependency-check-report.html'
-
-  # Secret scanning
-  secret-scan:
-    name: Secret Detection
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Run Gitleaks
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
-
-  # Code scanning with CodeQL (only Kotlin - Swift handled by Xcode)
   codeql:
     name: CodeQL Analysis
     runs-on: ubuntu-latest
     permissions:
+      security-events: write
       actions: read
       contents: read
-      security-events: write
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: kotlin
+          # Use advanced configuration if needed
+          # queries: security-extended,security-and-quality
 
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version: '17'
           distribution: 'temurin'
           cache: gradle
 
       - name: Build Kotlin
         run: |
           chmod +x gradlew
-          ./gradlew :spectra-core:build :spectra-ui:build -x test --no-daemon
+          # Build only Android debug targets to capture both common and Android code
+          # This is faster and avoids iOS target complexities on Linux
+          ./gradlew :spectra-core:assembleDebug :spectra-ui:assembleDebug -x test --no-daemon
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:kotlin"
 
-  # License compliance check
-  license-check:
-    name: License Compliance
+  dependency-scan:
+    name: Dependency Scan
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
+      - name: Dependency Check
+        uses: owasp/dependency-check-action@v2.4.0
+        with:
+          project: 'Spectra'
+          path: '.'
+          format: 'HTML'
+          out: 'reports'
+          args: >
+            --suppression dependency-check-suppressions.xml
+            --failOnCVSS 7
+        continue-on-error: true
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: reports
+
+  secret-scan:
+    name: Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  license-check:
+    name: License Check
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -108,7 +101,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version: '17'
           distribution: 'temurin'
           cache: gradle
 
