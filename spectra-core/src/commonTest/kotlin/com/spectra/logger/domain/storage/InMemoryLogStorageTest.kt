@@ -5,7 +5,6 @@ import com.spectra.logger.domain.model.LogEntry
 import com.spectra.logger.domain.model.LogFilter
 import com.spectra.logger.domain.model.LogLevel
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Clock
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -17,7 +16,7 @@ class InMemoryLogStorageTest {
         tag: String = "Test",
     ) = LogEntry(
         id = id,
-        timestamp = Clock.System.now(),
+        timestamp = com.spectra.logger.utils.SpectraTime.now(),
         level = level,
         tag = tag,
         message = "Message $id",

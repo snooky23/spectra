@@ -35,7 +35,7 @@ object LogExporter {
         val logs = storage.query(filter)
         return buildString {
             appendLine("=== Spectra Logger Export ===")
-            appendLine("Timestamp: ${formatTimestamp(kotlinx.datetime.Clock.System.now())}")
+            appendLine("Timestamp: ${formatTimestamp(kotlinx.datetime.com.spectra.logger.utils.SpectraTime.now())}")
             appendLine("Total logs: ${logs.size}")
             appendLine()
 
@@ -67,7 +67,7 @@ object LogExporter {
         val logs = storage.query(filter)
         return buildString {
             appendLine("{")
-            appendLine("  \"exportTimestamp\": \"${kotlinx.datetime.Clock.System.now()}\",")
+            appendLine("  \"exportTimestamp\": \"${kotlinx.datetime.com.spectra.logger.utils.SpectraTime.now()}\",")
             appendLine("  \"totalLogs\": ${logs.size},")
             appendLine("  \"logs\": [")
 
@@ -147,7 +147,7 @@ object LogExporter {
         val logs = storage.query(filter)
         return buildString {
             appendLine("=== Spectra Network Logger Export ===")
-            appendLine("Timestamp: ${formatTimestamp(kotlinx.datetime.Clock.System.now())}")
+            appendLine("Timestamp: ${formatTimestamp(kotlinx.datetime.com.spectra.logger.utils.SpectraTime.now())}")
             appendLine("Total requests: ${logs.size}")
             appendLine()
 
@@ -183,7 +183,7 @@ object LogExporter {
         val logs = storage.query(filter)
         return buildString {
             appendLine("{")
-            appendLine("  \"exportTimestamp\": \"${kotlinx.datetime.Clock.System.now()}\",")
+            appendLine("  \"exportTimestamp\": \"${kotlinx.datetime.com.spectra.logger.utils.SpectraTime.now()}\",")
             appendLine("  \"totalRequests\": ${logs.size},")
             appendLine("  \"requests\": [")
 

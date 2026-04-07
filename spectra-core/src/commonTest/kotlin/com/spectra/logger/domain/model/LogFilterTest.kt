@@ -1,6 +1,5 @@
 package com.spectra.logger.domain.model
 
-import kotlinx.datetime.Clock
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -9,7 +8,7 @@ class LogFilterTest {
     private val sampleEntry =
         LogEntry(
             id = "test-1",
-            timestamp = Clock.System.now(),
+            timestamp = com.spectra.logger.utils.SpectraTime.now(),
             level = LogLevel.INFO,
             tag = "TestTag",
             message = "Test message",
@@ -58,7 +57,7 @@ class LogFilterTest {
 
     @Test
     fun testTimestampFilter() {
-        val now = Clock.System.now()
+        val now = com.spectra.logger.utils.SpectraTime.now()
         val entry = sampleEntry.copy(timestamp = now)
 
         val beforeFilter = LogFilter(fromTimestamp = now.toEpochMilliseconds() - 1000)

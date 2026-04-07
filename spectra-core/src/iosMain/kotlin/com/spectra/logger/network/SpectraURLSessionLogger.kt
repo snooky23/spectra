@@ -11,7 +11,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import platform.Foundation.NSData
 import platform.Foundation.NSHTTPURLResponse
 import platform.Foundation.NSURLRequest
@@ -108,7 +107,7 @@ object SpectraURLSessionLogger {
         val entry =
             NetworkLogEntry(
                 id = IdGenerator.generate(),
-                timestamp = Clock.System.now(),
+                timestamp = com.spectra.logger.utils.SpectraTime.now(),
                 url = url,
                 method = method,
                 requestHeaders = emptyMap(),
@@ -143,10 +142,10 @@ object SpectraURLSessionLogger {
         completionHandler: (NSData?, NSURLResponse?, platform.Foundation.NSError?) -> Unit,
     ): NSURLSessionDataTask {
         val url = request.URL?.absoluteString ?: ""
-        val startTime = Clock.System.now().toEpochMilliseconds()
+        val startTime = com.spectra.logger.utils.SpectraTime.now().toEpochMilliseconds()
 
         return session.dataTaskWithRequest(request) { data, response, error ->
-            val duration = Clock.System.now().toEpochMilliseconds() - startTime
+            val duration = com.spectra.logger.utils.SpectraTime.now().toEpochMilliseconds() - startTime
             logRequest(url, "GET", response, data, error, duration, storage)
             completionHandler(data, response, error)
         }

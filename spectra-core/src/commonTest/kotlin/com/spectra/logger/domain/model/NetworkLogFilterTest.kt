@@ -1,6 +1,5 @@
 package com.spectra.logger.domain.model
 
-import kotlinx.datetime.Clock
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -9,7 +8,7 @@ class NetworkLogFilterTest {
     private val sampleEntry =
         NetworkLogEntry(
             id = "test-1",
-            timestamp = Clock.System.now(),
+            timestamp = com.spectra.logger.utils.SpectraTime.now(),
             url = "https://api.example.com/users",
             method = "GET",
             responseCode = 200,

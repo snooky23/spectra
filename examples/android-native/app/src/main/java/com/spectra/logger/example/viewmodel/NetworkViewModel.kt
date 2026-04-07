@@ -44,7 +44,7 @@ class NetworkViewModel : ViewModel() {
 
             val entry = NetworkLogEntry(
                 id = UUID.randomUUID().toString(),
-                timestamp = Clock.System.now(),
+                timestamp = com.spectra.logger.utils.SpectraTime.now(),
                 url = url,
                 method = method,
                 requestHeaders = mapOf("Accept" to "application/json"),
