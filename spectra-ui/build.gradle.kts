@@ -1,11 +1,4 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
-import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.provider.Property
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.TaskAction
-import org.gradle.process.ExecOperations
-import javax.inject.Inject
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -31,13 +24,14 @@ kotlin {
     // iOS targets
     val iosFrameworkName = "SpectraLoggerUI"
     val xcf = XCFramework(iosFrameworkName)
-    
-    val iosTargets = listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64(),
-    )
-    
+
+    val iosTargets =
+        listOf(
+            iosX64(),
+            iosArm64(),
+            iosSimulatorArm64(),
+        )
+
     iosTargets.forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = iosFrameworkName
@@ -52,11 +46,11 @@ kotlin {
     }
 
     sourceSets {
-        commonMain {
+        val commonMain by getting {
             dependencies {
                 implementation(project(":spectra-core"))
                 implementation(libs.androidx.lifecycle.viewmodel.compose)
-                
+
                 // Using stable coordinates to avoid deprecated Compose plugin accessors
                 implementation("org.jetbrains.compose.runtime:runtime:1.7.3")
                 implementation("org.jetbrains.compose.foundation:foundation:1.7.3")
@@ -76,23 +70,23 @@ kotlin {
             }
         }
 
-        commonTest {
+        val commonTest by getting {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.kotlinx.coroutines.test)
             }
         }
 
-        androidMain {
+        val androidMain by getting {
             dependencies {
                 implementation(libs.androidx.core.ktx)
             }
         }
 
         val iosMain by creating {
-            dependsOn(commonMain.get())
+            dependsOn(commonMain)
         }
-        
+
         iosTargets.forEach { target ->
             getByName("${target.name}Main").dependsOn(iosMain)
         }

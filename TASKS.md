@@ -76,12 +76,13 @@ See `docs/design/KMP_UI_ADAPTIVE_SPEC.md` for full architectural details.
 
 ## Phase 9: Advanced Build & Performance Optimization
 - [x] **Phase 9.1: Build Analytics & Bottleneck Identification**
-  - [x] Integrate Gradle Build Scans for deep performance analysis.
+  - [x] Integrate Gradle Build Scans (Develocity) for deep performance analysis.
   - [x] Resolve configuration-time resolution issues for better build scalability.
 - [x] **Phase 9.2: Compilation & Tooling Optimization**
   - [x] Fine-tune Kotlin Daemon and JVM memory settings for better compilation throughput.
   - [x] Implement modern Kotlin Multiplatform DSL and latest Gradle features.
   - [x] Suppress machine-specific native target warnings.
+  - [x] Fix ktlint violations in build scripts and source code.
 - [ ] **Phase 9.3: CI/CD Pipeline Acceleration**
   - [ ] Implement remote build caching for GitHub Actions to share build artifacts across PRs.
   - [ ] Optimize XCFramework generation to only build required architectures for testing.

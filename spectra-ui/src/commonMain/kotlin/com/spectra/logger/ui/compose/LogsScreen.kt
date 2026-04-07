@@ -19,7 +19,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spectra.logger.domain.model.LogEntry
 import com.spectra.logger.domain.model.LogLevel
 import com.spectra.logger.ui.compose.components.*
-import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 

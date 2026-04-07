@@ -1,11 +1,9 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import org.gradle.process.ExecOperations
-import javax.inject.Inject
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -71,13 +69,14 @@ kotlin {
     // iOS targets
     val iosFrameworkName = "SpectraLogger"
     val xcf = XCFramework(iosFrameworkName)
-    
-    val iosTargets = listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64(),
-    )
-    
+
+    val iosTargets =
+        listOf(
+            iosX64(),
+            iosArm64(),
+            iosSimulatorArm64(),
+        )
+
     iosTargets.forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = iosFrameworkName
@@ -113,6 +112,7 @@ kotlin {
                 implementation(libs.androidx.core.ktx)
                 implementation(libs.kotlinx.coroutines.android)
                 implementation(libs.okhttp)
+                // Compose UI
                 implementation(libs.bundles.compose.ui)
                 implementation(libs.bundles.androidx.compose)
             }
@@ -131,7 +131,7 @@ kotlin {
         val iosTest by creating {
             dependsOn(commonTest)
         }
-        
+
         iosTargets.forEach { target ->
             getByName("${target.name}Main").dependsOn(iosMain)
             getByName("${target.name}Test").dependsOn(iosTest)
@@ -139,7 +139,7 @@ kotlin {
     }
 }
 
-// Publishing configuration
+// Publishing configuration via Vanniktech Maven Publish Plugin
 mavenPublishing {
     publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
@@ -171,7 +171,7 @@ mavenPublishing {
     }
 }
 
-// Jacoco configuration
+// Jacoco configuration for code coverage
 jacoco {
     toolVersion = "0.8.11"
 }

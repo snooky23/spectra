@@ -15,9 +15,6 @@ import androidx.compose.ui.unit.dp
 import com.spectra.logger.domain.model.LogLevel
 import com.spectra.logger.ui.compose.components.DateTimePickerRow
 import com.spectra.logger.ui.compose.components.colorForLogLevel
-import kotlinx.datetime.Clock
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.hours
 
 /**
  * Filter bottom sheet for advanced log filtering
@@ -242,7 +239,7 @@ fun LogsFilterSheet(
                         onClick = {
                             localFilter =
                                 localFilter.copy(
-                                    fromTimestamp = com.spectra.logger.utils.SpectraTime.now() - 1.hours,
+                                    fromTimestamp = com.spectra.logger.utils.SpectraTime.hoursAgo(1),
                                     toTimestamp = null,
                                 )
                         },
@@ -252,7 +249,7 @@ fun LogsFilterSheet(
                         onClick = {
                             localFilter =
                                 localFilter.copy(
-                                    fromTimestamp = com.spectra.logger.utils.SpectraTime.now() - 1.days,
+                                    fromTimestamp = com.spectra.logger.utils.SpectraTime.daysAgo(1),
                                     toTimestamp = null,
                                 )
                         },
