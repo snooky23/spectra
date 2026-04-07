@@ -11,8 +11,6 @@ Documentation for integrating and using Spectra Logger:
 
 ### Package Manager Guides
 - [Swift Package Manager](guides/SPM_DISTRIBUTION_GUIDE.md)
-- [CocoaPods](guides/COCOAPODS_GUIDE.md)
-- [Carthage](guides/CARTHAGE_GUIDE.md)
 - [Swift Package Setup](guides/SWIFT_PACKAGE_SETUP.md)
 
 ## 🎨 Design (`design/`)
