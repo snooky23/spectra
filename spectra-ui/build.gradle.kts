@@ -1,3 +1,12 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.TaskAction
+import org.gradle.process.ExecOperations
+import javax.inject.Inject
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.jetbrains.compose)
@@ -22,16 +31,17 @@ kotlin {
     }
 
     // iOS targets
+    val iosFrameworkName = "SpectraLoggerUI"
+    val xcf = XCFramework(iosFrameworkName)
     listOf(
         iosX64(),
         iosArm64(),
         iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "SpectraLoggerUI"
+            baseName = iosFrameworkName
             isStatic = true
-            // Export the core library to the UI framework if needed
-            // export(project(":spectra-core"))
+            xcf.add(this)
         }
     }
 
@@ -82,52 +92,6 @@ kotlin {
             iosSimulatorArm64Main.dependsOn(this)
         }
     }
-}
-
-// Task to create XCFramework for iOS
-abstract class CreateXCFrameworkTask : DefaultTask() {
-    @get:Input
-    abstract val frameworkName: Property<String>
-
-    @get:InputDirectory
-    abstract val buildDirectory: DirectoryProperty
-
-    @get:Inject
-    abstract val execOperations: ExecOperations
-
-    @TaskAction
-    fun createXCFramework() {
-        val buildDir = buildDirectory.get().asFile
-        val name = frameworkName.get()
-        val buildType = "Release"
-        val xcframeworkPath = "$buildDir/XCFrameworks/${buildType.lowercase()}/$name.xcframework"
-
-        execOperations.exec {
-            commandLine(
-                "xcodebuild",
-                "-create-xcframework",
-                "-framework",
-                "$buildDir/bin/iosArm64/releaseFramework/$name.framework",
-                "-framework",
-                "$buildDir/bin/iosSimulatorArm64/releaseFramework/$name.framework",
-                "-output",
-                xcframeworkPath,
-            )
-        }
-        println("✅ XCFramework created at: $xcframeworkPath")
-    }
-}
-
-tasks.register<CreateXCFrameworkTask>("createXCFramework") {
-    group = "build"
-    description = "Creates an XCFramework for all iOS targets"
-    frameworkName.set("SpectraLoggerUI")
-    buildDirectory.set(project.layout.buildDirectory)
-
-    dependsOn(
-        "linkReleaseFrameworkIosArm64",
-        "linkReleaseFrameworkIosSimulatorArm64",
-    )
 }
 
 // Publishing configuration

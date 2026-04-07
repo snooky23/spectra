@@ -11,10 +11,10 @@ Add the dependency to your module's `build.gradle.kts`:
 ```kotlin
 dependencies {
     // Core SDK (required)
-    implementation("io.github.snooky23:spectra-core:1.0.5")
+    implementation("io.github.snooky23:spectra-core:1.0.4")
     
     // Unified UI SDK (optional - adds adaptive log viewer)
-    implementation("io.github.snooky23:spectra-ui:1.0.5")
+    implementation("io.github.snooky23:spectra-ui:1.0.4")
 }
 ```
 
@@ -30,7 +30,7 @@ dependencies {
    ```
    https://github.com/snooky23/spectra.git
    ```
-4. **Select version:** `1.0.5` or "Up to Next Major Version"
+4. **Select version:** `1.0.4` or "Up to Next Major Version"
 5. **Choose products:**
    - ✅ **SpectraLogger** (Core framework - required)
    - ✅ **SpectraLoggerUI** (Unified UI SDK - optional binary target)
@@ -52,7 +52,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/snooky23/spectra.git",
-            from: "1.0.5"
+            from: "1.0.4"
         )
     ],
     targets: [

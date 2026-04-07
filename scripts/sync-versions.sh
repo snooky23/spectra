@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Sync versions across all Spectra packages
-# This script ensures SpectraLogger (Kotlin) and SpectraLoggerUI (Swift) are at the same version
+# This script ensures SpectraLogger Core and UI are at the same version
 
 set -e
 
@@ -19,19 +19,19 @@ fi
 
 echo "Syncing all packages to version: $VERSION"
 
-# Note: Package.swift files don't have version fields in the traditional sense
-# They use version constraints for dependencies instead.
-# However, we update comments and ensure consistency across the project.
-
-# Update SpectraLogger/Package.swift to reference the correct minimum deployment target
-# and ensure consistency
-echo "✓ SpectraLogger/Package.swift is consistent (Swift Package uses git tags for versioning)"
-
-# Update spectra-ui-ios/Package.swift to reference the correct dependency version
-echo "✓ spectra-ui-ios/Package.swift is consistent (references local SpectraLogger package)"
+# Update Package.swift to reference the correct binary download URL version
+if [ -f "$PROJECT_ROOT/Package.swift" ]; then
+    # Update the URL version in binary targets
+    # Example: url: "https://github.com/snooky23/spectra/releases/download/v1.0.4/..."
+    sed -i '' "s|releases/download/v[0-9.]*|releases/download/v$VERSION|g" "$PROJECT_ROOT/Package.swift"
+    echo "✓ Package.swift binary target URLs updated to v$VERSION"
+fi
 
 # Update spectra-core/build.gradle.kts (if it manually specifies version)
 echo "✓ spectra-core/build.gradle.kts uses VERSION_NAME from gradle.properties"
+
+# Update spectra-ui/build.gradle.kts
+echo "✓ spectra-ui/build.gradle.kts uses VERSION_NAME from gradle.properties"
 
 # Update any iOS example app version configurations if they exist
 if [ -f "$PROJECT_ROOT/examples/ios-native/SpectraExample/SpectraExample.xcodeproj/project.pbxproj" ]; then
@@ -45,4 +45,4 @@ echo ""
 echo "Next steps:"
 echo "  1. Commit your changes"
 echo "  2. Create a git tag: git tag v$VERSION"
-echo "  3. Push to GitHub: git push --tags"
+echo "  3. Push to GitHub: git push origin main --tags"

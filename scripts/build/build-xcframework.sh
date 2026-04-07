@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-# Build all XCFrameworks for iOS distribution (Core + UI)
+# Build all XCFrameworks for iOS distribution (Core + UI) using official KMP tasks
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
@@ -13,57 +13,36 @@ echo "Build Type: $BUILD_TYPE"
 
 cd "$PROJECT_ROOT"
 
-# Function to build XCFramework for a specific module
-build_module_xcframework() {
+if [ "$BUILD_TYPE" == "Release" ]; then
+    ./gradlew :spectra-core:assembleSpectraLoggerReleaseXCFramework :spectra-ui:assembleSpectraLoggerUIReleaseXCFramework
+else
+    ./gradlew :spectra-core:assembleSpectraLoggerDebugXCFramework :spectra-ui:assembleSpectraLoggerUIDebugXCFramework
+fi
+
+# Ensure output directory exists for consumers (e.g. Package.swift)
+XCFRAMEWORK_DIR="$PROJECT_ROOT/build/xcframework"
+mkdir -p "$XCFRAMEWORK_DIR"
+
+# Copy the generated XCFrameworks to the centralized location
+# The official KMP tasks put them in [module]/build/XCFrameworks/[type]/[name].xcframework
+
+copy_xcframework() {
     local module=$1
-    local framework_name=$2
-    local framework_path=""
+    local name=$2
+    local src="$PROJECT_ROOT/$module/build/XCFrameworks/${BUILD_TYPE,,}/$name.xcframework"
+    local dest="$XCFRAMEWORK_DIR/$name.xcframework"
     
-    echo "📱 Building $module ($framework_name)..."
-    
-    if [ "$BUILD_TYPE" == "Release" ]; then
-        ./gradlew \
-            :$module:linkReleaseFrameworkIosArm64 \
-            :$module:linkReleaseFrameworkIosX64 \
-            :$module:linkReleaseFrameworkIosSimulatorArm64
-        framework_path="releaseFramework"
+    if [ -d "$src" ]; then
+        rm -rf "$dest"
+        cp -R "$src" "$dest"
+        echo "✅ $name.xcframework copied to $dest"
     else
-        ./gradlew \
-            :$module:linkDebugFrameworkIosArm64 \
-            :$module:linkDebugFrameworkIosX64 \
-            :$module:linkDebugFrameworkIosSimulatorArm64
-        framework_path="debugFramework"
+        echo "❌ Error: $name.xcframework not found at $src"
+        exit 1
     fi
-
-    local XCFRAMEWORK_DIR="$PROJECT_ROOT/build/xcframework"
-    mkdir -p "$XCFRAMEWORK_DIR"
-    local OUTPUT_PATH="$XCFRAMEWORK_DIR/$framework_name.xcframework"
-    rm -rf "$OUTPUT_PATH"
-
-    local BIN_DIR="$PROJECT_ROOT/$module/build/bin"
-    local TEMP_SIM_DIR="$PROJECT_ROOT/$module/build/temp-simulator"
-    rm -rf "$TEMP_SIM_DIR"
-    mkdir -p "$TEMP_SIM_DIR/$framework_name.framework"
-
-    cp -R "$BIN_DIR/iosSimulatorArm64/$framework_path/$framework_name.framework/" "$TEMP_SIM_DIR/$framework_name.framework/"
-
-    lipo -create \
-        "$BIN_DIR/iosX64/$framework_path/$framework_name.framework/$framework_name" \
-        "$BIN_DIR/iosSimulatorArm64/$framework_path/$framework_name.framework/$framework_name" \
-        -output "$TEMP_SIM_DIR/$framework_name.framework/$framework_name"
-
-    xcodebuild -create-xcframework \
-        -framework "$BIN_DIR/iosArm64/$framework_path/$framework_name.framework" \
-        -framework "$TEMP_SIM_DIR/$framework_name.framework" \
-        -output "$OUTPUT_PATH"
-
-    rm -rf "$TEMP_SIM_DIR"
-    echo "✅ $framework_name.xcframework created at $OUTPUT_PATH"
 }
 
-# Build both modules
-build_module_xcframework "spectra-core" "SpectraLogger"
-build_module_xcframework "spectra-ui" "SpectraLoggerUI"
+copy_xcframework "spectra-core" "SpectraLogger"
+copy_xcframework "spectra-ui" "SpectraLoggerUI"
 
-echo "✨ All XCFrameworks created successfully!"
-exit 0
+echo "✨ All XCFrameworks prepared successfully!"

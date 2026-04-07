@@ -4,7 +4,7 @@ This document describes the Continuous Integration and Continuous Deployment (CI
 
 ## Overview
 
-The project uses GitHub Actions for automated builds, testing, and code quality checks. The CI pipeline is optimized for speed through parallel execution and build caching.
+The project uses GitHub Actions for automated builds, testing, and code quality checks. The CI pipeline is optimized for speed through parallel execution, build caching, and Gradle Configuration Cache.
 
 ## Workflow Structure
 
@@ -14,7 +14,7 @@ The project uses GitHub Actions for automated builds, testing, and code quality 
 └────────┬─────────┘
          │
 ┌────────▼─────────┐
-│    build-kmp     │  ← Builds KMP core, caches output
+│    build-kmp     │  ← Builds KMP core and UI, caches output
 └────────┬─────────┘
          │
     ┌────┴────┐
@@ -33,14 +33,15 @@ The project uses GitHub Actions for automated builds, testing, and code quality 
 | Job | Runner | Dependencies | Purpose |
 |-----|--------|--------------|---------|
 | `code-quality` | Ubuntu | - | ktlint, detekt |
-| `build-kmp` | Ubuntu | code-quality | Build & test core |
-| `build-android` | Ubuntu | build-kmp | Build Android UI + Example |
-| `build-ios` | macOS 15 | build-kmp | Build iOS XCFramework + Example |
+| `build-kmp` | Ubuntu | code-quality | Build & test Core + UI modules |
+| `build-android` | Ubuntu | build-kmp | Build Android Example |
+| `build-ios` | macOS 15 | build-kmp | Build iOS XCFrameworks + Example |
 
 **Optimizations:**
-- **Concurrency:** Cancels in-progress runs for same branch/PR
-- **Caching:** KMP build output cached and reused by platform jobs
-- **Parallel execution:** Android and iOS build simultaneously
+- **Gradle Configuration Cache:** Dramatically reduces build configuration time.
+- **Concurrency:** Cancels in-progress runs for same branch/PR.
+- **Caching:** KMP build output cached and reused by platform jobs.
+- **Parallel execution:** Android and iOS build simultaneously.
 
 ### `security.yml` - Security Scans
 
@@ -50,7 +51,7 @@ The project uses GitHub Actions for automated builds, testing, and code quality 
 |-----|---------|
 | `dependency-scan` | Check for vulnerable dependencies |
 | `secret-scan` | Detect exposed secrets/credentials |
-| `codeql` | Static security analysis |
+| `codeql` | Static security analysis (Kotlin) |
 | `license-check` | Verify license compliance |
 
 > Note: Security scans only run on `main` and weekly schedule, not on every PR.
@@ -59,16 +60,16 @@ The project uses GitHub Actions for automated builds, testing, and code quality 
 
 **Triggers:** Git tags matching `v*`
 
-Handles publishing to Maven Central and creating GitHub Releases.
+Handles publishing to Maven Central and creating GitHub Releases with zipped XCFrameworks.
 
 ## Code Quality Configuration
 
 ### Modules Checked
 
-Only **spectra-core** is checked by ktlint and detekt. UI modules and examples are excluded because:
-- Compose UI code uses many magic numbers for sizing/padding
-- Example apps are for demonstration, not production
-- Wildcard imports are common in Compose files
+Both **spectra-core** and **spectra-ui** are checked by ktlint and detekt.
+Example apps are excluded because:
+- Example apps are for demonstration, not production.
+- Wildcard imports are common in Compose files.
 
 ### Detekt Rules
 
@@ -106,20 +107,23 @@ ktlint_standard_function-naming = disabled  # For Composable functions
 ### Full Build
 ```bash
 # Build everything
-./gradlew build
+./gradlew assemble
 
 # Build specific modules
-./gradlew :spectra-core:build
-./gradlew :spectra-ui-android:build
+./gradlew :spectra-core:assemble
+./gradlew :spectra-ui:assemble
 ```
 
 ### Tests
 ```bash
 # Run all tests
-./gradlew allTests
+./gradlew :spectra-core:allTests :spectra-ui:allTests
+```
 
-# Run KMP tests only
-./gradlew :spectra-core:allTests
+### iOS XCFrameworks
+```bash
+# Build both Core and UI XCFrameworks
+./scripts/build/build-xcframework.sh
 ```
 
 ## Artifacts
@@ -128,17 +132,17 @@ The CI pipeline produces the following artifacts:
 
 | Artifact | Description |
 |----------|-------------|
-| `kmp-test-results` | Test results from KMP core |
+| `kmp-test-results` | Test results from KMP Core and UI |
 | `android-debug-apk` | Debug APK from Android example |
-| `SpectraLogger-xcframework` | iOS XCFramework for distribution |
+| `SpectraLogger-xcframeworks` | iOS XCFrameworks (Core + UI) |
 
 ## Troubleshooting
 
 ### Build Failures
 
-1. **ktlint failures**: Run `./gradlew ktlintFormat` and commit fixes
-2. **detekt issues**: Check the report at `build/reports/detekt/`
-3. **iOS build failures**: Ensure Xcode command line tools are installed
+1. **ktlint failures**: Run `./gradlew ktlintFormat` and commit fixes.
+2. **Configuration Cache issues**: If you add new build logic, ensure it is serializable.
+3. **iOS build failures**: Ensure Xcode command line tools are installed and `xcodebuild` is available.
 
 ### Cache Issues
 

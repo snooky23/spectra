@@ -50,7 +50,7 @@ jobs:
           name: detekt-reports
           path: '**/build/reports/detekt/'
 
-  # Build and test KMP core (required by iOS and Android)
+  # Build and test KMP modules (Core and UI)
   build-kmp:
     name: Build & Test KMP Core
     runs-on: ubuntu-latest
@@ -105,6 +105,7 @@ jobs:
         with:
           path: |
             spectra-core/build
+            spectra-ui/build
             ~/.gradle/caches
           key: kmp-build-${{ github.sha }}
 
@@ -135,20 +136,18 @@ jobs:
         with:
           path: |
             spectra-core/build
+            spectra-ui/build
             ~/.gradle/caches
           key: kmp-build-${{ github.sha }}
 
       - name: Grant execute permission
         run: chmod +x gradlew
 
-      - name: Build Android UI module
-        run: ./gradlew :spectra-ui-android:build -x test
-
       - name: Build Android Example
         run: ./gradlew :examples:android-native:app:assembleDebug
 
-      - name: Run Android Tests
-        run: ./gradlew :spectra-ui-android:test :examples:android-native:app:testDebugUnitTest
+      - name: Run Android Example Tests
+        run: ./gradlew :examples:android-native:app:testDebugUnitTest
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -178,6 +177,15 @@ jobs:
         with:
           cache-read-only: false
 
+      - name: Restore KMP build cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            spectra-core/build
+            spectra-ui/build
+            ~/.gradle/caches
+          key: kmp-build-${{ github.sha }}
+
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
@@ -188,8 +196,8 @@ jobs:
 
       - name: Build iOS XCFrameworks
         run: |
-          ./gradlew :spectra-core:createXCFramework
-          ./gradlew :spectra-ui:createXCFramework
+          ./gradlew :spectra-core:assembleSpectraLoggerReleaseXCFramework
+          ./gradlew :spectra-ui:assembleSpectraLoggerUIReleaseXCFramework
 
       - name: Setup XCFrameworks for local development
         run: |
