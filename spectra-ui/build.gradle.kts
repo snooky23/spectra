@@ -43,6 +43,11 @@ kotlin {
             isStatic = true
             xcf.add(this)
         }
+
+        iosTarget.compilerOptions {
+            freeCompilerArgs.add("-Xexpect-actual-classes")
+            freeCompilerArgs.add("-Xopt-in=kotlin.time.ExperimentalTime")
+        }
     }
 
     sourceSets {
@@ -55,16 +60,24 @@ kotlin {
                 implementation(compose.material3)
                 implementation(compose.materialIconsExtended)
                 implementation(compose.components.resources)
-
-                // Adaptive UI libraries
                 implementation(compose.components.uiToolingPreview)
-                implementation("org.jetbrains.compose.material3.adaptive:adaptive:1.0.0")
-                implementation("org.jetbrains.compose.material3.adaptive:adaptive-layout:1.0.0")
-                implementation("org.jetbrains.compose.material3.adaptive:adaptive-navigation:1.0.0")
-                implementation("org.jetbrains.compose.material3:material3-adaptive-navigation-suite:1.7.0")
+
+                // Adaptive UI libraries - JetBrains compatible versions
+                implementation("org.jetbrains.compose.material3.adaptive:adaptive:1.0.1")
+                implementation("org.jetbrains.compose.material3.adaptive:adaptive-layout:1.0.1")
+                implementation("org.jetbrains.compose.material3.adaptive:adaptive-navigation:1.0.1")
+                implementation("org.jetbrains.compose.material3:material3-adaptive-navigation-suite:1.7.3")
 
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.datetime)
+            }
+        }
+
+        all {
+            languageSettings.apply {
+                optIn("kotlin.time.ExperimentalTime")
+                optIn("androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi")
+                optIn("androidx.compose.material3.ExperimentalMaterial3Api")
             }
         }
 

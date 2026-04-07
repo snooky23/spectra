@@ -126,7 +126,6 @@ All critical tasks pass locally:
 **Jobs**:
 - ✅ Build XCFramework
 - ✅ Create GitHub Release
-- ✅ Publish to CocoaPods (when token is set)
 
 **Status**: Already working, enhanced with better release notes
 
@@ -170,7 +169,6 @@ All critical tasks pass locally:
 
 Only 2 steps remain (see `RELEASE_v1.0.0_INSTRUCTIONS.md`):
 
-1. **Set CocoaPods token** (30 seconds)
    ```bash
    # Get token
    cat ~/.netrc | grep cocoapods.org -A 2
