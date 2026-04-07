@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -18,7 +17,6 @@ import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaf
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -41,7 +39,7 @@ fun NetworkLogsScreen(
     val uiState by viewModel.uiState.collectAsState()
     val navigator = rememberListDetailPaneScaffoldNavigator<String>()
     val scope = rememberCoroutineScope()
-    
+
     var showFilterSheet by remember { mutableStateOf(false) }
     var showShareBottomSheet by remember { mutableStateOf(false) }
 
@@ -69,7 +67,7 @@ fun NetworkLogsScreen(
                     onClearHost = viewModel::clearHostFilter,
                     onClearTimeRange = viewModel::clearTimeRangeFilter,
                     onClearResponseTime = viewModel::clearResponseTimeFilter,
-                    onClearFailedOnly = viewModel::clearFailedOnlyFilter
+                    onClearFailedOnly = viewModel::clearFailedOnlyFilter,
                 )
             }
         },
@@ -78,21 +76,21 @@ fun NetworkLogsScreen(
                 val currentDestination = navigator.currentDestination
                 val selectedLogId = currentDestination?.contentKey
                 val selectedLog = uiState.logs.find { it.id == selectedLogId }
-                
+
                 if (selectedLog != null) {
                     NetworkDetailContent(
                         log = selectedLog,
-                        onBack = { 
+                        onBack = {
                             scope.launch {
                                 navigator.navigateBack()
                             }
-                        }
+                        },
                     )
                 } else {
                     EmptyDetailPane("Select a network request to view details")
                 }
             }
-        }
+        },
     )
 
     // Filter bottom sheet
@@ -133,7 +131,7 @@ private fun NetworkListContent(
     onClearHost: () -> Unit,
     onClearTimeRange: () -> Unit,
     onClearResponseTime: () -> Unit,
-    onClearFailedOnly: () -> Unit
+    onClearFailedOnly: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -252,7 +250,7 @@ private fun NetworkListContent(
 @Composable
 private fun NetworkDetailContent(
     log: NetworkLogEntry,
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -262,9 +260,9 @@ private fun NetworkDetailContent(
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
             NetworkDetailPane(log = log)

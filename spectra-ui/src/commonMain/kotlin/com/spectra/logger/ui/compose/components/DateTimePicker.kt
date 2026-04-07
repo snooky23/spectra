@@ -15,38 +15,35 @@ fun DateTimePickerRow(
     label: String,
     timestamp: Instant?,
     onTimestampSelected: (Instant?) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
     var selectedDateMillis by remember { mutableStateOf<Long?>(null) }
 
-    val formattedTime = remember(timestamp) {
-        timestamp?.let {
-            val localDateTime = it.toLocalDateTime(TimeZone.currentSystemDefault())
-            "${localDateTime.date} ${localDateTime.hour.toString().padStart(2, '0')}:${localDateTime.minute.toString().padStart(2, '0')}"
-        } ?: "Not set"
-    }
-
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { showDatePicker = true }
-            .padding(vertical = 12.dp, horizontal = 16.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable { showDatePicker = true }
+                .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(label)
+        Text(text = label, style = MaterialTheme.typography.bodyMedium)
         Text(
-            text = formattedTime,
-            color = if (timestamp != null) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+            text = timestamp?.toString() ?: "Not set",
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (timestamp != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
         )
     }
 
     if (showDatePicker) {
-        val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = timestamp?.toEpochMilliseconds() ?: Clock.System.now().toEpochMilliseconds()
-        )
+        val datePickerState =
+            rememberDatePickerState(
+                initialSelectedDateMillis = timestamp?.toEpochMilliseconds() ?: Clock.System.now().toEpochMilliseconds(),
+            )
+
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
@@ -64,22 +61,24 @@ fun DateTimePickerRow(
                 TextButton(onClick = { showDatePicker = false }) {
                     Text("Cancel")
                 }
-            }
+            },
         ) {
             DatePicker(state = datePickerState)
         }
     }
 
     if (showTimePicker) {
-        val currentDateTime = timestamp?.toLocalDateTime(TimeZone.currentSystemDefault()) 
-            ?: Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-        
-        val timePickerState = rememberTimePickerState(
-            initialHour = currentDateTime.hour,
-            initialMinute = currentDateTime.minute,
-            is24Hour = true
-        )
-        
+        val defaultTz = TimeZone.currentSystemDefault()
+        val now = Clock.System.now()
+        val currentDateTime = (timestamp ?: now).toLocalDateTime(defaultTz)
+
+        val timePickerState =
+            rememberTimePickerState(
+                initialHour = currentDateTime.hour,
+                initialMinute = currentDateTime.minute,
+                is24Hour = true,
+            )
+
         AlertDialog(
             onDismissRequest = { showTimePicker = false },
             title = { Text("Select Time") },
@@ -88,20 +87,22 @@ fun DateTimePickerRow(
                 TextButton(onClick = {
                     showTimePicker = false
                     selectedDateMillis?.let { dateMillis ->
-                        val date = Instant.fromEpochMilliseconds(dateMillis)
-                            .toLocalDateTime(TimeZone.UTC).date
-                        
-                        val localDateTime = LocalDateTime(
-                            year = date.year,
-                            monthNumber = date.monthNumber,
-                            dayOfMonth = date.dayOfMonth,
-                            hour = timePickerState.hour,
-                            minute = timePickerState.minute,
-                            second = 0,
-                            nanosecond = 0
-                        )
-                        
-                        onTimestampSelected(localDateTime.toInstant(TimeZone.currentSystemDefault()))
+                        val date =
+                            Instant.fromEpochMilliseconds(dateMillis)
+                                .toLocalDateTime(TimeZone.UTC).date
+
+                        val localDateTime =
+                            LocalDateTime(
+                                year = date.year,
+                                monthNumber = date.monthNumber,
+                                dayOfMonth = date.dayOfMonth,
+                                hour = timePickerState.hour,
+                                minute = timePickerState.minute,
+                                second = 0,
+                                nanosecond = 0,
+                            )
+
+                        onTimestampSelected(localDateTime.toInstant(defaultTz))
                     }
                 }) {
                     Text("OK")
@@ -111,7 +112,7 @@ fun DateTimePickerRow(
                 TextButton(onClick = { showTimePicker = false }) {
                     Text("Cancel")
                 }
-            }
+            },
         )
     }
 }

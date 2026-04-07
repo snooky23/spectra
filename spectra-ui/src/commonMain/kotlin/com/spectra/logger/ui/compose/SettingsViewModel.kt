@@ -118,14 +118,16 @@ class SettingsViewModel : ViewModel() {
     suspend fun getExportAllText(): String {
         val appLogs = logStorage.query(filter = LogFilter(null, null, null, null, null), limit = null)
         val networkLogs = networkStorage.query()
-        
-        val appLogsText = appLogs.joinToString("\n") { log ->
-            "[${log.level.name}] ${log.timestamp} - ${log.tag}: ${log.message}"
-        }
-        val networkLogsText = networkLogs.joinToString("\n") { log ->
-            "[${log.method}] ${log.responseCode ?: "N/A"} ${log.url} - ${log.duration}ms"
-        }
-        
+
+        val appLogsText =
+            appLogs.joinToString("\n") { log ->
+                "[${log.level.name}] ${log.timestamp} - ${log.tag}: ${log.message}"
+            }
+        val networkLogsText =
+            networkLogs.joinToString("\n") { log ->
+                "[${log.method}] ${log.responseCode ?: "N/A"} ${log.url} - ${log.duration}ms"
+            }
+
         return "--- APPLICATION LOGS ---\n$appLogsText\n\n--- NETWORK LOGS ---\n$networkLogsText"
     }
 
@@ -142,7 +144,7 @@ class SettingsViewModel : ViewModel() {
             it.copy(
                 isNetworkLoggingEnabled = config.enabledFeatures.enableNetworkLogging,
                 isFilePersistenceEnabled = config.logStorageConfig.enablePersistence,
-                ignoredDomainsText = config.enabledFeatures.networkIgnoredDomains.joinToString(", ")
+                ignoredDomainsText = config.enabledFeatures.networkIgnoredDomains.joinToString(", "),
             )
         }
     }

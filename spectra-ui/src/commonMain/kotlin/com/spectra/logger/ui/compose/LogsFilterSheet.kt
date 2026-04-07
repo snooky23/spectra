@@ -286,7 +286,7 @@ fun LogsFilterSheet(
                     timestamp = localFilter.fromTimestamp,
                     onTimestampSelected = { timestamp ->
                         localFilter = localFilter.copy(fromTimestamp = timestamp)
-                    }
+                    },
                 )
 
                 DateTimePickerRow(
@@ -294,7 +294,7 @@ fun LogsFilterSheet(
                     timestamp = localFilter.toTimestamp,
                     onTimestampSelected = { timestamp ->
                         localFilter = localFilter.copy(toTimestamp = timestamp)
-                    }
+                    },
                 )
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))

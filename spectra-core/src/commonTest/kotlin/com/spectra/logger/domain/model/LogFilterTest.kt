@@ -85,18 +85,18 @@ class LogFilterTest {
     @Test
     fun testMetadataFilter() {
         val entryWithMetadata = sampleEntry.copy(metadata = mapOf("key1" to "value1", "key2" to "value2"))
-        
+
         // Filter by key only
         val keyFilter = LogFilter(metadataKey = "key1")
         assertTrue(keyFilter.matches(entryWithMetadata))
-        
+
         val missingKeyFilter = LogFilter(metadataKey = "missing")
         assertFalse(missingKeyFilter.matches(entryWithMetadata))
-        
+
         // Filter by key and value
         val keyValueFilter = LogFilter(metadataKey = "key1", metadataValue = "value1")
         assertTrue(keyValueFilter.matches(entryWithMetadata))
-        
+
         val wrongValueFilter = LogFilter(metadataKey = "key1", metadataValue = "wrong")
         assertFalse(wrongValueFilter.matches(entryWithMetadata))
     }

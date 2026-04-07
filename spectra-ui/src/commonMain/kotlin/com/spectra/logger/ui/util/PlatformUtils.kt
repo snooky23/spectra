@@ -7,5 +7,9 @@ expect object PlatformUtils {
     /**
      * Share text using the platform's native share sheet.
      */
-    fun shareText(text: String, title: String, context: Any? = null)
+    fun shareText(
+        text: String,
+        title: String,
+        context: Any? = null,
+    )
 }

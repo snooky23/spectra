@@ -1,6 +1,5 @@
 package com.spectra.logger.ui.compose.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -283,7 +282,10 @@ fun DetailSection(
  * Status badge for network requests
  */
 @Composable
-fun StatusBadge(code: Int?, error: String?) {
+fun StatusBadge(
+    code: Int?,
+    error: String?,
+) {
     val color = colorForStatusRange(code, error)
 
     Surface(
@@ -300,7 +302,10 @@ fun StatusBadge(code: Int?, error: String?) {
     }
 }
 
-fun colorForStatusRange(code: Int?, error: String?): Color {
+fun colorForStatusRange(
+    code: Int?,
+    error: String?,
+): Color {
     return when {
         error != null || code == null -> Color(0xFFF44336)
         code in 200..299 -> Color(0xFF4CAF50)
