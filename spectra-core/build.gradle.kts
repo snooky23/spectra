@@ -16,29 +16,38 @@ plugins {
 }
 
 // Generate version file from gradle.properties
-val versionName = project.findProperty("VERSION_NAME") as? String ?: "0.0.1-SNAPSHOT"
+abstract class GenerateVersionFileTask : DefaultTask() {
+    @get:Input
+    abstract val versionName: Property<String>
+
+    @get:OutputDirectory
+    abstract val outputDir: DirectoryProperty
+
+    @TaskAction
+    fun generate() {
+        val versionFile = outputDir.file("Version.kt").get().asFile
+        versionFile.parentFile.mkdirs()
+        versionFile.writeText(
+            """
+            package com.spectra.logger
+
+            /**
+             * Auto-generated file from gradle.properties
+             * Do not edit manually!
+             */
+            object Version {
+                const val LIBRARY_VERSION = "${versionName.get()}"
+            }
+            """.trimIndent() + "\n",
+        )
+    }
+}
+
+val libVersion = project.findProperty("VERSION_NAME") as? String ?: "0.0.1-SNAPSHOT"
 val generateVersionFile =
-    tasks.register("generateVersionFile") {
-        val outputDir = project.layout.buildDirectory.dir("generated/kotlin/com/spectra/logger")
-        outputs.dir(outputDir)
-
-        doLast {
-            val versionFile = file("${outputDir.get().asFile}/Version.kt")
-            versionFile.parentFile.mkdirs()
-            versionFile.writeText(
-                """
-                package com.spectra.logger
-
-                /**
-                 * Auto-generated file from gradle.properties
-                 * Do not edit manually!
-                 */
-                object Version {
-                    const val LIBRARY_VERSION = "$versionName"
-                }
-                """.trimIndent() + "\n",
-            )
-        }
+    tasks.register<GenerateVersionFileTask>("generateVersionFile") {
+        this.versionName.set(libVersion)
+        this.outputDir.set(project.layout.buildDirectory.dir("generated/kotlin/com/spectra/logger"))
     }
 
 kotlin {

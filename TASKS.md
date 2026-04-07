@@ -68,3 +68,9 @@ See `docs/design/KMP_UI_ADAPTIVE_SPEC.md` for full architectural details.
   - [x] Add explicit HTTP error simulation to example applications.
   - [x] Implement comprehensive unit tests for error/metadata logging and network filtering.
   - [x] Target near 100% test coverage for core and UI logic.
+
+## Phase 8: Build & Performance Optimization
+- [x] **Phase 8.1: Build Speed Improvements**
+  - [x] Enable and optimize Gradle configuration cache for faster incremental builds.
+  - [x] Investigate and resolve any configuration cache incompatibilities in the build scripts.
+
