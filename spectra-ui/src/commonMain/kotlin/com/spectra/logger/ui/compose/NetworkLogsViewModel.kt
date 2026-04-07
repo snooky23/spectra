@@ -145,7 +145,10 @@ class NetworkLogsViewModel : ViewModel() {
         }
     }
 
-    fun shareLogs(logs: List<NetworkLogEntry>, context: Any? = null) {
+    fun shareLogs(
+        logs: List<NetworkLogEntry>,
+        context: Any? = null,
+    ) {
         val shareText = getShareText(logs)
         PlatformUtils.shareText(shareText, "Share Network Logs", context)
     }

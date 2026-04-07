@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -19,7 +18,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -42,7 +40,7 @@ fun LogsScreen(
     val uiState by viewModel.uiState.collectAsState()
     val navigator = rememberListDetailPaneScaffoldNavigator<String>()
     val scope = rememberCoroutineScope()
-    
+
     var showFilterSheet by remember { mutableStateOf(false) }
     var showShareBottomSheet by remember { mutableStateOf(false) }
 
@@ -66,7 +64,7 @@ fun LogsScreen(
                     onToggleLevel = viewModel::toggleLevel,
                     onRemoveTag = viewModel::removeTagFilter,
                     onClearTimeRange = viewModel::clearTimeRangeFilter,
-                    onClearHasError = viewModel::clearHasErrorFilter
+                    onClearHasError = viewModel::clearHasErrorFilter,
                 )
             }
         },
@@ -75,21 +73,21 @@ fun LogsScreen(
                 val currentDestination = navigator.currentDestination
                 val selectedLogId = currentDestination?.contentKey
                 val selectedLog = uiState.logs.find { it.id == selectedLogId }
-                
+
                 if (selectedLog != null) {
                     LogDetailContent(
                         log = selectedLog,
-                        onBack = { 
+                        onBack = {
                             scope.launch {
                                 navigator.navigateBack()
                             }
-                        }
+                        },
                     )
                 } else {
                     EmptyDetailPane("Select a log to view details")
                 }
             }
-        }
+        },
     )
 
     // Filter bottom sheet
@@ -129,7 +127,7 @@ private fun LogsListContent(
     onToggleLevel: (LogLevel) -> Unit,
     onRemoveTag: (String) -> Unit,
     onClearTimeRange: () -> Unit,
-    onClearHasError: () -> Unit
+    onClearHasError: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -241,7 +239,7 @@ private fun LogsListContent(
 @Composable
 private fun LogDetailContent(
     log: LogEntry,
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -251,9 +249,9 @@ private fun LogDetailContent(
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
             LogDetailPane(log = log)

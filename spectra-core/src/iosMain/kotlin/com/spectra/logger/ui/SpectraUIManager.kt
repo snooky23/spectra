@@ -20,17 +20,17 @@ actual object SpectraUIManager {
 
     actual fun showScreen() {
         if (currentController != null) return
-        
+
         val provider = controllerProvider ?: return
         val controller = provider()
         currentController = controller
-        
+
         val root = UIApplication.sharedApplication.keyWindow?.rootViewController ?: return
         var top = root
         while (top.presentedViewController != null) {
             top = top.presentedViewController!!
         }
-        
+
         top.presentViewController(controller, animated = true, completion = null)
     }
 

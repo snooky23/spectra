@@ -13,7 +13,7 @@ kotlin {
         namespace = "com.spectra.logger.ui"
         compileSdk = 35
         minSdk = 24
-        
+
         androidResources.enable = true
 
         compilerOptions {
@@ -45,14 +45,14 @@ kotlin {
                 implementation(compose.material3)
                 implementation(compose.materialIconsExtended)
                 implementation(compose.components.resources)
-                
+
                 // Adaptive UI libraries
                 implementation(compose.components.uiToolingPreview)
                 implementation("org.jetbrains.compose.material3.adaptive:adaptive:1.0.0")
                 implementation("org.jetbrains.compose.material3.adaptive:adaptive-layout:1.0.0")
                 implementation("org.jetbrains.compose.material3.adaptive:adaptive-navigation:1.0.0")
                 implementation("org.jetbrains.compose.material3:material3-adaptive-navigation-suite:1.7.0")
-                
+
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.datetime)
             }

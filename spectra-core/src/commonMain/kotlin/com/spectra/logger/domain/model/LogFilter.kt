@@ -29,12 +29,12 @@ data class LogFilter(
         if (searchText != null && !entry.message.contains(searchText, ignoreCase = true)) return false
         if (fromTimestamp != null && entry.timestamp.toEpochMilliseconds() < fromTimestamp) return false
         if (toTimestamp != null && entry.timestamp.toEpochMilliseconds() > toTimestamp) return false
-        
+
         if (metadataKey != null) {
             val value = entry.metadata[metadataKey] ?: return false
             if (metadataValue != null && value != metadataValue) return false
         }
-        
+
         return true
     }
 

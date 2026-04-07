@@ -1,6 +1,5 @@
 package com.spectra.logger.ui.compose
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ListAlt
 import androidx.compose.material.icons.filled.Settings
@@ -8,7 +7,6 @@ import androidx.compose.material.icons.filled.SettingsEthernet
 import androidx.compose.material3.*
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spectra.logger.ui.compose.components.SpectraTheme
@@ -48,7 +46,7 @@ fun SpectraLoggerScreen(
                         onClick = { selectedTab = index },
                     )
                 }
-            }
+            },
         ) {
             when (selectedTab) {
                 0 -> LogsScreen()

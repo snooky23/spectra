@@ -62,7 +62,7 @@ kotlin {
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         }
-        
+
         // Enable unit testing on the JVM for this target
         withHostTestBuilder {}.configure {
             enableCoverage = true

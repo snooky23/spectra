@@ -285,9 +285,10 @@ fun NetworkFilterSheet(
                                 )
                         },
                         label = { Text("Clear") },
-                        colors = AssistChipDefaults.assistChipColors(
-                            labelColor = MaterialTheme.colorScheme.error
-                        )
+                        colors =
+                            AssistChipDefaults.assistChipColors(
+                                labelColor = MaterialTheme.colorScheme.error,
+                            ),
                     )
                 }
 
@@ -297,7 +298,7 @@ fun NetworkFilterSheet(
                     timestamp = localFilter.fromTimestamp,
                     onTimestampSelected = { timestamp ->
                         localFilter = localFilter.copy(fromTimestamp = timestamp)
-                    }
+                    },
                 )
 
                 DateTimePickerRow(
@@ -305,7 +306,7 @@ fun NetworkFilterSheet(
                     timestamp = localFilter.toTimestamp,
                     onTimestampSelected = { timestamp ->
                         localFilter = localFilter.copy(toTimestamp = timestamp)
-                    }
+                    },
                 )
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
