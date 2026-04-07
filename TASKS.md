@@ -63,8 +63,8 @@ See `docs/design/KMP_UI_ADAPTIVE_SPEC.md` for full architectural details.
   - Update example apps to use the unified SDK and delete the deprecated native UI modules (`spectra-ui-android`, `spectra-ui-ios`).
 - [x] **Phase 5: Documentation & Release Preparation**
   - Update READMEs, CI/CD GitHub Actions, and `Package.swift` for binary distribution. Drop CocoaPods support.
-- [ ] **Phase 6: Bug Fixes & Unit Testing**
-  - Fix stack trace extraction from metadata in `SpectraLogger`.
-  - Add explicit HTTP error simulation to example applications.
-  - Implement comprehensive unit tests for error/metadata logging and network filtering.
-  - Target near 100% test coverage for core and UI logic.
+- [x] **Phase 6: Bug Fixes & Unit Testing**
+  - [x] Fix stack trace extraction from metadata in `SpectraLogger`.
+  - [x] Add explicit HTTP error simulation to example applications.
+  - [x] Implement comprehensive unit tests for error/metadata logging and network filtering.
+  - [x] Target near 100% test coverage for core and UI logic.

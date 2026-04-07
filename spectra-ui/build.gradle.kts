@@ -39,18 +39,19 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":spectra-core"))
+                implementation(libs.androidx.lifecycle.viewmodel.compose)
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material3)
                 implementation(compose.materialIconsExtended)
                 implementation(compose.components.resources)
-                implementation(compose.components.uiToolingPreview)
                 
                 // Adaptive UI libraries
-                implementation(libs.compose.adaptive)
-                implementation(libs.compose.adaptive.layout)
-                implementation(libs.compose.adaptive.navigation)
-                implementation(libs.compose.adaptive.navigation.suite)
+                implementation(compose.components.uiToolingPreview)
+                implementation("org.jetbrains.compose.material3.adaptive:adaptive:1.0.0")
+                implementation("org.jetbrains.compose.material3.adaptive:adaptive-layout:1.0.0")
+                implementation("org.jetbrains.compose.material3.adaptive:adaptive-navigation:1.0.0")
+                implementation("org.jetbrains.compose.material3:material3-adaptive-navigation-suite:1.7.0")
                 
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.datetime)
@@ -67,7 +68,6 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(libs.androidx.core.ktx)
-                implementation(libs.androidx.lifecycle.viewmodel.compose)
             }
         }
 

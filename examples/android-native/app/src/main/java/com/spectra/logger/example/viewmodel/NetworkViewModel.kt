@@ -12,7 +12,7 @@ import java.util.UUID
 
 class NetworkViewModel : ViewModel() {
 
-    fun simulateRequest(method: String, url: String, statusCode: Int, duration: Double) {
+    fun simulateRequest(method: String, url: String, statusCode: Int?, duration: Double, errorMessage: String? = null) {
         viewModelScope.launch {
             delay((duration * 1000).toLong())
             
@@ -24,17 +24,23 @@ class NetworkViewModel : ViewModel() {
                 else -> null
             }
 
-            val responseHeaders = mapOf(
+            val responseHeaders = if (statusCode != null) mapOf(
                 "Content-Type" to "application/json",
                 "X-Response-Time" to "${durationMs}ms"
-            )
+            ) else emptyMap()
 
             val responseBody = when (statusCode) {
                 200 -> "{\"success\": true, \"data\": {\"id\": \"123\"}}"
+                201 -> "{\"success\": true, \"data\": {\"id\": \"123\"}}"
+                204 -> null
                 404 -> "{\"error\": \"Not Found\"}"
+                429 -> "{\"error\": \"Too Many Requests\"}"
                 500 -> "{\"error\": \"Internal Server Error\"}"
+                null -> null
                 else -> "{\"status\": $statusCode}"
             }
+
+            val errorText = errorMessage ?: if (statusCode != null && statusCode >= 400) "HTTP $statusCode: Request failed" else null
 
             val entry = NetworkLogEntry(
                 id = UUID.randomUUID().toString(),
@@ -47,7 +53,7 @@ class NetworkViewModel : ViewModel() {
                 responseHeaders = responseHeaders,
                 responseBody = responseBody,
                 duration = durationMs,
-                error = if (statusCode >= 400) "HTTP $statusCode: Request failed" else null,
+                error = errorText,
                 source = "SpectraExample",
                 sourceType = SourceType.APP
             )
