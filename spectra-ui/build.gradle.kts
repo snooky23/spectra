@@ -84,6 +84,52 @@ kotlin {
     }
 }
 
+// Task to create XCFramework for iOS
+abstract class CreateXCFrameworkTask : DefaultTask() {
+    @get:Input
+    abstract val frameworkName: Property<String>
+
+    @get:InputDirectory
+    abstract val buildDirectory: DirectoryProperty
+
+    @get:Inject
+    abstract val execOperations: ExecOperations
+
+    @TaskAction
+    fun createXCFramework() {
+        val buildDir = buildDirectory.get().asFile
+        val name = frameworkName.get()
+        val buildType = "Release"
+        val xcframeworkPath = "$buildDir/XCFrameworks/${buildType.lowercase()}/$name.xcframework"
+
+        execOperations.exec {
+            commandLine(
+                "xcodebuild",
+                "-create-xcframework",
+                "-framework",
+                "$buildDir/bin/iosArm64/releaseFramework/$name.framework",
+                "-framework",
+                "$buildDir/bin/iosSimulatorArm64/releaseFramework/$name.framework",
+                "-output",
+                xcframeworkPath,
+            )
+        }
+        println("✅ XCFramework created at: $xcframeworkPath")
+    }
+}
+
+tasks.register<CreateXCFrameworkTask>("createXCFramework") {
+    group = "build"
+    description = "Creates an XCFramework for all iOS targets"
+    frameworkName.set("SpectraLoggerUI")
+    buildDirectory.set(project.layout.buildDirectory)
+
+    dependsOn(
+        "linkReleaseFrameworkIosArm64",
+        "linkReleaseFrameworkIosSimulatorArm64",
+    )
+}
+
 // Publishing configuration
 mavenPublishing {
     publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)

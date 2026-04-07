@@ -28,7 +28,6 @@ allprojects {
 subprojects {
     // Only apply ktlint to non-UI and non-example modules
     val excludedProjects = listOf(
-        "spectra-ui-android",
         "android-native",
         "ios-native",
         "kmp-shared",
@@ -57,7 +56,6 @@ subprojects {
 subprojects {
     // Only apply detekt to non-UI and non-example modules
     val excludedProjects = listOf(
-        "spectra-ui-android",
         "android-native",
         "ios-native",
         "kmp-shared",

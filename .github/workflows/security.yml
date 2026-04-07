@@ -89,7 +89,7 @@ jobs:
       - name: Build Kotlin
         run: |
           chmod +x gradlew
-          ./gradlew build -x test --no-daemon
+          ./gradlew :spectra-core:build :spectra-ui:build -x test --no-daemon
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
