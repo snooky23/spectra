@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecOperations
 import javax.inject.Inject
@@ -23,8 +23,6 @@ kotlin {
         compileSdk = 35
         minSdk = 24
 
-        androidResources.enable = true
-
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         }
@@ -33,11 +31,14 @@ kotlin {
     // iOS targets
     val iosFrameworkName = "SpectraLoggerUI"
     val xcf = XCFramework(iosFrameworkName)
-    listOf(
+    
+    val iosTargets = listOf(
         iosX64(),
         iosArm64(),
         iosSimulatorArm64(),
-    ).forEach { iosTarget ->
+    )
+    
+    iosTargets.forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = iosFrameworkName
             isStatic = true
@@ -51,18 +52,20 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 implementation(project(":spectra-core"))
                 implementation(libs.androidx.lifecycle.viewmodel.compose)
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material3)
-                implementation(compose.materialIconsExtended)
-                implementation(compose.components.resources)
-                implementation(compose.components.uiToolingPreview)
+                
+                // Using stable coordinates to avoid deprecated Compose plugin accessors
+                implementation("org.jetbrains.compose.runtime:runtime:1.7.3")
+                implementation("org.jetbrains.compose.foundation:foundation:1.7.3")
+                implementation("org.jetbrains.compose.material3:material3:1.7.3")
+                implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
+                implementation("org.jetbrains.compose.components:components-resources:1.7.3")
+                implementation("org.jetbrains.compose.components:components-ui-tooling-preview:1.7.3")
 
-                // Adaptive UI libraries - JetBrains compatible versions
+                // Adaptive UI libraries
                 implementation("org.jetbrains.compose.material3.adaptive:adaptive:1.0.1")
                 implementation("org.jetbrains.compose.material3.adaptive:adaptive-layout:1.0.1")
                 implementation("org.jetbrains.compose.material3.adaptive:adaptive-navigation:1.0.1")
@@ -73,37 +76,35 @@ kotlin {
             }
         }
 
-        all {
-            languageSettings.apply {
-                optIn("kotlin.time.ExperimentalTime")
-                optIn("androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi")
-                optIn("androidx.compose.material3.ExperimentalMaterial3Api")
-            }
-        }
-
-        val commonTest by getting {
+        commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.kotlinx.coroutines.test)
             }
         }
 
-        val androidMain by getting {
+        androidMain {
             dependencies {
                 implementation(libs.androidx.core.ktx)
             }
         }
 
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-
         val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
+            dependsOn(commonMain.get())
         }
+        
+        iosTargets.forEach { target ->
+            getByName("${target.name}Main").dependsOn(iosMain)
+        }
+    }
+}
+
+// Global language settings for all source sets
+kotlin.sourceSets.all {
+    languageSettings.apply {
+        optIn("kotlin.time.ExperimentalTime")
+        optIn("androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi")
+        optIn("androidx.compose.material3.ExperimentalMaterial3Api")
     }
 }
 

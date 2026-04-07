@@ -24,9 +24,8 @@ allprojects {
     }
 }
 
-// Apply ktlint only to core modules (exclude UI and examples)
+// Apply quality tools lazily to avoid configuration-time resolution
 subprojects {
-    // Only apply ktlint to non-UI and non-example modules
     val excludedProjects = listOf(
         "android-native",
         "ios-native",
@@ -35,58 +34,50 @@ subprojects {
     )
     
     if (project.name !in excludedProjects && !project.path.contains("examples")) {
-        apply(plugin = "org.jlleitschuh.gradle.ktlint")
+        // Apply ktlint lazily
+        pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+            apply(plugin = "org.jlleitschuh.gradle.ktlint")
+            
+            configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+                version.set("1.1.1")
+                android.set(true)
+                outputToConsole.set(true)
+                outputColorName.set("RED")
+                ignoreFailures.set(false)
 
-        configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-            version.set("1.1.1")
-            android.set(true)
-            outputToConsole.set(true)
-            outputColorName.set("RED")
-            ignoreFailures.set(false)
+                filter {
+                    exclude("**/generated/**")
+                    exclude("**/build/**")
+                }
+            }
+        }
 
-            filter {
-                exclude("**/generated/**")
-                exclude("**/build/**")
+        // Apply detekt lazily
+        pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+            apply(plugin = "io.gitlab.arturbosch.detekt")
+
+            configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
+                buildUponDefaultConfig = true
+                allRules = false
+                config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+            }
+
+            tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+                reports {
+                    html.required.set(true)
+                    xml.required.set(true)
+                    txt.required.set(true)
+                }
+            }
+
+            dependencies {
+                "detektPlugins"("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.5")
             }
         }
     }
 }
 
-// Apply detekt only to core modules (exclude UI and examples which need different rules)
-subprojects {
-    // Only apply detekt to non-UI and non-example modules
-    val excludedProjects = listOf(
-        "android-native",
-        "ios-native",
-        "kmp-shared",
-        "app"
-    )
-    
-    if (project.name !in excludedProjects && !project.path.contains("examples")) {
-        apply(plugin = "io.gitlab.arturbosch.detekt")
-
-        configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
-            buildUponDefaultConfig = true
-            allRules = false
-            config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
-        }
-
-        // Configure reports on Detekt tasks instead of extension
-        tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
-            reports {
-                html.required.set(true)
-                xml.required.set(true)
-                txt.required.set(true)
-            }
-        }
-
-        dependencies {
-            "detektPlugins"("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.5")
-        }
-    }
-}
-
-// Dokka configuration for multi-module documentation
+// Dokka configuration
 tasks.dokkaHtmlMultiModule.configure {
     outputDirectory.set(layout.buildDirectory.dir("dokka"))
 }

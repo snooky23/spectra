@@ -171,7 +171,6 @@ Only 2 steps remain (see `RELEASE_v1.0.0_INSTRUCTIONS.md`):
 
    ```bash
    # Get token
-   cat ~/.netrc | grep cocoapods.org -A 2
 
    # Add to GitHub Secrets:
    # https://github.com/snooky23/spectra/settings/secrets/actions
