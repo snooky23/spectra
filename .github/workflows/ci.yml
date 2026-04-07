@@ -75,19 +75,21 @@ jobs:
       - name: Grant execute permission
         run: chmod +x gradlew scripts/**/*.sh
 
-      - name: Build KMP Core
-        run: ./gradlew :spectra-core:build -x test
+      - name: Build KMP Core and UI
+        run: ./gradlew :spectra-core:build :spectra-ui:build -x test
 
       - name: Run KMP Tests
-        run: ./gradlew :spectra-core:allTests
+        run: ./gradlew :spectra-core:allTests :spectra-ui:allTests
 
       - name: Generate Test Coverage
-        run: ./gradlew :spectra-core:jacocoTestReport
+        run: ./gradlew :spectra-core:jacocoTestReport :spectra-ui:koverHtmlReport || true
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          files: ./spectra-core/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
+          files: |
+            ./spectra-core/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
+            ./spectra-ui/build/reports/kover/report.xml
           fail_ci_if_error: false
 
       - name: Upload test results
@@ -184,29 +186,36 @@ jobs:
       - name: Grant execute permission
         run: chmod +x gradlew scripts/**/*.sh
 
-      - name: Build iOS XCFramework
-        run: ./gradlew :spectra-core:createXCFramework
+      - name: Build iOS XCFrameworks
+        run: |
+          ./gradlew :spectra-core:createXCFramework
+          ./gradlew :spectra-ui:createXCFramework
 
-      - name: Setup XCFramework for local development
+      - name: Setup XCFrameworks for local development
         run: |
           # Create the expected directory structure for the root Package.swift
           mkdir -p build/xcframework
           cp -R spectra-core/build/XCFrameworks/release/SpectraLogger.xcframework build/xcframework/
-          echo "✅ XCFramework copied to build/xcframework/"
+          cp -R spectra-ui/build/XCFrameworks/release/SpectraLoggerUI.xcframework build/xcframework/
+          echo "✅ XCFrameworks copied to build/xcframework/"
           ls -la build/xcframework/
 
       - name: Build iOS Example App
         run: |
           cd examples/ios-native
+          # Use local development environment for Package.swift
+          export SPECTRA_LOCAL_DEV=1
           xcodebuild -scheme "SpectraExample" \
             -destination 'platform=iOS Simulator,name=iPhone 16' \
             build CODE_SIGNING_ALLOWED=NO
 
-      - name: Upload XCFramework
+      - name: Upload XCFrameworks
         uses: actions/upload-artifact@v4
         with:
-          name: SpectraLogger-xcframework
-          path: spectra-core/build/XCFrameworks/release/SpectraLogger.xcframework
+          name: SpectraLogger-xcframeworks
+          path: |
+            spectra-core/build/XCFrameworks/release/SpectraLogger.xcframework
+            spectra-ui/build/XCFrameworks/release/SpectraLoggerUI.xcframework
 
   # Final status check for branch protection
   ci-success:
