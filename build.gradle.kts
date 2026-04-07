@@ -24,7 +24,7 @@ allprojects {
     }
 }
 
-// Configure quality tools globally but apply them lazily
+// Apply quality tools globally but apply them lazily
 val excludedProjects = listOf(
     "android-native",
     "ios-native",

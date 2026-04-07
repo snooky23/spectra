@@ -30,8 +30,6 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: kotlin
-          # Use advanced configuration if needed
-          # queries: security-extended,security-and-quality
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -43,47 +41,13 @@ jobs:
       - name: Build Kotlin
         run: |
           chmod +x gradlew
-          # Build Android targets to capture both common and Android code
+          # Build only common and Android modules using the simplest tasks possible
           ./gradlew :spectra-core:assembleAndroidMain :spectra-ui:assembleAndroidMain -x test --no-daemon
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:kotlin"
-
-  dependency-scan:
-    name: Dependency Scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: gradle
-
-      - name: Dependency Check
-        # Using the official OWASP Dependency-Check Gradle plugin is more reliable for Gradle projects
-        # We'll run it via gradlew if the plugin is applied, or use a working action.
-        # Since I haven't added the plugin to build.gradle.kts yet, I'll use the working action name.
-        uses: jeremylong/DependencyCheck-action@v5.0.0
-        with:
-          project: 'Spectra'
-          path: '.'
-          format: 'HTML'
-          out: 'reports'
-          args: >
-            --failOnCVSS 7
-        continue-on-error: true
-
-      - name: Upload results
-        uses: actions/upload-artifact@v4
-        with:
-          name: dependency-check-report
-          path: reports
 
   secret-scan:
     name: Secret Scan

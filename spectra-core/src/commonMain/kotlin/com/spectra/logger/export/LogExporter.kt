@@ -4,6 +4,7 @@ import com.spectra.logger.domain.model.LogFilter
 import com.spectra.logger.domain.model.NetworkLogFilter
 import com.spectra.logger.domain.storage.LogStorage
 import com.spectra.logger.domain.storage.NetworkLogStorage
+import com.spectra.logger.utils.SpectraTime
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -35,7 +36,7 @@ object LogExporter {
         val logs = storage.query(filter)
         return buildString {
             appendLine("=== Spectra Logger Export ===")
-            appendLine("Timestamp: ${formatTimestamp(com.spectra.logger.utils.SpectraTime.now())}")
+            appendLine("Timestamp: ${formatTimestamp(SpectraTime.now())}")
             appendLine("Total logs: ${logs.size}")
             appendLine()
 
@@ -67,7 +68,7 @@ object LogExporter {
         val logs = storage.query(filter)
         return buildString {
             appendLine("{")
-            appendLine("  \"exportTimestamp\": \"${com.spectra.logger.utils.SpectraTime.now()}\",")
+            appendLine("  \"exportTimestamp\": \"${SpectraTime.now()}\",")
             appendLine("  \"totalLogs\": ${logs.size},")
             appendLine("  \"logs\": [")
 
@@ -147,7 +148,7 @@ object LogExporter {
         val logs = storage.query(filter)
         return buildString {
             appendLine("=== Spectra Network Logger Export ===")
-            appendLine("Timestamp: ${formatTimestamp(com.spectra.logger.utils.SpectraTime.now())}")
+            appendLine("Timestamp: ${formatTimestamp(SpectraTime.now())}")
             appendLine("Total requests: ${logs.size}")
             appendLine()
 
@@ -183,7 +184,7 @@ object LogExporter {
         val logs = storage.query(filter)
         return buildString {
             appendLine("{")
-            appendLine("  \"exportTimestamp\": \"${com.spectra.logger.utils.SpectraTime.now()}\",")
+            appendLine("  \"exportTimestamp\": \"${SpectraTime.now()}\",")
             appendLine("  \"totalRequests\": ${logs.size},")
             appendLine("  \"requests\": [")
 
