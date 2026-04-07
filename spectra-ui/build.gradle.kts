@@ -25,12 +25,7 @@ kotlin {
     val iosFrameworkName = "SpectraLoggerUI"
     val xcf = XCFramework(iosFrameworkName)
 
-    val iosTargets =
-        listOf(
-            iosX64(),
-            iosArm64(),
-            iosSimulatorArm64(),
-        )
+    val iosTargets = listOf(iosX64(), iosArm64(), iosSimulatorArm64())
 
     iosTargets.forEach { iosTarget ->
         iosTarget.binaries.framework {
