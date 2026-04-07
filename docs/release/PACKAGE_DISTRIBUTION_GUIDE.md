@@ -58,8 +58,6 @@ See [SWIFT_PACKAGE_SETUP.md](./SWIFT_PACKAGE_SETUP.md) for detailed setup.
 ### Current State
 
 Podspec files exist but need updates:
-- `shared/SpectraLogger.podspec` - Core framework
-- `SpectraLoggerUI/SpectraLoggerUI.podspec` - UI components
 
 ### Issues to Resolve
 
@@ -82,7 +80,6 @@ This will automatically include:
 
 ### Timeline
 
-- [ ] Fix podspec validation issues
 - [ ] Document in README
 
 ---
@@ -176,8 +173,6 @@ dependencies {
 │   Your iOS App      │
 └────────┬────────────┘
 ┌────────▼─────────────────────────┐
-│   ├── SpectraLogger.podspec       │
-│   └── SpectraLoggerUI.podspec     │
 └────────┬─────────────────────────┘
          │
 ┌────────▼─────────────────────────┐

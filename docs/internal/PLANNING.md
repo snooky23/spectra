@@ -392,7 +392,6 @@ Spectra/
 # Install Homebrew (macOS)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-sudo gem install cocoapods
 
 # Install Kotlin compiler (optional, Gradle will handle it)
 brew install kotlin

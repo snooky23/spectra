@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecOperations
 import javax.inject.Inject
@@ -58,8 +58,6 @@ kotlin {
         compileSdk = 35
         minSdk = 24
 
-        androidResources.enable = true
-
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         }
@@ -73,11 +71,14 @@ kotlin {
     // iOS targets
     val iosFrameworkName = "SpectraLogger"
     val xcf = XCFramework(iosFrameworkName)
-    listOf(
+    
+    val iosTargets = listOf(
         iosX64(),
         iosArm64(),
         iosSimulatorArm64(),
-    ).forEach { iosTarget ->
+    )
+    
+    iosTargets.forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = iosFrameworkName
             isStatic = true
@@ -91,7 +92,6 @@ kotlin {
     }
 
     sourceSets {
-        // Common
         val commonMain by getting {
             kotlin.srcDir(generateVersionFile)
             dependencies {
@@ -105,17 +105,14 @@ kotlin {
                 implementation(libs.kotlin.test)
                 implementation(libs.kotlinx.coroutines.test)
                 implementation(libs.turbine)
-                // Note: MockK doesn't support iOS native, will add platform-specific tests later
             }
         }
 
-        // Android
         val androidMain by getting {
             dependencies {
                 implementation(libs.androidx.core.ktx)
                 implementation(libs.kotlinx.coroutines.android)
                 implementation(libs.okhttp)
-                // Compose UI
                 implementation(libs.bundles.compose.ui)
                 implementation(libs.bundles.androidx.compose)
             }
@@ -127,34 +124,22 @@ kotlin {
             }
         }
 
-        // iOS
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-
         val iosMain by creating {
             dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
         }
-
-        val iosX64Test by getting
-        val iosArm64Test by getting
-        val iosSimulatorArm64Test by getting
 
         val iosTest by creating {
             dependsOn(commonTest)
-            iosX64Test.dependsOn(this)
-            iosArm64Test.dependsOn(this)
-            iosSimulatorArm64Test.dependsOn(this)
+        }
+        
+        iosTargets.forEach { target ->
+            getByName("${target.name}Main").dependsOn(iosMain)
+            getByName("${target.name}Test").dependsOn(iosTest)
         }
     }
 }
 
-// Publishing configuration via Vanniktech Maven Publish Plugin
-// Reads metadata from gradle.properties (GROUP, VERSION_NAME, POM_* keys)
-// Signs with in-memory PGP keys when signingKey env var is set (CI)
+// Publishing configuration
 mavenPublishing {
     publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
@@ -186,7 +171,7 @@ mavenPublishing {
     }
 }
 
-// Jacoco configuration for code coverage
+// Jacoco configuration
 jacoco {
     toolVersion = "0.8.11"
 }
@@ -197,7 +182,6 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     reports {
         xml.required.set(true)
         html.required.set(true)
-        csv.required.set(false)
     }
 
     sourceDirectories.setFrom(files("src/commonMain/kotlin", "src/androidMain/kotlin"))

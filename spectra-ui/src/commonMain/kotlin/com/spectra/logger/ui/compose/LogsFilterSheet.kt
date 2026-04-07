@@ -262,7 +262,7 @@ fun LogsFilterSheet(
                         onClick = {
                             localFilter =
                                 localFilter.copy(
-                                    fromTimestamp = com.spectra.logger.utils.SpectraTime.now() - 7.days,
+                                    fromTimestamp = com.spectra.logger.utils.SpectraTime.daysAgo(7),
                                     toTimestamp = null,
                                 )
                         },

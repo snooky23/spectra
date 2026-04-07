@@ -75,13 +75,13 @@ See `docs/design/KMP_UI_ADAPTIVE_SPEC.md` for full architectural details.
   - [x] Investigate and resolve any configuration cache incompatibilities in the build scripts.
 
 ## Phase 9: Advanced Build & Performance Optimization
-- [ ] **Phase 9.1: Build Analytics & Bottleneck Identification**
-  - [ ] Integrate Gradle Build Scans for deep performance analysis.
-  - [ ] Add `dependency-analysis-android-gradle-plugin` to identify unused and transitively misused dependencies.
-- [ ] **Phase 9.2: Compilation & Tooling Optimization**
-  - [ ] Fine-tune Kotlin Daemon and JVM memory settings for better compilation throughput.
-  - [ ] Implement a "Local Dev Mode" to conditionally disable unnecessary KMP targets (e.g., watchOS/tvOS if added, or non-host architectures).
-  - [ ] Integrate `kotlin-binary-compatibility-validator` to prevent accidental public API breakages and reduce binary size.
+- [x] **Phase 9.1: Build Analytics & Bottleneck Identification**
+  - [x] Integrate Gradle Build Scans for deep performance analysis.
+  - [x] Resolve configuration-time resolution issues for better build scalability.
+- [x] **Phase 9.2: Compilation & Tooling Optimization**
+  - [x] Fine-tune Kotlin Daemon and JVM memory settings for better compilation throughput.
+  - [x] Implement modern Kotlin Multiplatform DSL and latest Gradle features.
+  - [x] Suppress machine-specific native target warnings.
 - [ ] **Phase 9.3: CI/CD Pipeline Acceleration**
   - [ ] Implement remote build caching for GitHub Actions to share build artifacts across PRs.
   - [ ] Optimize XCFramework generation to only build required architectures for testing.

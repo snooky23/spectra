@@ -355,7 +355,6 @@ git push origin main && git push origin v0.0.2
    - Set up GPG signing
    - Configure publishing scripts
 
-   - Create .podspec file
    - Publish iOS framework
 
 3. **GitHub Releases**
