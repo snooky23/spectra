@@ -24,39 +24,33 @@ allprojects {
     }
 }
 
-// Apply quality tools lazily to avoid configuration-time resolution
+// Configure quality tools globally but apply them lazily
+val excludedProjects = listOf(
+    "android-native",
+    "ios-native",
+    "kmp-shared",
+    "app"
+)
+
 subprojects {
-    val excludedProjects = listOf(
-        "android-native",
-        "ios-native",
-        "kmp-shared",
-        "app"
-    )
-    
     if (project.name !in excludedProjects && !project.path.contains("examples")) {
-        // Apply ktlint lazily
+        // Use a more robust lazy application
         pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             apply(plugin = "org.jlleitschuh.gradle.ktlint")
-            
-            configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+            apply(plugin = "io.gitlab.arturbosch.detekt")
+
+            extensions.configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
                 version.set("1.1.1")
                 android.set(true)
                 outputToConsole.set(true)
-                outputColorName.set("RED")
                 ignoreFailures.set(false)
-
                 filter {
                     exclude("**/generated/**")
                     exclude("**/build/**")
                 }
             }
-        }
 
-        // Apply detekt lazily
-        pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
-            apply(plugin = "io.gitlab.arturbosch.detekt")
-
-            configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
+            extensions.configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
                 buildUponDefaultConfig = true
                 allRules = false
                 config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
@@ -66,7 +60,6 @@ subprojects {
                 reports {
                     html.required.set(true)
                     xml.required.set(true)
-                    txt.required.set(true)
                 }
             }
 
