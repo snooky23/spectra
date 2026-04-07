@@ -1,7 +1,3 @@
-rootProject.name = "Spectra"
-
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-
 pluginManagement {
     repositories {
         google()
@@ -9,6 +5,22 @@ pluginManagement {
         mavenCentral()
     }
 }
+
+plugins {
+    id("com.gradle.develocity") version "3.19.1"
+}
+
+develocity {
+    buildScan {
+        termsOfUseUrl.set("https://gradle.com/terms-of-service")
+        termsOfUseAgree.set("yes")
+        publishing.onlyIf { System.getenv("CI") != null }
+    }
+}
+
+rootProject.name = "Spectra"
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 dependencyResolutionManagement {
     repositories {

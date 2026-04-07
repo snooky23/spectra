@@ -41,7 +41,9 @@ fun DateTimePickerRow(
     if (showDatePicker) {
         val datePickerState =
             rememberDatePickerState(
-                initialSelectedDateMillis = timestamp?.toEpochMilliseconds() ?: com.spectra.logger.utils.SpectraTime.now().toEpochMilliseconds(),
+                initialSelectedDateMillis =
+                    timestamp?.toEpochMilliseconds()
+                        ?: com.spectra.logger.utils.SpectraTime.now().toEpochMilliseconds(),
             )
 
         DatePickerDialog(

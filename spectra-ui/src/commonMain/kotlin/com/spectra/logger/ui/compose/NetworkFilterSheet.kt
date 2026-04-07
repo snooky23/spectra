@@ -13,10 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.spectra.logger.ui.compose.components.DateTimePickerRow
 import com.spectra.logger.ui.compose.components.colorForStatusRange
-import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.hours
 
 /**
  * Filter configuration for Network screen
@@ -240,7 +237,7 @@ fun NetworkFilterSheet(
                         onClick = {
                             localFilter =
                                 localFilter.copy(
-                                    fromTimestamp = com.spectra.logger.utils.SpectraTime.now() - 1.hours,
+                                    fromTimestamp = com.spectra.logger.utils.SpectraTime.hoursAgo(1),
                                     toTimestamp = null,
                                 )
                         },
@@ -250,7 +247,7 @@ fun NetworkFilterSheet(
                         onClick = {
                             localFilter =
                                 localFilter.copy(
-                                    fromTimestamp = com.spectra.logger.utils.SpectraTime.now() - 1.days,
+                                    fromTimestamp = com.spectra.logger.utils.SpectraTime.daysAgo(1),
                                     toTimestamp = null,
                                 )
                         },
@@ -260,7 +257,7 @@ fun NetworkFilterSheet(
                         onClick = {
                             localFilter =
                                 localFilter.copy(
-                                    fromTimestamp = com.spectra.logger.utils.SpectraTime.now() - 1.days,
+                                    fromTimestamp = com.spectra.logger.utils.SpectraTime.daysAgo(1),
                                     toTimestamp = null,
                                 )
                         },
