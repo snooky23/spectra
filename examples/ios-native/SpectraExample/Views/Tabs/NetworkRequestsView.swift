@@ -41,6 +41,10 @@ public struct NetworkRequestsView: View {
                         viewModel.simulateError500()
                     }
 
+                    LogButton(label: "Network Error (Timeout)", icon: "wifi.slash", backgroundColor: .red) {
+                        viewModel.simulateNetworkError()
+                    }
+
                     Spacer().frame(height: 16)
                     SectionHeader(title: "More HTTP Methods")
 

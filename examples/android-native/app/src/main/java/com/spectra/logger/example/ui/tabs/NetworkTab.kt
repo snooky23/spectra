@@ -99,6 +99,23 @@ fun NetworkTab(
             )
         }
 
+        item {
+            LogButton(
+                label = "Network Error (Timeout)",
+                icon = Icons.Default.SignalWifiOff,
+                backgroundColor = Color.Red,
+                action = {
+                    viewModel.simulateRequest(
+                        method = "GET",
+                        url = "https://api.example.com/sync",
+                        statusCode = null,
+                        duration = 15.0,
+                        errorMessage = "java.net.SocketTimeoutException: timeout"
+                    )
+                }
+            )
+        }
+
         item { SectionHeader("More HTTP Methods") }
 
         item {

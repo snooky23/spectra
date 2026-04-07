@@ -16,6 +16,7 @@ public class NetworkTestingViewModel: ObservableObject {
     public func simulatePut200() { mockDataGenerator.simulateNetworkRequest(method: "PUT", url: "https://api.example.com/users/123", statusCode: 200, duration: 0.6) }
     public func simulateDelete204() { mockDataGenerator.simulateNetworkRequest(method: "DELETE", url: "https://api.example.com/users/456", statusCode: 204, duration: 0.4) }
     public func simulateRateLimit429() { mockDataGenerator.simulateNetworkRequest(method: "POST", url: "https://api.example.com/bulk-upload", statusCode: 429, duration: 0.1) }
+    public func simulateNetworkError() { mockDataGenerator.simulateNetworkRequest(method: "GET", url: "https://api.example.com/sync", statusCode: nil, duration: 15.0, errorMessage: "NSURLErrorDomain: -1001 (The request timed out.)") }
     
     public func simulateBatchCalls() {
         let endpoints = ["users", "orders", "products", "inventory", "analytics"]

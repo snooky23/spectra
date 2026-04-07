@@ -30,7 +30,7 @@ public struct MockDataGenerator {
     }
 
     /// Simulates a network request and logs it to the network logs section via the AppLogger
-    public func simulateNetworkRequest(method: String, url: String, statusCode: Int, duration: Double) {
+    public func simulateNetworkRequest(method: String, url: String, statusCode: Int?, duration: Double, errorMessage: String? = nil) {
         Task.detached(priority: .userInitiated) {
             // Simulate network delay on background thread
             try? await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
@@ -48,30 +48,38 @@ public struct MockDataGenerator {
             }()
 
             // Generate realistic response headers based on status code
-            var responseHeaders: [String: String] = [
-                "Content-Type": "application/json",
-                "Server": "Example/1.0",
-                "X-Response-Time": "\(durationMs)ms"
-            ]
+            var responseHeaders: [String: String] = [:]
+            
+            if let code = statusCode {
+                responseHeaders = [
+                    "Content-Type": "application/json",
+                    "Server": "Example/1.0",
+                    "X-Response-Time": "\(durationMs)ms"
+                ]
 
-            if statusCode >= 200 && statusCode < 300 {
-                responseHeaders["Cache-Control"] = "max-age=3600"
-                responseHeaders["ETag"] = "\"abc123\""
-            } else if statusCode >= 400 {
-                responseHeaders["Cache-Control"] = "no-cache, no-store"
+                if code >= 200 && code < 300 {
+                    responseHeaders["Cache-Control"] = "max-age=3600"
+                    responseHeaders["ETag"] = "\"abc123\""
+                } else if code >= 400 {
+                    responseHeaders["Cache-Control"] = "no-cache, no-store"
+                }
             }
 
             // Generate response body based on status code
-            let responseBody: String = {
-                switch statusCode {
+            let responseBody: String? = {
+                guard let code = statusCode else { return nil }
+                switch code {
                 case 200: return "{\"success\": true, \"data\": {\"id\": \"123\"}}"
                 case 201: return "{\"success\": true, \"id\": \"newly-created-id\"}"
                 case 400: return "{\"error\": \"Bad Request\", \"code\": \"INVALID_PARAMS\"}"
                 case 404: return "{\"error\": \"Not Found\", \"code\": \"RESOURCE_NOT_FOUND\"}"
                 case 500: return "{\"error\": \"Internal Server Error\", \"code\": \"INTERNAL_ERROR\"}"
-                default: return "{\"error\": \"HTTP \(statusCode)\"}"
+                default: return "{\"error\": \"HTTP \(code)\"}"
                 }
             }()
+
+            let errorText = errorMessage ?? (statusCode != nil && statusCode! >= 400 ? "HTTP \(statusCode!): Request failed" : nil)
+            let ktStatusCode = statusCode != nil ? KotlinInt(int: Int32(statusCode!)) : nil
 
             // Create a network log entry with proper KMP type conversions
             let networkLogEntry = NetworkLogEntry(
@@ -86,11 +94,11 @@ public struct MockDataGenerator {
                     "User-Agent": "SpectraExample/1.0"
                 ],
                 requestBody: requestBody,
-                responseCode: KotlinInt(int: Int32(statusCode)),
+                responseCode: ktStatusCode,
                 responseHeaders: responseHeaders,
                 responseBody: responseBody,
                 duration: durationMs,
-                error: statusCode >= 400 ? "HTTP \(statusCode): Request failed" : nil,
+                error: errorText,
                 source: "SpectraExample",
                 sourceType: SourceType.app
             )
