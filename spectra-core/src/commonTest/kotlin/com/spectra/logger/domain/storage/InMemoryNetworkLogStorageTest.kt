@@ -4,7 +4,6 @@ import app.cash.turbine.test
 import com.spectra.logger.domain.model.NetworkLogEntry
 import com.spectra.logger.domain.model.NetworkLogFilter
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Clock
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -17,7 +16,7 @@ class InMemoryNetworkLogStorageTest {
         responseCode: Int = 200,
     ) = NetworkLogEntry(
         id = id,
-        timestamp = Clock.System.now(),
+        timestamp = com.spectra.logger.utils.SpectraTime.now(),
         url = url,
         method = method,
         responseCode = responseCode,

@@ -13,7 +13,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 
 /**
  * Ktor client plugin for network logging in KMP projects.
@@ -41,12 +40,12 @@ val SpectraNetworkLogger: ClientPlugin<SpectraNetworkLoggerConfig> =
         val startTimeKey = AttributeKey<Long>("SpectraStartTime")
 
         onRequest { request, _ ->
-            request.attributes.put(startTimeKey, Clock.System.now().toEpochMilliseconds())
+            request.attributes.put(startTimeKey, com.spectra.logger.utils.SpectraTime.now().toEpochMilliseconds())
         }
 
         onResponse { response ->
             val startTime = response.call.request.attributes.getOrNull(startTimeKey) ?: 0L
-            val duration = Clock.System.now().toEpochMilliseconds() - startTime
+            val duration = com.spectra.logger.utils.SpectraTime.now().toEpochMilliseconds() - startTime
 
             val request = response.call.request
 
@@ -71,7 +70,7 @@ val SpectraNetworkLogger: ClientPlugin<SpectraNetworkLoggerConfig> =
             val entry =
                 NetworkLogEntry(
                     id = IdGenerator.generate(),
-                    timestamp = Clock.System.now(),
+                    timestamp = com.spectra.logger.utils.SpectraTime.now(),
                     url = url,
                     method = method,
                     requestHeaders = requestHeaders,

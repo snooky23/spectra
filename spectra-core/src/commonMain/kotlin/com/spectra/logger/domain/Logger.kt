@@ -11,7 +11,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 
 /**
  * Core logger implementation.
@@ -156,7 +155,7 @@ class Logger(
         val entry =
             LogEntry(
                 id = IdGenerator.generate(),
-                timestamp = Clock.System.now(),
+                timestamp = com.spectra.logger.utils.SpectraTime.now(),
                 level = level,
                 tag = tag,
                 message = message,

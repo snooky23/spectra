@@ -37,7 +37,7 @@ object FileExporter {
                     ExportFormat.CSV -> "csv"
                 }
 
-            val defaultFileName = "spectra_logs_${System.currentTimeMillis()}.$extension"
+            val defaultFileName = "spectra_logs_${com.spectra.logger.utils.SpectraTime.now().toEpochMilliseconds()}.$extension"
             val file = File(context.cacheDir, fileName ?: defaultFileName)
 
             val content =
@@ -74,7 +74,7 @@ object FileExporter {
                     ExportFormat.CSV -> "csv"
                 }
 
-            val defaultFileName = "spectra_network_logs_${System.currentTimeMillis()}.$extension"
+            val defaultFileName = "spectra_network_logs_${com.spectra.logger.utils.SpectraTime.now().toEpochMilliseconds()}.$extension"
             val file = File(context.cacheDir, fileName ?: defaultFileName)
 
             val content =

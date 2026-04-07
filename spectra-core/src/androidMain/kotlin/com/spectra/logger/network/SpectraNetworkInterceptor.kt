@@ -8,7 +8,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import okhttp3.Interceptor
 import okhttp3.Response
 import okio.Buffer
@@ -47,7 +46,7 @@ class SpectraNetworkInterceptor(
             return chain.proceed(request)
         }
 
-        val startTime = System.currentTimeMillis()
+        val startTime = com.spectra.logger.utils.SpectraTime.now().toEpochMilliseconds()
 
         // Capture request details
         val requestHeaders =
@@ -74,7 +73,7 @@ class SpectraNetworkInterceptor(
             error = e.message ?: "Unknown error"
         }
 
-        val duration = System.currentTimeMillis() - startTime
+        val duration = com.spectra.logger.utils.SpectraTime.now().toEpochMilliseconds() - startTime
 
         // Capture response details
         val responseCode = response?.code
@@ -95,7 +94,7 @@ class SpectraNetworkInterceptor(
         val entry =
             NetworkLogEntry(
                 id = IdGenerator.generate(),
-                timestamp = Clock.System.now(),
+                timestamp = com.spectra.logger.utils.SpectraTime.now(),
                 url = request.url.toString(),
                 method = request.method,
                 requestHeaders = requestHeaders,

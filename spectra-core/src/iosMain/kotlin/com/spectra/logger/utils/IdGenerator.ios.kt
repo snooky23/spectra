@@ -1,7 +1,6 @@
 package com.spectra.logger.utils
 
 import kotlinx.atomicfu.atomic
-import kotlinx.datetime.Clock
 
 /**
  * iOS implementation using timestamp + atomic counter.
@@ -11,7 +10,7 @@ actual object IdGenerator {
     private val counter = atomic(0)
 
     actual fun generate(): String {
-        val timestamp = Clock.System.now().toEpochMilliseconds()
+        val timestamp = com.spectra.logger.utils.SpectraTime.now().toEpochMilliseconds()
         val count = counter.getAndIncrement()
         return "$timestamp-$count"
     }

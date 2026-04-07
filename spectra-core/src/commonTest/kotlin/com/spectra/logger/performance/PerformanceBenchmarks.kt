@@ -10,7 +10,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Clock
 import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlin.time.measureTime
@@ -88,7 +87,7 @@ class PerformanceBenchmarks {
                 storage.add(
                     LogEntry(
                         id = "log-$index",
-                        timestamp = Clock.System.now(),
+                        timestamp = com.spectra.logger.utils.SpectraTime.now(),
                         level = LogLevel.INFO,
                         tag = "Test",
                         message = "Message $index",
@@ -180,7 +179,7 @@ class PerformanceBenchmarks {
                 storage.add(
                     LogEntry(
                         id = "log-$index",
-                        timestamp = Clock.System.now(),
+                        timestamp = com.spectra.logger.utils.SpectraTime.now(),
                         level = level,
                         tag = "Test",
                         message = "Message $index",
