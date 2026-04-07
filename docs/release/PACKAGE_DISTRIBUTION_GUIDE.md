@@ -7,7 +7,6 @@ This document explains the current distribution options for Spectra Logger and t
 | Package Manager | Status | Notes |
 |---|---|---|
 | **Swift Package Manager (SPM)** | ✅ Primary (Recommended) | Fully functional, local + release modes |
-| **CocoaPods** | 🔧 Under Development | Podspecs exist but need updates |
 | **Maven Central** | 📋 Planned | For Kotlin/Android distribution |
 
 ---
@@ -53,7 +52,6 @@ See [SWIFT_PACKAGE_SETUP.md](./SWIFT_PACKAGE_SETUP.md) for detailed setup.
 
 ---
 
-## CocoaPods (Planned)
 
 **Status**: 🔧 **Under Development**
 
@@ -76,7 +74,6 @@ Once completed, users will be able to:
 
 ```ruby
 # In Podfile
-pod 'SpectraLoggerUI'
 ```
 
 This will automatically include:
@@ -86,9 +83,6 @@ This will automatically include:
 ### Timeline
 
 - [ ] Fix podspec validation issues
-- [ ] Set up binary hosting (GitHub Releases or CocoaPods trunk)
-- [ ] Test with example CocoaPods projects
-- [ ] Publish to CocoaPods Trunk
 - [ ] Document in README
 
 ---
@@ -124,7 +118,6 @@ dependencies {
 .package(path: "../SpectraLoggerUI")
 ```
 
-### I prefer CocoaPods
 
 **Wait for 1.1.0 release** 🔧
 - Planned support is coming
@@ -147,10 +140,8 @@ dependencies {
 - ✅ Example app with SPM
 
 ### Version 1.1.0 (Planned)
-- 🔧 CocoaPods support
 - 📋 Maven Central for Android
 - 📋 GitHub Releases for binaries
-- 📋 CocoaPods Trunk registration
 
 ### Version 1.2.0+ (Future)
 - 🎯 Swift Package Index listing
@@ -179,15 +170,12 @@ dependencies {
 └───────────────────────────────────┘
 ```
 
-### CocoaPods (Planned)
 
 ```
 ┌─────────────────────┐
 │   Your iOS App      │
 └────────┬────────────┘
-         │ pod 'SpectraLoggerUI'
 ┌────────▼─────────────────────────┐
-│   CocoaPods Trunk Registry        │
 │   ├── SpectraLogger.podspec       │
 │   └── SpectraLoggerUI.podspec     │
 └────────┬─────────────────────────┘
@@ -211,7 +199,6 @@ Do you want to use Spectra Logger?
 ├─ Yes, and I want to contribute
 │  └─ Use SPM in Local Development Mode ✅
 │
-├─ Yes, but I prefer CocoaPods
 │  └─ Wait for v1.1.0 release 🔧
 │
 └─ Yes, and I'm using Android/Kotlin
@@ -222,9 +209,7 @@ Do you want to use Spectra Logger?
 
 ## Contributing to Distribution
 
-If you want to help with CocoaPods or Maven Central support:
 
-1. **CocoaPods**: See issues tagged `cocoapods`
 2. **Maven Central**: See issues tagged `maven`
 3. **Binary Distribution**: See issues tagged `distribution`
 
@@ -234,7 +219,6 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 ## Support Matrix
 
-| Feature | SPM | CocoaPods | Maven | Carthage |
 |---------|-----|-----------|-------|----------|
 | iOS Framework | ✅ | 🔧 | ❌ | ❌ |
 | Android Library | ✅* | ❌ | 📋 | ❌ |

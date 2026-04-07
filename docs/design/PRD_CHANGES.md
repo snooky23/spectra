@@ -65,7 +65,6 @@ Clarified three distribution strategies:
 - Pre-compiled KMP code + Android UI
 
 **For Native iOS**:
-- CocoaPods, SPM, or XCFramework
 - Pre-compiled KMP code + iOS UI
 
 #### 8. **API Examples** (Appendix A)

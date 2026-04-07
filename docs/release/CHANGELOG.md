@@ -44,13 +44,11 @@ The first stable release of SpectraLogger - a high-performance, cross-platform l
 
 #### Distribution
 - **Swift Package Manager** support with binary XCFramework distribution
-- **CocoaPods** support (both source and binary distribution)
 - **Carthage** support with binary JSON manifest
 - **Lightweight**: Only 8.5MB XCFramework (93% smaller than beta versions)
 
 #### Documentation
 - Comprehensive installation guide for all three package managers
-- Platform-specific guides (CocoaPods, SPM, Carthage)
 - Architecture documentation
 - API reference with code examples
 - CI/CD setup guide for maintainers
@@ -115,10 +113,7 @@ dependencies: [
 ]
 ```
 
-#### CocoaPods
 ```ruby
-pod 'SpectraLogger', '~> 1.0'
-pod 'SpectraLoggerUI', '~> 1.0'  # Optional
 ```
 
 #### Carthage

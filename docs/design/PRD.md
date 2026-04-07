@@ -4,7 +4,6 @@
 
 ### Project Description
 Spectra Logger is a Kotlin Multiplatform (KMP) logging framework designed for mobile applications on iOS, Android, and KMP projects. The framework provides centralized event logging, error tracking, and network request monitoring with an integrated mobile UI for viewing and filtering logs in real-time. The framework will be distributed as a reusable library that can be integrated into:
-- **Native iOS projects** (XCFramework via CocoaPods/direct integration)
 - **Native Android projects** (AAR via Maven/Gradle)
 - **Kotlin Multiplatform projects** (KMP module via Maven/Gradle dependencies)
 
@@ -439,7 +438,6 @@ Spectra/
 - Includes pre-compiled KMP shared code + Android UI
 
 **For Native iOS Projects**:
-- CocoaPods (Podspec) - Recommended
 - Swift Package Manager (future consideration)
 - Direct XCFramework integration
 - Includes pre-compiled KMP shared code + iOS UI
@@ -714,7 +712,6 @@ Spectra/
 
 **Deliverables**:
 - Version 1.0.0 release
-- Published artifacts (Maven, CocoaPods)
 - Blog post / announcement
 - GitHub release
 
@@ -788,7 +785,6 @@ These may be considered for future releases based on user feedback and demand.
 - Android Studio Hedgehog or later
 - JDK 17+
 - Kotlin 1.9+
-- CocoaPods (for iOS framework distribution)
 
 ### External Dependencies
 - No mandatory external services
@@ -838,7 +834,6 @@ dependencies {
 
 **Native iOS (Podfile)**:
 ```ruby
-pod 'SpectraLogger', '~> 1.0'
 ```
 
 **Native iOS (Swift Package Manager)**:

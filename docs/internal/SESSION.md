@@ -297,7 +297,6 @@ git push origin main && git push origin v0.0.2
      - Added AppContext configuration examples
 
    - **examples/ios-native/README.md**:
-     - Updated to reflect Swift Package Manager setup (no CocoaPods)
      - Added error logging with stack traces example
      - Enhanced manual testing checklist (stack traces, tags, dark mode, share)
      - Improved "How It Works" section
@@ -356,9 +355,7 @@ git push origin main && git push origin v0.0.2
    - Set up GPG signing
    - Configure publishing scripts
 
-2. **CocoaPods Publishing**
    - Create .podspec file
-   - Register with CocoaPods Trunk
    - Publish iOS framework
 
 3. **GitHub Releases**
@@ -440,7 +437,6 @@ Spectra/
 
 ### Distribution
 - Maven Central (planned)
-- CocoaPods for iOS (planned)
 - GitHub Releases for direct downloads
 
 ---
@@ -556,4 +552,3 @@ See instructions in [CLAUDE.md](./CLAUDE.md) for the update protocol.
 ---
 
 **Session Status**: 🎉 ALL DEVELOPMENT COMPLETE! Project ready for production use
-**Next Action**: Optional - Publishing to Maven Central & CocoaPods (See docs/PUBLISHING.md)

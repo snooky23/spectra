@@ -95,8 +95,8 @@ kotlin {
         val commonMain by getting {
             kotlin.srcDir(generateVersionFile)
             dependencies {
-                implementation(libs.bundles.kotlinx)
-                implementation(libs.ktor.client.core)
+                api(libs.bundles.kotlinx)
+                api(libs.ktor.client.core)
             }
         }
 

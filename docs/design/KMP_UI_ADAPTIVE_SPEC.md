@@ -66,12 +66,10 @@ Exposing Kotlin code to Swift via Objective-C headers historically degrades the 
 
 ## 5. CI/CD, Distribution & Deprecations
 
-Currently, the SDK is distributed via GitHub Actions (`release.yml` and `release-core-xcframework.yml`). The current pipeline builds `SpectraLogger.xcframework` (Core) and distributes `spectra-ui-ios` as raw Swift files via SPM and CocoaPods.
 
 This migration changes the distribution model and deprecates legacy tools:
 1. **XCFramework Generation**: The GitHub Actions workflows must be updated to build and package the new `spectra-ui` KMP module into a binary `SpectraLoggerUI.xcframework` alongside the core framework.
 2. **Swift Package Manager (`Package.swift`)**: The package manifest will be updated to distribute `SpectraLoggerUI` as a `binaryTarget` (downloading the pre-compiled CMP XCFramework) instead of compiling raw Swift files. This is the **sole** supported distribution method for iOS moving forward.
-3. **CocoaPods Deprecation**: CocoaPods support will be officially dropped. The `SpectraLoggerUI.podspec` will be deleted, and references will be removed from the documentation.
 4. **Android Publishing**: The `mavenPublishing` setup will automatically include the new `spectra-ui` module when publishing to Maven Central, ensuring Android developers simply declare `implementation("com.spectra.logger:spectra-ui:VERSION")`.
 
 ---
@@ -114,10 +112,8 @@ The migration will be executed in discrete, verifiable phases:
 - Update `examples/android-native` to consume the new SDK.
 - Update `examples/ios-native` with the SwiftUI wrapper for the CMP controller.
 - Delete `spectra-ui-android` and `spectra-ui-ios` modules.
-- Remove `SpectraLoggerUI.podspec` and legacy CocoaPods references.
 
 ### Phase 5: Documentation & Release Preparation
-- Update all relevant documentation in `docs/` and project READMEs to reflect the new KMP UI architecture, SPM binary distribution, and the removal of CocoaPods.
 - Ensure all usage guides provide clear examples of wrapping the new `SpectraViewController` for iOS consumers.
 
 ---

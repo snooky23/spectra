@@ -240,7 +240,7 @@ fun NetworkFilterSheet(
                         onClick = {
                             localFilter =
                                 localFilter.copy(
-                                    fromTimestamp = Clock.System.now() - 1.hours,
+                                    fromTimestamp = com.spectra.logger.utils.SpectraTime.now() - 1.hours,
                                     toTimestamp = null,
                                 )
                         },
@@ -250,7 +250,7 @@ fun NetworkFilterSheet(
                         onClick = {
                             localFilter =
                                 localFilter.copy(
-                                    fromTimestamp = Clock.System.now() - 1.days,
+                                    fromTimestamp = com.spectra.logger.utils.SpectraTime.now() - 1.days,
                                     toTimestamp = null,
                                 )
                         },
@@ -260,7 +260,7 @@ fun NetworkFilterSheet(
                         onClick = {
                             localFilter =
                                 localFilter.copy(
-                                    fromTimestamp = Clock.System.now() - 1.days,
+                                    fromTimestamp = com.spectra.logger.utils.SpectraTime.now() - 1.days,
                                     toTimestamp = null,
                                 )
                         },
@@ -270,7 +270,7 @@ fun NetworkFilterSheet(
                         onClick = {
                             localFilter =
                                 localFilter.copy(
-                                    fromTimestamp = Clock.System.now() - 7.days,
+                                    fromTimestamp = com.spectra.logger.utils.SpectraTime.now() - 7.days,
                                     toTimestamp = null,
                                 )
                         },

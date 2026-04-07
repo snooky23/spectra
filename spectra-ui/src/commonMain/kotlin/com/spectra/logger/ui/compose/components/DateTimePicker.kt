@@ -41,7 +41,7 @@ fun DateTimePickerRow(
     if (showDatePicker) {
         val datePickerState =
             rememberDatePickerState(
-                initialSelectedDateMillis = timestamp?.toEpochMilliseconds() ?: Clock.System.now().toEpochMilliseconds(),
+                initialSelectedDateMillis = timestamp?.toEpochMilliseconds() ?: com.spectra.logger.utils.SpectraTime.now().toEpochMilliseconds(),
             )
 
         DatePickerDialog(
@@ -69,7 +69,7 @@ fun DateTimePickerRow(
 
     if (showTimePicker) {
         val defaultTz = TimeZone.currentSystemDefault()
-        val now = Clock.System.now()
+        val now = com.spectra.logger.utils.SpectraTime.now()
         val currentDateTime = (timestamp ?: now).toLocalDateTime(defaultTz)
 
         val timePickerState =

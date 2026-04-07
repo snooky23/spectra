@@ -9,11 +9,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.layout.AnimatedPane
-import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
-import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
-import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,88 +24,70 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 /**
- * Logs screen displaying application logs with adaptive filtering and detail views.
+ * Logs screen displaying application logs with simplified filtering and detail views.
+ * Bypasses NavigableListDetailPaneScaffold to ensure multiplatform compilation.
  */
-@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogsScreen(
     modifier: Modifier = Modifier,
     viewModel: LogsViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val navigator = rememberListDetailPaneScaffoldNavigator<String>()
     val scope = rememberCoroutineScope()
 
     var showFilterSheet by remember { mutableStateOf(false) }
     var showShareBottomSheet by remember { mutableStateOf(false) }
+    var selectedLog by remember { mutableStateOf<LogEntry?>(null) }
 
-    NavigableListDetailPaneScaffold(
-        modifier = modifier,
-        navigator = navigator,
-        listPane = {
-            AnimatedPane {
-                LogsListContent(
-                    uiState = uiState,
-                    onLogClick = { log ->
-                        scope.launch {
-                            navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, log.id)
-                        }
-                    },
-                    onShowFilter = { showFilterSheet = true },
-                    onShowShare = { showShareBottomSheet = true },
-                    onRefresh = viewModel::loadLogs,
-                    onClearLogs = viewModel::clearLogs,
-                    onSearchChange = viewModel::onSearchTextChanged,
-                    onToggleLevel = viewModel::toggleLevel,
-                    onRemoveTag = viewModel::removeTagFilter,
-                    onClearTimeRange = viewModel::clearTimeRangeFilter,
-                    onClearHasError = viewModel::clearHasErrorFilter,
-                )
-            }
-        },
-        detailPane = {
-            AnimatedPane {
-                val currentDestination = navigator.currentDestination
-                val selectedLogId = currentDestination?.contentKey
-                val selectedLog = uiState.logs.find { it.id == selectedLogId }
+    Box(modifier = modifier.fillMaxSize()) {
+        if (selectedLog == null) {
+            LogsListContent(
+                uiState = uiState,
+                onLogClick = { log ->
+                    selectedLog = log
+                },
+                onShowFilter = { showFilterSheet = true },
+                onShowShare = { showShareBottomSheet = true },
+                onRefresh = viewModel::loadLogs,
+                onClearLogs = viewModel::clearLogs,
+                onSearchChange = viewModel::onSearchTextChanged,
+                onToggleLevel = viewModel::toggleLevel,
+                onRemoveTag = viewModel::removeTagFilter,
+                onClearTimeRange = viewModel::clearTimeRangeFilter,
+                onClearHasError = viewModel::clearHasErrorFilter,
+            )
+        } else {
+            LogDetailContent(
+                log = selectedLog!!,
+                onBack = {
+                    selectedLog = null
+                },
+            )
+        }
 
-                if (selectedLog != null) {
-                    LogDetailContent(
-                        log = selectedLog,
-                        onBack = {
-                            scope.launch {
-                                navigator.navigateBack()
-                            }
-                        },
-                    )
-                } else {
-                    EmptyDetailPane("Select a log to view details")
-                }
-            }
-        },
-    )
+        // Filter bottom sheet
+        if (showFilterSheet) {
+            LogsFilterSheet(
+                filter = uiState.advancedFilter,
+                selectedLevels = uiState.selectedLevels,
+                availableTags = uiState.availableTags,
+                onFilterChange = viewModel::updateFilter,
+                onLevelsChange = viewModel::updateLevels,
+                onDismiss = { showFilterSheet = false },
+            )
+        }
 
-    // Filter bottom sheet
-    if (showFilterSheet) {
-        LogsFilterSheet(
-            filter = uiState.advancedFilter,
-            selectedLevels = uiState.selectedLevels,
-            availableTags = uiState.availableTags,
-            onFilterChange = viewModel::updateFilter,
-            onLevelsChange = viewModel::updateLevels,
-            onDismiss = { showFilterSheet = false },
-        )
-    }
-
-    // Share bottom sheet
-    if (showShareBottomSheet) {
-        ShareBottomSheet(
-            filteredCount = uiState.filteredLogs.size,
-            totalCount = uiState.logs.size,
-            onShareFiltered = { viewModel.shareLogs(uiState.filteredLogs) },
-            onShareAll = { viewModel.shareLogs(uiState.logs) },
-            onDismiss = { showShareBottomSheet = false },
-        )
+        // Share bottom sheet
+        if (showShareBottomSheet) {
+            ShareBottomSheet(
+                filteredCount = uiState.filteredLogs.size,
+                totalCount = uiState.logs.size,
+                onShareFiltered = { viewModel.shareLogs(uiState.filteredLogs) },
+                onShareAll = { viewModel.shareLogs(uiState.logs) },
+                onDismiss = { showShareBottomSheet = false },
+            )
+        }
     }
 }
 
@@ -256,13 +233,6 @@ private fun LogDetailContent(
         Box(modifier = Modifier.padding(paddingValues)) {
             LogDetailPane(log = log)
         }
-    }
-}
-
-@Composable
-fun EmptyDetailPane(message: String) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = message, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 

@@ -334,7 +334,6 @@ Spectra/
 | Technology | Version | Purpose |
 |------------|---------|---------|
 | **Xcode** | 15+ | iOS development |
-| **CocoaPods** | 1.14+ | Dependency management |
 | **Foundation** | iOS 13+ | Core iOS APIs |
 
 #### KMP Projects (Ktor Support)
@@ -387,15 +386,12 @@ Spectra/
 #### For iOS Development
 - **macOS** 13+ (Ventura or Sonoma)
 - **Xcode** 15+
-- **CocoaPods** 1.14+
-- **Ruby** 2.7+ (for CocoaPods)
 
 ### Build Tools
 ```bash
 # Install Homebrew (macOS)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-# Install CocoaPods
 sudo gem install cocoapods
 
 # Install Kotlin compiler (optional, Gradle will handle it)
@@ -550,9 +546,7 @@ com.spectra:logger:1.0.0              # Core KMP module
 com.spectra:logger-android:1.0.0     # Android-specific AAR
 ```
 
-### CocoaPods
 ```ruby
-pod 'SpectraLogger', '~> 1.0'         # iOS Framework
 ```
 
 ### GitHub Releases

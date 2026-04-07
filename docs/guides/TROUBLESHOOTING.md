@@ -11,8 +11,6 @@ This guide addresses common issues encountered when integrating, configuring, or
     2. Check that the provided dependency version matches the latest release.
     3. Run `Clean Project` and then `Rebuild Project` to force Gradle sync.
 
-### **Issue:** `Missing Required Architecture (arm64)` (iOS CocoaPods)
-- **Cause:** Xcode sometimes throws module format errors when mixing SwiftUI architectures via older CocoaPods scripts.
 - **Solution:** Under your App target's **Build Settings**, set `Build Active Architecture Only` to `YES` for Debug. Ensure your Podfile has the `post_install` hook shown in the [Installation Guide](./INSTALLATION.md) clamping the iOS Target to `15.0`.
 
 ---

@@ -684,7 +684,6 @@ This document breaks down the 18-week development timeline into concrete, action
 
 #### Task Group: Native iOS Example
 - [ ] Create new iOS app project (Swift)
-  - [ ] Add Spectra Logger via CocoaPods
   - [ ] Initialize logger in AppDelegate
   - [ ] Register URLProtocol for network logging
 - [ ] Implement example features (same as Android)
@@ -717,7 +716,6 @@ This document breaks down the 18-week development timeline into concrete, action
   - [ ] Show UI
   - [ ] Troubleshooting
 - [ ] Write integration guide for native iOS
-  - [ ] Add dependency (CocoaPods / SPM)
   - [ ] Initialize framework
   - [ ] Configure network logging
   - [ ] Show UI
@@ -1036,9 +1034,7 @@ This document breaks down the 18-week development timeline into concrete, action
   - [ ] Publish Android module
   - [ ] Verify artifacts available
 - [ ] Publish iOS Framework
-  - [ ] Publish to CocoaPods
   - [ ] Tag repository
-  - [ ] Verify pod install works
   - [ ] (Future) Publish to SPM
 - [ ] Create GitHub Release
   - [ ] Tag: v1.0.0
@@ -1081,7 +1077,6 @@ This document breaks down the 18-week development timeline into concrete, action
   - [ ] Collect feedback
 - [ ] Track adoption metrics
   - [ ] Maven Central downloads
-  - [ ] CocoaPods downloads
   - [ ] GitHub stars/forks
 - [ ] Plan next steps
   - [ ] Prioritize feature requests
@@ -1091,7 +1086,6 @@ This document breaks down the 18-week development timeline into concrete, action
 **Deliverables**:
 - ✅ Version 1.0.0 released
 - ✅ Published to Maven Central
-- ✅ Published to CocoaPods
 - ✅ GitHub release created
 - ✅ Launch announced
 - ✅ Community engaged
@@ -1172,17 +1166,13 @@ This document breaks down the 18-week development timeline into concrete, action
 
 **Completed**:
 - [x] Remove Compose Multiplatform from core (93% size reduction: 119MB → 8.5MB)
-- [x] Separate UI layers (SpectraLoggerUI pod for iOS, future Compose for Android)
 - [x] Build lightweight XCFramework (8.5MB)
 - [x] Create professional podspecs (SpectraLogger, SpectraLoggerUI)
 - [x] Set up SPM binary distribution
-- [x] CocoaPods distribution ready
 - [x] Push to GitHub with v1.0.0 tag
 
 **Remaining** (Complete These to Release v1.0.0):
 - [ ] Create GitHub Release v1.0.0 with XCFramework
-- [ ] Publish SpectraLogger to CocoaPods Trunk
-- [ ] Publish SpectraLoggerUI to CocoaPods Trunk
 
 **Completed** (Added to v1.0.0):
 - [x] Carthage support (~10-15% market)
