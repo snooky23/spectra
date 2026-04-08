@@ -214,7 +214,7 @@ jobs:
           # Use local development environment for Package.swift
           export SPECTRA_LOCAL_DEV=1
           xcodebuild -scheme "SpectraExample" \
-            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -destination 'generic/platform=iOS Simulator' \
             build CODE_SIGNING_ALLOWED=NO
 
       - name: Upload XCFrameworks

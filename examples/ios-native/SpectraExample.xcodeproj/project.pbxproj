@@ -11,6 +11,7 @@
 		00000000000000000000000000000112 /* MainAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000000000212 /* MainAppView.swift */; };
 		00000000000000000000000000000113 /* SpectraLoggerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000000000213 /* SpectraLoggerView.swift */; };
 		00000000000000000000000000000114 /* SpectraLoggerUI in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000000000000310 /* SpectraLoggerUI */; };
+		00000000000000000000000000000115 /* SpectraLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000000000000311 /* SpectraLogger */; };
 		1CEF023B2A4EEC76D9A4E879 /* SharedComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C9B388399DA5BDCA2727D86 /* SharedComponents.swift */; };
 		4299320EEAA12EB313ACFC4B /* MockDataGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDBE7870D90C9FD8EDD3F83A /* MockDataGenerator.swift */; };
 		93CF305A31E1AD634B6E8C95 /* NetworkRequestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A83D6C31B6A54E439052F7 /* NetworkRequestsView.swift */; };
@@ -40,6 +41,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				00000000000000000000000000000114 /* SpectraLoggerUI in Frameworks */,
+				00000000000000000000000000000115 /* SpectraLogger in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,6 +143,7 @@
 			name = SpectraExample;
 			packageProductDependencies = (
 				00000000000000000000000000000310 /* SpectraLoggerUI */,
+				00000000000000000000000000000311 /* SpectraLogger */,
 			);
 			productName = SpectraExample;
 			productReference = 00000000000000000000000000000001 /* SpectraExample.app */;
@@ -416,6 +419,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 00000000000000000000000000000320 /* XCLocalSwiftPackageReference "Spectra" */;
 			productName = SpectraLoggerUI;
+		};
+		00000000000000000000000000000311 /* SpectraLogger */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 00000000000000000000000000000320 /* XCLocalSwiftPackageReference "Spectra" */;
+			productName = SpectraLogger;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
