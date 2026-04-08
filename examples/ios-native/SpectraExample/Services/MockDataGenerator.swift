@@ -1,5 +1,5 @@
 import Foundation
-import SpectraLogger
+import SpectraLoggerUI
 
 /// A service to generate mock network requests and fake stack traces for the example app.
 public struct MockDataGenerator {

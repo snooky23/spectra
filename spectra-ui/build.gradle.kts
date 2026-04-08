@@ -31,6 +31,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = iosFrameworkName
             isStatic = true
+            export(project(":spectra-core"))
             xcf.add(this)
         }
 
@@ -43,7 +44,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":spectra-core"))
+                api(project(":spectra-core"))
                 implementation(libs.androidx.lifecycle.viewmodel.compose)
 
                 // Using stable coordinates to avoid deprecated Compose plugin accessors
