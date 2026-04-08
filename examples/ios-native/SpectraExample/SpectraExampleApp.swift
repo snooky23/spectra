@@ -1,5 +1,5 @@
 import SwiftUI
-import SpectraLogger
+import SpectraLoggerUI
 
 @main
 struct SpectraExampleApp: App {
@@ -16,8 +16,6 @@ struct SpectraExampleApp: App {
     var body: some Scene {
         WindowGroup {
             MainAppView()
-                .statusBar(hidden: true)
-                .onShakeToRevealSpectraLogger()
                 .onOpenURL { url in
                     handleURL(url)
                 }

@@ -29,7 +29,8 @@ mkdir -p "$XCFRAMEWORK_DIR"
 copy_xcframework() {
     local module=$1
     local name=$2
-    local src="$PROJECT_ROOT/$module/build/XCFrameworks/${BUILD_TYPE,,}/$name.xcframework"
+    local build_type_lower=$(echo "$BUILD_TYPE" | tr '[:upper:]' '[:lower:]')
+    local src="$PROJECT_ROOT/$module/build/XCFrameworks/$build_type_lower/$name.xcframework"
     local dest="$XCFRAMEWORK_DIR/$name.xcframework"
     
     if [ -d "$src" ]; then
