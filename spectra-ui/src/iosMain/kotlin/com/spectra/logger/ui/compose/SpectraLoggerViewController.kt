@@ -8,7 +8,9 @@ import platform.UIKit.UIViewController
  * This is used by iOS applications to present the logger.
  */
 fun SpectraLoggerViewController(onDismiss: () -> Unit): UIViewController {
-    return ComposeUIViewController {
+    return ComposeUIViewController(configure = {
+        enforceStrictPlistSanityCheck = false
+    }) {
         SpectraLoggerScreen(onDismiss = onDismiss)
     }
 }

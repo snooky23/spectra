@@ -19,7 +19,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
-    viewModel: SettingsViewModel = viewModel(),
+    viewModel: SettingsViewModel = viewModel { SettingsViewModel() },
     onDismiss: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
