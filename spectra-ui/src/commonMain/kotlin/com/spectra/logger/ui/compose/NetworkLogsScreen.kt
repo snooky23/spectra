@@ -23,7 +23,7 @@ import com.spectra.logger.domain.model.NetworkLogEntry
 @Composable
 fun NetworkLogsScreen(
     modifier: Modifier = Modifier,
-    viewModel: NetworkLogsViewModel = viewModel(),
+    viewModel: NetworkLogsViewModel = viewModel { NetworkLogsViewModel() },
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()

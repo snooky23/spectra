@@ -18,7 +18,7 @@ import com.spectra.logger.ui.compose.components.SpectraTheme
 @Composable
 fun SpectraLoggerScreen(
     onDismiss: () -> Unit = {},
-    settingsViewModel: SettingsViewModel = viewModel(),
+    settingsViewModel: SettingsViewModel = viewModel { SettingsViewModel() },
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
     val settingsState by settingsViewModel.uiState.collectAsState()

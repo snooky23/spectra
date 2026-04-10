@@ -30,7 +30,7 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 fun LogsScreen(
     modifier: Modifier = Modifier,
-    viewModel: LogsViewModel = viewModel(),
+    viewModel: LogsViewModel = viewModel { LogsViewModel() },
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()

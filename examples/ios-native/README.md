@@ -114,6 +114,14 @@ struct SpectraLoggerView: UIViewControllerRepresentable {
 ### Signature Issues
 Simulator builds do not require code signing. For physical devices, ensure your team is selected in the "Signing & Capabilities" tab.
 
+### ProMotion Support (iOS)
+The SDK includes a built-in safety check to prevent crashes if `CADisableMinimumFrameDurationOnPhone` is missing from your `Info.plist`. However, for the best visual experience on high-refresh-rate iPhones (Pro models):
+
+1.  Add `CADisableMinimumFrameDurationOnPhone` to your `Info.plist`.
+2.  Set it to `YES` (Boolean).
+
+This allows the Compose Multiplatform engine to utilize the full **120Hz (ProMotion)** refresh rate. Without this, the UI may be throttled to 60Hz.
+
 ---
 
 **Last Updated**: 2026-04-07

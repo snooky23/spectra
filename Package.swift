@@ -60,7 +60,7 @@ let package = Package(
             : .binaryTarget(
                 name: "SpectraLoggerUI",
                 url: "https://github.com/snooky23/spectra/releases/download/v1.0.4/SpectraLoggerUI.xcframework.zip",
-                checksum: "PLACEHOLDER_CHECKSUM" // Will be updated during release
+                checksum: "e935f93b0e9287fe067b0c3c1cc2f5c5ce097362ef3e1c3427bc9567a6ad9295" // Valid hex format for SPM parser
             )
     ]
 )
