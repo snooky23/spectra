@@ -1,7 +1,7 @@
 package com.spectra.logger.ui.compose
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ListAlt
+import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SettingsEthernet
 import androidx.compose.material3.*
@@ -25,7 +25,7 @@ fun SpectraLoggerScreen(
 
     val tabs =
         listOf(
-            TabItem("Logs", Icons.Default.ListAlt),
+            TabItem("Logs", Icons.AutoMirrored.Filled.ListAlt),
             TabItem("Network", Icons.Default.SettingsEthernet),
             TabItem("Settings", Icons.Default.Settings),
         )
