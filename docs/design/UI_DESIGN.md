@@ -6,7 +6,7 @@
 
 ## Navigation Structure
 
-The logger UI uses a **3-tab layout** at the bottom:
+The logger UI uses a **3-tab layout** at the bottom (via `NavigationSuiteScaffold`):
 
 | Tab | Icon | Description |
 |-----|------|-------------|
@@ -14,36 +14,90 @@ The logger UI uses a **3-tab layout** at the bottom:
 | **Network** | `network` | Network request/response logs |
 | **Settings** | `gearshape` | Configuration and storage management |
 
+On Medium/Expanded devices (IPad, desktop), `NavigationSuiteScaffold` automatically converts the bottom bar into a **side navigation rail**.
+
 ---
 
-## Color Tokens
+## Adaptive UI Architecture
+
+Spectra uses a centralized **`ScreenConfig`/`AdaptiveNavigator`** architecture to deliver different layouts based on window width.
+
+### ScreenConfig
+
+`ScreenConfig` is resolved via `rememberScreenConfig()` and reports:
+- `isCompact: Boolean` — window width < 600dp (phone)
+- `isDualPane: Boolean` — window width ≥ 600dp (tablet, desktop)
+
+### AdaptiveNavigator Routing
+
+```
+                          ┌─────────────────────────────┐
+                          │       AdaptiveNavigator      │
+                          └─────────────┬───────────────┘
+                 ┌────────────────────── │ ──────────────────┐
+      isDualPane == false (Compact)      │      isDualPane == true (Medium/Expanded)
+                 │                       │                   │
+    ┌────────────────────────┐           │    ┌─────────────────────────────────────┐
+    │  Animated Nav Stack    │           │    │  40% List │ Divider │ 60% Detail    │
+    │  (slide left/right)    │           │    │           │         │               │
+    │                        │           │    │  - No X   │         │ - No ← Back   │
+    │  Root: 'X' Close btn   │           │    │  - No ←   │         │ - Empty state │
+    │  Detail: '← Back' btn  │           │    │             placeholder             │
+    └────────────────────────┘           │    └─────────────────────────────────────┘
+```
+
+### Compact Navigation Flow (< 600dp)
+
+1. Root screen shows full-screen List with **'X' (Close)** button in TopAppBar nav slot.
+2. Tapping a row **pushes** Detail full-screen with slide-in animation (300ms).
+3. Detail screen shows **'← Back'** navigation arrow.
+4. Tapping Back **pops** the detail with reverse slide animation.
+
+### Dual-Pane Navigation Flow (≥ 600dp)
+
+1. List pane (40% width) and Detail pane (60% width) are shown **simultaneously**.
+2. Tapping a row **instantly** updates the Detail pane — no push animation.
+3. Detail pane shows **no Back arrow** (navigation is contextual, not modal).
+4. Detail pane shows "Select an item to view details" when nothing is selected.
+5. The 'X' Close button is **hidden** in dual-pane mode as well (no overlay paradigm).
+
+---
+
+## Design Tokens (Hardcoded)
+
+All tokens are defined in `SpectraDesignTokens.kt` and must be used instead of ad-hoc color literals.
 
 ### Log Level Colors
 
-| Level | Color | Usage |
-|-------|-------|-------|
-| Verbose | `secondary/gray` | Low priority, noise |
-| Debug | `blue` | Development info |
-| Info | `green` | Normal operations |
-| Warning | `orange` | Potential issues |
-| Error | `red` | Errors requiring attention |
-| Fatal | `purple` | Critical failures |
+| Level | Token | Hex | Usage |
+|-------|-------|-----|-------|
+| Verbose | `VerboseGray` | `#8E8E93` | Low priority, noise |
+| Debug | `DebugBlue` | `#007AFF` | Development info |
+| Info | `InfoGreen` | `#34C759` | Normal operations |
+| Warning | `WarningOrange` | `#FF9500` | Potential issues |
+| Error | `ErrorRed` | `#FF3B30` | Errors requiring attention |
+| Fatal | `FatalPurple` | `#AF52DE` | Critical failures |
 
 ### HTTP Status Code Colors
 
-| Range | Color | Meaning |
-|-------|-------|---------|
-| 2xx | `green` | Success |
-| 3xx | `blue` | Redirect |
-| 4xx | `orange` | Client error |
-| 5xx | `red` | Server error |
+| Range | Token | Hex | Meaning |
+|-------|-------|-----|---------|
+| 2xx | `InfoGreen` | `#34C759` | Success |
+| 3xx | `DebugBlue` | `#007AFF` | Redirect |
+| 4xx | `WarningOrange` | `#FF9500` | Client error |
+| 5xx | `ErrorRed` | `#FF3B30` | Server error |
 
-### Background Colors
+### Background & Structure Tokens
 
-- **Card/Section background**: `systemGray6` (iOS) / equivalent light gray
-- **Selected filter chip**: `{color}.opacity(0.2)`
-- **Unselected filter chip**: `systemGray5`
-- **Error section background**: `red.opacity(0.05)`
+| Token | Value | Usage |
+|-------|-------|-------|
+| `SystemGray6` | `#F2F2F7` | Card/section backgrounds |
+| `FilterChipAlpha` | `0.2f` | Filter chip background opacity |
+| `SearchBarShape` | `RoundedCornerShape(10.dp)` | Search bar corners |
+| `DetailCardShape` | `RoundedCornerShape(8.dp)` | Log/Network detail cards |
+| `ScreenHorizontalPaddingCompact` | `16.dp` | Horizontal padding on phone |
+| `ScreenHorizontalPaddingExpanded` | `24.dp` | Horizontal padding on tablet/desktop |
+| `ListToDetailGap` | `1.dp` | Divider between list and detail panes |
 
 ---
 
@@ -713,4 +767,5 @@ All colors should adapt automatically:
 
 ---
 
-**Last Updated**: 2025-12-13
+**Last Updated**: 2026-04-18  
+**Covers**: Epic 1 (Compact Navigation), Epic 2 (Dual-Pane Layout), Epic 3 (Docs Sync)
