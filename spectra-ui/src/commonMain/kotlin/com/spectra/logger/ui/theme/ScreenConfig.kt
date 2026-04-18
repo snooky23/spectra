@@ -19,7 +19,6 @@ data class ScreenConfig(
  */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-@ReadOnlyComposable
 fun rememberScreenConfig(): ScreenConfig {
     val adaptiveInfo = currentWindowAdaptiveInfo()
     val widthSizeClass = adaptiveInfo.windowSizeClass.windowWidthSizeClass

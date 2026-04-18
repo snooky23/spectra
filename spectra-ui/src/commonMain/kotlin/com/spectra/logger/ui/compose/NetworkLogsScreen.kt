@@ -29,28 +29,26 @@ fun NetworkLogsScreen(
     val scope = rememberCoroutineScope()
 
     var showFilterSheet by remember { mutableStateOf(false) }
-    var selectedLog by remember { mutableStateOf<NetworkLogEntry?>(null) }
 
     Box(modifier = modifier.fillMaxSize()) {
-        if (selectedLog == null) {
-            NetworkLogsListContent(
-                uiState = uiState,
-                onLogClick = { log ->
-                    selectedLog = log
-                },
-                onShowFilter = { showFilterSheet = true },
-                onRefresh = viewModel::loadLogs,
-                onClearLogs = viewModel::clearLogs,
-                onSearchChange = viewModel::onSearchTextChanged,
-            )
-        } else {
-            NetworkLogDetailContent(
-                log = selectedLog!!,
-                onBack = {
-                    selectedLog = null
-                },
-            )
-        }
+        com.spectra.logger.ui.compose.navigation.AdaptiveNavigator<NetworkLogEntry>(
+            listContent = { navigateToDetail ->
+                NetworkLogsListContent(
+                    uiState = uiState,
+                    onLogClick = navigateToDetail,
+                    onShowFilter = { showFilterSheet = true },
+                    onRefresh = viewModel::loadLogs,
+                    onClearLogs = viewModel::clearLogs,
+                    onSearchChange = viewModel::onSearchTextChanged,
+                )
+            },
+            detailContent = { selectedItem, navigateBack ->
+                NetworkLogDetailContent(
+                    log = selectedItem,
+                    onBack = navigateBack,
+                )
+            }
+        )
 
         if (showFilterSheet) {
             NetworkFilterSheet(
