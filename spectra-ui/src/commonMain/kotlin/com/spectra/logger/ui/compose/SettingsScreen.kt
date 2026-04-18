@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.spectra.logger.ui.compose.components.*
 
 /**
  * Settings screen for configuration and log management.
@@ -29,13 +30,10 @@ fun SettingsScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(
-                title = { Text("Settings") },
-                actions = {
-                    IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Close")
-                    }
-                },
+            SpectraNavBar(
+                title = "Settings",
+                navMode = NavMode.ROOT,
+                onDismiss = onDismiss,
             )
         },
     ) { paddingValues ->
