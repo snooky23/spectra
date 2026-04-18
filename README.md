@@ -45,8 +45,8 @@ dependencies {
    - `SpectraLogger` (Core SDK - required)
    - `SpectraLoggerUI` (Unified UI SDK - optional binary target)
 
-> [!TIP]
-> **iOS ProMotion Support**: While the SDK gracefully handles missing configuration to prevent crashes, we highly recommend adding `CADisableMinimumFrameDurationOnPhone = YES` to your app's `Info.plist`. This ensures the Compose engine can utilize the full 120Hz refresh rate on ProMotion-enabled devices.
+> [!IMPORTANT]
+> **iOS ProMotion Configuration**: If using `SpectraLoggerUI`, you must add `CADisableMinimumFrameDurationOnPhone = YES` to your app's `Info.plist` (or Target Build Settings). This is required by the Compose Multiplatform engine for 120Hz display support and consistent rendering performance.
 
 ---
 

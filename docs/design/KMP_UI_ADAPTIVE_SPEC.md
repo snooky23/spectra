@@ -1,8 +1,4 @@
-# Architectural Specification: Spectra Logger KMP UI SDK & Adaptive Layouts
-
-**Status:** Approved  
-**Author:** Spectra Architecture Team  
-**Date:** April 2026  
+plp
 
 ---
 
