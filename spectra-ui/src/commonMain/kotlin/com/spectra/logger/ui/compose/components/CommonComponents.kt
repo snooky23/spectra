@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.spectra.logger.ui.compose.AppearanceMode
+import com.spectra.logger.ui.theme.SpectraDesignTokens
 
 /**
  * Spectra Logger theme wrapper that respects the appearance mode setting
@@ -68,7 +69,7 @@ fun SearchBar(
             }
         },
         singleLine = true,
-        shape = RoundedCornerShape(12.dp),
+        shape = SpectraDesignTokens.SearchBarShape,
         colors =
             TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,
@@ -234,7 +235,7 @@ fun LogLevelBadge(level: com.spectra.logger.domain.model.LogLevel) {
     val color = colorForLogLevel(level)
     Surface(
         shape = RoundedCornerShape(4.dp),
-        color = color.copy(alpha = 0.2f),
+        color = color.copy(alpha = SpectraDesignTokens.FilterChipAlpha),
     ) {
         Text(
             text = level.name,
@@ -248,12 +249,12 @@ fun LogLevelBadge(level: com.spectra.logger.domain.model.LogLevel) {
 
 fun colorForLogLevel(level: com.spectra.logger.domain.model.LogLevel): Color {
     return when (level) {
-        com.spectra.logger.domain.model.LogLevel.VERBOSE -> Color.Gray
-        com.spectra.logger.domain.model.LogLevel.DEBUG -> Color(0xFF2196F3)
-        com.spectra.logger.domain.model.LogLevel.INFO -> Color(0xFF4CAF50)
-        com.spectra.logger.domain.model.LogLevel.WARNING -> Color(0xFFFF9800)
-        com.spectra.logger.domain.model.LogLevel.ERROR -> Color(0xFFF44336)
-        com.spectra.logger.domain.model.LogLevel.FATAL -> Color(0xFF9C27B0)
+        com.spectra.logger.domain.model.LogLevel.VERBOSE -> SpectraDesignTokens.VerboseGray
+        com.spectra.logger.domain.model.LogLevel.DEBUG -> SpectraDesignTokens.DebugBlue
+        com.spectra.logger.domain.model.LogLevel.INFO -> SpectraDesignTokens.InfoGreen
+        com.spectra.logger.domain.model.LogLevel.WARNING -> SpectraDesignTokens.WarningOrange
+        com.spectra.logger.domain.model.LogLevel.ERROR -> SpectraDesignTokens.ErrorRed
+        com.spectra.logger.domain.model.LogLevel.FATAL -> SpectraDesignTokens.FatalPurple
     }
 }
 
@@ -290,7 +291,7 @@ fun StatusBadge(
 
     Surface(
         shape = RoundedCornerShape(4.dp),
-        color = color.copy(alpha = 0.2f),
+        color = color.copy(alpha = SpectraDesignTokens.FilterChipAlpha),
     ) {
         Text(
             text = code?.toString() ?: "ERR",
@@ -307,20 +308,20 @@ fun colorForStatusRange(
     error: String?,
 ): Color {
     return when {
-        error != null || code == null -> Color(0xFFF44336)
-        code in 200..299 -> Color(0xFF4CAF50)
-        code in 300..399 -> Color(0xFF2196F3)
-        code in 400..499 -> Color(0xFFFF9800)
-        else -> Color(0xFFF44336)
+        error != null || code == null -> SpectraDesignTokens.ErrorRed
+        code in 200..299 -> SpectraDesignTokens.InfoGreen
+        code in 300..399 -> SpectraDesignTokens.DebugBlue
+        code in 400..499 -> SpectraDesignTokens.WarningOrange
+        else -> SpectraDesignTokens.ErrorRed
     }
 }
 
 fun colorForStatusRange(range: String): Color {
     return when (range) {
-        "2xx" -> Color(0xFF4CAF50)
-        "3xx" -> Color(0xFF2196F3)
-        "4xx" -> Color(0xFFFF9800)
-        "5xx" -> Color(0xFFF44336)
-        else -> Color.Gray
+        "2xx" -> SpectraDesignTokens.InfoGreen
+        "3xx" -> SpectraDesignTokens.DebugBlue
+        "4xx" -> SpectraDesignTokens.WarningOrange
+        "5xx" -> SpectraDesignTokens.ErrorRed
+        else -> SpectraDesignTokens.VerboseGray
     }
 }
