@@ -3,7 +3,6 @@ package com.spectra.logger.ui.theme
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.window.core.layout.WindowWidthSizeClass
 
 /**
@@ -11,7 +10,7 @@ import androidx.window.core.layout.WindowWidthSizeClass
  */
 data class ScreenConfig(
     val isCompact: Boolean,
-    val isDualPane: Boolean
+    val isDualPane: Boolean,
 )
 
 /**
@@ -22,13 +21,14 @@ data class ScreenConfig(
 fun rememberScreenConfig(): ScreenConfig {
     val adaptiveInfo = currentWindowAdaptiveInfo()
     val widthSizeClass = adaptiveInfo.windowSizeClass.windowWidthSizeClass
-    
+
     val isCompact = widthSizeClass == WindowWidthSizeClass.COMPACT
-    val isDualPane = widthSizeClass == WindowWidthSizeClass.MEDIUM || 
-                     widthSizeClass == WindowWidthSizeClass.EXPANDED
-                     
+    val isDualPane =
+        widthSizeClass == WindowWidthSizeClass.MEDIUM ||
+            widthSizeClass == WindowWidthSizeClass.EXPANDED
+
     return ScreenConfig(
         isCompact = isCompact,
-        isDualPane = isDualPane
+        isDualPane = isDualPane,
     )
 }

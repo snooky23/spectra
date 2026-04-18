@@ -45,9 +45,10 @@ fun <T> AdaptiveNavigator(
             }
             // Vertical divider between panes
             HorizontalDivider(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(SpectraDesignTokens.ListToDetailGap),
+                modifier =
+                    Modifier
+                        .fillMaxHeight()
+                        .width(SpectraDesignTokens.ListToDetailGap),
                 color = MaterialTheme.colorScheme.outlineVariant,
             )
             // Detail pane — 60% of width
@@ -87,23 +88,25 @@ fun <T> AdaptiveNavigator(
                     // Navigating to detail
                     slideInHorizontally(
                         animationSpec = tween(300),
-                        initialOffsetX = { fullWidth -> fullWidth }
-                    ) togetherWith slideOutHorizontally(
-                        animationSpec = tween(300),
-                        targetOffsetX = { fullWidth -> -fullWidth / 2 }
-                    )
+                        initialOffsetX = { fullWidth -> fullWidth },
+                    ) togetherWith
+                        slideOutHorizontally(
+                            animationSpec = tween(300),
+                            targetOffsetX = { fullWidth -> -fullWidth / 2 },
+                        )
                 } else {
                     // Navigating back to list
                     slideInHorizontally(
                         animationSpec = tween(300),
-                        initialOffsetX = { fullWidth -> -fullWidth / 2 }
-                    ) togetherWith slideOutHorizontally(
-                        animationSpec = tween(300),
-                        targetOffsetX = { fullWidth -> fullWidth }
-                    )
+                        initialOffsetX = { fullWidth -> -fullWidth / 2 },
+                    ) togetherWith
+                        slideOutHorizontally(
+                            animationSpec = tween(300),
+                            targetOffsetX = { fullWidth -> fullWidth },
+                        )
                 }
             },
-            modifier = modifier.fillMaxSize()
+            modifier = modifier.fillMaxSize(),
         ) { currentItem ->
             if (currentItem == null) {
                 Box(modifier = Modifier.fillMaxSize()) {
