@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,6 +15,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spectra.logger.domain.model.NetworkLogEntry
+import com.spectra.logger.ui.compose.components.*
 
 /**
  * Network logs screen with list and detail views.
@@ -78,15 +80,11 @@ private fun NetworkLogsListContent(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Network Logs") },
-                navigationIcon = {
-                    if (!isDualPane) {
-                        IconButton(onClick = onDismiss) {
-                            Icon(androidx.compose.material.icons.Icons.Default.Close, contentDescription = "Exit")
-                        }
-                    }
-                },
+            SpectraNavBar(
+                title = "Network Logs",
+                navMode = NavMode.ROOT,
+                isDualPane = isDualPane,
+                onDismiss = onDismiss,
                 actions = {
                     IconButton(onClick = onShowFilter) {
                         Icon(Icons.Default.FilterList, contentDescription = "Filter")
@@ -160,15 +158,11 @@ private fun NetworkLogDetailContent(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Request Detail") },
-                navigationIcon = {
-                    if (!isDualPane) {
-                        IconButton(onClick = onBack) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                        }
-                    }
-                },
+            SpectraNavBar(
+                title = "Request Detail",
+                navMode = NavMode.DETAIL,
+                isDualPane = isDualPane,
+                onBack = onBack,
             )
         },
     ) { paddingValues ->

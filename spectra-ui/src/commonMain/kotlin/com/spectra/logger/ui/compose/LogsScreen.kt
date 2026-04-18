@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -111,15 +113,11 @@ private fun LogsListContent(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Logs") },
-                navigationIcon = {
-                    if (!isDualPane) {
-                        IconButton(onClick = onDismiss) {
-                            Icon(androidx.compose.material.icons.Icons.Default.Close, contentDescription = "Exit")
-                        }
-                    }
-                },
+            SpectraNavBar(
+                title = "Logs",
+                navMode = NavMode.ROOT,
+                isDualPane = isDualPane,
+                onDismiss = onDismiss,
                 actions = {
                     BadgedBox(
                         badge = {
@@ -238,15 +236,11 @@ private fun LogDetailContent(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Log Detail") },
-                navigationIcon = {
-                    if (!isDualPane) {
-                        IconButton(onClick = onBack) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                        }
-                    }
-                },
+            SpectraNavBar(
+                title = "Log Detail",
+                navMode = NavMode.DETAIL,
+                isDualPane = isDualPane,
+                onBack = onBack,
             )
         },
     ) { paddingValues ->

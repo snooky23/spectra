@@ -4,6 +4,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -16,6 +17,58 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.spectra.logger.ui.compose.AppearanceMode
 import com.spectra.logger.ui.theme.SpectraDesignTokens
+
+/**
+ * Navigation mode for [SpectraNavBar] — controls which navigation icon is shown.
+ *
+ * - [ROOT]: Compact-only 'X' (Close) button that calls [onDismiss]. Hidden in dual-pane.
+ * - [DETAIL]: Compact-only '← Back' button that calls [onBack]. Hidden in dual-pane.
+ * - [NONE]: No navigation icon (e.g. Settings, or any dual-pane root screen).
+ */
+enum class NavMode { ROOT, DETAIL, NONE }
+
+/**
+ * Shared top app bar for all Spectra Logger screens.
+ *
+ * Centralises the Close / Back navigation icon logic and the actions slot,
+ * eliminating duplicated [TopAppBar] scaffolding across screens.
+ *
+ * @param title      Screen title shown in the center/start of the bar.
+ * @param navMode    Which navigation icon to render (see [NavMode]).
+ * @param isDualPane When `true`, navigation icons (Close/Back) are suppressed.
+ * @param onDismiss  Called when the user taps the 'X' icon (ROOT mode only).
+ * @param onBack     Called when the user taps '← Back' (DETAIL mode only).
+ * @param actions    Optional trailing action composable (filter, share, menu…).
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SpectraNavBar(
+    title: String,
+    navMode: NavMode = NavMode.NONE,
+    isDualPane: Boolean = false,
+    onDismiss: () -> Unit = {},
+    onBack: () -> Unit = {},
+    actions: @Composable RowScope.() -> Unit = {},
+) {
+    TopAppBar(
+        title = { Text(title) },
+        navigationIcon = {
+            when {
+                navMode == NavMode.ROOT && !isDualPane -> {
+                    IconButton(onClick = onDismiss) {
+                        Icon(Icons.Default.Close, contentDescription = "Exit")
+                    }
+                }
+                navMode == NavMode.DETAIL && !isDualPane -> {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            }
+        },
+        actions = actions,
+    )
+}
 
 /**
  * Spectra Logger theme wrapper that respects the appearance mode setting
