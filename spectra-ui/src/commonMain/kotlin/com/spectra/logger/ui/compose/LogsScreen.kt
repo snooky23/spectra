@@ -37,33 +37,31 @@ fun LogsScreen(
 
     var showFilterSheet by remember { mutableStateOf(false) }
     var showShareBottomSheet by remember { mutableStateOf(false) }
-    var selectedLog by remember { mutableStateOf<LogEntry?>(null) }
 
     Box(modifier = modifier.fillMaxSize()) {
-        if (selectedLog == null) {
-            LogsListContent(
-                uiState = uiState,
-                onLogClick = { log ->
-                    selectedLog = log
-                },
-                onShowFilter = { showFilterSheet = true },
-                onShowShare = { showShareBottomSheet = true },
-                onRefresh = viewModel::loadLogs,
-                onClearLogs = viewModel::clearLogs,
-                onSearchChange = viewModel::onSearchTextChanged,
-                onToggleLevel = viewModel::toggleLevel,
-                onRemoveTag = viewModel::removeTagFilter,
-                onClearTimeRange = viewModel::clearTimeRangeFilter,
-                onClearHasError = viewModel::clearHasErrorFilter,
-            )
-        } else {
-            LogDetailContent(
-                log = selectedLog!!,
-                onBack = {
-                    selectedLog = null
-                },
-            )
-        }
+        com.spectra.logger.ui.compose.navigation.AdaptiveNavigator<LogEntry>(
+            listContent = { navigateToDetail ->
+                LogsListContent(
+                    uiState = uiState,
+                    onLogClick = navigateToDetail,
+                    onShowFilter = { showFilterSheet = true },
+                    onShowShare = { showShareBottomSheet = true },
+                    onRefresh = viewModel::loadLogs,
+                    onClearLogs = viewModel::clearLogs,
+                    onSearchChange = viewModel::onSearchTextChanged,
+                    onToggleLevel = viewModel::toggleLevel,
+                    onRemoveTag = viewModel::removeTagFilter,
+                    onClearTimeRange = viewModel::clearTimeRangeFilter,
+                    onClearHasError = viewModel::clearHasErrorFilter,
+                )
+            },
+            detailContent = { selectedItem, navigateBack ->
+                LogDetailContent(
+                    log = selectedItem,
+                    onBack = navigateBack,
+                )
+            }
+        )
 
         // Filter bottom sheet
         if (showFilterSheet) {
