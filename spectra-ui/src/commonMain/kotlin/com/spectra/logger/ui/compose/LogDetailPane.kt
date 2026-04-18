@@ -66,8 +66,8 @@ fun LogDetailPane(
         )
         Surface(
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-            shape = RoundedCornerShape(8.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+            shape = com.spectra.logger.ui.theme.SpectraDesignTokens.DetailCardShape,
+            color = com.spectra.logger.ui.theme.SpectraDesignTokens.SystemGray6,
         ) {
             Text(
                 text = log.message,
@@ -100,8 +100,8 @@ fun LogDetailPane(
             )
             Surface(
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                shape = RoundedCornerShape(8.dp),
-                color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f),
+                shape = com.spectra.logger.ui.theme.SpectraDesignTokens.DetailCardShape,
+                color = com.spectra.logger.ui.theme.SpectraDesignTokens.SystemGray6,
             ) {
                 Text(
                     text = log.throwable!!,

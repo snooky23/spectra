@@ -49,8 +49,8 @@ fun SpectraLoggerScreen(
             },
         ) {
             when (selectedTab) {
-                0 -> LogsScreen()
-                1 -> NetworkLogsScreen()
+                0 -> LogsScreen(onDismiss = onDismiss)
+                1 -> NetworkLogsScreen(onDismiss = onDismiss)
                 2 ->
                     SettingsScreen(
                         viewModel = settingsViewModel,

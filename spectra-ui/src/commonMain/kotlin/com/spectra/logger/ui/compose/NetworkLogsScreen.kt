@@ -24,6 +24,7 @@ import com.spectra.logger.domain.model.NetworkLogEntry
 fun NetworkLogsScreen(
     modifier: Modifier = Modifier,
     viewModel: NetworkLogsViewModel = viewModel { NetworkLogsViewModel() },
+    onDismiss: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
@@ -32,20 +33,23 @@ fun NetworkLogsScreen(
 
     Box(modifier = modifier.fillMaxSize()) {
         com.spectra.logger.ui.compose.navigation.AdaptiveNavigator<NetworkLogEntry>(
-            listContent = { navigateToDetail ->
+            listContent = { navigateToDetail, isDualPane ->
                 NetworkLogsListContent(
                     uiState = uiState,
                     onLogClick = navigateToDetail,
+                    onDismiss = onDismiss,
+                    isDualPane = isDualPane,
                     onShowFilter = { showFilterSheet = true },
                     onRefresh = viewModel::loadLogs,
                     onClearLogs = viewModel::clearLogs,
                     onSearchChange = viewModel::onSearchTextChanged,
                 )
             },
-            detailContent = { selectedItem, navigateBack ->
+            detailContent = { selectedItem, navigateBack, isDualPane ->
                 NetworkLogDetailContent(
                     log = selectedItem,
                     onBack = navigateBack,
+                    isDualPane = isDualPane,
                 )
             }
         )
@@ -65,6 +69,8 @@ fun NetworkLogsScreen(
 private fun NetworkLogsListContent(
     uiState: NetworkLogsUiState,
     onLogClick: (NetworkLogEntry) -> Unit,
+    onDismiss: () -> Unit,
+    isDualPane: Boolean,
     onShowFilter: () -> Unit,
     onRefresh: () -> Unit,
     onClearLogs: () -> Unit,
@@ -74,6 +80,13 @@ private fun NetworkLogsListContent(
         topBar = {
             TopAppBar(
                 title = { Text("Network Logs") },
+                navigationIcon = {
+                    if (!isDualPane) {
+                        IconButton(onClick = onDismiss) {
+                            Icon(androidx.compose.material.icons.Icons.Default.Close, contentDescription = "Exit")
+                        }
+                    }
+                },
                 actions = {
                     IconButton(onClick = onShowFilter) {
                         Icon(Icons.Default.FilterList, contentDescription = "Filter")
@@ -107,13 +120,16 @@ private fun NetworkLogsListContent(
             )
         },
     ) { paddingValues ->
+        val horizontalPadding = if (isDualPane)
+            com.spectra.logger.ui.theme.SpectraDesignTokens.ScreenHorizontalPaddingExpanded
+        else
+            com.spectra.logger.ui.theme.SpectraDesignTokens.ScreenHorizontalPaddingCompact
         Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-            OutlinedTextField(
-                value = uiState.searchText,
-                onValueChange = onSearchChange,
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                placeholder = { Text("Search URL...") },
-                leadingIcon = { Icon(Icons.Default.Search, null) },
+            com.spectra.logger.ui.compose.components.SearchBar(
+                query = uiState.searchText,
+                onQueryChange = onSearchChange,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding, vertical = 8.dp),
+                placeholder = "Search URL...",
             )
 
             if (uiState.filteredLogs.isEmpty()) {
@@ -121,7 +137,10 @@ private fun NetworkLogsListContent(
                     Text("No logs found")
                 }
             } else {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = horizontalPadding),
+                ) {
                     items(uiState.filteredLogs, key = { it.id }) { log ->
                         NetworkLogRow(log = log, onClick = { onLogClick(log) })
                         HorizontalDivider()
@@ -137,14 +156,17 @@ private fun NetworkLogsListContent(
 private fun NetworkLogDetailContent(
     log: NetworkLogEntry,
     onBack: () -> Unit,
+    isDualPane: Boolean = false,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Request Detail") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    if (!isDualPane) {
+                        IconButton(onClick = onBack) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        }
                     }
                 },
             )
