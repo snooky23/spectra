@@ -105,8 +105,8 @@ private fun OverviewTab(log: NetworkLogEntry) {
         if (log.error != null) {
             DetailSection(title = "Error", titleColor = MaterialTheme.colorScheme.error) {
                 Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f),
+                    shape = com.spectra.logger.ui.theme.SpectraDesignTokens.DetailCardShape,
+                    color = com.spectra.logger.ui.theme.SpectraDesignTokens.SystemGray6,
                 ) {
                     Text(
                         text = log.error!!,
@@ -203,8 +203,8 @@ private fun BodyContent(body: String?) {
         Text("Empty body", style = MaterialTheme.typography.bodySmall)
     } else {
         Surface(
-            shape = RoundedCornerShape(8.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+            shape = com.spectra.logger.ui.theme.SpectraDesignTokens.DetailCardShape,
+            color = com.spectra.logger.ui.theme.SpectraDesignTokens.SystemGray6,
         ) {
             Text(
                 text = body,

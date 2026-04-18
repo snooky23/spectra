@@ -72,6 +72,9 @@ fun SearchBar(
         shape = SpectraDesignTokens.SearchBarShape,
         colors =
             TextFieldDefaults.colors(
+                focusedContainerColor = SpectraDesignTokens.SystemGray6,
+                unfocusedContainerColor = SpectraDesignTokens.SystemGray6,
+                disabledContainerColor = SpectraDesignTokens.SystemGray6,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,
@@ -234,7 +237,7 @@ fun ShareBottomSheet(
 fun LogLevelBadge(level: com.spectra.logger.domain.model.LogLevel) {
     val color = colorForLogLevel(level)
     Surface(
-        shape = RoundedCornerShape(4.dp),
+        shape = androidx.compose.foundation.shape.CircleShape,
         color = color.copy(alpha = SpectraDesignTokens.FilterChipAlpha),
     ) {
         Text(
@@ -290,7 +293,7 @@ fun StatusBadge(
     val color = colorForStatusRange(code, error)
 
     Surface(
-        shape = RoundedCornerShape(4.dp),
+        shape = androidx.compose.foundation.shape.CircleShape,
         color = color.copy(alpha = SpectraDesignTokens.FilterChipAlpha),
     ) {
         Text(

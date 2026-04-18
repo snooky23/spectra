@@ -24,4 +24,11 @@ object SpectraDesignTokens {
     val SearchBarShape = RoundedCornerShape(10.dp)
     val DetailCardShape = RoundedCornerShape(8.dp)
     const val FilterChipAlpha = 0.2f
+
+    // Responsive Layout Padding
+    val ScreenHorizontalPaddingCompact = 16.dp
+    val ScreenHorizontalPaddingExpanded = 24.dp
+
+    // Dual-Pane Divider
+    val ListToDetailGap = 1.dp
 }

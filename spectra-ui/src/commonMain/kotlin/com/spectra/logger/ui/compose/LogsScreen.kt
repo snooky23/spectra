@@ -31,6 +31,7 @@ import kotlinx.datetime.toLocalDateTime
 fun LogsScreen(
     modifier: Modifier = Modifier,
     viewModel: LogsViewModel = viewModel { LogsViewModel() },
+    onDismiss: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
@@ -40,10 +41,12 @@ fun LogsScreen(
 
     Box(modifier = modifier.fillMaxSize()) {
         com.spectra.logger.ui.compose.navigation.AdaptiveNavigator<LogEntry>(
-            listContent = { navigateToDetail ->
+            listContent = { navigateToDetail, isDualPane ->
                 LogsListContent(
                     uiState = uiState,
                     onLogClick = navigateToDetail,
+                    onDismiss = onDismiss,
+                    isDualPane = isDualPane,
                     onShowFilter = { showFilterSheet = true },
                     onShowShare = { showShareBottomSheet = true },
                     onRefresh = viewModel::loadLogs,
@@ -55,10 +58,11 @@ fun LogsScreen(
                     onClearHasError = viewModel::clearHasErrorFilter,
                 )
             },
-            detailContent = { selectedItem, navigateBack ->
+            detailContent = { selectedItem, navigateBack, isDualPane ->
                 LogDetailContent(
                     log = selectedItem,
                     onBack = navigateBack,
+                    isDualPane = isDualPane,
                 )
             }
         )
@@ -93,6 +97,8 @@ fun LogsScreen(
 private fun LogsListContent(
     uiState: LogsUiState,
     onLogClick: (LogEntry) -> Unit,
+    onDismiss: () -> Unit,
+    isDualPane: Boolean,
     onShowFilter: () -> Unit,
     onShowShare: () -> Unit,
     onRefresh: () -> Unit,
@@ -107,6 +113,13 @@ private fun LogsListContent(
         topBar = {
             TopAppBar(
                 title = { Text("Logs") },
+                navigationIcon = {
+                    if (!isDualPane) {
+                        IconButton(onClick = onDismiss) {
+                            Icon(androidx.compose.material.icons.Icons.Default.Close, contentDescription = "Exit")
+                        }
+                    }
+                },
                 actions = {
                     BadgedBox(
                         badge = {
@@ -153,18 +166,22 @@ private fun LogsListContent(
             )
         },
     ) { paddingValues ->
+        val horizontalPadding = if (isDualPane)
+            com.spectra.logger.ui.theme.SpectraDesignTokens.ScreenHorizontalPaddingExpanded
+        else
+            com.spectra.logger.ui.theme.SpectraDesignTokens.ScreenHorizontalPaddingCompact
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues),
         ) {
             SearchBar(
                 query = uiState.searchText,
                 onQueryChange = onSearchChange,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding, vertical = 8.dp),
             )
 
             if (uiState.hasAnyActiveFilters) {
                 Row(
-                    modifier = Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 4.dp),
+                    modifier = Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = horizontalPadding, vertical = 4.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     uiState.selectedLevels.sortedBy { it.ordinal }.forEach { level ->
@@ -197,7 +214,10 @@ private fun LogsListContent(
                     )
                 }
                 else -> {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = horizontalPadding),
+                    ) {
                         items(uiState.filteredLogs, key = { it.id }) { log ->
                             LogRow(log = log, onClick = { onLogClick(log) })
                             HorizontalDivider()
@@ -214,14 +234,17 @@ private fun LogsListContent(
 private fun LogDetailContent(
     log: LogEntry,
     onBack: () -> Unit,
+    isDualPane: Boolean = false,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Log Detail") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    if (!isDualPane) {
+                        IconButton(onClick = onBack) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        }
                     }
                 },
             )
