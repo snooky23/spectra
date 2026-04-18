@@ -291,7 +291,7 @@ fun LogLevelBadge(level: com.spectra.logger.domain.model.LogLevel) {
     val color = colorForLogLevel(level)
     Surface(
         shape = androidx.compose.foundation.shape.CircleShape,
-        color = color.copy(alpha = SpectraDesignTokens.FilterChipAlpha),
+        color = color.copy(alpha = SpectraDesignTokens.FILTER_CHIP_ALPHA),
     ) {
         Text(
             text = level.name,
@@ -347,7 +347,7 @@ fun StatusBadge(
 
     Surface(
         shape = androidx.compose.foundation.shape.CircleShape,
-        color = color.copy(alpha = SpectraDesignTokens.FilterChipAlpha),
+        color = color.copy(alpha = SpectraDesignTokens.FILTER_CHIP_ALPHA),
     ) {
         Text(
             text = code?.toString() ?: "ERR",

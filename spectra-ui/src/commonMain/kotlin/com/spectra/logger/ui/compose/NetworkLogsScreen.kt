@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -53,7 +52,7 @@ fun NetworkLogsScreen(
                     onBack = navigateBack,
                     isDualPane = isDualPane,
                 )
-            }
+            },
         )
 
         if (showFilterSheet) {
@@ -118,10 +117,12 @@ private fun NetworkLogsListContent(
             )
         },
     ) { paddingValues ->
-        val horizontalPadding = if (isDualPane)
-            com.spectra.logger.ui.theme.SpectraDesignTokens.ScreenHorizontalPaddingExpanded
-        else
-            com.spectra.logger.ui.theme.SpectraDesignTokens.ScreenHorizontalPaddingCompact
+        val horizontalPadding =
+            if (isDualPane) {
+                com.spectra.logger.ui.theme.SpectraDesignTokens.ScreenHorizontalPaddingExpanded
+            } else {
+                com.spectra.logger.ui.theme.SpectraDesignTokens.ScreenHorizontalPaddingCompact
+            }
         Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             com.spectra.logger.ui.compose.components.SearchBar(
                 query = uiState.searchText,

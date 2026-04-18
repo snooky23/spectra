@@ -23,7 +23,7 @@ object SpectraDesignTokens {
     // UI Component Structurals
     val SearchBarShape = RoundedCornerShape(10.dp)
     val DetailCardShape = RoundedCornerShape(8.dp)
-    const val FilterChipAlpha = 0.2f
+    const val FILTER_CHIP_ALPHA = 0.2f
 
     // Responsive Layout Padding
     val ScreenHorizontalPaddingCompact = 16.dp
