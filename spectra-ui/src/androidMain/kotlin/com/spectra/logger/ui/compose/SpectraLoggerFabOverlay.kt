@@ -15,6 +15,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.spectra.logger.ui.SpectraUIManager
 import kotlin.math.roundToInt
 
@@ -39,12 +41,16 @@ fun SpectraLoggerFabOverlay(
         }
 
         if (isShowing) {
-            ModalBottomSheet(
+            Dialog(
                 onDismissRequest = { SpectraUIManager.dismissScreen() },
-                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-                modifier = Modifier.fillMaxSize(),
+                properties = DialogProperties(
+                    usePlatformDefaultWidth = false,
+                    decorFitsSystemWindows = false,
+                ),
             ) {
-                SpectraLoggerScreen(onDismiss = { SpectraUIManager.dismissScreen() })
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    SpectraLoggerScreen(onDismiss = { SpectraUIManager.dismissScreen() })
+                }
             }
         }
     }

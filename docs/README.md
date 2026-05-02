@@ -4,6 +4,7 @@ This folder contains all Spectra Logger documentation organized by category.
 
 ## 📚 User Guides (`guides/`)
 Documentation for integrating and using Spectra Logger:
+- [Developer Onboarding Guide](guides/DEVELOPER_GUIDE.md) - Environment setup and build instructions
 - [Installation Guide](guides/INSTALLATION.md) - Get started with Spectra
 - [Usage Guide](guides/USAGE_GUIDE.md) - How to use the SDK
 - [API Reference](guides/API.md) - Complete API documentation
@@ -18,7 +19,7 @@ Product and UI design documentation:
 - [UI Design Specification](design/UI_DESIGN.md) - Screen layouts and components
 - [Architecture](design/ARCHITECTURE.md) - Technical architecture
 - [Product Requirements](design/PRD.md) - Full PRD
-- [PRD Changes](design/PRD_CHANGES.md) - Change log for PRD
+- [Archived Docs](archive/) - Previous versions and change logs
 
 ## 🚀 Release (`release/`)
 Publishing and release documentation:
@@ -32,6 +33,7 @@ Publishing and release documentation:
 
 ## 🔧 Internal (`internal/`)
 Development session and planning docs (for contributors):
+- [Master Technical Specification](../_bmad-output/refactor-docs/MASTER_SPEC.md) - The central source of truth
 - [Planning](internal/PLANNING.md) - Project roadmap
 - [Tasks](internal/TASKS.md) - Development tasks
 - [Session Notes](internal/SESSION.md) - Dev session notes

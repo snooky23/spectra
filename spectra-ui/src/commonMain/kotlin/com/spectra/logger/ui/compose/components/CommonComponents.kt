@@ -44,6 +44,7 @@ enum class NavMode { ROOT, DETAIL, NONE }
 @Composable
 fun SpectraNavBar(
     title: String,
+    subtitle: String? = null,
     navMode: NavMode = NavMode.NONE,
     isDualPane: Boolean = false,
     onDismiss: () -> Unit = {},
@@ -51,7 +52,26 @@ fun SpectraNavBar(
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     TopAppBar(
-        title = { Text(title) },
+        title = {
+            Column {
+                Text(title)
+                if (subtitle != null) {
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    )
+                }
+            }
+        },
+        windowInsets = if (!isDualPane) WindowInsets.statusBars else WindowInsets(0),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            scrolledContainerColor = MaterialTheme.colorScheme.surface,
+            navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+        ),
         navigationIcon = {
             when {
                 navMode == NavMode.ROOT && !isDualPane -> {
