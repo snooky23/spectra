@@ -31,6 +31,7 @@ actual object SpectraUIManager {
             top = top.presentedViewController!!
         }
 
+        controller.modalPresentationStyle = platform.UIKit.UIModalPresentationFullScreen
         top.presentViewController(controller, animated = true, completion = null)
     }
 

@@ -113,6 +113,7 @@ private fun LogsListContent(
         topBar = {
             SpectraNavBar(
                 title = "Logs",
+                subtitle = "${uiState.filteredLogs.size} logs",
                 navMode = NavMode.ROOT,
                 isDualPane = isDualPane,
                 onDismiss = onDismiss,

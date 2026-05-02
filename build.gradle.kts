@@ -12,6 +12,13 @@ plugins {
     alias(libs.plugins.dokka)
     alias(libs.plugins.vanniktech.publish) apply false
     alias(libs.plugins.skie) apply false
+    id("java")
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
 allprojects {
@@ -75,6 +82,6 @@ tasks.dokkaHtmlMultiModule.configure {
     outputDirectory.set(layout.buildDirectory.dir("dokka"))
 }
 
-tasks.register("clean", Delete::class) {
+tasks.named<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }

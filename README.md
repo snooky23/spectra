@@ -103,8 +103,9 @@ struct ContentView: View {
 
 ## Documentation
 
-- [KMP UI Migration Spec](docs/design/KMP_UI_ADAPTIVE_SPEC.md) - Architectural details of the unified UI
-- [Adaptive UI Guide](docs/design/UI_DESIGN.md) - Screen layouts and behaviors
+- [Master Technical Specification](_bmad-output/refactor-docs/MASTER_SPEC.md) - The central source of truth for architecture and design
+- [Developer Onboarding Guide](docs/guides/DEVELOPER_GUIDE.md) - Environment setup and build instructions
+- [Adaptive UI Guide](docs/design/UI_DESIGN.md) - Detailed screen layouts and behaviors
 - [API Reference](docs/API.md) - Complete API documentation
 
 ---

@@ -4,17 +4,41 @@
 
 ---
 
-## Navigation Structure
+## Navigation & Presentation Standards
 
-The logger UI uses a **3-tab layout** at the bottom (via `NavigationSuiteScaffold`):
+Spectra Logger enforces a **full-screen navigation model** on both mobile and tablet devices to maximize observability real-estate and provide a premium, native feel.
 
-| Tab | Icon | Description |
-|-----|------|-------------|
-| **Logs** | `list.bullet.rectangle` | Application logs with filtering |
-| **Network** | `network` | Network request/response logs |
-| **Settings** | `gearshape` | Configuration and storage management |
+### Platform Presentation
+- **iOS**: Presented via `UIModalPresentationFullScreen`. Default `.pageSheet` (card) behavior is disabled.
+- **Android**: Presented via a full-screen `Dialog` with `usePlatformDefaultWidth = false` and `decorFitsSystemWindows = false`.
 
-On Medium/Expanded devices (IPad, desktop), `NavigationSuiteScaffold` automatically converts the bottom bar into a **side navigation rail**.
+### Navigation Transitions
+- **Compact (Mobile)**: Uses a standard stack-based "Push" model. Root screens (Logs, Network, Settings) show an **'X' (Close)** button. Detail screens show a **'← Back'** arrow. Transition is a horizontal slide (300ms).
+- **Expanded (Tablet)**: Uses a **Dual-Pane** model. Navigation is instant (no slide). Detail pane is always visible.
+
+---
+
+## Screen Archetypes
+
+To maintain consistency, every screen in Spectra must follow one of these archetypes:
+
+| Archetype | Navigation Icon (Compact) | Usage |
+|-----------|---------------------------|-------|
+| **Root List** | `X` (Close) | Main entry points (Logs, Network) |
+| **Detail** | `←` (Back) | Log Details, Request/Response Details |
+| **Settings** | `X` (Close) | Settings root |
+| **Filter Overlay** | `X` (Close) or `Cancel` | Search/Filter configurations |
+
+---
+
+## Shared Navigation Bar (`SpectraNavBar`)
+
+All screens utilize the `SpectraNavBar` component to ensure unified edge-to-edge handling and layout.
+
+### Features
+- **Subtitle Support**: Small labels below the title (e.g., "1,234 logs") for context without clutter.
+- **Edge-to-Edge**: Automatically handles `statusBars` padding unless suppressed (e.g., in dual-pane details).
+- **Theming**: Dynamically adapts colors based on `MaterialTheme` while maintaining high contrast.
 
 ---
 
@@ -27,6 +51,7 @@ Spectra uses a centralized **`ScreenConfig`/`AdaptiveNavigator`** architecture t
 `ScreenConfig` is resolved via `rememberScreenConfig()` and reports:
 - `isCompact: Boolean` — window width < 600dp (phone)
 - `isDualPane: Boolean` — window width ≥ 600dp (tablet, desktop)
+- `isFullWidthDetail: Boolean` — internal flag for mobile detail views being full-screen.
 
 ### AdaptiveNavigator Routing
 
@@ -38,7 +63,7 @@ Spectra uses a centralized **`ScreenConfig`/`AdaptiveNavigator`** architecture t
       isDualPane == false (Compact)      │      isDualPane == true (Medium/Expanded)
                  │                       │                   │
     ┌────────────────────────┐           │    ┌─────────────────────────────────────┐
-    │  Animated Nav Stack    │           │    │  40% List │ Divider │ 60% Detail    │
+    │  Full-Screen Stack     │           │    │  40% List │ Divider │ 60% Detail    │
     │  (slide left/right)    │           │    │           │         │               │
     │                        │           │    │  - No X   │         │ - No ← Back   │
     │  Root: 'X' Close btn   │           │    │  - No ←   │         │ - Empty state │
@@ -59,7 +84,7 @@ Spectra uses a centralized **`ScreenConfig`/`AdaptiveNavigator`** architecture t
 2. Tapping a row **instantly** updates the Detail pane — no push animation.
 3. Detail pane shows **no Back arrow** (navigation is contextual, not modal).
 4. Detail pane shows "Select an item to view details" when nothing is selected.
-5. The 'X' Close button is **hidden** in dual-pane mode as well (no overlay paradigm).
+5. The 'X' Close button is **hidden** in dual-pane mode as well.
 
 ---
 

@@ -81,6 +81,7 @@ private fun NetworkLogsListContent(
         topBar = {
             SpectraNavBar(
                 title = "Network Logs",
+                subtitle = "${uiState.filteredLogs.size} logs",
                 navMode = NavMode.ROOT,
                 isDualPane = isDualPane,
                 onDismiss = onDismiss,
