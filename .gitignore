@@ -187,4 +187,4 @@ generated-sources/
 .gemini/
 _bmad/
 _bmad-output/
-# Note: .agent/skills/ can be tracked if you want to share installed skills with your team.
+# Note: .agents/skills/ can be tracked if you want to share installed skills with your team.

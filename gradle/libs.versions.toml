@@ -10,6 +10,7 @@ coroutines = "1.10.1"
 serialization = "1.8.0"
 datetime = "0.6.1"
 atomicfu = "0.26.1"
+kotlinx-collections-immutable = "0.3.7"
 
 # Build Tools
 agp = "9.1.0"
@@ -65,6 +66,7 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
 kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
 
 # AndroidX - Core
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
@@ -123,7 +125,8 @@ kotlinx = [
     "kotlinx-coroutines-core",
     "kotlinx-serialization-json",
     "kotlinx-datetime",
-    "kotlinx-atomicfu"
+    "kotlinx-atomicfu",
+    "kotlinx-collections-immutable"
 ]
 
 # AndroidX core dependencies
