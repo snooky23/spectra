@@ -43,10 +43,11 @@ fun SpectraLoggerFabOverlay(
         if (isShowing) {
             Dialog(
                 onDismissRequest = { SpectraUIManager.dismissScreen() },
-                properties = DialogProperties(
-                    usePlatformDefaultWidth = false,
-                    decorFitsSystemWindows = false,
-                ),
+                properties =
+                    DialogProperties(
+                        usePlatformDefaultWidth = false,
+                        decorFitsSystemWindows = false,
+                    ),
             ) {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     SpectraLoggerScreen(onDismiss = { SpectraUIManager.dismissScreen() })

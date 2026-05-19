@@ -1,50 +1,59 @@
 installation:
-  version: 6.2.2
+  version: 6.6.0
   installDate: 2026-04-08T18:46:33.172Z
-  lastUpdated: 2026-04-08T18:46:33.172Z
+  lastUpdated: 2026-05-16T20:35:20.448Z
 modules:
   - name: core
-    version: 6.2.2
+    version: 6.6.0
     installDate: 2026-04-08T18:46:31.829Z
-    lastUpdated: 2026-04-08T18:46:31.829Z
+    lastUpdated: 2026-05-16T20:35:20.399Z
     source: built-in
     npmPackage: null
     repoUrl: null
   - name: bmm
-    version: 6.2.2
+    version: 6.6.0
     installDate: 2026-04-08T18:46:22.000Z
-    lastUpdated: 2026-04-08T18:46:31.829Z
+    lastUpdated: 2026-05-16T20:35:20.400Z
     source: built-in
     npmPackage: null
     repoUrl: null
   - name: bmb
-    version: 1.1.0
+    version: v1.8.0
     installDate: 2026-04-08T18:46:23.338Z
-    lastUpdated: 2026-04-08T18:46:32.151Z
+    lastUpdated: 2026-05-16T20:35:20.411Z
     source: external
     npmPackage: bmad-builder
     repoUrl: https://github.com/bmad-code-org/bmad-builder
+    channel: stable
+    sha: d64469f61fadc6cfbf2dea6a0a257fe6eb2790a2
   - name: tea
-    version: 1.7.2
+    version: v1.18.0
     installDate: 2026-04-08T18:46:25.308Z
-    lastUpdated: 2026-04-08T18:46:32.462Z
+    lastUpdated: 2026-05-16T20:35:20.421Z
     source: external
     npmPackage: bmad-method-test-architecture-enterprise
     repoUrl: https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise
+    channel: stable
+    sha: 34a242c1379a1fdb4b812b4dc94f52df764341bb
   - name: wds
-    version: 0.3.1
+    version: v0.1.0
     installDate: 2026-04-08T18:46:27.053Z
-    lastUpdated: 2026-04-08T18:46:32.845Z
-    source: external
+    lastUpdated: 2026-05-16T20:35:20.438Z
+    source: community
     npmPackage: bmad-method-wds-expansion
     repoUrl: https://github.com/bmad-code-org/bmad-method-wds-expansion
+    channel: stable
+    sha: 35500f44eb445fe7ffd12292c58108a81e19e65e
+    registryApprovedTag: v0.1.0
   - name: cis
-    version: 0.1.9
+    version: v0.2.0
     installDate: 2026-04-08T18:46:28.610Z
-    lastUpdated: 2026-04-08T18:46:33.172Z
+    lastUpdated: 2026-05-16T20:35:20.448Z
     source: external
     npmPackage: bmad-creative-intelligence-suite
     repoUrl: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite
+    channel: stable
+    sha: 14a63b893c07173b7a6cfe0fb6a9a72ba51d3cf1
 ides:
   - gemini
   - antigravity
