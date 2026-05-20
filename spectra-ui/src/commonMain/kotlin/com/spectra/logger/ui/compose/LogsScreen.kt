@@ -56,6 +56,13 @@ fun LogsScreen(
                     onRemoveTag = viewModel::removeTagFilter,
                     onClearTimeRange = viewModel::clearTimeRangeFilter,
                     onClearHasError = viewModel::clearHasErrorFilter,
+                    onTimeRangeSelected = { from, to ->
+                        val fromInstant = kotlinx.datetime.Instant.fromEpochMilliseconds(from)
+                        val toInstant = kotlinx.datetime.Instant.fromEpochMilliseconds(to)
+                        viewModel.updateFilter(
+                            uiState.advancedFilter.copy(fromTimestamp = fromInstant, toTimestamp = toInstant)
+                        )
+                    }
                 )
             },
             detailContent = { selectedItem, navigateBack, isDualPane ->
@@ -108,7 +115,10 @@ private fun LogsListContent(
     onRemoveTag: (String) -> Unit,
     onClearTimeRange: () -> Unit,
     onClearHasError: () -> Unit,
+    onTimeRangeSelected: (Long, Long) -> Unit,
 ) {
+    var isDashboardMode by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             SpectraNavBar(
@@ -178,6 +188,25 @@ private fun LogsListContent(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding, vertical = 8.dp),
             )
 
+            SingleChoiceSegmentedButtonRow(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding, vertical = 8.dp)
+            ) {
+                SegmentedButton(
+                    selected = !isDashboardMode,
+                    onClick = { isDashboardMode = false },
+                    shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2)
+                ) {
+                    Text("List")
+                }
+                SegmentedButton(
+                    selected = isDashboardMode,
+                    onClick = { isDashboardMode = true },
+                    shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2)
+                ) {
+                    Text("Dashboard")
+                }
+            }
+
             if (uiState.hasAnyActiveFilters) {
                 Row(
                     modifier = Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = horizontalPadding, vertical = 4.dp),
@@ -200,26 +229,36 @@ private fun LogsListContent(
 
             HorizontalDivider()
 
-            when {
-                uiState.isLoading -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                }
-                uiState.filteredLogs.isEmpty() -> {
-                    EmptyState(
-                        icon = if (uiState.logs.isEmpty()) Icons.Default.Inbox else Icons.Default.Search,
-                        message = if (uiState.logs.isEmpty()) "No logs to display" else "No matching logs",
-                    )
-                }
-                else -> {
-                    LazyColumn(
+            androidx.compose.animation.Crossfade(targetState = isDashboardMode) { dashboard ->
+                if (dashboard) {
+                    DashboardScreen(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = horizontalPadding),
-                    ) {
-                        items(uiState.filteredLogs, key = { it.id }) { log ->
-                            LogRow(log = log, onClick = { onLogClick(log) })
-                            HorizontalDivider()
+                        onTimeRangeSelected = onTimeRangeSelected,
+                        onLevelTapped = onToggleLevel
+                    )
+                } else {
+                    when {
+                        uiState.isLoading -> {
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator()
+                            }
+                        }
+                        uiState.filteredLogs.isEmpty() -> {
+                            EmptyState(
+                                icon = if (uiState.logs.isEmpty()) Icons.Default.Inbox else Icons.Default.Search,
+                                message = if (uiState.logs.isEmpty()) "No logs to display" else "No matching logs",
+                            )
+                        }
+                        else -> {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = horizontalPadding),
+                            ) {
+                                items(uiState.filteredLogs, key = { it.id }) { log ->
+                                    LogRow(log = log, onClick = { onLogClick(log) })
+                                    HorizontalDivider()
+                                }
+                            }
                         }
                     }
                 }
