@@ -2,6 +2,7 @@ package com.spectra.logger.ui.compose.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -17,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.Fill
@@ -29,6 +31,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import com.spectra.logger.domain.model.LogLevel
+import kotlin.math.PI
 import kotlin.math.atan2
 
 /**
@@ -101,21 +104,24 @@ fun LevelPieChart(
         tapOffset = null
     }
 
-    BoxWithConstraints(modifier = baseModifier) {
+    BoxWithConstraints(
+        modifier = baseModifier,
+        contentAlignment = Alignment.Center
+    ) {
         val maxWidthPx = with(LocalDensity.current) { maxWidth.toPx() }
 
         val canvasModifier = Modifier
-            .size(120.dp)
-            .padding(8.dp)
+            .fillMaxSize()
+            .padding(16.dp)
             .pointerInput(levelCounts, onLevelClick) {
                 if (onLevelClick == null) return@pointerInput
                 detectTapGestures { offset ->
                     val center = Offset(size.width / 2f, size.height / 2f)
                     val dx = offset.x - center.x
                     val dy = offset.y - center.y
-                    
+
                     // Calculate angle in degrees from -180 to 180
-                    var angle = (atan2(dy.toDouble(), dx.toDouble()) * (180 / Math.PI)).toFloat()
+                    var angle = (atan2(dy.toDouble(), dx.toDouble()) * (180 / PI)).toFloat()
                     // Shift so 0 is at 12 o'clock (-90 degrees in atan2 standard)
                     angle += 90f
                     if (angle < 0f) angle += 360f
@@ -152,7 +158,7 @@ fun LevelPieChart(
             if (count > 0) {
                 val sweepAngle = (count.toFloat() / total) * 360f
                 val color = colorForLogLevel(level)
-                
+
                 val isSelected = selectedLevel == level
                 val hasSelection = selectedLevel != null
                 val alpha = if (hasSelection && !isSelected) 0.4f else 1.0f
@@ -183,7 +189,7 @@ fun LevelPieChart(
                 with(LocalDensity.current) { (tapOffset!!.x + 20.dp.toPx()).toDp() }
             }
             val yOffset = with(LocalDensity.current) { (tapOffset!!.y - 30.dp.toPx()).toDp() }
-            
+
             GraphTooltip(
                 text = "${selectedLevel.name}: $count",
                 modifier = Modifier.offset(x = xOffset, y = yOffset)

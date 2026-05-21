@@ -7,6 +7,8 @@ import androidx.compose.material.icons.filled.SettingsEthernet
 import androidx.compose.material3.*
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.spectra.logger.ui.compose.components.SpectraTheme
@@ -32,6 +34,7 @@ fun SpectraLoggerScreen(
 
     SpectraTheme(appearanceMode = settingsState.appearanceMode) {
         NavigationSuiteScaffold(
+            modifier = Modifier.fillMaxSize(),
             navigationSuiteItems = {
                 tabs.forEachIndexed { index, tab ->
                     item(

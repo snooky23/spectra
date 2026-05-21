@@ -34,6 +34,7 @@ class FilterEngineRepositoryImpl(
             DashboardStatistics(
                 timeline = persistentListOf(),
                 levelCounts = persistentMapOf(),
+                tagCounts = persistentMapOf(),
                 totalLogs = 0,
             ),
         )
@@ -67,9 +68,11 @@ class FilterEngineRepositoryImpl(
     private fun aggregateLogs(logs: List<LogEntry>): DashboardStatistics {
         val levelCounts = mutableMapOf<LogLevel, Int>()
         val timelineMap = mutableMapOf<Long, MutableMap<LogLevel, Int>>()
+        val tagCounts = mutableMapOf<String, Int>()
 
         logs.forEach { log ->
             levelCounts[log.level] = (levelCounts[log.level] ?: 0) + 1
+            tagCounts[log.tag] = (tagCounts[log.tag] ?: 0) + 1
 
             val bucket = getBucketTimestamp(log.timestamp.toEpochMilliseconds())
             val bucketCounts = timelineMap.getOrPut(bucket) { mutableMapOf() }
@@ -87,6 +90,7 @@ class FilterEngineRepositoryImpl(
         return DashboardStatistics(
             timeline = timelineBuckets,
             levelCounts = levelCounts.toPersistentMap(),
+            tagCounts = tagCounts.toPersistentMap(),
             totalLogs = logs.size,
         )
     }
@@ -100,6 +104,10 @@ class FilterEngineRepositoryImpl(
         // Update level counts
         val currentLevelCount = current.levelCounts[log.level] ?: 0
         val newLevelCounts = current.levelCounts.put(log.level, currentLevelCount + 1)
+
+        // Update tag counts
+        val currentTagCount = current.tagCounts[log.tag] ?: 0
+        val newTagCounts = current.tagCounts.put(log.tag, currentTagCount + 1)
 
         // Update timeline
         val bucketTimestamp = getBucketTimestamp(log.timestamp.toEpochMilliseconds())
@@ -122,6 +130,7 @@ class FilterEngineRepositoryImpl(
         return DashboardStatistics(
             timeline = newTimeline.toPersistentList(),
             levelCounts = newLevelCounts,
+            tagCounts = newTagCounts,
             totalLogs = newTotal,
         )
     }
