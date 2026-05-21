@@ -113,8 +113,6 @@ fun DashboardContent(
                         },
                         modifier = Modifier.fillMaxWidth().aspectRatio(2f).heightIn(min = 200.dp, max = 400.dp)
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    LogLevelLegend(modifier = Modifier.fillMaxWidth())
                 }
             }
         }
@@ -130,6 +128,7 @@ fun DashboardContent(
                     LevelPieChart(
                         levelCounts = statistics.levelCounts,
                         onLevelClick = onLevelTapped,
+                        strokeWidth = with(androidx.compose.ui.platform.LocalDensity.current) { 24.dp.toPx() },
                         modifier = Modifier.fillMaxWidth().aspectRatio(1.5f).heightIn(min = 150.dp, max = 300.dp)
                     )
                     Spacer(modifier = Modifier.height(16.dp))

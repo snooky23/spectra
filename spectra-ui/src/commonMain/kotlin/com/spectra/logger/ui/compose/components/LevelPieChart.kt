@@ -145,33 +145,44 @@ fun LevelPieChart(
         Canvas(modifier = canvasModifier) {
         var startAngle = -90f // Start drawing from the top (12 o'clock)
 
+        // Force perfect circle by using the minimum dimension
+        val minDim = kotlin.math.min(size.width, size.height)
+        val rawTopLeft = Offset((size.width - minDim) / 2f, (size.height - minDim) / 2f)
+
+        // Deflate bounding box to prevent stroke clipping
+        val offsetPadding = (strokeWidth ?: 0f) / 2f
+        val topLeft = Offset(rawTopLeft.x + offsetPadding, rawTopLeft.y + offsetPadding)
+        val arcSize = Size(minDim - (strokeWidth ?: 0f), minDim - (strokeWidth ?: 0f))
+
         val style =
             if (strokeWidth != null) {
-                Stroke(width = strokeWidth)
+                Stroke(width = strokeWidth, cap = androidx.compose.ui.graphics.StrokeCap.Round)
             } else {
                 Fill
             }
+
+        val activeSlicesCount = levelCounts.values.count { it > 0 }
+        val gapAngle = if (activeSlicesCount > 1) 3f else 0f
 
         // To ensure stable slice rendering, order by ordinal or count if needed,
         // but default map iteration is fine if predictable.
         levelCounts.forEach { (level, count) ->
             if (count > 0) {
                 val sweepAngle = (count.toFloat() / total) * 360f
+                val adjustedSweep = sweepAngle - gapAngle
                 val color = colorForLogLevel(level)
 
                 val isSelected = selectedLevel == level
                 val hasSelection = selectedLevel != null
                 val alpha = if (hasSelection && !isSelected) 0.4f else 1.0f
-                // Scaling pie slice slightly is tricky without calculating individual offsets,
-                // so we just use the alpha dimming for the pie chart as visual feedback.
 
                 drawArc(
                     color = color.copy(alpha = alpha),
-                    startAngle = startAngle,
-                    sweepAngle = sweepAngle,
+                    startAngle = startAngle + (gapAngle / 2f),
+                    sweepAngle = adjustedSweep,
                     useCenter = useCenter && strokeWidth == null,
-                    topLeft = Offset.Zero,
-                    size = Size(size.width, size.height),
+                    topLeft = topLeft,
+                    size = arcSize,
                     style = style,
                 )
 
