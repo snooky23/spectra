@@ -21,6 +21,7 @@ data class StatisticsUiState(
         DashboardStatistics(
             timeline = persistentListOf(),
             levelCounts = persistentMapOf(),
+            tagCounts = persistentMapOf(),
             totalLogs = 0,
         ),
     val isLoading: Boolean = true,

@@ -1,7 +1,9 @@
 package com.spectra.logger.ui.compose.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -11,10 +13,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.spectra.logger.domain.model.LogLevel
 import com.spectra.logger.ui.compose.AppearanceMode
 import com.spectra.logger.ui.theme.SpectraDesignTokens
 
@@ -308,10 +312,10 @@ fun ShareBottomSheet(
  * Badge for log levels
  */
 @Composable
-fun LogLevelBadge(level: com.spectra.logger.domain.model.LogLevel) {
+fun LogLevelBadge(level: LogLevel) {
     val color = colorForLogLevel(level)
     Surface(
-        shape = androidx.compose.foundation.shape.CircleShape,
+        shape = CircleShape,
         color = color.copy(alpha = SpectraDesignTokens.FILTER_CHIP_ALPHA),
     ) {
         Text(
@@ -324,14 +328,14 @@ fun LogLevelBadge(level: com.spectra.logger.domain.model.LogLevel) {
     }
 }
 
-fun colorForLogLevel(level: com.spectra.logger.domain.model.LogLevel): Color {
+fun colorForLogLevel(level: LogLevel): Color {
     return when (level) {
-        com.spectra.logger.domain.model.LogLevel.VERBOSE -> SpectraDesignTokens.VerboseGray
-        com.spectra.logger.domain.model.LogLevel.DEBUG -> SpectraDesignTokens.DebugBlue
-        com.spectra.logger.domain.model.LogLevel.INFO -> SpectraDesignTokens.InfoGreen
-        com.spectra.logger.domain.model.LogLevel.WARNING -> SpectraDesignTokens.WarningOrange
-        com.spectra.logger.domain.model.LogLevel.ERROR -> SpectraDesignTokens.ErrorRed
-        com.spectra.logger.domain.model.LogLevel.FATAL -> SpectraDesignTokens.FatalPurple
+        LogLevel.VERBOSE -> SpectraDesignTokens.VerboseGray
+        LogLevel.DEBUG -> SpectraDesignTokens.DebugBlue
+        LogLevel.INFO -> SpectraDesignTokens.InfoGreen
+        LogLevel.WARNING -> SpectraDesignTokens.WarningOrange
+        LogLevel.ERROR -> SpectraDesignTokens.ErrorRed
+        LogLevel.FATAL -> SpectraDesignTokens.FatalPurple
     }
 }
 
@@ -400,5 +404,39 @@ fun colorForStatusRange(range: String): Color {
         "4xx" -> SpectraDesignTokens.WarningOrange
         "5xx" -> SpectraDesignTokens.ErrorRed
         else -> SpectraDesignTokens.VerboseGray
+    }
+}
+
+/**
+ * A horizontal flow-based legend for log levels.
+ * Displays a color dot and the name for each level.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun LogLevelLegend(
+    modifier: Modifier = Modifier,
+    levels: List<LogLevel> = LogLevel.entries
+) {
+    FlowRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        levels.forEach { level ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .clip(CircleShape)
+                        .background(colorForLogLevel(level))
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = level.name.lowercase().replaceFirstChar { it.uppercase() },
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
     }
 }

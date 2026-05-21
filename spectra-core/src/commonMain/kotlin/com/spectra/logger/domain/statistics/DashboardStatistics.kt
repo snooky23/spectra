@@ -10,6 +10,7 @@ import kotlinx.collections.immutable.PersistentMap
 data class DashboardStatistics(
     val timeline: PersistentList<TimelineBucket>,
     val levelCounts: PersistentMap<LogLevel, Int>,
+    val tagCounts: PersistentMap<String, Int>,
     val totalLogs: Int,
 )
 
