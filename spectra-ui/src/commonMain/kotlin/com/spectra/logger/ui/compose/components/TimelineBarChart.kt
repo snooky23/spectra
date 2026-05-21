@@ -23,6 +23,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -167,9 +170,23 @@ fun TimelineBarChart(
                 )
             }
 
+        val gridLineColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.08f)
+        
         Canvas(modifier = canvasModifier) {
         val canvasWidth = size.width
         val canvasHeight = size.height
+
+        // Draw 3 background horizontal grid lines
+        val gridLineCount = 3
+        for (i in 1..gridLineCount) {
+            val y = (canvasHeight / (gridLineCount + 1)) * i
+            drawLine(
+                color = gridLineColor,
+                start = Offset(0f, y),
+                end = Offset(canvasWidth, y),
+                strokeWidth = 1.dp.toPx()
+            )
+        }
 
         // Draw baseline axis
         drawLine(
@@ -195,10 +212,9 @@ fun TimelineBarChart(
 
         // Calculate layout properties
         val barCount = data.size
-        // Fixed gap ratio: 20% of the bar spacing is gap, 80% is the bar
         val barSpacing = canvasWidth / barCount
-        val baseBarWidth = barSpacing * 0.8f
-        val gapWidth = barSpacing * 0.2f
+        val maxBarWidthPx = 28.dp.toPx() // limit the maximum width of a single bar
+        val computedBarWidth = (barSpacing * 0.8f).coerceAtMost(maxBarWidthPx)
 
         // Draw each bar
         data.forEachIndexed { index, barData ->
@@ -206,21 +222,39 @@ fun TimelineBarChart(
             val scale = scales.getOrElse(index) { 1.0f }
             
             val barHeight = (barData.value / maxValue) * canvasHeight * scale
-            val barWidth = baseBarWidth * scale
+            val scaledBarWidth = computedBarWidth * scale
             
-            // Adjust xOffset slightly if scaled to keep it centered
-            val widthDiff = barWidth - baseBarWidth
-            val xOffset = index * barSpacing + (gapWidth / 2f) - (widthDiff / 2f)
+            // Centering within the time bucket column
+            val xOffset = index * barSpacing + (barSpacing - scaledBarWidth) / 2f
             val yOffset = canvasHeight - barHeight
 
             if (barHeight > 0f) {
-                drawRoundRect(
-                    color = barData.color.copy(alpha = alpha),
-                    topLeft = Offset(xOffset, yOffset),
-                    size = Size(barWidth, barHeight),
-                    // Slight rounding for premium feel
-                    cornerRadius = CornerRadius(2.dp.toPx()),
+                val path = Path().apply {
+                    addRoundRect(
+                        roundRect = RoundRect(
+                            left = xOffset,
+                            top = yOffset,
+                            right = xOffset + scaledBarWidth,
+                            bottom = canvasHeight,
+                            topLeftCornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
+                            topRightCornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
+                            bottomLeftCornerRadius = CornerRadius.Zero,
+                            bottomRightCornerRadius = CornerRadius.Zero
+                        )
+                    )
+                }
+
+                // Stunning vertical gradient fade
+                val brush = Brush.verticalGradient(
+                    colors = listOf(
+                        barData.color.copy(alpha = alpha),
+                        barData.color.copy(alpha = alpha * 0.2f)
+                    ),
+                    startY = yOffset,
+                    endY = canvasHeight
                 )
+                
+                drawPath(path, brush = brush)
             }
         }
     }
