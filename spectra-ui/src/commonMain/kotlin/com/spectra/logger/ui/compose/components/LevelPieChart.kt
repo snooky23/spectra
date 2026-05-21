@@ -162,7 +162,9 @@ fun LevelPieChart(
             }
 
         val activeSlicesCount = levelCounts.values.count { it > 0 }
-        val gapAngle = if (activeSlicesCount > 1) 3f else 0f
+        val gapAngle = if (activeSlicesCount > 1) {
+            if (strokeWidth != null) 3f else 1.5f
+        } else 0f
 
         // To ensure stable slice rendering, order by ordinal or count if needed,
         // but default map iteration is fine if predictable.
