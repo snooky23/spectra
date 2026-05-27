@@ -1,17 +1,20 @@
 package com.spectra.logger
 
-import com.spectra.logger.config.LoggerConfiguration
-import com.spectra.logger.config.LoggerConfigurationBuilder
-import com.spectra.logger.domain.Logger
-import com.spectra.logger.domain.model.LogEntry
-import com.spectra.logger.domain.model.LogFilter
-import com.spectra.logger.domain.model.NetworkLogEntry
-import com.spectra.logger.domain.model.NetworkLogFilter
-import com.spectra.logger.domain.storage.InMemoryLogStorage
-import com.spectra.logger.domain.storage.InMemoryNetworkLogStorage
-import com.spectra.logger.domain.storage.LogStorage
-import com.spectra.logger.domain.storage.NetworkLogStorage
-import com.spectra.logger.ui.SpectraUIManager
+import com.spectra.logger.core.utils.*
+import com.spectra.logger.core.model.SourceType
+import com.spectra.logger.feature.network.model.NetworkLogFilter
+import com.spectra.logger.core.model.*
+
+import com.spectra.logger.feature.settings.config.LoggerConfiguration
+import com.spectra.logger.feature.settings.config.LoggerConfigurationBuilder
+import com.spectra.logger.core.Logger
+import com.spectra.logger.feature.logs.model.LogEntry
+import com.spectra.logger.feature.logs.model.LogFilter
+import com.spectra.logger.feature.network.model.NetworkLogEntry
+import com.spectra.logger.feature.logs.storage.InMemoryLogStorage
+import com.spectra.logger.feature.network.storage.InMemoryNetworkLogStorage
+import com.spectra.logger.feature.logs.storage.LogStorage
+import com.spectra.logger.feature.network.storage.NetworkLogStorage
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.flow.Flow
 
@@ -33,12 +36,6 @@ import kotlinx.coroutines.flow.Flow
  *         maxCapacity = 20_000
  *     }
  * }
- * ```
- *
- * **UI Display:**
- * ```
- * SpectraLogger.showScreen()   // Show logger UI as modal
- * SpectraLogger.dismissScreen() // Dismiss logger UI
  * ```
  *
  * @since 0.0.1
@@ -250,69 +247,27 @@ object SpectraLogger {
         val newConfig = LoggerConfigurationBuilder().apply(block).build()
         configAtomic.value = newConfig
 
-        // Recreate storages with new configuration
-        val newLogStorage = InMemoryLogStorage(maxCapacity = newConfig.logStorageConfig.maxCapacity)
-        val newNetworkStorage = InMemoryNetworkLogStorage(maxCapacity = newConfig.networkStorageConfig.maxCapacity)
+        // Update capacity of existing storages or recreate them if they are not the expected types
+        val currentLogStorage = logStorageAtomic.value
+        if (currentLogStorage is InMemoryLogStorage) {
+            currentLogStorage.updateCapacity(newConfig.logStorageConfig.maxCapacity)
+        } else {
+            logStorageAtomic.value = InMemoryLogStorage(maxCapacity = newConfig.logStorageConfig.maxCapacity)
+        }
 
-        logStorageAtomic.value = newLogStorage
-        networkStorageAtomic.value = newNetworkStorage
+        val currentNetworkStorage = networkStorageAtomic.value
+        if (currentNetworkStorage is InMemoryNetworkLogStorage) {
+            currentNetworkStorage.updateCapacity(newConfig.networkStorageConfig.maxCapacity)
+        } else {
+            networkStorageAtomic.value = InMemoryNetworkLogStorage(maxCapacity = newConfig.networkStorageConfig.maxCapacity)
+        }
 
-        // Recreate logger with new configuration
+        // Recreate logger with new configuration using the active logStorage
         loggerAtomic.value =
             Logger(
-                storage = newLogStorage,
+                storage = logStorageAtomic.value,
                 minLevel = newConfig.minLogLevel,
             )
     }
 
-    // UI Display API
-
-    /**
-     * Show the Spectra Logger debug UI as a modal screen.
-     *
-     * This displays the logger interface above the running app without interrupting
-     * the app's lifecycle. Users can dismiss the UI at any time.
-     *
-     * The UI includes:
-     * - Log viewer with real-time updates
-     * - Network request/response viewer
-     * - Settings and configuration options
-     * - Export and share functionality
-     *
-     * **Platform-specific behavior:**
-     * - **Android**: Shows as a fullscreen modal dialog
-     * - **iOS**: Shows as a modal presentation over the current view
-     *
-     * Example:
-     * ```
-     * // Show on button tap
-     * button.setOnClickListener {
-     *     SpectraLogger.showScreen()
-     * }
-     *
-     * // Show on shake gesture (enable in Activity)
-     * // Show via URL scheme
-     * // Show from settings menu
-     * ```
-     *
-     * @see dismissScreen
-     * @since 0.0.1
-     */
-    fun showScreen() = SpectraUIManager.showScreen()
-
-    /**
-     * Dismiss the Spectra Logger debug UI.
-     *
-     * Closes the modal screen if it is currently shown.
-     * Safe to call even if the screen is not currently visible.
-     *
-     * Example:
-     * ```
-     * SpectraLogger.dismissScreen()
-     * ```
-     *
-     * @see showScreen
-     * @since 0.0.1
-     */
-    fun dismissScreen() = SpectraUIManager.dismissScreen()
 }
