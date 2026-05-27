@@ -1,6 +1,11 @@
 package com.spectra.logger
 
-import com.spectra.logger.domain.model.LogLevel
+import com.spectra.logger.core.utils.*
+import com.spectra.logger.core.model.SourceType
+import com.spectra.logger.feature.network.model.NetworkLogFilter
+import com.spectra.logger.core.model.*
+
+import com.spectra.logger.feature.logs.model.LogLevel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Ignore

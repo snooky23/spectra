@@ -1,0 +1,370 @@
+package com.spectra.logger.feature.logs.ui
+
+import com.spectra.logger.core.utils.*
+import com.spectra.logger.core.model.SourceType
+import com.spectra.logger.feature.network.model.NetworkLogFilter
+import com.spectra.logger.core.model.*
+
+import com.spectra.logger.core.ui.components.charts.*
+import com.spectra.logger.core.ui.components.pickers.*
+import com.spectra.logger.core.ui.components.effects.*
+import com.spectra.logger.core.ui.components.common.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.spectra.logger.feature.logs.model.LogEntry
+import com.spectra.logger.feature.logs.model.LogLevel
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+
+/**
+ * Logs screen displaying application logs with simplified filtering and detail views.
+ * Bypasses NavigableListDetailPaneScaffold to ensure multiplatform compilation.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LogsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: LogsViewModel = viewModel { LogsViewModel() },
+    onDismiss: () -> Unit = {},
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val scope = rememberCoroutineScope()
+
+    var showFilterSheet by remember { mutableStateOf(false) }
+    var showShareBottomSheet by remember { mutableStateOf(false) }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        com.spectra.logger.core.ui.navigation.AdaptiveNavigator<LogEntry>(
+            listContent = { navigateToDetail, isDualPane ->
+                LogsListContent(
+                    uiState = uiState,
+                    onLogClick = navigateToDetail,
+                    onDismiss = onDismiss,
+                    isDualPane = isDualPane,
+                    onShowFilter = { showFilterSheet = true },
+                    onShowShare = { showShareBottomSheet = true },
+                    onRefresh = viewModel::loadLogs,
+                    onClearLogs = viewModel::clearLogs,
+                    onSearchChange = viewModel::onSearchTextChanged,
+                    onToggleLevel = viewModel::toggleLevel,
+                    onRemoveTag = viewModel::removeTagFilter,
+                    onClearTimeRange = viewModel::clearTimeRangeFilter,
+                    onClearHasError = viewModel::clearHasErrorFilter,
+                    onTimeRangeSelected = { from, to ->
+                        val fromInstant = kotlinx.datetime.Instant.fromEpochMilliseconds(from)
+                        val toInstant = kotlinx.datetime.Instant.fromEpochMilliseconds(to)
+                        viewModel.updateFilter(
+                            uiState.advancedFilter.copy(fromTimestamp = fromInstant, toTimestamp = toInstant),
+                        )
+                    },
+                )
+            },
+            detailContent = { selectedItem, navigateBack, isDualPane ->
+                LogDetailContent(
+                    log = selectedItem,
+                    onBack = navigateBack,
+                    isDualPane = isDualPane,
+                )
+            },
+        )
+
+        // Filter bottom sheet
+        if (showFilterSheet) {
+            LogsFilterSheet(
+                filter = uiState.advancedFilter,
+                selectedLevels = uiState.selectedLevels,
+                availableTags = uiState.availableTags,
+                onFilterChange = viewModel::updateFilter,
+                onLevelsChange = viewModel::updateLevels,
+                onDismiss = { showFilterSheet = false },
+            )
+        }
+
+        // Share bottom sheet
+        if (showShareBottomSheet) {
+            ShareBottomSheet(
+                filteredCount = uiState.filteredLogs.size,
+                totalCount = uiState.logs.size,
+                onShareFiltered = { viewModel.shareLogs(uiState.filteredLogs) },
+                onShareAll = { viewModel.shareLogs(uiState.logs) },
+                onDismiss = { showShareBottomSheet = false },
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LogsListContent(
+    uiState: LogsUiState,
+    onLogClick: (LogEntry) -> Unit,
+    onDismiss: () -> Unit,
+    isDualPane: Boolean,
+    onShowFilter: () -> Unit,
+    onShowShare: () -> Unit,
+    onRefresh: () -> Unit,
+    onClearLogs: () -> Unit,
+    onSearchChange: (String) -> Unit,
+    onToggleLevel: (LogLevel) -> Unit,
+    onRemoveTag: (String) -> Unit,
+    onClearTimeRange: () -> Unit,
+    onClearHasError: () -> Unit,
+    onTimeRangeSelected: (Long, Long) -> Unit,
+) {
+    var isDashboardMode by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
+
+    Scaffold(
+        topBar = {
+            SpectraNavBar(
+                title = "Logs",
+                subtitle = "${uiState.filteredLogs.size} logs",
+                navMode = NavMode.ROOT,
+                isDualPane = isDualPane,
+                onDismiss = onDismiss,
+                actions = {
+                    BadgedBox(
+                        badge = {
+                            if (uiState.totalActiveFilterCount > 0) {
+                                Badge { Text("${uiState.totalActiveFilterCount}") }
+                            }
+                        },
+                    ) {
+                        IconButton(onClick = onShowFilter) {
+                            Icon(Icons.Default.FilterList, contentDescription = "Filter")
+                        }
+                    }
+
+                    IconButton(onClick = onShowShare) {
+                        Icon(Icons.Default.Share, contentDescription = "Share")
+                    }
+
+                    var showMenu by remember { mutableStateOf(false) }
+                    IconButton(onClick = { showMenu = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "More")
+                    }
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Refresh") },
+                            onClick = {
+                                onRefresh()
+                                showMenu = false
+                            },
+                            leadingIcon = { Icon(Icons.Default.Refresh, null) },
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Clear All Logs") },
+                            onClick = {
+                                onClearLogs()
+                                showMenu = false
+                            },
+                            leadingIcon = { Icon(Icons.Default.Delete, null) },
+                        )
+                    }
+                },
+            )
+        },
+    ) { paddingValues ->
+         val horizontalPadding =
+             if (isDualPane) {
+                 com.spectra.logger.core.ui.theme.SpectraDesignTokens.ScreenHorizontalPaddingExpanded
+             } else {
+                 com.spectra.logger.core.ui.theme.SpectraDesignTokens.ScreenHorizontalPaddingCompact
+             }
+        Column(
+            modifier = Modifier.fillMaxSize().padding(paddingValues),
+        ) {
+            SearchBar(
+                query = uiState.searchText,
+                onQueryChange = onSearchChange,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding, vertical = 8.dp),
+            )
+
+            SingleChoiceSegmentedButtonRow(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding, vertical = 8.dp),
+            ) {
+                SegmentedButton(
+                    selected = !isDashboardMode,
+                    onClick = { isDashboardMode = false },
+                    shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+                ) {
+                    Text("List")
+                }
+                SegmentedButton(
+                    selected = isDashboardMode,
+                    onClick = { isDashboardMode = true },
+                    shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+                ) {
+                    Text("Dashboard")
+                }
+            }
+
+            if (uiState.hasAnyActiveFilters) {
+                Row(
+                    modifier = Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = horizontalPadding, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    uiState.selectedLevels.sortedBy { it.ordinal }.forEach { level ->
+                        ActiveFilterBadge(label = level.name, onRemove = { onToggleLevel(level) })
+                    }
+                    uiState.selectedTags.forEach { tag ->
+                        ActiveFilterBadge(label = "Tag: $tag", onRemove = { onRemoveTag(tag) })
+                    }
+                    if (uiState.hasTimeRangeFilter) {
+                        ActiveFilterBadge(label = "Time Range", onRemove = onClearTimeRange)
+                    }
+                    if (uiState.hasErrorOnly) {
+                        ActiveFilterBadge(label = "Errors Only", onRemove = onClearHasError)
+                    }
+                }
+            }
+
+            HorizontalDivider()
+
+            androidx.compose.animation.Crossfade(targetState = isDashboardMode) { dashboard ->
+                if (dashboard) {
+                    DashboardScreen(
+                        modifier = Modifier.fillMaxSize(),
+                        onTimeRangeSelected = onTimeRangeSelected,
+                        onLevelTapped = onToggleLevel,
+                    )
+                } else {
+                    when {
+                        uiState.isLoading -> {
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator()
+                            }
+                        }
+                        uiState.filteredLogs.isEmpty() -> {
+                            EmptyState(
+                                icon = if (uiState.logs.isEmpty()) Icons.Default.Inbox else Icons.Default.Search,
+                                message = if (uiState.logs.isEmpty()) "No logs to display" else "No matching logs",
+                            )
+                        }
+                        else -> {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = horizontalPadding),
+                            ) {
+                                items(uiState.filteredLogs, key = { it.id }) { log ->
+                                    LogRow(log = log, onClick = { onLogClick(log) })
+                                    HorizontalDivider()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LogDetailContent(
+    log: LogEntry,
+    onBack: () -> Unit,
+    isDualPane: Boolean = false,
+) {
+    Scaffold(
+        topBar = {
+            SpectraNavBar(
+                title = "Log Detail",
+                navMode = NavMode.DETAIL,
+                isDualPane = isDualPane,
+                onBack = onBack,
+            )
+        },
+    ) { paddingValues ->
+        Box(modifier = Modifier.padding(paddingValues)) {
+            LogDetailPane(log = log)
+        }
+    }
+}
+
+@Composable
+fun LogRow(
+    log: LogEntry,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 12.dp),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                LogLevelBadge(level = log.level)
+                Text(
+                    text = log.tag,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Text(
+                text = formatShortTime(log.timestamp),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = log.message,
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
+
+        if (log.throwable != null) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Icon(
+                    Icons.Default.Warning,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                    tint = Color(0xFFFF9800),
+                )
+                Text(
+                    text = "Has Error",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color(0xFFFF9800),
+                )
+            }
+        }
+    }
+}
+
+private fun formatShortTime(timestamp: kotlinx.datetime.Instant): String {
+    val localDateTime = timestamp.toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault())
+    val hour = localDateTime.hour.toString().padStart(2, '0')
+    val minute = localDateTime.minute.toString().padStart(2, '0')
+    val second = localDateTime.second.toString().padStart(2, '0')
+    return "$hour:$minute:$second"
+}

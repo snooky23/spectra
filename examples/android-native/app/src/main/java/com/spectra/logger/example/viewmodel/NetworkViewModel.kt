@@ -3,8 +3,8 @@ package com.spectra.logger.example.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spectra.logger.SpectraLogger
-import com.spectra.logger.domain.model.NetworkLogEntry
-import com.spectra.logger.domain.model.SourceType
+import com.spectra.logger.feature.network.model.NetworkLogEntry
+import com.spectra.logger.core.model.SourceType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -44,7 +44,7 @@ class NetworkViewModel : ViewModel() {
 
             val entry = NetworkLogEntry(
                 id = UUID.randomUUID().toString(),
-                timestamp = com.spectra.logger.utils.SpectraTime.now(),
+                timestamp = com.spectra.logger.core.utils.SpectraTime.now(),
                 url = url,
                 method = method,
                 requestHeaders = mapOf("Accept" to "application/json"),
