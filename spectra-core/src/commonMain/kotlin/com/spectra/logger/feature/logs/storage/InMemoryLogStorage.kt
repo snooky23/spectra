@@ -89,6 +89,13 @@ class InMemoryLogStorage(
 
     override fun observe(filter: LogFilter): Flow<LogEntry> = logFlow.filter { filter.matches(it) }
 
+    override suspend fun exportLogs(): String? {
+        // InMemoryLogStorage does not have a FileSystem context to write an export file to.
+        // To use export functionality, configure the logger with a FileLogStorage.
+        println("SpectraLogger: Cannot export logs from InMemoryLogStorage because no directory path is configured.")
+        return null
+    }
+
     override suspend fun count(): Int = countAtomic.value
 
     override suspend fun clear() {

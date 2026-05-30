@@ -198,6 +198,12 @@ object SpectraLogger {
      */
     suspend fun clear() = logger.clear()
 
+    /**
+     * Export all log entries to a single file and return its absolute path.
+     * @return Absolute path to the exported `.jsonl` file, or null if empty/failed.
+     */
+    suspend fun exportLogs(): String? = logger.exportLogs()
+
     // Network Logging API
 
     /**

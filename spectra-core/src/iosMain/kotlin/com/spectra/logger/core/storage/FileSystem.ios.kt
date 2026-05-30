@@ -121,4 +121,6 @@ actual class FileSystem actual constructor(private val directoryPath: String) {
                 emptyList()
             }
         }
+
+    actual fun getAbsolutePath(path: String): String = getFilePath(path)
 }
