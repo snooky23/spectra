@@ -24,7 +24,15 @@ class SpectraKtorConfig {
      */
     var maxBodySize: Long = 250_000L
     
-    // Additional configuration properties for future stories (e.g. ignoreList)
+    /**
+     * List of string tokens. If a request URL contains any of these tokens, the request is ignored.
+     */
+    var ignoreTokens: List<String> = emptyList()
+
+    /**
+     * List of Regex patterns. If a request URL matches any of these regexes, the request is ignored.
+     */
+    var ignoreRegex: List<Regex> = emptyList()
 }
 
 /**
@@ -32,6 +40,14 @@ class SpectraKtorConfig {
  */
 val SpectraKtorPlugin = createClientPlugin("SpectraKtorPlugin", ::SpectraKtorConfig) {
     on(Send) { request ->
+        val urlString = request.url.toString()
+        val shouldIgnore = pluginConfig.ignoreTokens.any { urlString.contains(it, ignoreCase = true) } ||
+                           pluginConfig.ignoreRegex.any { it.containsMatchIn(urlString) }
+                           
+        if (shouldIgnore) {
+            return@on proceed(request)
+        }
+
         val startTime = SpectraTime.now()
         val startMark = TimeSource.Monotonic.markNow()
         val requestId = IdGenerator.generate()

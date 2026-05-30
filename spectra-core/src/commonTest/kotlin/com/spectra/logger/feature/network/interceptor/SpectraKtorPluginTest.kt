@@ -139,4 +139,29 @@ class SpectraKtorPluginTest {
         val averageTimeMs = totalTime.inWholeNanoseconds.toDouble() / iterations / 1_000_000.0
         assertTrue(averageTimeMs < 5.0, "Average overhead was ${averageTimeMs}ms, should be < 5.0ms")
     }
+
+    @Test
+    fun testIgnoreListDropsTraffic() = runTest {
+        val mockEngine = MockEngine { respond(content = "OK", status = HttpStatusCode.OK) }
+        val client = HttpClient(mockEngine) {
+            install(SpectraKtorPlugin) {
+                ignoreTokens = listOf("analytics.com", "telemetry")
+                ignoreRegex = listOf(Regex(".*\\/secret\\/.*"))
+            }
+        }
+
+        // Should be ignored due to token
+        client.get("https://analytics.com/track")
+        client.get("https://api.myapp.com/telemetry/v1")
+        
+        // Should be ignored due to regex
+        client.get("https://api.myapp.com/secret/keys")
+        
+        // Should be logged
+        client.get("https://api.myapp.com/users")
+        
+        val logs = SpectraLogger.queryNetwork()
+        assertEquals(1, logs.size)
+        assertEquals("https://api.myapp.com/users", logs.first().url)
+    }
 }

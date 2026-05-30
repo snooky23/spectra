@@ -12,11 +12,21 @@ import okhttp3.Response
 import okio.Buffer
 
 class SpectraOkHttpInterceptor(
-    private val maxBodySize: Long = 250_000L
+    private val maxBodySize: Long = 250_000L,
+    private val ignoreTokens: List<String> = emptyList(),
+    private val ignoreRegex: List<Regex> = emptyList()
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
+        val urlString = request.url.toString()
+        val shouldIgnore = ignoreTokens.any { urlString.contains(it, ignoreCase = true) } ||
+                           ignoreRegex.any { it.containsMatchIn(urlString) }
+                           
+        if (shouldIgnore) {
+            return chain.proceed(request)
+        }
+
         val requestId = IdGenerator.generate()
         val startTime = SpectraTime.now()
         val startNano = System.nanoTime()
