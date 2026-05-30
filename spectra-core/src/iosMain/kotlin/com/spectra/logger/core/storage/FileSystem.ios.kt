@@ -26,18 +26,9 @@ import platform.Foundation.writeToFile
  * Files are stored in NSDocumentDirectory which is backed up by iCloud.
  */
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-actual class FileSystem {
+actual class FileSystem actual constructor(private val directoryPath: String) {
     private val fileManager = NSFileManager.defaultManager
-    private val baseDir: String by lazy {
-        val paths =
-            NSSearchPathForDirectoriesInDomains(
-                NSDocumentDirectory,
-                NSUserDomainMask,
-                true,
-            )
-        val documentsDirectory = paths.first() as String
-        "$documentsDirectory/spectra_logs"
-    }
+    private val baseDir: String = directoryPath
 
     init {
         // Create base directory if it doesn't exist

@@ -171,6 +171,7 @@ class Logger(
             )
 
         scope.launch {
+            println("LOGGER: Executing coroutine!")
             storage.add(entry)
         }
     }

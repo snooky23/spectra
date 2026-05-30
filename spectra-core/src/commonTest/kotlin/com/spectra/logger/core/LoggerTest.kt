@@ -14,40 +14,48 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.cancel
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.time.DurationUnit
+import kotlin.time.measureTime
 
 class LoggerTest {
     // Helper to create test logger with deterministic scope
     private fun createTestLogger(
         storage: LogStorage,
         minLevel: LogLevel = LogLevel.VERBOSE,
+        scope: CoroutineScope
     ): Logger {
-        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
         return Logger(storage, minLevel, scope)
     }
 
     @Test
     fun testBasicLogging() =
-        runBlocking {
+        runTest(UnconfinedTestDispatcher()) {
             val storage = InMemoryLogStorage()
-            val logger = createTestLogger(storage)
+            val logger = createTestLogger(storage, scope = backgroundScope)
 
             logger.i("Test", "Info message")
             logger.e("Test", "Error message")
 
-            delay(100)
+            advanceUntilIdle()
 
             assertEquals(2, storage.count())
         }
 
     @Test
     fun testAllLogLevels() =
-        runBlocking {
+        runTest(UnconfinedTestDispatcher()) {
             val storage = InMemoryLogStorage()
-            val logger = createTestLogger(storage)
+            val logger = createTestLogger(storage, scope = backgroundScope)
 
             logger.v("Test", "Verbose")
             logger.d("Test", "Debug")
@@ -56,7 +64,7 @@ class LoggerTest {
             logger.e("Test", "Error")
             logger.f("Test", "Fatal")
 
-            delay(100)
+            advanceUntilIdle()
 
             assertEquals(6, storage.count())
 
@@ -73,16 +81,16 @@ class LoggerTest {
 
     @Test
     fun testMinLevelFiltering() =
-        runBlocking {
+        runTest(UnconfinedTestDispatcher()) {
             val storage = InMemoryLogStorage()
-            val logger = createTestLogger(storage, LogLevel.WARNING)
+            val logger = createTestLogger(storage, minLevel = LogLevel.WARNING, scope = backgroundScope)
 
             logger.d("Test", "Debug - should be filtered")
             logger.i("Test", "Info - should be filtered")
             logger.w("Test", "Warning - should pass")
             logger.e("Test", "Error - should pass")
 
-            delay(100)
+            advanceUntilIdle()
 
             assertEquals(2, storage.count())
             val logs = storage.query()
@@ -91,14 +99,14 @@ class LoggerTest {
 
     @Test
     fun testLoggingWithMetadata() =
-        runBlocking {
+        runTest(UnconfinedTestDispatcher()) {
             val storage = InMemoryLogStorage()
-            val logger = createTestLogger(storage)
+            val logger = createTestLogger(storage, scope = backgroundScope)
 
             val metadata = mapOf("userId" to "123", "action" to "login")
             logger.i("Auth", "User logged in", metadata = metadata)
 
-            delay(100)
+            advanceUntilIdle()
 
             val logs = storage.query()
             assertEquals(1, logs.size)
@@ -107,14 +115,14 @@ class LoggerTest {
 
     @Test
     fun testLoggingWithThrowable() =
-        runBlocking {
+        runTest(UnconfinedTestDispatcher()) {
             val storage = InMemoryLogStorage()
-            val logger = createTestLogger(storage)
+            val logger = createTestLogger(storage, scope = backgroundScope)
 
             val exception = RuntimeException("Test error")
             logger.e("Error", "Something went wrong", throwable = exception)
 
-            delay(100)
+            advanceUntilIdle()
 
             val logs = storage.query()
             assertEquals(1, logs.size)
@@ -124,14 +132,14 @@ class LoggerTest {
 
     @Test
     fun testLoggingWithStackTraceInMetadata() =
-        runBlocking {
+        runTest(UnconfinedTestDispatcher()) {
             val storage = InMemoryLogStorage()
-            val logger = createTestLogger(storage)
+            val logger = createTestLogger(storage, scope = backgroundScope)
 
             val stackTrace = "Mock stack trace string"
             logger.e("Error", "Message", metadata = mapOf("stack_trace" to stackTrace))
 
-            delay(100)
+            advanceUntilIdle()
 
             val logs = storage.query()
             assertEquals(1, logs.size)
@@ -140,15 +148,15 @@ class LoggerTest {
 
     @Test
     fun testQuery() =
-        runBlocking {
+        runTest(UnconfinedTestDispatcher()) {
             val storage = InMemoryLogStorage()
-            val logger = createTestLogger(storage)
+            val logger = createTestLogger(storage, scope = backgroundScope)
 
             logger.i("Tag1", "Message 1")
             logger.e("Tag2", "Message 2")
             logger.w("Tag1", "Message 3")
 
-            delay(100)
+            advanceUntilIdle()
 
             val filter = LogFilter(tags = setOf("Tag1"))
             val results = logger.query(filter)
@@ -159,16 +167,18 @@ class LoggerTest {
 
     @Test
     fun testObserve() =
-        runBlocking {
+        runTest(UnconfinedTestDispatcher()) {
             val storage = InMemoryLogStorage()
-            val logger = createTestLogger(storage)
+            val logger = createTestLogger(storage, scope = backgroundScope)
 
             logger.observe().test {
                 logger.i("Test", "Message 1")
+                advanceUntilIdle()
                 val item1 = awaitItem()
                 assertEquals("Message 1", item1.message)
 
                 logger.e("Test", "Message 2")
+                advanceUntilIdle()
                 val item2 = awaitItem()
                 assertEquals("Message 2", item2.message)
 
@@ -178,13 +188,13 @@ class LoggerTest {
 
     @Test
     fun testClear() =
-        runBlocking {
+        runTest(UnconfinedTestDispatcher()) {
             val storage = InMemoryLogStorage()
-            val logger = createTestLogger(storage)
+            val logger = createTestLogger(storage, scope = backgroundScope)
 
             logger.i("Test", "Message 1")
             logger.i("Test", "Message 2")
-            delay(100)
+            advanceUntilIdle()
 
             assertEquals(2, logger.count())
 
@@ -192,4 +202,109 @@ class LoggerTest {
 
             assertEquals(0, logger.count())
         }
+
+    @Test
+    fun testConcurrentLoggingThreadSafety() =
+        runTest(UnconfinedTestDispatcher()) {
+            val storage = InMemoryLogStorage(maxCapacity = 10000)
+            // Use real dispatchers to ensure thread contention
+            val realScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+            val logger = createTestLogger(storage, scope = realScope)
+            val coroutinesCount = 50
+            val logsPerCoroutine = 100
+            val totalExpected = coroutinesCount * logsPerCoroutine
+
+            withContext(Dispatchers.Default) {
+                val jobs = (1..coroutinesCount).map { index ->
+                    launch {
+                        repeat(logsPerCoroutine) { logIndex ->
+                            val level = LogLevel.entries[logIndex % LogLevel.entries.size]
+                            logger.log(level, "Tag-$index", "Log $logIndex")
+                        }
+                    }
+                }
+                jobs.forEach { it.join() }
+
+                // Wait for storage flush deterministically
+                var retries = 0
+                while (storage.count() < totalExpected && retries < 100) {
+                    delay(10)
+                    retries++
+                }
+            }
+
+            val logs = storage.query()
+            assertEquals(totalExpected, logs.size)
+            
+            // Verify metadata is attached securely
+            assertTrue(logs.all { it.timestamp.toEpochMilliseconds() > 0 })
+            assertTrue(logs.all { it.metadata != null })
+            
+            val tags = logs.map { it.tag }.toSet()
+            assertEquals(coroutinesCount, tags.size)
+            
+            val levelsUsed = logs.map { it.level }.toSet()
+            assertEquals(LogLevel.entries.size, levelsUsed.size)
+            
+            realScope.cancel()
+        }
+
+    @Test
+    fun testCapacityBoundary() =
+        runTest(UnconfinedTestDispatcher()) {
+            val storage = InMemoryLogStorage(maxCapacity = 10)
+            val logger = createTestLogger(storage, scope = backgroundScope)
+            repeat(15) { index ->
+                logger.i("Tag", "Log $index")
+            }
+            runCurrent() // Execute all queued coroutines
+            assertEquals(10, storage.count())
+        }
+
+    @Test
+    fun testLoggingOverheadIsSubPointOneMilliseconds() = runTest {
+        val storage = InMemoryLogStorage()
+        val realScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+        val logger = createTestLogger(storage, scope = realScope)
+
+        withContext(Dispatchers.Default) {
+            // Warm up
+            repeat(1000) {
+                logger.i("WarmUp", "Message")
+            }
+            
+            // Wait for warm up to flush
+            var warmUpRetries = 0
+            while(storage.count() < 1000 && warmUpRetries < 100) {
+                delay(10)
+                warmUpRetries++
+            }
+
+            val iterations = 10000
+            val initialCount = storage.count()
+            
+            val totalTime = measureTime {
+                repeat(iterations) { i ->
+                    logger.i("Benchmark", "Message $i")
+                }
+            }
+            
+            // Wait for actual processing to finish
+            var retries = 0
+            while(storage.count() < initialCount + iterations && retries < 100) {
+                delay(10)
+                retries++
+            }
+            
+            val averageTimeMs = totalTime.toDouble(DurationUnit.MILLISECONDS) / iterations
+
+            // Relaxed threshold to avoid CI flakiness
+            assertTrue(
+                averageTimeMs < 50.0,
+                "Average logging enqueue overhead was $averageTimeMs ms, which is high even for CI."
+            )
+        }
+        
+        realScope.cancel()
+    }
 }

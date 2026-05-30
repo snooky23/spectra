@@ -9,6 +9,7 @@ import app.cash.turbine.test
 import com.spectra.logger.feature.logs.model.LogEntry
 import com.spectra.logger.feature.logs.model.LogLevel
 import com.spectra.logger.feature.logs.storage.InMemoryLogStorage
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
 import kotlin.test.Test
@@ -29,51 +30,49 @@ class FilterEngineRepositoryTest {
 
     @Test
     fun testStatisticsAggregation() =
-        runTest {
+        runTest(UnconfinedTestDispatcher()) {
             val storage = InMemoryLogStorage()
-            val repository = FilterEngineRepositoryImpl(storage)
+            val repository = FilterEngineRepositoryImpl(storage, UnconfinedTestDispatcher())
 
             // Seed some data
             storage.add(createEntry("1", 1000L, LogLevel.INFO))
             storage.add(createEntry("2", 1500L, LogLevel.ERROR))
             storage.add(createEntry("3", 65000L, LogLevel.INFO)) // Next bucket (1 min = 60000ms)
 
-            repository.startObserving(this)
+            try {
+                repository.startObserving(backgroundScope)
 
-            repository.statistics.test {
-                // Skip the initial empty state
-                val initialState = awaitItem()
-                assertEquals(0, initialState.totalLogs)
+                repository.statistics.test {
+                    // With UnconfinedTestDispatcher, the initially seeded logs are processed immediately
+                    val stats = awaitItem()
 
-                // Wait for the initially seeded logs to be processed
-                val stats = awaitItem()
+                    assertEquals(3, stats.totalLogs)
+                    assertEquals(2, stats.levelCounts[LogLevel.INFO])
+                    assertEquals(1, stats.levelCounts[LogLevel.ERROR])
 
-                assertEquals(3, stats.totalLogs)
-                assertEquals(2, stats.levelCounts[LogLevel.INFO])
-                assertEquals(1, stats.levelCounts[LogLevel.ERROR])
+                    // Bucket 1 (0ms) has 2 logs
+                    assertEquals(0L, stats.timeline[0].timestamp)
+                    assertEquals(1, stats.timeline[0].counts[LogLevel.INFO])
+                    assertEquals(1, stats.timeline[0].counts[LogLevel.ERROR])
 
-                // Bucket 1 (0ms) has 2 logs
-                assertEquals(0L, stats.timeline[0].timestamp)
-                assertEquals(1, stats.timeline[0].counts[LogLevel.INFO])
-                assertEquals(1, stats.timeline[0].counts[LogLevel.ERROR])
+                    // Bucket 2 (60000ms) has 1 log
+                    assertEquals(60000L, stats.timeline[1].timestamp)
+                    assertEquals(1, stats.timeline[1].counts[LogLevel.INFO])
 
-                // Bucket 2 (60000ms) has 1 log
-                assertEquals(60000L, stats.timeline[1].timestamp)
-                assertEquals(1, stats.timeline[1].counts[LogLevel.INFO])
+                    // Add new log dynamically
+                    storage.add(createEntry("4", 120000L, LogLevel.WARNING)) // Next next bucket
 
-                // Add new log dynamically
-                storage.add(createEntry("4", 120000L, LogLevel.WARNING)) // Next next bucket
+                    val newStats = awaitItem()
+                    assertEquals(4, newStats.totalLogs)
+                    assertEquals(1, newStats.levelCounts[LogLevel.WARNING])
+                    assertEquals(3, newStats.timeline.size)
+                    assertEquals(120000L, newStats.timeline[2].timestamp)
+                    assertEquals(1, newStats.timeline[2].counts[LogLevel.WARNING])
 
-                val newStats = awaitItem()
-                assertEquals(4, newStats.totalLogs)
-                assertEquals(1, newStats.levelCounts[LogLevel.WARNING])
-                assertEquals(3, newStats.timeline.size)
-                assertEquals(120000L, newStats.timeline[2].timestamp)
-                assertEquals(1, newStats.timeline[2].counts[LogLevel.WARNING])
-
-                cancelAndIgnoreRemainingEvents()
+                    cancelAndIgnoreRemainingEvents()
+                }
+            } finally {
+                repository.stopObserving()
             }
-
-            repository.stopObserving()
         }
 }

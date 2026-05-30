@@ -34,6 +34,9 @@ data class LoggerConfiguration(
 data class StorageConfiguration(
     val maxCapacity: Int = 10_000,
     val enablePersistence: Boolean = false,
+    val directoryPath: String? = null,
+    val flushThreshold: Int = 50,
+    val maxFileSizeBytes: Long = 50_000_000L,
     val fileLogLevel: LogLevel = LogLevel.DEBUG,
 )
 
@@ -125,12 +128,18 @@ class LoggerConfigurationBuilder {
 class StorageConfigurationBuilder(
     var maxCapacity: Int = 10_000,
     var enablePersistence: Boolean = false,
+    var directoryPath: String? = null,
+    var flushThreshold: Int = 50,
+    var maxFileSizeBytes: Long = 50_000_000L,
     var fileLogLevel: LogLevel = LogLevel.DEBUG,
 ) {
     internal fun build(): StorageConfiguration =
         StorageConfiguration(
             maxCapacity = maxCapacity,
             enablePersistence = enablePersistence,
+            directoryPath = directoryPath,
+            flushThreshold = flushThreshold,
+            maxFileSizeBytes = maxFileSizeBytes,
             fileLogLevel = fileLogLevel,
         )
 }

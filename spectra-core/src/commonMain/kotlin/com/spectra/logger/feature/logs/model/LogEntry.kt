@@ -6,6 +6,7 @@ import com.spectra.logger.feature.network.model.NetworkLogFilter
 import com.spectra.logger.core.model.*
 
 import kotlinx.datetime.Instant
+import kotlinx.serialization.Serializable
 
 /**
  * Represents a single log entry in the system.
@@ -20,6 +21,7 @@ import kotlinx.datetime.Instant
  * @property source Package/Bundle ID where the log originated (auto-detected)
  * @property sourceType Type of source (APP, SDK, PLUGIN) - auto-detected
  */
+@Serializable
 data class LogEntry(
     val id: String,
     val timestamp: Instant,

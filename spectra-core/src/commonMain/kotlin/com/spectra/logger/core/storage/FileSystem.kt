@@ -11,7 +11,7 @@ import com.spectra.logger.core.model.*
  * This expect/actual pattern provides platform-specific file operations
  * while maintaining a common interface.
  */
-expect class FileSystem {
+expect class FileSystem(directoryPath: String) {
     /**
      * Write text content to a file.
      *
