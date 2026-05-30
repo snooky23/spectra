@@ -69,7 +69,16 @@ import SpectraLogger
 SpectraLogger.shared.d(tag: "Auth", message: "User logged in", throwable: nil, metadata: [:])
 ```
 
-### 2. Show the Log Viewer (UI SDK)
+### 2. Export Logs (JSON Lines)
+
+```kotlin
+// Combine all tracked logs into a single shareable .jsonl file
+val exportPath = SpectraLogger.exportLogs()
+// On Android: Use FileProvider to share `exportPath` via Intent
+// On iOS: Pass `exportPath` directly to UIActivityViewController
+```
+
+### 3. Show the Log Viewer (UI SDK)
 
 **Android (Compose):**
 ```kotlin
