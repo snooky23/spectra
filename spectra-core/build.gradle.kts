@@ -99,6 +99,7 @@ kotlin {
                 implementation(libs.kotlin.test)
                 implementation(libs.kotlinx.coroutines.test)
                 implementation(libs.turbine)
+                implementation(libs.ktor.client.mock)
             }
         }
 
@@ -116,6 +117,7 @@ kotlin {
         val androidHostTest by getting {
             dependencies {
                 implementation(libs.junit)
+                implementation(libs.mockwebserver)
             }
         }
 

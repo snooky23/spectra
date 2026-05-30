@@ -19,6 +19,10 @@ import com.spectra.logger.feature.logs.storage.LogStorage
 import com.spectra.logger.feature.network.storage.NetworkLogStorage
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 /**
  * Main entry point for the Spectra Logger framework.
@@ -174,6 +178,37 @@ object SpectraLogger {
         throwable: Throwable? = null,
         metadata: Map<String, String>? = null,
     ) = logger.f(tag, message, throwable, metadata)
+
+    private val exceptionHandler = kotlinx.coroutines.CoroutineExceptionHandler { _, throwable ->
+        // Silently swallow network storage exceptions to prevent app crashes
+        // but log them to the local console for debugging
+        println("SpectraLogger Network Storage Error: ${throwable.message}")
+    }
+
+    private var ioScope = CoroutineScope(SupervisorJob() + Dispatchers.Default + exceptionHandler)
+    
+    /**
+     * Internal setter for testing
+     */
+    internal fun setCoroutineScopeForTesting(scope: CoroutineScope) {
+        ioScope = scope
+    }
+
+    /**
+     * Internal reset for testing
+     */
+    internal fun resetCoroutineScopeForTesting() {
+        ioScope = CoroutineScope(SupervisorJob() + Dispatchers.Default + exceptionHandler)
+    }
+    
+    /**
+     * Log a network event without blocking.
+     */
+    fun logNetwork(entry: NetworkLogEntry) {
+        ioScope.launch {
+            networkStorage.add(entry)
+        }
+    }
 
     /**
      * Query stored logs.
