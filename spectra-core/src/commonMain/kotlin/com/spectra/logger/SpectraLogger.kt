@@ -12,6 +12,8 @@ import com.spectra.logger.feature.logs.model.LogEntry
 import com.spectra.logger.feature.logs.model.LogFilter
 import com.spectra.logger.feature.network.model.NetworkLogEntry
 import com.spectra.logger.feature.logs.storage.InMemoryLogStorage
+import com.spectra.logger.feature.logs.storage.FileLogStorage
+import com.spectra.logger.core.storage.FileSystem
 import com.spectra.logger.feature.network.storage.InMemoryNetworkLogStorage
 import com.spectra.logger.feature.logs.storage.LogStorage
 import com.spectra.logger.feature.network.storage.NetworkLogStorage
@@ -247,9 +249,16 @@ object SpectraLogger {
         val newConfig = LoggerConfigurationBuilder().apply(block).build()
         configAtomic.value = newConfig
 
-        // Update capacity of existing storages or recreate them if they are not the expected types
         val currentLogStorage = logStorageAtomic.value
-        if (currentLogStorage is InMemoryLogStorage) {
+        if (newConfig.logStorageConfig.enablePersistence && newConfig.logStorageConfig.directoryPath != null) {
+            val fileSystem = FileSystem(newConfig.logStorageConfig.directoryPath!!)
+            logStorageAtomic.value = FileLogStorage(
+                fileSystem = fileSystem,
+                maxFileSize = newConfig.logStorageConfig.maxFileSizeBytes ?: FileLogStorage.DEFAULT_MAX_FILE_SIZE,
+                flushThreshold = newConfig.logStorageConfig.flushThreshold ?: 50,
+                maxCapacity = newConfig.logStorageConfig.maxCapacity
+            )
+        } else if (currentLogStorage is InMemoryLogStorage) {
             currentLogStorage.updateCapacity(newConfig.logStorageConfig.maxCapacity)
         } else {
             logStorageAtomic.value = InMemoryLogStorage(maxCapacity = newConfig.logStorageConfig.maxCapacity)

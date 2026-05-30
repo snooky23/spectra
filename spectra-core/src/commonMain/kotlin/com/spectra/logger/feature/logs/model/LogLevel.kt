@@ -5,10 +5,13 @@ import com.spectra.logger.core.model.SourceType
 import com.spectra.logger.feature.network.model.NetworkLogFilter
 import com.spectra.logger.core.model.*
 
+import kotlinx.serialization.Serializable
+
 /**
  * Severity levels for log entries.
  * Ordered from least to most severe.
  */
+@Serializable
 enum class LogLevel(val priority: Int) {
     VERBOSE(0),
     DEBUG(1),

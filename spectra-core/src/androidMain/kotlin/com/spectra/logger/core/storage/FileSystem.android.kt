@@ -5,20 +5,17 @@ import com.spectra.logger.core.model.SourceType
 import com.spectra.logger.feature.network.model.NetworkLogFilter
 import com.spectra.logger.core.model.*
 
-import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 
 /**
- * Android implementation of FileSystem using app's internal storage.
- *
- * Files are stored in Context.filesDir which is private to the app.
+ * Android implementation of FileSystem using provided directory path.
  */
-actual class FileSystem(private val context: Context) {
+actual class FileSystem actual constructor(private val directoryPath: String) {
     private val baseDir: File
         get() =
-            File(context.filesDir, "spectra_logs").apply {
+            File(directoryPath).apply {
                 if (!exists()) mkdirs()
             }
 
