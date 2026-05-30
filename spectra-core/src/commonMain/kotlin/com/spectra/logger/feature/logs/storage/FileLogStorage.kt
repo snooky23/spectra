@@ -192,6 +192,35 @@ class FileLogStorage(
         }
     }
 
+    override suspend fun exportLogs(): String? {
+        flush()
+        initialized.await()
+
+        return withContext(backgroundDispatcher) {
+            try {
+                val exportFileName = "export_${com.spectra.logger.core.utils.SpectraTime.now()}.jsonl"
+                
+                // If it exists, delete it first (unlikely due to timestamp)
+                if (fileSystem.exists(exportFileName)) {
+                    fileSystem.delete(exportFileName)
+                }
+
+                // Write all log files chronologically (oldest first)
+                for (i in maxOf(0, currentFileIndex - maxFiles + 1)..currentFileIndex) {
+                    val fileName = "logs_$i.jsonl"
+                    if (!fileSystem.exists(fileName)) continue
+
+                    val content = fileSystem.readText(fileName) ?: continue
+                    fileSystem.writeText(exportFileName, content, append = true)
+                }
+                
+                fileSystem.getAbsolutePath(exportFileName)
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
     override fun observe(filter: LogFilter): Flow<LogEntry> = logFlow.filter { filter.matches(it) }
 
     override suspend fun clear() {

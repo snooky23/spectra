@@ -1,0 +1,3 @@
+{"id":"4c440496-68bb-469c-9c55-cd0a5d26917c","timestamp":"2026-05-30T05:51:45.538710Z","level":"INFO","tag":"Test","message":"Log 1","source":"App"}
+{"id":"2e6b8462-f9ad-4429-a811-4cf1c8250f15","timestamp":"2026-05-30T05:51:45.539046Z","level":"INFO","tag":"Test","message":"Log 2","source":"App"}
+{"id":"888f8e61-914a-4960-9d1b-17fc28a3e334","timestamp":"2026-05-30T05:51:45.539313Z","level":"INFO","tag":"Test","message":"Log 3","source":"App"}

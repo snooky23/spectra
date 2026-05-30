@@ -64,4 +64,12 @@ expect class FileSystem(directoryPath: String) {
      * @return List of file names in the directory
      */
     suspend fun listFiles(path: String): List<String>
+
+    /**
+     * Get the absolute native path for a file.
+     *
+     * @param path File path relative to app storage directory
+     * @return The absolute path as a string
+     */
+    fun getAbsolutePath(path: String): String
 }

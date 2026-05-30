@@ -198,4 +198,10 @@ class Logger(
      * Clear all logs.
      */
     suspend fun clear() = storage.clear()
+
+    /**
+     * Export all log entries to a single file and return its absolute path.
+     * @return Absolute path to the exported `.jsonl` file, or null if empty/failed.
+     */
+    suspend fun exportLogs(): String? = storage.exportLogs()
 }
