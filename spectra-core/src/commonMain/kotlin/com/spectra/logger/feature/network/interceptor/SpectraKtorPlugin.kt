@@ -15,6 +15,7 @@ import io.ktor.http.content.ByteArrayContent
 import io.ktor.http.content.OutgoingContent
 import io.ktor.util.toMap
 import kotlinx.coroutines.CancellationException
+import kotlin.time.TimeSource
 
 class SpectraKtorConfig {
     /**
@@ -32,6 +33,7 @@ class SpectraKtorConfig {
 val SpectraKtorPlugin = createClientPlugin("SpectraKtorPlugin", ::SpectraKtorConfig) {
     on(Send) { request ->
         val startTime = SpectraTime.now()
+        val startMark = TimeSource.Monotonic.markNow()
         val requestId = IdGenerator.generate()
         
         // Attempt to safely extract the request body without consuming a stream
@@ -56,8 +58,7 @@ val SpectraKtorPlugin = createClientPlugin("SpectraKtorPlugin", ::SpectraKtorCon
             // Proceed with the actual network call
             val call = proceed(request)
             val response = call.response
-            val endTime = SpectraTime.now()
-            val durationMs = kotlin.math.max(0L, endTime.toEpochMilliseconds() - startTime.toEpochMilliseconds())
+            val durationMs = startMark.elapsedNow().inWholeMilliseconds
             
             val responseHeaders = response.headers.entries().associate { 
                 it.key to it.value.joinToString(", ") 
@@ -86,10 +87,8 @@ val SpectraKtorPlugin = createClientPlugin("SpectraKtorPlugin", ::SpectraKtorCon
             SpectraLogger.logNetwork(logEntry)
             return@on call
         } catch (e: Throwable) {
-            if (e is CancellationException) throw e
-            
-            val endTime = SpectraTime.now()
-            val durationMs = kotlin.math.max(0L, endTime.toEpochMilliseconds() - startTime.toEpochMilliseconds())
+            val isCancelled = e is CancellationException
+            val durationMs = startMark.elapsedNow().inWholeMilliseconds
             
             val logEntry = NetworkLogEntry(
                 id = requestId,
@@ -102,7 +101,7 @@ val SpectraKtorPlugin = createClientPlugin("SpectraKtorPlugin", ::SpectraKtorCon
                 responseHeaders = emptyMap(),
                 responseBody = null,
                 duration = durationMs,
-                error = e.stackTraceToString(),
+                error = if (isCancelled) "Cancelled" else e.stackTraceToString(),
                 source = "ktor",
                 sourceType = SourceType.PLUGIN
             )

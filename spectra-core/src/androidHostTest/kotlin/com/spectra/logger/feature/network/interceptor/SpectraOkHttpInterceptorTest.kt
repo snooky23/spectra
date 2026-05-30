@@ -54,6 +54,7 @@ class SpectraOkHttpInterceptorTest {
             MockResponse()
                 .setResponseCode(200)
                 .setBody("Success Response Body")
+                .addHeader("Content-Type", "text/plain")
                 .addHeader("X-Response-Test", "ResponseValue")
         )
 
