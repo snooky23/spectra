@@ -54,7 +54,7 @@ data class NetworkLogEntry(
         get() = error != null || responseCode == null || responseCode >= 400
 
     companion object {
-        const val MAX_BODY_SIZE = 10_000 // 10KB max for body storage
+        const val MAX_BODY_SIZE = 250_000 // 250KB max for body storage
 
         /**
          * Truncates body content if it exceeds max size.
