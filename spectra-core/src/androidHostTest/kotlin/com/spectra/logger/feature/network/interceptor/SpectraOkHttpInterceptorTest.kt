@@ -206,4 +206,38 @@ class SpectraOkHttpInterceptorTest {
         val averageTimeMs = totalTime.toDouble() / iterations
         assertTrue(averageTimeMs < 5.0, "Average overhead was ${averageTimeMs}ms, should be < 5.0ms")
     }
+
+    @Test
+    fun `test ignore list successfully drops traffic without logging`() = runTest(UnconfinedTestDispatcher()) {
+        SpectraLogger.setCoroutineScopeForTesting(this)
+        SpectraLogger.clearNetwork()
+        
+        val ignoreClient = OkHttpClient.Builder()
+            .addInterceptor(SpectraOkHttpInterceptor(
+                ignoreTokens = listOf("analytics.com", "telemetry"),
+                ignoreRegex = listOf(Regex(".*\\/secret\\/.*"))
+            ))
+            .build()
+            
+        mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody("OK"))
+        mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody("OK"))
+        mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody("OK"))
+        mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody("OK"))
+        
+        // Should be ignored due to token
+        ignoreClient.newCall(Request.Builder().url(mockWebServer.url("/track?host=analytics.com")).build()).execute()
+        ignoreClient.newCall(Request.Builder().url(mockWebServer.url("/telemetry/v1")).build()).execute()
+        
+        // Should be ignored due to regex
+        ignoreClient.newCall(Request.Builder().url(mockWebServer.url("/secret/keys")).build()).execute()
+        
+        // Should be logged
+        ignoreClient.newCall(Request.Builder().url(mockWebServer.url("/users")).build()).execute()
+        
+        advanceUntilIdle()
+        
+        val logs = SpectraLogger.queryNetwork()
+        assertEquals(1, logs.size)
+        assertTrue(logs.first().url.contains("/users"))
+    }
 }
