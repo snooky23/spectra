@@ -1,0 +1,140 @@
+diff --git a/spectra-core/src/androidHostTest/kotlin/com/spectra/logger/feature/network/interceptor/SpectraOkHttpInterceptorTest.kt b/spectra-core/src/androidHostTest/kotlin/com/spectra/logger/feature/network/interceptor/SpectraOkHttpInterceptorTest.kt
+index 813ff37..f5d9b2c 100644
+--- a/spectra-core/src/androidHostTest/kotlin/com/spectra/logger/feature/network/interceptor/SpectraOkHttpInterceptorTest.kt
++++ b/spectra-core/src/androidHostTest/kotlin/com/spectra/logger/feature/network/interceptor/SpectraOkHttpInterceptorTest.kt
+@@ -206,4 +206,38 @@ class SpectraOkHttpInterceptorTest {
+         val averageTimeMs = totalTime.toDouble() / iterations
+         assertTrue(averageTimeMs < 5.0, "Average overhead was ${averageTimeMs}ms, should be < 5.0ms")
+     }
++
++    @Test
++    fun `test ignore list successfully drops traffic without logging`() = runTest(UnconfinedTestDispatcher()) {
++        SpectraLogger.setCoroutineScopeForTesting(this)
++        SpectraLogger.clearNetwork()
++        
++        val ignoreClient = OkHttpClient.Builder()
++            .addInterceptor(SpectraOkHttpInterceptor(
++                ignoreTokens = listOf("analytics.com", "telemetry"),
++                ignoreRegex = listOf(Regex(".*\\/secret\\/.*"))
++            ))
++            .build()
++            
++        mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody("OK"))
++        mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody("OK"))
++        mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody("OK"))
++        mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody("OK"))
++        
++        // Should be ignored due to token
++        ignoreClient.newCall(Request.Builder().url(mockWebServer.url("/track?host=analytics.com")).build()).execute()
++        ignoreClient.newCall(Request.Builder().url(mockWebServer.url("/telemetry/v1")).build()).execute()
++        
++        // Should be ignored due to regex
++        ignoreClient.newCall(Request.Builder().url(mockWebServer.url("/secret/keys")).build()).execute()
++        
++        // Should be logged
++        ignoreClient.newCall(Request.Builder().url(mockWebServer.url("/users")).build()).execute()
++        
++        advanceUntilIdle()
++        
++        val logs = SpectraLogger.queryNetwork()
++        assertEquals(1, logs.size)
++        assertTrue(logs.first().url.contains("/users"))
++    }
+ }
+diff --git a/spectra-core/src/androidMain/kotlin/com/spectra/logger/feature/network/interceptor/SpectraOkHttpInterceptor.kt b/spectra-core/src/androidMain/kotlin/com/spectra/logger/feature/network/interceptor/SpectraOkHttpInterceptor.kt
+index 50cfd39..9b74248 100644
+--- a/spectra-core/src/androidMain/kotlin/com/spectra/logger/feature/network/interceptor/SpectraOkHttpInterceptor.kt
++++ b/spectra-core/src/androidMain/kotlin/com/spectra/logger/feature/network/interceptor/SpectraOkHttpInterceptor.kt
+@@ -12,11 +12,21 @@ import okhttp3.Response
+ import okio.Buffer
+ 
+ class SpectraOkHttpInterceptor(
+-    private val maxBodySize: Long = 250_000L
++    private val maxBodySize: Long = 250_000L,
++    private val ignoreTokens: List<String> = emptyList(),
++    private val ignoreRegex: List<Regex> = emptyList()
+ ) : Interceptor {
+ 
+     override fun intercept(chain: Interceptor.Chain): Response {
+         val request = chain.request()
++        val urlString = request.url.toString()
++        val shouldIgnore = ignoreTokens.any { urlString.contains(it, ignoreCase = true) } ||
++                           ignoreRegex.any { it.containsMatchIn(urlString) }
++                           
++        if (shouldIgnore) {
++            return chain.proceed(request)
++        }
++
+         val requestId = IdGenerator.generate()
+         val startTime = SpectraTime.now()
+         val startNano = System.nanoTime()
+diff --git a/spectra-core/src/commonMain/kotlin/com/spectra/logger/feature/network/interceptor/SpectraKtorPlugin.kt b/spectra-core/src/commonMain/kotlin/com/spectra/logger/feature/network/interceptor/SpectraKtorPlugin.kt
+index e2f269a..d108d96 100644
+--- a/spectra-core/src/commonMain/kotlin/com/spectra/logger/feature/network/interceptor/SpectraKtorPlugin.kt
++++ b/spectra-core/src/commonMain/kotlin/com/spectra/logger/feature/network/interceptor/SpectraKtorPlugin.kt
+@@ -24,7 +24,15 @@ class SpectraKtorConfig {
+      */
+     var maxBodySize: Long = 250_000L
+     
+-    // Additional configuration properties for future stories (e.g. ignoreList)
++    /**
++     * List of string tokens. If a request URL contains any of these tokens, the request is ignored.
++     */
++    var ignoreTokens: List<String> = emptyList()
++
++    /**
++     * List of Regex patterns. If a request URL matches any of these regexes, the request is ignored.
++     */
++    var ignoreRegex: List<Regex> = emptyList()
+ }
+ 
+ /**
+@@ -32,6 +40,14 @@ class SpectraKtorConfig {
+  */
+ val SpectraKtorPlugin = createClientPlugin("SpectraKtorPlugin", ::SpectraKtorConfig) {
+     on(Send) { request ->
++        val urlString = request.url.toString()
++        val shouldIgnore = pluginConfig.ignoreTokens.any { urlString.contains(it, ignoreCase = true) } ||
++                           pluginConfig.ignoreRegex.any { it.containsMatchIn(urlString) }
++                           
++        if (shouldIgnore) {
++            return@on proceed(request)
++        }
++
+         val startTime = SpectraTime.now()
+         val startMark = TimeSource.Monotonic.markNow()
+         val requestId = IdGenerator.generate()
+diff --git a/spectra-core/src/commonTest/kotlin/com/spectra/logger/feature/network/interceptor/SpectraKtorPluginTest.kt b/spectra-core/src/commonTest/kotlin/com/spectra/logger/feature/network/interceptor/SpectraKtorPluginTest.kt
+index c601b06..48ca693 100644
+--- a/spectra-core/src/commonTest/kotlin/com/spectra/logger/feature/network/interceptor/SpectraKtorPluginTest.kt
++++ b/spectra-core/src/commonTest/kotlin/com/spectra/logger/feature/network/interceptor/SpectraKtorPluginTest.kt
+@@ -139,4 +139,29 @@ class SpectraKtorPluginTest {
+         val averageTimeMs = totalTime.inWholeNanoseconds.toDouble() / iterations / 1_000_000.0
+         assertTrue(averageTimeMs < 5.0, "Average overhead was ${averageTimeMs}ms, should be < 5.0ms")
+     }
++
++    @Test
++    fun testIgnoreListDropsTraffic() = runTest {
++        val mockEngine = MockEngine { respond(content = "OK", status = HttpStatusCode.OK) }
++        val client = HttpClient(mockEngine) {
++            install(SpectraKtorPlugin) {
++                ignoreTokens = listOf("analytics.com", "telemetry")
++                ignoreRegex = listOf(Regex(".*\\/secret\\/.*"))
++            }
++        }
++
++        // Should be ignored due to token
++        client.get("https://analytics.com/track")
++        client.get("https://api.myapp.com/telemetry/v1")
++        
++        // Should be ignored due to regex
++        client.get("https://api.myapp.com/secret/keys")
++        
++        // Should be logged
++        client.get("https://api.myapp.com/users")
++        
++        val logs = SpectraLogger.queryNetwork()
++        assertEquals(1, logs.size)
++        assertEquals("https://api.myapp.com/users", logs.first().url)
++    }
+ }

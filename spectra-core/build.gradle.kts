@@ -9,7 +9,6 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.skie)
     alias(libs.plugins.vanniktech.publish)
     id("jacoco")
 }
