@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import com.spectra.logger.core.utils.ioDispatcher
 
 /**
  * Core logger implementation.
@@ -31,7 +32,7 @@ class Logger(
     private val minLevel: LogLevel = LogLevel.VERBOSE,
     scope: CoroutineScope? = null,
 ) {
-    private val scope: CoroutineScope = scope ?: CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val scope: CoroutineScope = scope ?: CoroutineScope(SupervisorJob() + ioDispatcher)
 
     /**
      * Log a verbose message.
@@ -172,17 +173,14 @@ class Logger(
             )
 
         scope.launch {
-            storage.add(entry)
+            // Run local storage concurrently with sinks so it doesn't block plugin execution
+            launch { storage.add(entry) }
             
-            // Fan-out to custom sinks with isolated error handling
+            // Fan-out to custom sinks sequentially within this coroutine to prevent launch explosion
             sinks.forEach { sink ->
-                launch {
-                    runCatching {
-                        sink.log(entry)
-                    }.onFailure { e ->
-                        println("SpectraLogger: Custom sink ${sink::class.simpleName} failed to log entry: ${e.message}")
-                    }
-                }
+                runCatching {
+                    sink.log(entry)
+                } // Silently swallow to prevent stdout pollution and app crashes
             }
         }
     }
