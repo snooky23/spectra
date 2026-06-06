@@ -40,7 +40,7 @@ class PluginArchitectureTest {
         }
 
         SpectraLogger.configure {
-            addLogSink(customSink)
+            addSink(customSink)
         }
 
         SpectraLogger.d("TestTag", "Hello custom sink!")
@@ -62,7 +62,7 @@ class PluginArchitectureTest {
         }
 
         SpectraLogger.configure {
-            addNetworkLogSink(customSink)
+            addNetworkSink(customSink)
         }
 
         val dummyNetworkEntry = NetworkLogEntry(
@@ -105,8 +105,8 @@ class PluginArchitectureTest {
         }
 
         SpectraLogger.configure {
-            addLogSink(crashingSink)
-            addLogSink(stableSink)
+            addSink(crashingSink)
+            addSink(stableSink)
         }
 
         // This should NOT crash the test suite
