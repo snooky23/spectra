@@ -117,14 +117,14 @@ class LoggerConfigurationBuilder {
     /**
      * Register a custom sink to receive standard logs in real-time.
      */
-    fun addLogSink(sink: LogSink) {
+    fun addSink(sink: LogSink) {
         logSinks.add(sink)
     }
 
     /**
      * Register a custom sink to receive network logs in real-time.
      */
-    fun addNetworkLogSink(sink: NetworkLogSink) {
+    fun addNetworkSink(sink: NetworkLogSink) {
         networkLogSinks.add(sink)
     }
 
