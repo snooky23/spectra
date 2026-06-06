@@ -188,3 +188,12 @@ generated-sources/
 _bmad/
 _bmad-output/
 # Note: .agents/skills/ can be tracked if you want to share installed skills with your team.
+
+# Temporary patches/scripts
+*.patch
+*.diff
+test*.kt
+test_*.kt
+*.orig
+
+

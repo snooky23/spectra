@@ -1,15 +1,5 @@
 package com.spectra.logger.core.ui.components.common
 
-import com.spectra.logger.core.ui.components.charts.*
-import com.spectra.logger.core.ui.components.pickers.*
-import com.spectra.logger.core.ui.components.effects.*
-import com.spectra.logger.core.ui.components.common.*
-
-import com.spectra.logger.core.utils.*
-import com.spectra.logger.core.model.SourceType
-import com.spectra.logger.feature.network.model.NetworkLogFilter
-import com.spectra.logger.core.model.*
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -28,9 +18,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.spectra.logger.core.model.*
+import com.spectra.logger.core.ui.components.charts.*
+import com.spectra.logger.core.ui.components.effects.*
+import com.spectra.logger.core.ui.components.pickers.*
+import com.spectra.logger.core.ui.theme.SpectraDesignTokens
+import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogLevel
 import com.spectra.logger.feature.settings.ui.AppearanceMode
-import com.spectra.logger.core.ui.theme.SpectraDesignTokens
 
 /**
  * Navigation mode for [SpectraNavBar] — controls which navigation icon is shown.

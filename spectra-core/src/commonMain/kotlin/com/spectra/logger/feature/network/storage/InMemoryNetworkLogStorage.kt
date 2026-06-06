@@ -1,11 +1,9 @@
 package com.spectra.logger.feature.network.storage
 
-import com.spectra.logger.core.utils.*
-import com.spectra.logger.core.model.SourceType
-import com.spectra.logger.feature.network.model.NetworkLogFilter
 import com.spectra.logger.core.model.*
-
+import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.network.model.NetworkLogEntry
+import com.spectra.logger.feature.network.model.NetworkLogFilter
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized

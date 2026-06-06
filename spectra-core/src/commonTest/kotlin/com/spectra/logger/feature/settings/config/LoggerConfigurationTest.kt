@@ -1,10 +1,7 @@
 package com.spectra.logger.feature.settings.config
 
-import com.spectra.logger.core.utils.*
-import com.spectra.logger.core.model.SourceType
-import com.spectra.logger.feature.network.model.NetworkLogFilter
 import com.spectra.logger.core.model.*
-
+import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogLevel
 import kotlin.test.Test
 import kotlin.test.assertEquals

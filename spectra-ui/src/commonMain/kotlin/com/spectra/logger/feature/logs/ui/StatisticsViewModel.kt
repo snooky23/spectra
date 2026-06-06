@@ -1,13 +1,10 @@
 package com.spectra.logger.feature.logs.ui
 
-import com.spectra.logger.core.utils.*
-import com.spectra.logger.core.model.SourceType
-import com.spectra.logger.feature.network.model.NetworkLogFilter
-import com.spectra.logger.core.model.*
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spectra.logger.SpectraLogger
+import com.spectra.logger.core.model.*
+import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogLevel
 import com.spectra.logger.feature.logs.statistics.DashboardStatistics
 import com.spectra.logger.feature.logs.statistics.FilterEngineRepositoryImpl

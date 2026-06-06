@@ -1,14 +1,5 @@
 package com.spectra.logger.feature.settings.ui
 
-import com.spectra.logger.core.utils.*
-import com.spectra.logger.core.model.SourceType
-import com.spectra.logger.feature.network.model.NetworkLogFilter
-import com.spectra.logger.core.model.*
-
-import com.spectra.logger.core.ui.components.charts.*
-import com.spectra.logger.core.ui.components.pickers.*
-import com.spectra.logger.core.ui.components.effects.*
-import com.spectra.logger.core.ui.components.common.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -20,6 +11,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.spectra.logger.core.model.*
+import com.spectra.logger.core.ui.components.charts.*
+import com.spectra.logger.core.ui.components.common.*
+import com.spectra.logger.core.ui.components.effects.*
+import com.spectra.logger.core.ui.components.pickers.*
+import com.spectra.logger.core.utils.*
 
 /**
  * Settings screen for configuration and log management.
@@ -134,6 +131,26 @@ fun SettingsScreen(
                             onCheckedChange = viewModel::toggleFilePersistence,
                         )
                     }
+
+                    HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
+
+                    // Max Body Size
+                    OutlinedTextField(
+                        value = uiState.maxBodySizeText,
+                        onValueChange = { viewModel.updateMaxBodySize(it) },
+                        label = { Text("Max Body Size (bytes)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                    )
+
+                    // Ignored Tokens
+                    OutlinedTextField(
+                        value = uiState.ignoredTokensText,
+                        onValueChange = { viewModel.updateIgnoredTokens(it) },
+                        label = { Text("Ignored URL Tokens (comma separated)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                    )
                 }
             }
 

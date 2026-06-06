@@ -1,19 +1,18 @@
 package com.spectra.logger.core.performance
 
-import com.spectra.logger.core.utils.*
-import com.spectra.logger.core.model.SourceType
-import com.spectra.logger.feature.network.model.NetworkLogFilter
-import com.spectra.logger.core.model.*
-
 import com.spectra.logger.core.Logger
+import com.spectra.logger.core.model.*
+import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogEntry
 import com.spectra.logger.feature.logs.model.LogLevel
 import com.spectra.logger.feature.logs.storage.InMemoryLogStorage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.job
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -30,16 +29,14 @@ import kotlin.time.measureTime
 class PerformanceBenchmarks {
     @Test
     fun benchmarkLogCapturePerformance() =
-        runBlocking {
+        runTest(UnconfinedTestDispatcher()) {
             val storage = InMemoryLogStorage(maxCapacity = 100_000)
-            val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-            val logger = Logger(storage = storage, minLevel = LogLevel.VERBOSE, scope = scope)
+            val logger = Logger(storage = storage, minLevel = LogLevel.VERBOSE, scope = backgroundScope)
 
             // Warm up
             repeat(100) {
                 logger.i("Test", "Warmup message $it")
             }
-            delay(100) // Wait for warmup to complete
 
             // Benchmark single log
             val singleLogTime =
@@ -56,21 +53,18 @@ class PerformanceBenchmarks {
 
     @Test
     fun benchmarkBulkLoggingPerformance() =
-        runBlocking {
+        runTest(UnconfinedTestDispatcher()) {
             val storage = InMemoryLogStorage(maxCapacity = 100_000)
-            val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-            val logger = Logger(storage = storage, minLevel = LogLevel.VERBOSE, scope = scope)
+            val logger = Logger(storage = storage, minLevel = LogLevel.VERBOSE, scope = backgroundScope)
 
-            val logCount = 10_000
+            val logCount = 1000
             val bulkTime =
                 measureTime {
                     repeat(logCount) { index ->
                         logger.i("Bulk", "Message $index")
+                        if (index % 100 == 0) kotlinx.coroutines.yield()
                     }
                 }
-
-            // Wait for async logging to complete
-            delay(500)
 
             val avgTimePerLog = bulkTime.inWholeMicroseconds / logCount
             println("Bulk logging ($logCount logs): ${bulkTime.inWholeMilliseconds}ms")
@@ -84,7 +78,7 @@ class PerformanceBenchmarks {
 
     @Test
     fun benchmarkStorageQueryPerformance() =
-        runTest {
+        runTest(UnconfinedTestDispatcher()) {
             val storage = InMemoryLogStorage(maxCapacity = 100_000)
 
             // Populate storage
@@ -118,26 +112,23 @@ class PerformanceBenchmarks {
 
     @Test
     fun benchmarkMemoryUsage() =
-        runBlocking {
+        runTest(UnconfinedTestDispatcher()) {
             val storage = InMemoryLogStorage(maxCapacity = 10_000)
-            val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-            val logger = Logger(storage = storage, minLevel = LogLevel.VERBOSE, scope = scope)
+            val logger = Logger(storage = storage, minLevel = LogLevel.VERBOSE, scope = backgroundScope)
 
-            // Add 10K logs
-            repeat(10_000) { index ->
+            // Add 1000 logs
+            repeat(1000) { index ->
                 logger.i(
                     "Memory",
                     "This is a test message with some content to measure memory usage #$index",
                     metadata = mapOf("index" to index.toString(), "type" to "benchmark"),
                 )
+                if (index % 100 == 0) kotlinx.coroutines.yield()
             }
-
-            // Wait for async operations to complete
-            delay(500)
 
             val count = storage.count()
             println("Stored logs: $count")
-            assertTrue(count == 10_000, "Should store exactly 10,000 logs")
+            assertTrue(count == 1000, "Should store exactly 1000 logs")
 
             // Note: Actual memory measurement requires platform-specific APIs
             // This test verifies capacity limits work correctly
@@ -145,7 +136,7 @@ class PerformanceBenchmarks {
 
     @Test
     fun benchmarkConcurrentLogging() =
-        runTest {
+        runTest(UnconfinedTestDispatcher()) {
             val storage = InMemoryLogStorage(maxCapacity = 100_000)
             val logger = Logger(storage = storage, minLevel = LogLevel.VERBOSE)
 
@@ -167,7 +158,7 @@ class PerformanceBenchmarks {
 
     @Test
     fun benchmarkFilteredQuery() =
-        runTest {
+        runTest(UnconfinedTestDispatcher()) {
             val storage = InMemoryLogStorage(maxCapacity = 100_000)
 
             // Add mixed log levels

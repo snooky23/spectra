@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.android.kotlin.multiplatform.library)
-    alias(libs.plugins.skie)
     alias(libs.plugins.vanniktech.publish)
 }
 
@@ -25,7 +24,15 @@ kotlin {
     val iosFrameworkName = "SpectraLoggerUI"
     val xcf = XCFramework(iosFrameworkName)
 
-    val iosTargets = listOf(iosX64(), iosArm64(), iosSimulatorArm64())
+    val activeArch = project.findProperty("spectra.activeArch") as? String
+    val isIosX64Enabled = activeArch == null || activeArch == "iosX64"
+    val isIosArm64Enabled = activeArch == null || activeArch == "iosArm64"
+    val isIosSimulatorArm64Enabled = activeArch == null || activeArch == "iosSimulatorArm64"
+
+    val iosTargets = mutableListOf<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>()
+    if (isIosX64Enabled) iosTargets.add(iosX64())
+    if (isIosArm64Enabled) iosTargets.add(iosArm64())
+    if (isIosSimulatorArm64Enabled) iosTargets.add(iosSimulatorArm64())
 
     iosTargets.forEach { iosTarget ->
         iosTarget.binaries.framework {

@@ -1,14 +1,5 @@
 package com.spectra.logger.feature.logs.ui
 
-import com.spectra.logger.core.utils.*
-import com.spectra.logger.core.model.SourceType
-import com.spectra.logger.feature.network.model.NetworkLogFilter
-import com.spectra.logger.core.model.*
-
-import com.spectra.logger.core.ui.components.charts.*
-import com.spectra.logger.core.ui.components.pickers.*
-import com.spectra.logger.core.ui.components.effects.*
-import com.spectra.logger.core.ui.components.common.*
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -21,9 +12,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.spectra.logger.feature.logs.model.LogLevel
-import com.spectra.logger.core.ui.components.pickers.DateTimePickerRow
+import com.spectra.logger.core.model.*
+import com.spectra.logger.core.ui.components.charts.*
+import com.spectra.logger.core.ui.components.common.*
 import com.spectra.logger.core.ui.components.common.colorForLogLevel
+import com.spectra.logger.core.ui.components.effects.*
+import com.spectra.logger.core.ui.components.pickers.*
+import com.spectra.logger.core.ui.components.pickers.DateTimePickerRow
+import com.spectra.logger.core.utils.*
+import com.spectra.logger.feature.logs.model.LogLevel
 
 /**
  * Filter bottom sheet for advanced log filtering

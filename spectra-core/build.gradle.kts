@@ -69,7 +69,15 @@ kotlin {
     val iosFrameworkName = "SpectraLogger"
     val xcf = XCFramework(iosFrameworkName)
 
-    val iosTargets = listOf(iosX64(), iosArm64(), iosSimulatorArm64())
+    val activeArch = project.findProperty("spectra.activeArch") as? String
+    val isIosX64Enabled = activeArch == null || activeArch == "iosX64"
+    val isIosArm64Enabled = activeArch == null || activeArch == "iosArm64"
+    val isIosSimulatorArm64Enabled = activeArch == null || activeArch == "iosSimulatorArm64"
+
+    val iosTargets = mutableListOf<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>()
+    if (isIosX64Enabled) iosTargets.add(iosX64())
+    if (isIosArm64Enabled) iosTargets.add(iosArm64())
+    if (isIosSimulatorArm64Enabled) iosTargets.add(iosSimulatorArm64())
 
     iosTargets.forEach { iosTarget ->
         iosTarget.binaries.framework {
@@ -84,12 +92,31 @@ kotlin {
         }
     }
 
+    // Desktop/JVM targets
+    jvm()
+    val macosTargets = listOf(macosX64(), macosArm64())
+    val linuxTargets = listOf(linuxX64(), linuxArm64())
+    val mingwTargets = listOf(mingwX64())
+
+    // Web targets
+    js {
+        browser()
+        nodejs()
+    }
+
+    @OptIn(org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+        nodejs()
+    }
+
     sourceSets {
         val commonMain by getting {
             kotlin.srcDir(generateVersionFile)
             dependencies {
                 api(libs.bundles.kotlinx)
                 api(libs.ktor.client.core)
+                api(libs.okio.core)
             }
         }
 
@@ -99,6 +126,7 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.test)
                 implementation(libs.turbine)
                 implementation(libs.ktor.client.mock)
+                implementation(libs.okio.fakefilesystem)
             }
         }
 
@@ -120,18 +148,14 @@ kotlin {
             }
         }
 
-        val iosMain by creating {
+        val nativeMain by creating {
             dependsOn(commonMain)
         }
 
-        val iosTest by creating {
-            dependsOn(commonTest)
-        }
-
-        iosTargets.forEach { target ->
-            getByName("${target.name}Main").dependsOn(iosMain)
-            getByName("${target.name}Test").dependsOn(iosTest)
-        }
+        macosTargets.forEach { getByName("${it.name}Main").dependsOn(nativeMain) }
+        linuxTargets.forEach { getByName("${it.name}Main").dependsOn(nativeMain) }
+        mingwTargets.forEach { getByName("${it.name}Main").dependsOn(nativeMain) }
+        iosTargets.forEach { getByName("${it.name}Main").dependsOn(nativeMain) }
     }
 }
 

@@ -1,10 +1,5 @@
 package com.spectra.logger.core.ui.compose
 
-import com.spectra.logger.core.utils.*
-import com.spectra.logger.core.model.SourceType
-import com.spectra.logger.feature.network.model.NetworkLogFilter
-import com.spectra.logger.core.model.*
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -30,7 +25,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import androidx.core.view.WindowCompat
+import com.spectra.logger.core.model.*
 import com.spectra.logger.core.ui.SpectraUIManager
+import com.spectra.logger.core.utils.*
 import kotlin.math.roundToInt
 
 /**

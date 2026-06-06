@@ -11,7 +11,6 @@ plugins {
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.dokka)
     alias(libs.plugins.vanniktech.publish) apply false
-    alias(libs.plugins.skie) apply false
     id("java")
 }
 
@@ -84,4 +83,8 @@ tasks.dokkaHtmlMultiModule.configure {
 
 tasks.named<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
+}
+
+plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
+    the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().ignoreScripts = false
 }

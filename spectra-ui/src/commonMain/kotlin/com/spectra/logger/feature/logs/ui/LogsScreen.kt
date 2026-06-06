@@ -1,14 +1,5 @@
 package com.spectra.logger.feature.logs.ui
 
-import com.spectra.logger.core.utils.*
-import com.spectra.logger.core.model.SourceType
-import com.spectra.logger.feature.network.model.NetworkLogFilter
-import com.spectra.logger.core.model.*
-
-import com.spectra.logger.core.ui.components.charts.*
-import com.spectra.logger.core.ui.components.pickers.*
-import com.spectra.logger.core.ui.components.effects.*
-import com.spectra.logger.core.ui.components.common.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -25,6 +16,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.spectra.logger.core.model.*
+import com.spectra.logger.core.ui.components.charts.*
+import com.spectra.logger.core.ui.components.common.*
+import com.spectra.logger.core.ui.components.effects.*
+import com.spectra.logger.core.ui.components.pickers.*
+import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogEntry
 import com.spectra.logger.feature.logs.model.LogLevel
 import kotlinx.datetime.TimeZone
@@ -181,12 +178,12 @@ private fun LogsListContent(
             )
         },
     ) { paddingValues ->
-         val horizontalPadding =
-             if (isDualPane) {
-                 com.spectra.logger.core.ui.theme.SpectraDesignTokens.ScreenHorizontalPaddingExpanded
-             } else {
-                 com.spectra.logger.core.ui.theme.SpectraDesignTokens.ScreenHorizontalPaddingCompact
-             }
+        val horizontalPadding =
+            if (isDualPane) {
+                com.spectra.logger.core.ui.theme.SpectraDesignTokens.ScreenHorizontalPaddingExpanded
+            } else {
+                com.spectra.logger.core.ui.theme.SpectraDesignTokens.ScreenHorizontalPaddingCompact
+            }
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues),
         ) {

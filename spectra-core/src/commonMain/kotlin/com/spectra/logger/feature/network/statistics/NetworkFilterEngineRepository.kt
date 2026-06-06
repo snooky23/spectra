@@ -2,6 +2,8 @@ package com.spectra.logger.feature.network.statistics
 
 import com.spectra.logger.feature.network.model.NetworkLogEntry
 import com.spectra.logger.feature.network.storage.NetworkLogStorage
+import kotlinx.atomicfu.locks.SynchronizedObject
+import kotlinx.atomicfu.locks.synchronized
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toPersistentList
@@ -30,66 +32,80 @@ class NetworkFilterEngineRepositoryImpl(
     private val networkStorage: NetworkLogStorage,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : NetworkFilterEngineRepository {
-
-    private val _statistics = MutableStateFlow(
-        NetworkDashboardStatistics(
-            totalRequests = 0,
-            statusCounts = persistentMapOf(
-                "2xx" to 0,
-                "3xx" to 0,
-                "4xx" to 0,
-                "5xx" to 0,
-                "Failed" to 0
+    private val _statistics =
+        MutableStateFlow(
+            NetworkDashboardStatistics(
+                totalRequests = 0,
+                statusCounts =
+                    persistentMapOf(
+                        "1xx" to 0,
+                        "2xx" to 0,
+                        "3xx" to 0,
+                        "4xx" to 0,
+                        "5xx" to 0,
+                        "Other" to 0,
+                        "Failed" to 0,
+                    ),
+                latencyDistribution =
+                    persistentMapOf(
+                        "< 100ms" to 0,
+                        "100-500ms" to 0,
+                        "500ms-2s" to 0,
+                        "> 2s" to 0,
+                    ),
+                timeline = persistentListOf(),
             ),
-            latencyDistribution = persistentMapOf(
-                "< 100ms" to 0,
-                "100-500ms" to 0,
-                "500ms-2s" to 0,
-                "> 2s" to 0
-            ),
-            timeline = persistentListOf()
         )
-    )
     override val statistics: StateFlow<NetworkDashboardStatistics> = _statistics.asStateFlow()
 
     private var observationJob: Job? = null
+    private val lock = SynchronizedObject()
 
     override fun startObserving(scope: CoroutineScope) {
-        if (observationJob?.isActive == true) return
+        synchronized(lock) {
+            if (observationJob?.isActive == true) return
 
-        observationJob = scope.launch(dispatcher) {
-            // Initial load
-            val initialLogs = networkStorage.query()
-            var currentStats = aggregateLogs(initialLogs)
-            _statistics.value = currentStats
+            observationJob =
+                scope.launch(dispatcher) {
+                    // Initial load
+                    val initialLogs = networkStorage.query()
+                    var currentStats = aggregateLogs(initialLogs)
+                    _statistics.value = currentStats
 
-            // Observe new logs
-            networkStorage.observe().collect { log ->
-                currentStats = addLogToStatistics(currentStats, log)
-                _statistics.value = currentStats
-            }
+                    // Observe new logs
+                    networkStorage.observe().collect { log ->
+                        currentStats = addLogToStatistics(currentStats, log)
+                        _statistics.value = currentStats
+                    }
+                }
         }
     }
 
     override fun stopObserving() {
-        observationJob?.cancel()
-        observationJob = null
+        synchronized(lock) {
+            observationJob?.cancel()
+            observationJob = null
+        }
     }
 
     private fun aggregateLogs(logs: List<NetworkLogEntry>): NetworkDashboardStatistics {
-        val statusCounts = mutableMapOf(
-            "2xx" to 0,
-            "3xx" to 0,
-            "4xx" to 0,
-            "5xx" to 0,
-            "Failed" to 0
-        )
-        val latencyDistribution = mutableMapOf(
-            "< 100ms" to 0,
-            "100-500ms" to 0,
-            "500ms-2s" to 0,
-            "> 2s" to 0
-        )
+        val statusCounts =
+            mutableMapOf(
+                "1xx" to 0,
+                "2xx" to 0,
+                "3xx" to 0,
+                "4xx" to 0,
+                "5xx" to 0,
+                "Other" to 0,
+                "Failed" to 0,
+            )
+        val latencyDistribution =
+            mutableMapOf(
+                "< 100ms" to 0,
+                "100-500ms" to 0,
+                "500ms-2s" to 0,
+                "> 2s" to 0,
+            )
 
         // Map of bucketTimestamp -> (count, totalDurationMs)
         val timelineMap = mutableMapOf<Long, Pair<Int, Long>>()
@@ -106,22 +122,23 @@ class NetworkFilterEngineRepositoryImpl(
             timelineMap[bucket] = Pair(existing.first + 1, existing.second + log.duration)
         }
 
-        val timelineBuckets = timelineMap.entries
-            .sortedBy { it.key }
-            .map { (timestamp, data) ->
-                val (count, totalDuration) = data
-                NetworkTimelineBucket(
-                    timestamp = timestamp,
-                    count = count,
-                    averageDurationMs = if (count > 0) totalDuration / count else 0L
-                )
-            }.toPersistentList()
+        val timelineBuckets =
+            timelineMap.entries
+                .sortedBy { it.key }
+                .map { (timestamp, data) ->
+                    val (count, totalDuration) = data
+                    NetworkTimelineBucket(
+                        timestamp = timestamp,
+                        count = count,
+                        totalDurationMs = totalDuration,
+                    )
+                }.toPersistentList()
 
         return NetworkDashboardStatistics(
             totalRequests = logs.size,
             statusCounts = statusCounts.toPersistentMap(),
             latencyDistribution = latencyDistribution.toPersistentMap(),
-            timeline = timelineBuckets
+            timeline = timelineBuckets,
         )
     }
 
@@ -149,15 +166,19 @@ class NetworkFilterEngineRepositoryImpl(
         if (existingIndex != -1) {
             val bucket = newTimeline[existingIndex]
             val newCount = bucket.count + 1
-            val totalDuration = bucket.averageDurationMs * bucket.count + log.duration
-            val newAvg = totalDuration / newCount
-            newTimeline[existingIndex] = bucket.copy(count = newCount, averageDurationMs = newAvg)
+            val totalDuration = bucket.totalDurationMs + log.duration
+            newTimeline[existingIndex] =
+                bucket.copy(
+                    count = newCount,
+                    totalDurationMs = totalDuration,
+                )
         } else {
-            val newBucket = NetworkTimelineBucket(
-                timestamp = bucketTimestamp,
-                count = 1,
-                averageDurationMs = log.duration
-            )
+            val newBucket =
+                NetworkTimelineBucket(
+                    timestamp = bucketTimestamp,
+                    count = 1,
+                    totalDurationMs = log.duration,
+                )
             newTimeline.add(newBucket)
             newTimeline.sortBy { it.timestamp }
         }
@@ -166,18 +187,19 @@ class NetworkFilterEngineRepositoryImpl(
             totalRequests = newTotal,
             statusCounts = newStatusCounts,
             latencyDistribution = newLatencyDistribution,
-            timeline = newTimeline.toPersistentList()
+            timeline = newTimeline.toPersistentList(),
         )
     }
 
     private fun getStatusCategory(log: NetworkLogEntry): String {
         if (log.error != null || log.responseCode == null) return "Failed"
         return when (log.responseCode) {
+            in 100..199 -> "1xx"
             in 200..299 -> "2xx"
             in 300..399 -> "3xx"
             in 400..499 -> "4xx"
             in 500..599 -> "5xx"
-            else -> "Failed"
+            else -> "Other"
         }
     }
 

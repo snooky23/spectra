@@ -12,7 +12,6 @@
 		00000000000000000000000000000113 /* SpectraLoggerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000000000000213 /* SpectraLoggerView.swift */; };
 		00000000000000000000000000000114 /* SpectraLoggerUI in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000000000000310 /* SpectraLoggerUI */; };
 		00000000000000000000000000000115 /* SpectraLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000000000000311 /* SpectraLogger */; };
-
 		1CEF023B2A4EEC76D9A4E879 /* SharedComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C9B388399DA5BDCA2727D86 /* SharedComponents.swift */; };
 		4299320EEAA12EB313ACFC4B /* MockDataGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDBE7870D90C9FD8EDD3F83A /* MockDataGenerator.swift */; };
 		93CF305A31E1AD634B6E8C95 /* NetworkRequestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A83D6C31B6A54E439052F7 /* NetworkRequestsView.swift */; };
@@ -134,6 +133,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00000000000000000000000000000901 /* Build configuration list for PBXNativeTarget "SpectraExample" */;
 			buildPhases = (
+				4626A2B0E58B0D00342FA950 /* Build KMP Spectra Frameworks */,
 				00000000000000000000000000000410 /* Frameworks */,
 				00000000000000000000000000001010 /* Sources */,
 			);
@@ -175,7 +175,7 @@
 			);
 			mainGroup = 00000000000000000000000000000501;
 			packageReferences = (
-				00000000000000000000000000000320 /* XCLocalSwiftPackageReference "Spectra" */,
+				00000000000000000000000000000320 /* XCLocalSwiftPackageReference ".." */,
 			);
 			productRefGroup = 00000000000000000000000000000701 /* Products */;
 			projectDirPath = "";
@@ -185,6 +185,27 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4626A2B0E58B0D00342FA950 /* Build KMP Spectra Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Build KMP Spectra Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd \"$SRCROOT/../../..\"\nexport SPECTRA_LOCAL_DEV=1\n./scripts/build/build-xcframework.sh ${CONFIGURATION}";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		00000000000000000000000000001010 /* Sources */ = {
@@ -411,24 +432,23 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		00000000000000000000000000000320 /* XCLocalSwiftPackageReference "Spectra" */ = {
+		00000000000000000000000000000320 /* XCLocalSwiftPackageReference ".." */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = "../..";
+			relativePath = ../..;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		00000000000000000000000000000310 /* SpectraLoggerUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 00000000000000000000000000000320 /* XCLocalSwiftPackageReference "Spectra" */;
+			package = 00000000000000000000000000000320 /* XCLocalSwiftPackageReference ".." */;
 			productName = SpectraLoggerUI;
 		};
 		00000000000000000000000000000311 /* SpectraLogger */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 00000000000000000000000000000320 /* XCLocalSwiftPackageReference "Spectra" */;
+			package = 00000000000000000000000000000320 /* XCLocalSwiftPackageReference ".." */;
 			productName = SpectraLogger;
 		};
-
 /* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 00000000000000000000000000001101 /* Project object */;

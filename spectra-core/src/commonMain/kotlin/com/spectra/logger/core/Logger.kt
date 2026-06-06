@@ -1,16 +1,14 @@
 package com.spectra.logger.core
 
-import com.spectra.logger.core.utils.*
-import com.spectra.logger.core.model.SourceType
-import com.spectra.logger.feature.network.model.NetworkLogFilter
 import com.spectra.logger.core.model.*
-
+import com.spectra.logger.core.utils.*
+import com.spectra.logger.core.utils.IdGenerator
+import com.spectra.logger.core.utils.SourceDetector
 import com.spectra.logger.feature.logs.model.LogEntry
 import com.spectra.logger.feature.logs.model.LogFilter
 import com.spectra.logger.feature.logs.model.LogLevel
+import com.spectra.logger.feature.logs.sink.LogSink
 import com.spectra.logger.feature.logs.storage.LogStorage
-import com.spectra.logger.core.utils.IdGenerator
-import com.spectra.logger.core.utils.SourceDetector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -22,11 +20,14 @@ import kotlinx.coroutines.launch
  * Thread-safe with asynchronous log capture.
  *
  * @property storage Log storage implementation
+ * @property storage Log storage implementation
+ * @property sinks Custom plugin sinks for fan-out
  * @property minLevel Minimum log level to capture (default: VERBOSE)
  * @property scope Coroutine scope for async operations (default: background scope)
  */
 class Logger(
     private val storage: LogStorage,
+    private val sinks: List<LogSink> = emptyList(),
     private val minLevel: LogLevel = LogLevel.VERBOSE,
     scope: CoroutineScope? = null,
 ) {
@@ -171,8 +172,18 @@ class Logger(
             )
 
         scope.launch {
-            println("LOGGER: Executing coroutine!")
             storage.add(entry)
+            
+            // Fan-out to custom sinks with isolated error handling
+            sinks.forEach { sink ->
+                launch {
+                    runCatching {
+                        sink.log(entry)
+                    }.onFailure { e ->
+                        println("SpectraLogger: Custom sink ${sink::class.simpleName} failed to log entry: ${e.message}")
+                    }
+                }
+            }
         }
     }
 
