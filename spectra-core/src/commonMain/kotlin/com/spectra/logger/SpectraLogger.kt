@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import com.spectra.logger.core.utils.ioDispatcher
 
 /**
  * Main entry point for the Spectra Logger framework.
@@ -54,12 +55,12 @@ object SpectraLogger {
         )
     private val exceptionHandler =
         kotlinx.coroutines.CoroutineExceptionHandler { _, throwable ->
-            // Silently swallow network storage exceptions to prevent app crashes
+            // Silently swallow internal storage exceptions to prevent app crashes
             // but log them to the local console for debugging
-            println("SpectraLogger Network Storage Error: ${throwable.message}")
+            println("SpectraLogger Internal Error: ${throwable.message}")
         }
 
-    private var ioScope = CoroutineScope(SupervisorJob() + Dispatchers.Default + exceptionHandler)
+    private var ioScope = CoroutineScope(SupervisorJob() + ioDispatcher + exceptionHandler)
         set(value) {
             field = value
             // Re-bind the active logger when scope changes
@@ -211,7 +212,7 @@ object SpectraLogger {
      * Internal reset for testing
      */
     internal fun resetCoroutineScopeForTesting() {
-        ioScope = CoroutineScope(SupervisorJob() + Dispatchers.Default + exceptionHandler)
+        ioScope = CoroutineScope(SupervisorJob() + ioDispatcher + exceptionHandler)
     }
 
     /**
@@ -219,17 +220,14 @@ object SpectraLogger {
      */
     fun logNetwork(entry: NetworkLogEntry) {
         ioScope.launch {
-            networkStorage.add(entry)
+            // Run local storage concurrently with sinks so it doesn't block plugin execution
+            launch { networkStorage.add(entry) }
             
-            // Fan-out to custom network sinks with isolated error handling
+            // Fan-out to custom network sinks sequentially within this coroutine to prevent launch explosion
             configuration.networkLogSinks.forEach { sink ->
-                launch {
-                    runCatching {
-                        sink.logNetwork(entry)
-                    }.onFailure { e ->
-                        println("SpectraLogger: Custom network sink ${sink::class.simpleName} failed to log entry: ${e.message}")
-                    }
-                }
+                runCatching {
+                    sink.logNetwork(entry)
+                } // Silently swallow to prevent stdout pollution and app crashes
             }
         }
     }
