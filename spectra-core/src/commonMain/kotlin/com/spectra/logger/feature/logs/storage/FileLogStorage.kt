@@ -1,16 +1,21 @@
 package com.spectra.logger.feature.logs.storage
 
 import com.spectra.logger.core.model.*
+import com.spectra.logger.core.storage.FileSystem
+import com.spectra.logger.core.utils.ioDispatcher
 import com.spectra.logger.feature.logs.model.LogEntry
 import com.spectra.logger.feature.logs.model.LogFilter
-import com.spectra.logger.core.storage.FileSystem
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
 import kotlinx.coroutines.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -35,8 +40,12 @@ class FileLogStorage(
     private val maxFiles: Int = DEFAULT_MAX_FILES,
     private val flushThreshold: Int = 50,
     private val maxCapacity: Int = InMemoryLogStorage.DEFAULT_CAPACITY,
-    private val backgroundDispatcher: CoroutineDispatcher = Dispatchers.Default,
+    private val backgroundDispatcher: CoroutineDispatcher = ioDispatcher,
 ) : LogStorage {
+    private val _ioErrorHandler = atomic<((Throwable) -> Unit)?>(null)
+    var ioErrorHandler: ((Throwable) -> Unit)?
+        get() = _ioErrorHandler.value
+        set(value) { _ioErrorHandler.value = value }
     private val json = Json { prettyPrint = false }
     private val logFlow = MutableSharedFlow<LogEntry>(replay = 0, extraBufferCapacity = 64)
 
@@ -116,22 +125,56 @@ class FileLogStorage(
             try {
                 performWrite(batch)
             } catch (e: Exception) {
-                // Ignore I/O errors to prevent crashing the host app
+                ioErrorHandler?.invoke(e) ?: println("Spectra File I/O Error: ${e.message}")
             }
         }
     }
 
+    private val writeMutex = kotlinx.coroutines.sync.Mutex()
+
     private suspend fun performWrite(batch: List<LogEntry>) {
-        initialized.await()
-        val lines = batch.joinToString("") { json.encodeToString(it) + "\n" }
-        
-        val currentSize = fileSystem.getFileSize(currentFileName)
-        if (currentSize + lines.length > maxFileSize) {
-            rotateFiles()
+        if (batch.isEmpty()) return
+        writeMutex.withLock {
+            initialized.await()
+            val currentFileName = "logs_$currentFileIndex.jsonl"
+            var runningSize = fileSystem.getFileSize(currentFileName)
+            val builder = StringBuilder()
+            var builderLengthBytes = 0
+            var currentBatchCount = 0
+
+            for (entry in batch) {
+                val line = json.encodeToString(entry) + "\n"
+                val lineBytes = line.encodeToByteArray()
+                val lineSize = lineBytes.size
+
+                val maxAllowedSize = maxFileSize.coerceIn(1L, Int.MAX_VALUE.toLong())
+                if (lineSize > maxAllowedSize) {
+                    continue
+                }
+
+                if (runningSize + builderLengthBytes + lineSize > maxFileSize && (runningSize > 0L || builderLengthBytes > 0)) {
+                    if (builder.isNotEmpty()) {
+                        val currentWriteFile = "logs_$currentFileIndex.jsonl"
+                        fileSystem.writeText(currentWriteFile, builder.toString(), append = true)
+                        countAtomic.addAndGet(currentBatchCount)
+                        builder.clear()
+                        builderLengthBytes = 0
+                        currentBatchCount = 0
+                    }
+                    rotateFiles()
+                    runningSize = 0L // reset since we rotated to a new file
+                }
+                builder.append(line)
+                builderLengthBytes += lineSize
+                currentBatchCount++
+            }
+
+            if (builder.isNotEmpty()) {
+                val currentWriteFile = "logs_$currentFileIndex.jsonl"
+                fileSystem.writeText(currentWriteFile, builder.toString(), append = true)
+                countAtomic.addAndGet(currentBatchCount)
+            }
         }
-        
-        fileSystem.writeText(currentFileName, lines, append = true)
-        countAtomic.addAndGet(batch.size)
     }
 
     suspend fun flush() {
@@ -144,9 +187,7 @@ class FileLogStorage(
         }
         if (batchToWrite != null) {
             withContext(backgroundDispatcher) {
-                try {
-                    performWrite(batchToWrite!!)
-                } catch (e: Exception) {}
+                performWrite(batchToWrite!!)
             }
         }
     }
@@ -157,37 +198,39 @@ class FileLogStorage(
     ): List<LogEntry> {
         flush()
         initialized.await()
-        
-        return withContext(backgroundDispatcher) {
-            val allLogs = mutableListOf<LogEntry>()
 
-            for (i in currentFileIndex downTo maxOf(0, currentFileIndex - maxFiles + 1)) {
-                val fileName = "logs_$i.jsonl"
-                if (!fileSystem.exists(fileName)) continue
+        return writeMutex.withLock {
+            withContext(backgroundDispatcher) {
+                val allLogs = mutableListOf<LogEntry>()
 
-                val content = fileSystem.readText(fileName) ?: continue
-                val logs =
-                    content
-                        .lines()
-                        .filter { it.isNotBlank() }
-                        .mapNotNull { line ->
-                            try {
-                                json.decodeFromString<LogEntry>(line)
-                            } catch (e: Exception) {
-                                null
+                for (i in currentFileIndex downTo maxOf(0, currentFileIndex - maxFiles + 1)) {
+                    val fileName = "logs_$i.jsonl"
+                    if (!fileSystem.exists(fileName)) continue
+
+                    val content = fileSystem.readText(fileName) ?: continue
+                    val logs =
+                        content
+                            .lines()
+                            .filter { it.isNotBlank() }
+                            .mapNotNull { line ->
+                                try {
+                                    json.decodeFromString<LogEntry>(line)
+                                } catch (e: Exception) {
+                                    null
+                                }
                             }
-                        }
-                        .reversed()
+                            .reversed()
 
-                allLogs.addAll(logs)
-            }
+                    allLogs.addAll(logs)
+                }
 
-            val filtered = allLogs.filter { filter.matches(it) }
+                val filtered = allLogs.filter { filter.matches(it) }
 
-            if (limit != null && limit > 0) {
-                filtered.take(limit)
-            } else {
-                filtered
+                if (limit != null && limit > 0) {
+                    filtered.take(limit)
+                } else {
+                    filtered
+                }
             }
         }
     }
@@ -196,10 +239,14 @@ class FileLogStorage(
         flush()
         initialized.await()
 
-        return withContext(backgroundDispatcher) {
-            try {
-                val exportFileName = "export_${com.spectra.logger.core.utils.SpectraTime.now()}.jsonl"
-                
+        return writeMutex.withLock {
+            withContext(backgroundDispatcher) {
+                val timeStr = com.spectra.logger.core.utils.SpectraTime.now().toString()
+                    .replace(":", "-")
+                    .replace(".", "-")
+                    .replace("T", "_")
+                val exportFileName = "export_$timeStr.jsonl"
+
                 // If it exists, delete it first (unlikely due to timestamp)
                 if (fileSystem.exists(exportFileName)) {
                     fileSystem.delete(exportFileName)
@@ -210,13 +257,10 @@ class FileLogStorage(
                     val fileName = "logs_$i.jsonl"
                     if (!fileSystem.exists(fileName)) continue
 
-                    val content = fileSystem.readText(fileName) ?: continue
-                    fileSystem.writeText(exportFileName, content, append = true)
+                    fileSystem.appendFile(fileName, exportFileName)
                 }
-                
+
                 fileSystem.getAbsolutePath(exportFileName)
-            } catch (e: Exception) {
-                null
             }
         }
     }
@@ -229,13 +273,17 @@ class FileLogStorage(
             pendingWrites.clear()
             countAtomic.value = 0
         }
-        withContext(backgroundDispatcher) {
-            try {
+        writeMutex.withLock {
+            withContext(backgroundDispatcher) {
                 for (i in 0..currentFileIndex) {
-                    fileSystem.delete("logs_$i.jsonl")
+                    try {
+                        fileSystem.delete("logs_$i.jsonl")
+                    } catch (e: Exception) {
+                        // ignore
+                    }
                 }
                 currentFileIndex = 0
-            } catch (e: Exception) {}
+            }
         }
     }
 
@@ -247,7 +295,17 @@ class FileLogStorage(
         currentFileIndex++
         val oldestFileIndex = currentFileIndex - maxFiles
         if (oldestFileIndex >= 0) {
-            fileSystem.delete("logs_$oldestFileIndex.jsonl")
+            val fileName = "logs_$oldestFileIndex.jsonl"
+            try {
+                if (fileSystem.exists(fileName)) {
+                    val content = fileSystem.readText(fileName)
+                    val deletedCount = content?.lines()?.count { it.isNotBlank() } ?: 0
+                    fileSystem.delete(fileName)
+                    countAtomic.addAndGet(-deletedCount)
+                }
+            } catch (e: Exception) {
+                // Ignore delete errors
+            }
         }
     }
 
@@ -262,7 +320,14 @@ class FileLogStorage(
                     }
 
                 currentFileIndex = indices.maxOrNull() ?: 0
-                
+
+                for (fileName in logFiles) {
+                    val idx = fileName.removePrefix("logs_").removeSuffix(".jsonl").toIntOrNull() ?: continue
+                    if (idx < currentFileIndex - maxFiles + 1) {
+                        try { fileSystem.delete(fileName) } catch(e: Exception) {}
+                    }
+                }
+
                 var total = 0
                 for (i in currentFileIndex downTo maxOf(0, currentFileIndex - maxFiles + 1)) {
                     val fileName = "logs_$i.jsonl"
@@ -271,12 +336,21 @@ class FileLogStorage(
                     total += content.lines().count { it.isNotBlank() }
                 }
                 countAtomic.value = total
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+                println("Spectra File I/O Error: ${e.message}")
+            }
         }
     }
 
     companion object {
-        const val DEFAULT_MAX_FILE_SIZE = 10_485_760L // 10MB
+        const val DEFAULT_MAX_FILE_SIZE = 10 * 1024 * 1024L // 10MB
         const val DEFAULT_MAX_FILES = 5
+    }
+
+    /**
+     * Closes the storage, cancelling all pending background operations.
+     */
+    suspend fun close() {
+        ioScope.coroutineContext[kotlinx.coroutines.Job]?.cancelAndJoin()
     }
 }

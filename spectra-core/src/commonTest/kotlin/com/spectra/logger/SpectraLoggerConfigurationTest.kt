@@ -1,13 +1,12 @@
 package com.spectra.logger
 
-import com.spectra.logger.core.utils.*
-import com.spectra.logger.core.model.SourceType
-import com.spectra.logger.feature.network.model.NetworkLogFilter
 import com.spectra.logger.core.model.*
-
+import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogLevel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -15,6 +14,19 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
 class SpectraLoggerConfigurationTest {
+    
+    @BeforeTest
+    @AfterTest
+    fun reset() = runTest {
+        SpectraLogger.clear()
+        SpectraLogger.clearNetwork()
+        SpectraLogger.configure {
+            minLogLevel = LogLevel.VERBOSE
+            logStorage { maxCapacity = 10_000 }
+            networkStorage { maxCapacity = 1_000 }
+        }
+    }
+
     @Test
     fun testDefaultConfiguration() {
         val config = SpectraLogger.configuration
@@ -40,13 +52,6 @@ class SpectraLoggerConfigurationTest {
         assertEquals(LogLevel.WARNING, config.minLogLevel)
         assertEquals(5_000, config.logStorageConfig.maxCapacity)
         assertEquals(500, config.networkStorageConfig.maxCapacity)
-
-        // Reset for other tests
-        SpectraLogger.configure {
-            minLogLevel = LogLevel.VERBOSE
-            logStorage { maxCapacity = 10_000 }
-            networkStorage { maxCapacity = 1_000 }
-        }
     }
 
     @Test

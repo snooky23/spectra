@@ -1,12 +1,9 @@
 package com.spectra.logger.feature.logs.ui
 
-import com.spectra.logger.core.utils.*
-import com.spectra.logger.core.model.SourceType
-import com.spectra.logger.feature.network.model.NetworkLogFilter
-import com.spectra.logger.core.model.*
-
 import app.cash.turbine.test
 import com.spectra.logger.SpectraLogger
+import com.spectra.logger.core.model.*
+import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogEntry
 import com.spectra.logger.feature.logs.model.LogLevel
 import kotlinx.coroutines.Dispatchers

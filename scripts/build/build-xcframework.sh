@@ -13,10 +13,25 @@ echo "Build Type: $BUILD_TYPE"
 
 cd "$PROJECT_ROOT"
 
+# Determine active architecture for Xcode local dev
+ARCH_ARGS=""
+if [[ "${SPECTRA_LOCAL_DEV:-}" == "1" && -n "${PLATFORM_NAME:-}" && -n "${ARCHS:-}" ]]; then
+    if [[ "$PLATFORM_NAME" == "iphonesimulator" ]]; then
+        if [[ "$ARCHS" == *"arm64"* ]]; then
+            ARCH_ARGS="-Pspectra.activeArch=iosSimulatorArm64"
+        else
+            ARCH_ARGS="-Pspectra.activeArch=iosX64"
+        fi
+    elif [[ "$PLATFORM_NAME" == "iphoneos" ]]; then
+        ARCH_ARGS="-Pspectra.activeArch=iosArm64"
+    fi
+    echo "🎯 Local Dev Mode: Optimizing build for active architecture: $ARCH_ARGS"
+fi
+
 if [ "$BUILD_TYPE" == "Release" ]; then
-    ./gradlew :spectra-core:assembleSpectraLoggerReleaseXCFramework :spectra-ui:assembleSpectraLoggerUIReleaseXCFramework
+    ./gradlew :spectra-core:assembleSpectraLoggerReleaseXCFramework :spectra-ui:assembleSpectraLoggerUIReleaseXCFramework $ARCH_ARGS
 else
-    ./gradlew :spectra-core:assembleSpectraLoggerDebugXCFramework :spectra-ui:assembleSpectraLoggerUIDebugXCFramework
+    ./gradlew :spectra-core:assembleSpectraLoggerDebugXCFramework :spectra-ui:assembleSpectraLoggerUIDebugXCFramework $ARCH_ARGS
 fi
 
 # Ensure output directory exists for consumers (e.g. Package.swift)

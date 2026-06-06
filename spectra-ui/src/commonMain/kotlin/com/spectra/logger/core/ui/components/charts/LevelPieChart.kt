@@ -1,15 +1,5 @@
 package com.spectra.logger.core.ui.components.charts
 
-import com.spectra.logger.core.ui.components.charts.*
-import com.spectra.logger.core.ui.components.pickers.*
-import com.spectra.logger.core.ui.components.effects.*
-import com.spectra.logger.core.ui.components.common.*
-
-import com.spectra.logger.core.utils.*
-import com.spectra.logger.core.model.SourceType
-import com.spectra.logger.feature.network.model.NetworkLogFilter
-import com.spectra.logger.core.model.*
-
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -39,6 +29,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.spectra.logger.core.model.*
+import com.spectra.logger.core.ui.components.common.*
+import com.spectra.logger.core.ui.components.effects.*
+import com.spectra.logger.core.ui.components.pickers.*
+import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogLevel
 import kotlin.math.PI
 

@@ -1,12 +1,11 @@
 package com.spectra.logger.feature.settings.config
 
-import com.spectra.logger.core.utils.*
-import com.spectra.logger.core.model.SourceType
-import com.spectra.logger.feature.network.model.NetworkLogFilter
 import com.spectra.logger.core.model.*
-
 import com.spectra.logger.core.model.AppContext
+import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogLevel
+import com.spectra.logger.feature.logs.sink.LogSink
+import com.spectra.logger.feature.network.sink.NetworkLogSink
 
 /**
  * Configuration for the Spectra Logger.
@@ -19,6 +18,8 @@ data class LoggerConfiguration(
     val performanceConfig: PerformanceConfiguration = PerformanceConfiguration(),
     val enabledFeatures: FeatureFlags = FeatureFlags(),
     val appContext: AppContext? = null,
+    val logSinks: List<LogSink> = emptyList(),
+    val networkLogSinks: List<NetworkLogSink> = emptyList(),
 ) {
     companion object {
         /**
@@ -59,6 +60,7 @@ data class FeatureFlags(
     val enableCrashReporting: Boolean = false,
     val enablePerformanceMetrics: Boolean = false,
     val networkIgnoredDomains: List<String> = emptyList(),
+    val networkIgnoredTokens: List<String> = emptyList(),
     val networkIgnoredExtensions: List<String> = listOf("png", "jpg", "jpeg", "gif", "svg", "ico"),
 )
 
@@ -80,6 +82,8 @@ class LoggerConfigurationBuilder {
     private var networkStorageConfig = StorageConfiguration(maxCapacity = 1_000)
     private var performanceConfig = PerformanceConfiguration()
     private var enabledFeatures = FeatureFlags()
+    private val logSinks = mutableListOf<LogSink>()
+    private val networkLogSinks = mutableListOf<NetworkLogSink>()
 
     /**
      * Configure log storage settings.
@@ -110,6 +114,20 @@ class LoggerConfigurationBuilder {
         enabledFeatures = FeatureFlagsBuilder().apply(block).build()
     }
 
+    /**
+     * Register a custom sink to receive standard logs in real-time.
+     */
+    fun addLogSink(sink: LogSink) {
+        logSinks.add(sink)
+    }
+
+    /**
+     * Register a custom sink to receive network logs in real-time.
+     */
+    fun addNetworkLogSink(sink: NetworkLogSink) {
+        networkLogSinks.add(sink)
+    }
+
     internal fun build(): LoggerConfiguration =
         LoggerConfiguration(
             minLogLevel = minLogLevel,
@@ -118,6 +136,8 @@ class LoggerConfigurationBuilder {
             performanceConfig = performanceConfig,
             enabledFeatures = enabledFeatures,
             appContext = appContext,
+            logSinks = logSinks.toList(),
+            networkLogSinks = networkLogSinks.toList(),
         )
 }
 
@@ -170,6 +190,7 @@ class FeatureFlagsBuilder(
     var enableCrashReporting: Boolean = false,
     var enablePerformanceMetrics: Boolean = false,
     var networkIgnoredDomains: List<String> = emptyList(),
+    var networkIgnoredTokens: List<String> = emptyList(),
     var networkIgnoredExtensions: List<String> = listOf("png", "jpg", "jpeg", "gif", "svg", "ico"),
 ) {
     internal fun build(): FeatureFlags =
@@ -178,6 +199,7 @@ class FeatureFlagsBuilder(
             enableCrashReporting = enableCrashReporting,
             enablePerformanceMetrics = enablePerformanceMetrics,
             networkIgnoredDomains = networkIgnoredDomains,
+            networkIgnoredTokens = networkIgnoredTokens,
             networkIgnoredExtensions = networkIgnoredExtensions,
         )
 }

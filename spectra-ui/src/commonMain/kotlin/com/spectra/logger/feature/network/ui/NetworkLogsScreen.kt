@@ -1,14 +1,5 @@
 package com.spectra.logger.feature.network.ui
 
-import com.spectra.logger.core.utils.*
-import com.spectra.logger.core.model.SourceType
-import com.spectra.logger.feature.network.model.NetworkLogFilter
-import com.spectra.logger.core.model.*
-
-import com.spectra.logger.core.ui.components.charts.*
-import com.spectra.logger.core.ui.components.pickers.*
-import com.spectra.logger.core.ui.components.effects.*
-import com.spectra.logger.core.ui.components.common.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,6 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.spectra.logger.core.model.*
+import com.spectra.logger.core.ui.components.charts.*
+import com.spectra.logger.core.ui.components.common.*
+import com.spectra.logger.core.ui.components.effects.*
+import com.spectra.logger.core.ui.components.pickers.*
+import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.network.model.NetworkLogEntry
 
 /**

@@ -1,19 +1,15 @@
 package com.spectra.logger.core.ui.theme
 
-import com.spectra.logger.core.ui.components.charts.*
-import com.spectra.logger.core.ui.components.pickers.*
-import com.spectra.logger.core.ui.components.effects.*
-import com.spectra.logger.core.ui.components.common.*
-
-import com.spectra.logger.core.utils.*
-import com.spectra.logger.core.model.SourceType
-import com.spectra.logger.feature.network.model.NetworkLogFilter
-import com.spectra.logger.core.model.*
-
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.spectra.logger.core.model.*
+import com.spectra.logger.core.ui.components.charts.*
+import com.spectra.logger.core.ui.components.common.*
+import com.spectra.logger.core.ui.components.effects.*
+import com.spectra.logger.core.ui.components.pickers.*
+import com.spectra.logger.core.utils.*
 
 /**
  * Holds the structural layout context based on available physical window space.

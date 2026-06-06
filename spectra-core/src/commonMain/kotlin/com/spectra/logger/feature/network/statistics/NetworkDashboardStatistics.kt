@@ -8,8 +8,10 @@ import kotlinx.collections.immutable.PersistentMap
  */
 data class NetworkDashboardStatistics(
     val totalRequests: Int,
-    val statusCounts: PersistentMap<String, Int>, // "2xx", "3xx", "4xx", "5xx", "Failed"
-    val latencyDistribution: PersistentMap<String, Int>, // "< 100ms", "100-500ms", "500ms-2s", "> 2s"
+    // "2xx", "3xx", "4xx", "5xx", "Failed"
+    val statusCounts: PersistentMap<String, Int>,
+    // "< 100ms", "100-500ms", "500ms-2s", "> 2s"
+    val latencyDistribution: PersistentMap<String, Int>,
     val timeline: PersistentList<NetworkTimelineBucket>,
 )
 
@@ -19,5 +21,8 @@ data class NetworkDashboardStatistics(
 data class NetworkTimelineBucket(
     val timestamp: Long,
     val count: Int,
-    val averageDurationMs: Long,
-)
+    val totalDurationMs: Long,
+) {
+    val averageDurationMs: Long
+        get() = if (count > 0) totalDurationMs / count else 0L
+}

@@ -1,15 +1,5 @@
 package com.spectra.logger.core.ui.compose
 
-import com.spectra.logger.core.ui.components.charts.*
-import com.spectra.logger.core.ui.components.pickers.*
-import com.spectra.logger.core.ui.components.effects.*
-import com.spectra.logger.core.ui.components.common.*
-
-import com.spectra.logger.core.utils.*
-import com.spectra.logger.core.model.SourceType
-import com.spectra.logger.feature.network.model.NetworkLogFilter
-import com.spectra.logger.core.model.*
-
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.icons.Icons
@@ -22,11 +12,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.spectra.logger.core.model.*
+import com.spectra.logger.core.ui.components.charts.*
+import com.spectra.logger.core.ui.components.common.*
 import com.spectra.logger.core.ui.components.common.SpectraTheme
-import com.spectra.logger.feature.settings.ui.SettingsViewModel
-import com.spectra.logger.feature.settings.ui.SettingsScreen
+import com.spectra.logger.core.ui.components.effects.*
+import com.spectra.logger.core.ui.components.pickers.*
+import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.ui.LogsScreen
 import com.spectra.logger.feature.network.ui.NetworkLogsScreen
+import com.spectra.logger.feature.settings.ui.SettingsScreen
+import com.spectra.logger.feature.settings.ui.SettingsViewModel
 
 /**
  * Main Spectra Logger UI entry point using adaptive navigation.

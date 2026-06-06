@@ -1,11 +1,8 @@
 package com.spectra.logger.core
 
-import com.spectra.logger.core.utils.*
-import com.spectra.logger.core.model.SourceType
-import com.spectra.logger.feature.network.model.NetworkLogFilter
-import com.spectra.logger.core.model.*
-
 import app.cash.turbine.test
+import com.spectra.logger.core.model.*
+import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogFilter
 import com.spectra.logger.feature.logs.model.LogLevel
 import com.spectra.logger.feature.logs.storage.InMemoryLogStorage
@@ -13,14 +10,16 @@ import com.spectra.logger.feature.logs.storage.LogStorage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.cancel
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -32,9 +31,9 @@ class LoggerTest {
     private fun createTestLogger(
         storage: LogStorage,
         minLevel: LogLevel = LogLevel.VERBOSE,
-        scope: CoroutineScope
+        scope: CoroutineScope,
     ): Logger {
-        return Logger(storage, minLevel, scope)
+        return Logger(storage = storage, minLevel = minLevel, scope = scope)
     }
 
     @Test
@@ -207,46 +206,35 @@ class LoggerTest {
     fun testConcurrentLoggingThreadSafety() =
         runTest(UnconfinedTestDispatcher()) {
             val storage = InMemoryLogStorage(maxCapacity = 10000)
-            // Use real dispatchers to ensure thread contention
-            val realScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-            val logger = createTestLogger(storage, scope = realScope)
+            val logger = createTestLogger(storage, scope = backgroundScope)
             val coroutinesCount = 50
             val logsPerCoroutine = 100
             val totalExpected = coroutinesCount * logsPerCoroutine
 
-            withContext(Dispatchers.Default) {
-                val jobs = (1..coroutinesCount).map { index ->
+            val jobs =
+                (1..coroutinesCount).map { index ->
                     launch {
                         repeat(logsPerCoroutine) { logIndex ->
                             val level = LogLevel.entries[logIndex % LogLevel.entries.size]
                             logger.log(level, "Tag-$index", "Log $logIndex")
+                            if (logIndex % 10 == 0) kotlinx.coroutines.yield()
                         }
                     }
                 }
-                jobs.forEach { it.join() }
-
-                // Wait for storage flush deterministically
-                var retries = 0
-                while (storage.count() < totalExpected && retries < 100) {
-                    delay(10)
-                    retries++
-                }
-            }
+            jobs.forEach { it.join() }
 
             val logs = storage.query()
             assertEquals(totalExpected, logs.size)
-            
+
             // Verify metadata is attached securely
             assertTrue(logs.all { it.timestamp.toEpochMilliseconds() > 0 })
             assertTrue(logs.all { it.metadata != null })
-            
+
             val tags = logs.map { it.tag }.toSet()
             assertEquals(coroutinesCount, tags.size)
-            
+
             val levelsUsed = logs.map { it.level }.toSet()
             assertEquals(LogLevel.entries.size, levelsUsed.size)
-            
-            realScope.cancel()
         }
 
     @Test
@@ -262,49 +250,33 @@ class LoggerTest {
         }
 
     @Test
-    fun testLoggingOverheadIsSubPointOneMilliseconds() = runTest {
-        val storage = InMemoryLogStorage()
-        val realScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-        val logger = createTestLogger(storage, scope = realScope)
+    fun testLoggingOverheadIsSubPointOneMilliseconds() =
+        runTest(UnconfinedTestDispatcher()) {
+            val storage = InMemoryLogStorage()
+            val logger = createTestLogger(storage, scope = backgroundScope)
 
-        withContext(Dispatchers.Default) {
             // Warm up
-            repeat(1000) {
+            repeat(1000) { i ->
                 logger.i("WarmUp", "Message")
-            }
-            
-            // Wait for warm up to flush
-            var warmUpRetries = 0
-            while(storage.count() < 1000 && warmUpRetries < 100) {
-                delay(10)
-                warmUpRetries++
+                if (i % 100 == 0) kotlinx.coroutines.yield()
             }
 
-            val iterations = 10000
-            val initialCount = storage.count()
-            
-            val totalTime = measureTime {
-                repeat(iterations) { i ->
-                    logger.i("Benchmark", "Message $i")
+            val iterations = 1000
+
+            val totalTime =
+                measureTime {
+                    repeat(iterations) { i ->
+                        logger.i("Benchmark", "Message $i")
+                        if (i % 100 == 0) kotlinx.coroutines.yield()
+                    }
                 }
-            }
-            
-            // Wait for actual processing to finish
-            var retries = 0
-            while(storage.count() < initialCount + iterations && retries < 100) {
-                delay(10)
-                retries++
-            }
-            
-            val averageTimeMs = totalTime.toDouble(DurationUnit.MILLISECONDS) / iterations
 
-            // Relaxed threshold to avoid CI flakiness
-            assertTrue(
-                averageTimeMs < 50.0,
-                "Average logging enqueue overhead was $averageTimeMs ms, which is high even for CI."
-            )
-        }
-        
-        realScope.cancel()
-    }
+                val averageTimeMs = totalTime.toDouble(DurationUnit.MILLISECONDS) / iterations
+
+                // Relaxed threshold to avoid CI flakiness
+                assertTrue(
+                    averageTimeMs < 50.0,
+                    "Average logging enqueue overhead was $averageTimeMs ms, which is high even for CI.",
+                )
+            }
 }

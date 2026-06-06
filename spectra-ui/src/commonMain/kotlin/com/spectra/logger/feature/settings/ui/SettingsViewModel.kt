@@ -1,16 +1,13 @@
 package com.spectra.logger.feature.settings.ui
 
-import com.spectra.logger.core.utils.*
-import com.spectra.logger.core.model.SourceType
-import com.spectra.logger.feature.network.model.NetworkLogFilter
-import com.spectra.logger.core.model.*
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spectra.logger.SpectraLogger
 import com.spectra.logger.Version
-import com.spectra.logger.feature.logs.model.LogFilter
+import com.spectra.logger.core.model.*
 import com.spectra.logger.core.ui.util.PlatformUtils
+import com.spectra.logger.core.utils.*
+import com.spectra.logger.feature.logs.model.LogFilter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -132,7 +129,37 @@ class SettingsViewModel : ViewModel() {
                 enableCrashReporting = currentFeatures.enableCrashReporting
                 enablePerformanceMetrics = currentFeatures.enablePerformanceMetrics
                 networkIgnoredDomains = list
+                networkIgnoredTokens = currentFeatures.networkIgnoredTokens
                 networkIgnoredExtensions = currentFeatures.networkIgnoredExtensions
+            }
+        }
+        refreshConfigState()
+    }
+
+    fun updateIgnoredTokens(tokens: String) {
+        val list = tokens.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+        val currentFeatures = SpectraLogger.configuration.enabledFeatures
+        SpectraLogger.configure {
+            features {
+                enableNetworkLogging = currentFeatures.enableNetworkLogging
+                enableCrashReporting = currentFeatures.enableCrashReporting
+                enablePerformanceMetrics = currentFeatures.enablePerformanceMetrics
+                networkIgnoredDomains = currentFeatures.networkIgnoredDomains
+                networkIgnoredTokens = list
+                networkIgnoredExtensions = currentFeatures.networkIgnoredExtensions
+            }
+        }
+        refreshConfigState()
+    }
+
+    fun updateMaxBodySize(size: String) {
+        val parsedSize = size.toIntOrNull() ?: SpectraLogger.configuration.performanceConfig.maxBodySize
+        val currentPerf = SpectraLogger.configuration.performanceConfig
+        SpectraLogger.configure {
+            performance {
+                flowBufferCapacity = currentPerf.flowBufferCapacity
+                asyncWriteTimeout = currentPerf.asyncWriteTimeout
+                maxBodySize = parsedSize
             }
         }
         refreshConfigState()
@@ -168,6 +195,8 @@ class SettingsViewModel : ViewModel() {
                 isNetworkLoggingEnabled = config.enabledFeatures.enableNetworkLogging,
                 isFilePersistenceEnabled = config.logStorageConfig.enablePersistence,
                 ignoredDomainsText = config.enabledFeatures.networkIgnoredDomains.joinToString(", "),
+                ignoredTokensText = config.enabledFeatures.networkIgnoredTokens.joinToString(", "),
+                maxBodySizeText = config.performanceConfig.maxBodySize.toString(),
             )
         }
     }
@@ -184,6 +213,8 @@ data class SettingsUiState(
     val isNetworkLoggingEnabled: Boolean = true,
     val isFilePersistenceEnabled: Boolean = false,
     val ignoredDomainsText: String = "",
+    val ignoredTokensText: String = "",
+    val maxBodySizeText: String = "250000",
 )
 
 enum class AppearanceMode(val label: String) {
