@@ -34,7 +34,7 @@ class SpectraOkHttpInterceptor(
                             val config = SpectraLogger.configuration.enabledFeatures
                             config.networkIgnoredTokens.any { urlString.contains(it, ignoreCase = true) } ||
                                 config.networkIgnoredDomains.any { urlString.contains(it, ignoreCase = true) }
-                        }.getOrDefault(false)
+                        }.getOrDefault(true) // Fail-close: if config crashes, ignore the log to prevent PII leaks
                 ) ||
                 ignoreRegex.any { it.containsMatchIn(urlString) }
 
@@ -144,6 +144,12 @@ class SpectraOkHttpInterceptor(
             } else {
                 val peekedBody = response.peekBody(currentMaxBodySize)
                 responseBodyText = peekedBody.string()
+                val originalContentLength = response.body?.contentLength() ?: -1L
+                val isTruncated = (originalContentLength != -1L && originalContentLength > currentMaxBodySize) ||
+                    (originalContentLength == -1L && peekedBody.contentLength() == currentMaxBodySize)
+                if (isTruncated) {
+                    responseBodyText += "\n[Body truncated]"
+                }
             }
         } catch (e: Throwable) {
             responseBodyText = "[Failed to read response body: ${e.message}]"
