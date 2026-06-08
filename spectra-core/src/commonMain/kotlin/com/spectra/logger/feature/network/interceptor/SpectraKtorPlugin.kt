@@ -36,7 +36,7 @@ val SpectraKtorPlugin =
                                 val config = SpectraLogger.configuration.enabledFeatures
                                 config.networkIgnoredTokens.any { urlString.contains(it, ignoreCase = true) } ||
                                     config.networkIgnoredDomains.any { urlString.contains(it, ignoreCase = true) }
-                            }.getOrDefault(false)
+                            }.getOrDefault(true) // Fail-close: if config crashes, ignore the log to prevent PII leaks
                     ) || pluginConfig.ignoreRegex.any { it.containsMatchIn(urlString) }
 
             if (shouldIgnore) {
@@ -55,10 +55,9 @@ val SpectraKtorPlugin =
                 }.getOrDefault(1024L * 1024L)
 
             fun truncateSafely(text: String): String {
-                val bytes = text.encodeToByteArray()
-                if (bytes.size <= currentMaxBodySize) return text
                 val limit = currentMaxBodySize.coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
-                return bytes.decodeToString(endIndex = limit) + "\n[Body truncated]"
+                if (text.length <= limit) return text
+                return text.take(limit) + "\n[Body truncated]"
             }
 
             when (body) {

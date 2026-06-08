@@ -97,7 +97,11 @@ object SourceDetector {
                     }
                     else -> { // iOS/Native style or unformatted
                         val parts = trimmed.split(Regex("\\s+"))
-                        if (parts.size >= 2) parts[0] else ""
+                        if (parts.size >= 2) {
+                            if (parts[0].all { it.isDigit() }) parts[1] else parts[0]
+                        } else {
+                            ""
+                        }
                     }
                 }
 
