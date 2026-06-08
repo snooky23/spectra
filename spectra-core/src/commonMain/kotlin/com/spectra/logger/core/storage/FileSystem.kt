@@ -59,6 +59,31 @@ class FileSystem(
         }
 
     /**
+     * Count non-blank lines in a file efficiently without loading it fully into memory.
+     *
+     * @param path File path relative to app storage directory
+     * @return Number of non-blank lines, or 0 if file doesn't exist
+     */
+    suspend fun countLines(path: String): Int =
+        withContext(dispatcher) {
+            val fs = okioFs ?: return@withContext 0
+            val fullPath = getAbsolutePath(path).toPath()
+            if (!fs.exists(fullPath)) return@withContext 0
+            try {
+                fs.source(fullPath).buffer().use { source ->
+                    var count = 0
+                    while (true) {
+                        val line = source.readUtf8Line() ?: break
+                        if (line.isNotBlank()) count++
+                    }
+                    count
+                }
+            } catch (e: Exception) {
+                0
+            }
+        }
+
+    /**
      * Check if a file exists.
      *
      * @param path File path relative to app storage directory

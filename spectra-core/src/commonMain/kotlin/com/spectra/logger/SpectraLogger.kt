@@ -316,6 +316,9 @@ object SpectraLogger {
         if (newConfig.logStorageConfig.enablePersistence && newConfig.logStorageConfig.directoryPath != null) {
             val fileSystem = FileSystem(newConfig.logStorageConfig.directoryPath!!)
             if (fileSystem.okioFs != null) {
+                if (currentLogStorage is FileLogStorage) {
+                    ioScope.launch { currentLogStorage.close() }
+                }
                 logStorageAtomic.value =
                     FileLogStorage(
                         fileSystem = fileSystem,
@@ -324,11 +327,17 @@ object SpectraLogger {
                         maxCapacity = newConfig.logStorageConfig.maxCapacity,
                     )
             } else {
+                if (currentLogStorage is FileLogStorage) {
+                    ioScope.launch { currentLogStorage.close() }
+                }
                 logStorageAtomic.value = InMemoryLogStorage(maxCapacity = newConfig.logStorageConfig.maxCapacity)
             }
         } else if (currentLogStorage is InMemoryLogStorage) {
             currentLogStorage.updateCapacity(newConfig.logStorageConfig.maxCapacity)
         } else {
+            if (currentLogStorage is FileLogStorage) {
+                ioScope.launch { currentLogStorage.close() }
+            }
             logStorageAtomic.value = InMemoryLogStorage(maxCapacity = newConfig.logStorageConfig.maxCapacity)
         }
 
