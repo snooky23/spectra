@@ -122,10 +122,12 @@ class FileLogStorage(
 
     private fun flushBatch(batch: List<LogEntry>) {
         ioScope.launch {
-            try {
-                performWrite(batch)
-            } catch (e: Exception) {
-                ioErrorHandler?.invoke(e) ?: println("Spectra File I/O Error: ${e.message}")
+            withContext(backgroundDispatcher) {
+                try {
+                    performWrite(batch)
+                } catch (e: Exception) {
+                    ioErrorHandler?.invoke(e)
+                }
             }
         }
     }
@@ -187,7 +189,11 @@ class FileLogStorage(
         }
         if (batchToWrite != null) {
             withContext(backgroundDispatcher) {
-                performWrite(batchToWrite!!)
+                try {
+                    performWrite(batchToWrite!!)
+                } catch (e: Exception) {
+                    ioErrorHandler?.invoke(e)
+                }
             }
         }
     }
@@ -298,8 +304,7 @@ class FileLogStorage(
             val fileName = "logs_$oldestFileIndex.jsonl"
             try {
                 if (fileSystem.exists(fileName)) {
-                    val content = fileSystem.readText(fileName)
-                    val deletedCount = content?.lines()?.count { it.isNotBlank() } ?: 0
+                    val deletedCount = fileSystem.countLines(fileName)
                     fileSystem.delete(fileName)
                     countAtomic.addAndGet(-deletedCount)
                 }
@@ -332,8 +337,7 @@ class FileLogStorage(
                 for (i in currentFileIndex downTo maxOf(0, currentFileIndex - maxFiles + 1)) {
                     val fileName = "logs_$i.jsonl"
                     if (!fileSystem.exists(fileName)) continue
-                    val content = fileSystem.readText(fileName) ?: continue
-                    total += content.lines().count { it.isNotBlank() }
+                    total += fileSystem.countLines(fileName)
                 }
                 countAtomic.value = total
             } catch (e: Exception) {
@@ -348,9 +352,10 @@ class FileLogStorage(
     }
 
     /**
-     * Closes the storage, cancelling all pending background operations.
+     * Closes the storage, flushing buffers and cancelling all pending background operations.
      */
     suspend fun close() {
+        flush()
         ioScope.coroutineContext[kotlinx.coroutines.Job]?.cancelAndJoin()
     }
 }
