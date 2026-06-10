@@ -74,9 +74,11 @@ class FileLogStorageTest {
             val storage =
                 FileLogStorage(
                     fileSystem = fileSystem,
-                    maxFileSize = 1000L, // Increased to allow the emoji message to fit
+                    // Increased to allow the emoji message to fit
+                    maxFileSize = 1000L,
                     maxFiles = 3,
-                    flushThreshold = 1, // immediate flush
+                    // immediate flush
+                    flushThreshold = 1,
                     backgroundDispatcher = dispatcher,
                 )
 

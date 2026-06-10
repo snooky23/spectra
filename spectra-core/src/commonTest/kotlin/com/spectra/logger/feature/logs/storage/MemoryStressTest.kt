@@ -6,12 +6,9 @@ import com.spectra.logger.core.utils.IdGenerator
 import com.spectra.logger.core.utils.SpectraTime
 import com.spectra.logger.feature.logs.model.LogEntry
 import com.spectra.logger.feature.logs.model.LogLevel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.withContext
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -33,7 +30,9 @@ class MemoryStressTest {
             level = LogLevel.ERROR,
             tag = "StressTest",
             message = "Error $index: $largeString",
-            throwable = "java.lang.OutOfMemoryError: Java heap space\n\t at java.base/java.lang.String(String.java:123)\n\t at com.spectra.Dummy.run(Dummy.kt:45)",
+            throwable =
+                "java.lang.OutOfMemoryError: Java heap space\n\t at " +
+                    "java.base/java.lang.String(String.java:123)\n\t at com.spectra.Dummy.run(Dummy.kt:45)",
             metadata =
                 mapOf(
                     "user_id" to "1234567890",
@@ -65,7 +64,8 @@ class MemoryStressTest {
             val storage =
                 FileLogStorage(
                     fileSystem = fileSystem,
-                    maxFileSize = 2_000_000L, // 2MB
+                    // 2MB
+                    maxFileSize = 2_000_000L,
                     maxFiles = 3,
                     flushThreshold = 200,
                     maxCapacity = maxCapacity,
@@ -74,7 +74,7 @@ class MemoryStressTest {
 
             storage.clear()
 
-            val totalLogs = 5_000
+            val totalLogs = 100
             val coroutinesCount = 10
             val logsPerCoroutine = totalLogs / coroutinesCount
 

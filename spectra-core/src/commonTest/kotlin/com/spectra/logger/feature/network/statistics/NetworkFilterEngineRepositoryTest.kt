@@ -9,6 +9,7 @@ import kotlinx.datetime.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class NetworkFilterEngineRepositoryTest {
     private fun createEntry(
         id: String,

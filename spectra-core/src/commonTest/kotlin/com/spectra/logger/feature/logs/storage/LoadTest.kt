@@ -57,7 +57,8 @@ class LoadTest {
             val storage =
                 FileLogStorage(
                     fileSystem = fileSystem,
-                    maxFileSize = 10_000_000L, // 10MB
+                    // 10MB
+                    maxFileSize = 10_000_000L,
                     maxFiles = 5,
                     flushThreshold = 100,
                     backgroundDispatcher = dispatcher,

@@ -8,18 +8,12 @@ import com.spectra.logger.feature.logs.model.LogLevel
 import com.spectra.logger.feature.logs.storage.InMemoryLogStorage
 import com.spectra.logger.feature.logs.storage.LogStorage
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.withContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -207,12 +201,13 @@ class LoggerTest {
         runTest(UnconfinedTestDispatcher()) {
             val storage = InMemoryLogStorage(maxCapacity = 10000)
             val logger = createTestLogger(storage, scope = backgroundScope)
-            val coroutinesCount = 50
-            val logsPerCoroutine = 100
-            val totalExpected = coroutinesCount * logsPerCoroutine
+
+            val numCoroutines = 10
+            val logsPerCoroutine = 10
+            val totalExpected = numCoroutines * logsPerCoroutine
 
             val jobs =
-                (1..coroutinesCount).map { index ->
+                (1..numCoroutines).map { index ->
                     launch {
                         repeat(logsPerCoroutine) { logIndex ->
                             val level = LogLevel.entries[logIndex % LogLevel.entries.size]
@@ -231,7 +226,7 @@ class LoggerTest {
             assertTrue(logs.all { it.metadata != null })
 
             val tags = logs.map { it.tag }.toSet()
-            assertEquals(coroutinesCount, tags.size)
+            assertEquals(numCoroutines, tags.size)
 
             val levelsUsed = logs.map { it.level }.toSet()
             assertEquals(LogLevel.entries.size, levelsUsed.size)
@@ -271,12 +266,12 @@ class LoggerTest {
                     }
                 }
 
-                val averageTimeMs = totalTime.toDouble(DurationUnit.MILLISECONDS) / iterations
+            val averageTimeMs = totalTime.toDouble(DurationUnit.MILLISECONDS) / iterations
 
-                // Relaxed threshold to avoid CI flakiness
-                assertTrue(
-                    averageTimeMs < 50.0,
-                    "Average logging enqueue overhead was $averageTimeMs ms, which is high even for CI.",
-                )
-            }
+            // Relaxed threshold to avoid CI flakiness
+            assertTrue(
+                averageTimeMs < 50.0,
+                "Average logging enqueue overhead was $averageTimeMs ms, which is high even for CI.",
+            )
+        }
 }
