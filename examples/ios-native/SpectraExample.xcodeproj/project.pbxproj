@@ -14,10 +14,12 @@
 		00000000000000000000000000000115 /* SpectraLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000000000000311 /* SpectraLogger */; };
 		1CEF023B2A4EEC76D9A4E879 /* SharedComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C9B388399DA5BDCA2727D86 /* SharedComponents.swift */; };
 		4299320EEAA12EB313ACFC4B /* MockDataGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDBE7870D90C9FD8EDD3F83A /* MockDataGenerator.swift */; };
+		7A7CB77CD2CD84D9AD7A27A6 /* SpectraLoggerUI.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90ADCCF1D68F3D6975D6B653 /* SpectraLoggerUI.xcframework */; };
 		93CF305A31E1AD634B6E8C95 /* NetworkRequestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A83D6C31B6A54E439052F7 /* NetworkRequestsView.swift */; };
 		A21E2294CCF36CA090B1D7E6 /* NetworkTestingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0218D627ACE7D8D56C2F187A /* NetworkTestingViewModel.swift */; };
 		B5F293B2D1A8EA01AA0E24A4 /* ActionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA60BA7549A50F38219A5A6 /* ActionsViewModel.swift */; };
 		BA4AC2B0EE000894FEEDB0BE /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 779F7ACC8AF2287DCBE7ADCF /* AppLogger.swift */; };
+		C6C07AFBCE86CFEF93ADEE21 /* SpectraLogger.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A865CA8CFDDD6C8100E731C4 /* SpectraLogger.xcframework */; };
 		DA9EF6831ECF6AF7BDED76A7 /* ExampleActionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A08BB694CB17BBFDBC4EEC3 /* ExampleActionsView.swift */; };
 /* End PBXBuildFile section */
 
@@ -32,6 +34,8 @@
 		4CA60BA7549A50F38219A5A6 /* ActionsViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ActionsViewModel.swift; sourceTree = "<group>"; };
 		779F7ACC8AF2287DCBE7ADCF /* AppLogger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
 		84A83D6C31B6A54E439052F7 /* NetworkRequestsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworkRequestsView.swift; sourceTree = "<group>"; };
+		90ADCCF1D68F3D6975D6B653 /* SpectraLoggerUI.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; name = SpectraLoggerUI.xcframework; path = ../../../build/xcframework/SpectraLoggerUI.xcframework; sourceTree = "<group>"; };
+		A865CA8CFDDD6C8100E731C4 /* SpectraLogger.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; name = SpectraLogger.xcframework; path = ../../../build/xcframework/SpectraLogger.xcframework; sourceTree = "<group>"; };
 		FDBE7870D90C9FD8EDD3F83A /* MockDataGenerator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MockDataGenerator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -40,8 +44,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00000000000000000000000000000114 /* SpectraLoggerUI in Frameworks */,
-				00000000000000000000000000000115 /* SpectraLogger in Frameworks */,
+				C6C07AFBCE86CFEF93ADEE21 /* SpectraLogger.xcframework in Frameworks */,
+				7A7CB77CD2CD84D9AD7A27A6 /* SpectraLoggerUI.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,6 +57,7 @@
 			children = (
 				00000000000000000000000000000601 /* SpectraExample */,
 				00000000000000000000000000000701 /* Products */,
+				A41577AD86453E1D42A7828C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -126,6 +131,15 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
+		A41577AD86453E1D42A7828C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A865CA8CFDDD6C8100E731C4 /* SpectraLogger.xcframework */,
+				90ADCCF1D68F3D6975D6B653 /* SpectraLoggerUI.xcframework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -142,10 +156,6 @@
 			dependencies = (
 			);
 			name = SpectraExample;
-			packageProductDependencies = (
-				00000000000000000000000000000310 /* SpectraLoggerUI */,
-				00000000000000000000000000000311 /* SpectraLogger */,
-			);
 			productName = SpectraExample;
 			productReference = 00000000000000000000000000000001 /* SpectraExample.app */;
 			productType = "com.apple.product-type.application";
@@ -357,6 +367,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../build/xcframework\"",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CADisableMinimumFrameDurationOnPhone = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifestType = UISceneManifestTypeCode;
@@ -387,6 +401,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../build/xcframework\"",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CADisableMinimumFrameDurationOnPhone = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifestType = UISceneManifestTypeCode;
