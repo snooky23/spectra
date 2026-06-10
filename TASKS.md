@@ -48,7 +48,7 @@ This document tracks the implementation progress of Spectra Logger against the f
 - [ ] Remote log streaming (WebSocket)
 - [ ] Log analytics dashboard
 - [ ] Crash symbolication
-- [ ] Plugin architecture for custom sinks
+- [x] Plugin architecture for custom sinks
 - [ ] Integration with crash reporting services (Sentry, Firebase)
 
 ## Phase 7: KMP UI SDK Migration & Android 17 Compliance
