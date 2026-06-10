@@ -5,8 +5,6 @@ import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogLevel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -14,10 +12,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
 class SpectraLoggerConfigurationTest {
-    
-    @BeforeTest
-    @AfterTest
-    fun reset() = runTest {
+    private suspend fun reset() {
         SpectraLogger.clear()
         SpectraLogger.clearNetwork()
         SpectraLogger.configure {
@@ -28,36 +23,41 @@ class SpectraLoggerConfigurationTest {
     }
 
     @Test
-    fun testDefaultConfiguration() {
-        val config = SpectraLogger.configuration
+    fun testDefaultConfiguration() =
+        runTest {
+            reset()
+            val config = SpectraLogger.configuration
 
-        assertEquals(LogLevel.VERBOSE, config.minLogLevel)
-        assertEquals(10_000, config.logStorageConfig.maxCapacity)
-        assertEquals(1_000, config.networkStorageConfig.maxCapacity)
-    }
-
-    @Test
-    fun testConfigureChangesSettings() {
-        SpectraLogger.configure {
-            minLogLevel = LogLevel.WARNING
-            logStorage {
-                maxCapacity = 5_000
-            }
-            networkStorage {
-                maxCapacity = 500
-            }
+            assertEquals(LogLevel.VERBOSE, config.minLogLevel)
+            assertEquals(10_000, config.logStorageConfig.maxCapacity)
+            assertEquals(1_000, config.networkStorageConfig.maxCapacity)
         }
 
-        val config = SpectraLogger.configuration
-        assertEquals(LogLevel.WARNING, config.minLogLevel)
-        assertEquals(5_000, config.logStorageConfig.maxCapacity)
-        assertEquals(500, config.networkStorageConfig.maxCapacity)
-    }
+    @Test
+    fun testConfigureChangesSettings() =
+        runTest {
+            reset()
+            SpectraLogger.configure {
+                minLogLevel = LogLevel.WARNING
+                logStorage {
+                    maxCapacity = 5_000
+                }
+                networkStorage {
+                    maxCapacity = 500
+                }
+            }
+
+            val config = SpectraLogger.configuration
+            assertEquals(LogLevel.WARNING, config.minLogLevel)
+            assertEquals(5_000, config.logStorageConfig.maxCapacity)
+            assertEquals(500, config.networkStorageConfig.maxCapacity)
+        }
 
     @Test
     @Ignore // TODO: Fix dispatcher issue with SpectraLogger singleton on iOS
     fun testConfigureAffectsLogging() =
         runTest(timeout = 10000.milliseconds) {
+            reset()
             // Configure to filter out VERBOSE and DEBUG
             SpectraLogger.configure {
                 minLogLevel = LogLevel.INFO
@@ -87,6 +87,7 @@ class SpectraLoggerConfigurationTest {
     @Test
     fun testNetworkStorageAccess() =
         runTest {
+            reset()
             val networkStorage = SpectraLogger.networkStorage
             assertEquals(0, networkStorage.count())
         }
@@ -94,6 +95,7 @@ class SpectraLoggerConfigurationTest {
     @Test
     fun testLogStorageAccess() =
         runTest {
+            reset()
             val logStorage = SpectraLogger.logStorage
             assertTrue(logStorage.count() >= 0)
         }
@@ -101,6 +103,7 @@ class SpectraLoggerConfigurationTest {
     @Test
     fun testNetworkQueryAPI() =
         runTest {
+            reset()
             val results = SpectraLogger.queryNetwork()
             assertTrue(results.isEmpty() || results.isNotEmpty()) // Just verify it works
         }
@@ -108,6 +111,7 @@ class SpectraLoggerConfigurationTest {
     @Test
     fun testNetworkCount() =
         runTest {
+            reset()
             val count = SpectraLogger.networkCount()
             assertTrue(count >= 0)
         }
@@ -115,6 +119,7 @@ class SpectraLoggerConfigurationTest {
     @Test
     fun testClearNetwork() =
         runTest {
+            reset()
             SpectraLogger.clearNetwork()
             assertEquals(0, SpectraLogger.networkCount())
         }

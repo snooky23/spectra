@@ -88,8 +88,9 @@ class SpectraOkHttpInterceptor(
                         body.writeTo(sink)
                     }
 
-                    val isOversized = bytesWritten >= currentMaxBodySize ||
-                        (body.contentLength() != -1L && body.contentLength() > currentMaxBodySize)
+                    val isOversized =
+                        bytesWritten >= currentMaxBodySize ||
+                            (body.contentLength() != -1L && body.contentLength() > currentMaxBodySize)
 
                     requestBodyText =
                         if (isOversized) {
@@ -145,8 +146,9 @@ class SpectraOkHttpInterceptor(
                 val peekedBody = response.peekBody(currentMaxBodySize)
                 responseBodyText = peekedBody.string()
                 val originalContentLength = response.body?.contentLength() ?: -1L
-                val isTruncated = (originalContentLength != -1L && originalContentLength > currentMaxBodySize) ||
-                    (originalContentLength == -1L && peekedBody.contentLength() == currentMaxBodySize)
+                val isTruncated =
+                    (originalContentLength != -1L && originalContentLength > currentMaxBodySize) ||
+                        (originalContentLength == -1L && peekedBody.contentLength() == currentMaxBodySize)
                 if (isTruncated) {
                     responseBodyText += "\n[Body truncated]"
                 }

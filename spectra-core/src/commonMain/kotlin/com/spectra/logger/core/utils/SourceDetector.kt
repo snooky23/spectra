@@ -74,7 +74,7 @@ object SourceDetector {
                 "SwiftUI",
                 "libsystem",
                 "detectSource",
-                "logNetwork"
+                "logNetwork",
             )
 
         // Find the first non-internal package

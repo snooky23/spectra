@@ -100,9 +100,10 @@ val SpectraKtorPlugin =
                     } else if (savedCall === call && contentLength < 0L) {
                         "[Chunked response body omitted to prevent stream consumption]"
                     } else {
-                        val raw = runCatching {
-                            savedCall.response.bodyAsText()
-                        }.getOrElse { "[Failed to read response body: ${it.message}]" }
+                        val raw =
+                            runCatching {
+                                savedCall.response.bodyAsText()
+                            }.getOrElse { "[Failed to read response body: ${it.message}]" }
                         truncateSafely(raw)
                     }
 

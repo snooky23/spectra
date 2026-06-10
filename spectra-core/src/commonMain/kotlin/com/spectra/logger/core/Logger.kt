@@ -4,17 +4,16 @@ import com.spectra.logger.core.model.*
 import com.spectra.logger.core.utils.*
 import com.spectra.logger.core.utils.IdGenerator
 import com.spectra.logger.core.utils.SourceDetector
+import com.spectra.logger.core.utils.ioDispatcher
 import com.spectra.logger.feature.logs.model.LogEntry
 import com.spectra.logger.feature.logs.model.LogFilter
 import com.spectra.logger.feature.logs.model.LogLevel
 import com.spectra.logger.feature.logs.sink.LogSink
 import com.spectra.logger.feature.logs.storage.LogStorage
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import com.spectra.logger.core.utils.ioDispatcher
 
 /**
  * Core logger implementation.
@@ -174,8 +173,8 @@ class Logger(
 
         scope.launch {
             // Run local storage concurrently with sinks so it doesn't block plugin execution
-            launch { storage.add(entry) }
-            
+            storage.add(entry)
+
             // Fan-out to custom sinks sequentially within this coroutine to prevent launch explosion
             sinks.forEach { sink ->
                 runCatching {

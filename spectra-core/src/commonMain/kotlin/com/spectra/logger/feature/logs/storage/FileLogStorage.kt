@@ -45,7 +45,9 @@ class FileLogStorage(
     private val _ioErrorHandler = atomic<((Throwable) -> Unit)?>(null)
     var ioErrorHandler: ((Throwable) -> Unit)?
         get() = _ioErrorHandler.value
-        set(value) { _ioErrorHandler.value = value }
+        set(value) {
+            _ioErrorHandler.value = value
+        }
     private val json = Json { prettyPrint = false }
     private val logFlow = MutableSharedFlow<LogEntry>(replay = 0, extraBufferCapacity = 64)
 
@@ -247,10 +249,11 @@ class FileLogStorage(
 
         return writeMutex.withLock {
             withContext(backgroundDispatcher) {
-                val timeStr = com.spectra.logger.core.utils.SpectraTime.now().toString()
-                    .replace(":", "-")
-                    .replace(".", "-")
-                    .replace("T", "_")
+                val timeStr =
+                    com.spectra.logger.core.utils.SpectraTime.now().toString()
+                        .replace(":", "-")
+                        .replace(".", "-")
+                        .replace("T", "_")
                 val exportFileName = "export_$timeStr.jsonl"
 
                 // If it exists, delete it first (unlikely due to timestamp)
@@ -329,7 +332,10 @@ class FileLogStorage(
                 for (fileName in logFiles) {
                     val idx = fileName.removePrefix("logs_").removeSuffix(".jsonl").toIntOrNull() ?: continue
                     if (idx < currentFileIndex - maxFiles + 1) {
-                        try { fileSystem.delete(fileName) } catch(e: Exception) {}
+                        try {
+                            fileSystem.delete(fileName)
+                        } catch (e: Exception) {
+                        }
                     }
                 }
 

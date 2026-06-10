@@ -4,6 +4,7 @@ import com.spectra.logger.core.Logger
 import com.spectra.logger.core.model.*
 import com.spectra.logger.core.storage.FileSystem
 import com.spectra.logger.core.utils.*
+import com.spectra.logger.core.utils.ioDispatcher
 import com.spectra.logger.feature.logs.model.LogEntry
 import com.spectra.logger.feature.logs.model.LogFilter
 import com.spectra.logger.feature.logs.storage.FileLogStorage
@@ -17,11 +18,9 @@ import com.spectra.logger.feature.settings.config.LoggerConfiguration
 import com.spectra.logger.feature.settings.config.LoggerConfigurationBuilder
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import com.spectra.logger.core.utils.ioDispatcher
 
 /**
  * Main entry point for the Spectra Logger framework.
@@ -46,13 +45,11 @@ import com.spectra.logger.core.utils.ioDispatcher
  * @since 0.0.1
  */
 object SpectraLogger {
-    private val configAtomic = atomic(LoggerConfiguration.DEFAULT)
+    private val configAtomic = atomic<LoggerConfiguration?>(null)
     private val logStorageAtomic =
-        atomic<LogStorage>(InMemoryLogStorage(maxCapacity = LoggerConfiguration.DEFAULT.logStorageConfig.maxCapacity))
+        atomic<LogStorage?>(null)
     private val networkStorageAtomic =
-        atomic<NetworkLogStorage>(
-            InMemoryNetworkLogStorage(maxCapacity = LoggerConfiguration.DEFAULT.networkStorageConfig.maxCapacity),
-        )
+        atomic<NetworkLogStorage?>(null)
     private val exceptionHandler =
         kotlinx.coroutines.CoroutineExceptionHandler { _, throwable ->
             // Silently swallow internal storage exceptions to prevent app crashes
@@ -64,44 +61,65 @@ object SpectraLogger {
         set(value) {
             field = value
             // Re-bind the active logger when scope changes
-            loggerAtomic.value = Logger(
-                storage = logStorageAtomic.value,
-                sinks = configuration.logSinks,
-                minLevel = configuration.minLogLevel,
-                scope = value
-            )
+            loggerAtomic.value =
+                Logger(
+                    storage = logStorage,
+                    sinks = configuration.logSinks,
+                    minLevel = configuration.minLogLevel,
+                    scope = value,
+                )
         }
 
     private val loggerAtomic =
-        atomic(
-            Logger(
-                storage = logStorageAtomic.value,
-                sinks = LoggerConfiguration.DEFAULT.logSinks,
-                minLevel = LoggerConfiguration.DEFAULT.minLogLevel,
-                scope = ioScope,
-            ),
-        )
+        atomic<Logger?>(null)
 
     /**
      * Current configuration.
      */
-    val configuration: LoggerConfiguration
-        get() = configAtomic.value
+    public val configuration: LoggerConfiguration
+        get() = configAtomic.value ?: LoggerConfiguration.DEFAULT
 
     /**
      * Log storage instance.
      */
-    val logStorage: LogStorage
-        get() = logStorageAtomic.value
+    public val logStorage: LogStorage
+        get() {
+            var current = logStorageAtomic.value
+            if (current == null) {
+                current = InMemoryLogStorage(maxCapacity = configuration.logStorageConfig.maxCapacity)
+                logStorageAtomic.compareAndSet(null, current)
+            }
+            return logStorageAtomic.value!!
+        }
 
     /**
      * Network log storage instance.
      */
-    val networkStorage: NetworkLogStorage
-        get() = networkStorageAtomic.value
+    public val networkStorage: NetworkLogStorage
+        get() {
+            var current = networkStorageAtomic.value
+            if (current == null) {
+                current = InMemoryNetworkLogStorage(maxCapacity = configuration.networkStorageConfig.maxCapacity)
+                networkStorageAtomic.compareAndSet(null, current)
+            }
+            return networkStorageAtomic.value!!
+        }
 
     private val logger: Logger
-        get() = loggerAtomic.value
+        get() {
+            var current = loggerAtomic.value
+            if (current == null) {
+                current =
+                    Logger(
+                        storage = logStorage,
+                        sinks = configuration.logSinks,
+                        minLevel = configuration.minLogLevel,
+                        scope = ioScope,
+                    )
+                loggerAtomic.compareAndSet(null, current)
+            }
+            return loggerAtomic.value!!
+        }
 
     /**
      * Returns the current version of the Spectra Logger framework.
@@ -199,8 +217,6 @@ object SpectraLogger {
         metadata: Map<String, String>? = null,
     ) = logger.f(tag, message, throwable, metadata)
 
-
-
     /**
      * Internal setter for testing
      */
@@ -219,10 +235,11 @@ object SpectraLogger {
      * Log a network event without blocking.
      */
     fun logNetwork(entry: NetworkLogEntry) {
+        if (!configuration.enabledFeatures.enableNetworkLogging) return
         ioScope.launch {
             // Run local storage concurrently with sinks so it doesn't block plugin execution
-            launch { networkStorage.add(entry) }
-            
+            networkStorage.add(entry)
+
             // Fan-out to custom network sinks sequentially within this coroutine to prevent launch explosion
             configuration.networkLogSinks.forEach { sink ->
                 runCatching {
@@ -312,46 +329,47 @@ object SpectraLogger {
         val newConfig = LoggerConfigurationBuilder().apply(block).build()
         configAtomic.value = newConfig
 
-        val currentLogStorage = logStorageAtomic.value
-        if (newConfig.logStorageConfig.enablePersistence && newConfig.logStorageConfig.directoryPath != null) {
-            val fileSystem = FileSystem(newConfig.logStorageConfig.directoryPath!!)
-            if (fileSystem.okioFs != null) {
-                if (currentLogStorage is FileLogStorage) {
-                    ioScope.launch { currentLogStorage.close() }
-                }
-                logStorageAtomic.value =
+        val currentLogStorage = logStorage
+        val newStorage =
+            if (newConfig.logStorageConfig.enablePersistence && newConfig.logStorageConfig.directoryPath != null) {
+                val fileSystem = FileSystem(newConfig.logStorageConfig.directoryPath!!)
+                if (fileSystem.okioFs != null) {
+                    if (currentLogStorage is FileLogStorage) {
+                        ioScope.launch { currentLogStorage.close() }
+                    }
                     FileLogStorage(
                         fileSystem = fileSystem,
                         maxFileSize = newConfig.logStorageConfig.maxFileSizeBytes ?: FileLogStorage.DEFAULT_MAX_FILE_SIZE,
                         flushThreshold = newConfig.logStorageConfig.flushThreshold ?: 50,
                         maxCapacity = newConfig.logStorageConfig.maxCapacity,
                     )
+                } else {
+                    if (currentLogStorage is FileLogStorage) {
+                        ioScope.launch { currentLogStorage.close() }
+                    }
+                    InMemoryLogStorage(maxCapacity = newConfig.logStorageConfig.maxCapacity)
+                }
+            } else if (currentLogStorage is InMemoryLogStorage) {
+                currentLogStorage.updateCapacity(newConfig.logStorageConfig.maxCapacity)
+                currentLogStorage
             } else {
                 if (currentLogStorage is FileLogStorage) {
                     ioScope.launch { currentLogStorage.close() }
                 }
-                logStorageAtomic.value = InMemoryLogStorage(maxCapacity = newConfig.logStorageConfig.maxCapacity)
+                InMemoryLogStorage(maxCapacity = newConfig.logStorageConfig.maxCapacity)
             }
-        } else if (currentLogStorage is InMemoryLogStorage) {
-            currentLogStorage.updateCapacity(newConfig.logStorageConfig.maxCapacity)
-        } else {
-            if (currentLogStorage is FileLogStorage) {
-                ioScope.launch { currentLogStorage.close() }
-            }
-            logStorageAtomic.value = InMemoryLogStorage(maxCapacity = newConfig.logStorageConfig.maxCapacity)
-        }
+        logStorageAtomic.value = newStorage
 
-        val currentNetworkStorage = networkStorageAtomic.value
+        val currentNetworkStorage = networkStorage
         if (currentNetworkStorage is InMemoryNetworkLogStorage) {
             currentNetworkStorage.updateCapacity(newConfig.networkStorageConfig.maxCapacity)
         } else {
             networkStorageAtomic.value = InMemoryNetworkLogStorage(maxCapacity = newConfig.networkStorageConfig.maxCapacity)
         }
 
-        // Recreate logger with new configuration using the active logStorage and sinks
         loggerAtomic.value =
             Logger(
-                storage = logStorageAtomic.value,
+                storage = logStorageAtomic.value!!,
                 sinks = newConfig.logSinks,
                 minLevel = newConfig.minLogLevel,
                 scope = ioScope,
