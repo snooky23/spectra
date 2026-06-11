@@ -185,9 +185,7 @@ generated-sources/
 
 # BMad / Antigravity Agent Files
 .gemini/
-_bmad/
-_bmad-output/
-# Note: .agents/skills/ can be tracked if you want to share installed skills with your team.
+# Note: .agents/skills/, _bmad/ and _bmad-output/ can be tracked if you want to share installed skills with your team.
 
 # Temporary patches/scripts
 *.patch
