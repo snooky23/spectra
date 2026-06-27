@@ -35,7 +35,7 @@ else
 fi
 
 # Ensure output directory exists for consumers (e.g. Package.swift)
-XCFRAMEWORK_DIR="$PROJECT_ROOT/build/xcframework"
+XCFRAMEWORK_DIR="$PROJECT_ROOT/SpectraFrameworks"
 mkdir -p "$XCFRAMEWORK_DIR"
 
 # Copy the generated XCFrameworks to the centralized location
