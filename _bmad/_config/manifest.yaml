@@ -1,59 +1,59 @@
 installation:
-  version: 6.6.0
+  version: 6.9.0
   installDate: 2026-04-08T18:46:33.172Z
-  lastUpdated: 2026-05-16T20:35:20.448Z
+  lastUpdated: 2026-06-27T20:57:09.566Z
 modules:
   - name: core
-    version: 6.6.0
+    version: 6.9.0
     installDate: 2026-04-08T18:46:31.829Z
-    lastUpdated: 2026-05-16T20:35:20.399Z
+    lastUpdated: 2026-06-27T20:57:09.561Z
     source: built-in
     npmPackage: null
     repoUrl: null
   - name: bmm
-    version: 6.6.0
+    version: 6.9.0
     installDate: 2026-04-08T18:46:22.000Z
-    lastUpdated: 2026-05-16T20:35:20.400Z
+    lastUpdated: 2026-06-27T20:57:09.562Z
     source: built-in
     npmPackage: null
     repoUrl: null
-  - name: bmb
-    version: v1.8.0
-    installDate: 2026-04-08T18:46:23.338Z
-    lastUpdated: 2026-05-16T20:35:20.411Z
-    source: external
-    npmPackage: bmad-builder
-    repoUrl: https://github.com/bmad-code-org/bmad-builder
-    channel: stable
-    sha: d64469f61fadc6cfbf2dea6a0a257fe6eb2790a2
   - name: tea
-    version: v1.18.0
+    version: v1.19.0
     installDate: 2026-04-08T18:46:25.308Z
-    lastUpdated: 2026-05-16T20:35:20.421Z
+    lastUpdated: 2026-06-27T20:57:09.563Z
     source: external
     npmPackage: bmad-method-test-architecture-enterprise
     repoUrl: https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise
     channel: stable
-    sha: 34a242c1379a1fdb4b812b4dc94f52df764341bb
-  - name: wds
-    version: v0.1.0
-    installDate: 2026-04-08T18:46:27.053Z
-    lastUpdated: 2026-05-16T20:35:20.438Z
-    source: community
-    npmPackage: bmad-method-wds-expansion
-    repoUrl: https://github.com/bmad-code-org/bmad-method-wds-expansion
-    channel: stable
-    sha: 35500f44eb445fe7ffd12292c58108a81e19e65e
-    registryApprovedTag: v0.1.0
+    sha: 8734d51f24071ddbcb3617390b5fcddb4128ef77
+  - name: bmb
+    version: v1.8.0
+    installDate: 2026-04-08T18:46:23.338Z
+    lastUpdated: 2026-06-27T20:57:09.564Z
+    source: external
+    npmPackage: bmad-builder
+    repoUrl: https://github.com/bmad-code-org/bmad-builder
+    channel: pinned
+    sha: d64469f61fadc6cfbf2dea6a0a257fe6eb2790a2
   - name: cis
-    version: v0.2.0
+    version: v0.2.1
     installDate: 2026-04-08T18:46:28.610Z
-    lastUpdated: 2026-05-16T20:35:20.448Z
+    lastUpdated: 2026-06-27T20:57:09.565Z
     source: external
     npmPackage: bmad-creative-intelligence-suite
     repoUrl: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite
     channel: stable
-    sha: 14a63b893c07173b7a6cfe0fb6a9a72ba51d3cf1
+    sha: 07a8dd03d196a762f21c241d985293fe5b0f90e7
+  - name: wds
+    version: v0.4.3
+    installDate: 2026-04-08T18:46:27.053Z
+    lastUpdated: 2026-06-27T20:57:09.566Z
+    source: external
+    npmPackage: bmad-wds
+    repoUrl: https://github.com/bmad-code-org/bmad-method-wds-expansion
+    channel: stable
+    sha: cc16f09fcfab26d35635af1491f36a38a8431c8d
+    registryApprovedTag: v0.1.0
 ides:
   - gemini
   - antigravity
