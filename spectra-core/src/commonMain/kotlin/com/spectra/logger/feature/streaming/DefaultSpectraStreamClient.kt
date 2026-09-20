@@ -1,6 +1,5 @@
 package com.spectra.logger.feature.streaming
 
-import com.spectra.logger.SpectraLogger
 import com.spectra.logger.feature.events.storage.EventLogStorage
 import com.spectra.logger.feature.logs.storage.LogStorage
 import com.spectra.logger.feature.network.storage.NetworkLogStorage
@@ -28,9 +27,9 @@ import kotlinx.coroutines.sync.withLock
  */
 class DefaultSpectraStreamClient(
     private val transport: StreamTransport = KtorStreamTransport(),
-    private val logStorage: LogStorage = SpectraLogger.logStorage,
-    private val networkStorage: NetworkLogStorage = SpectraLogger.networkStorage,
-    private val eventStorage: EventLogStorage = SpectraLogger.eventStorage,
+    private val logStorage: LogStorage,
+    private val networkStorage: NetworkLogStorage,
+    private val eventStorage: EventLogStorage,
     private val deviceInfoProvider: DeviceInfoProvider = SimpleDeviceInfoProvider(),
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) : SpectraStreamClient {
