@@ -15,6 +15,7 @@ data class LoggerConfiguration(
     val minLogLevel: LogLevel = LogLevel.VERBOSE,
     val logStorageConfig: StorageConfiguration = StorageConfiguration(),
     val networkStorageConfig: StorageConfiguration = StorageConfiguration(maxCapacity = 1_000),
+    val eventStorageConfig: StorageConfiguration = StorageConfiguration(maxCapacity = 5_000),
     val performanceConfig: PerformanceConfiguration = PerformanceConfiguration(),
     val enabledFeatures: FeatureFlags = FeatureFlags(),
     val appContext: AppContext? = null,
@@ -57,6 +58,7 @@ data class PerformanceConfiguration(
  */
 data class FeatureFlags(
     val enableNetworkLogging: Boolean = true,
+    val enableEventLogging: Boolean = true,
     val enableCrashReporting: Boolean = false,
     val enablePerformanceMetrics: Boolean = false,
     val networkIgnoredDomains: List<String> = emptyList(),
@@ -80,6 +82,7 @@ class LoggerConfigurationBuilder {
 
     private var logStorageConfig = StorageConfiguration()
     private var networkStorageConfig = StorageConfiguration(maxCapacity = 1_000)
+    private var eventStorageConfig = StorageConfiguration(maxCapacity = 5_000)
     private var performanceConfig = PerformanceConfiguration()
     private var enabledFeatures = FeatureFlags()
     private val logSinks = mutableListOf<LogSink>()
@@ -98,6 +101,14 @@ class LoggerConfigurationBuilder {
     fun networkStorage(block: StorageConfigurationBuilder.() -> Unit) {
         networkStorageConfig =
             StorageConfigurationBuilder(maxCapacity = 1_000).apply(block).build()
+    }
+
+    /**
+     * Configure event log storage settings.
+     */
+    fun eventStorage(block: StorageConfigurationBuilder.() -> Unit) {
+        eventStorageConfig =
+            StorageConfigurationBuilder(maxCapacity = 5_000).apply(block).build()
     }
 
     /**
@@ -133,6 +144,7 @@ class LoggerConfigurationBuilder {
             minLogLevel = minLogLevel,
             logStorageConfig = logStorageConfig,
             networkStorageConfig = networkStorageConfig,
+            eventStorageConfig = eventStorageConfig,
             performanceConfig = performanceConfig,
             enabledFeatures = enabledFeatures,
             appContext = appContext,
@@ -187,6 +199,7 @@ class PerformanceConfigurationBuilder(
 @LoggerConfigurationDsl
 class FeatureFlagsBuilder(
     var enableNetworkLogging: Boolean = true,
+    var enableEventLogging: Boolean = true,
     var enableCrashReporting: Boolean = false,
     var enablePerformanceMetrics: Boolean = false,
     var networkIgnoredDomains: List<String> = emptyList(),
@@ -196,6 +209,7 @@ class FeatureFlagsBuilder(
     internal fun build(): FeatureFlags =
         FeatureFlags(
             enableNetworkLogging = enableNetworkLogging,
+            enableEventLogging = enableEventLogging,
             enableCrashReporting = enableCrashReporting,
             enablePerformanceMetrics = enablePerformanceMetrics,
             networkIgnoredDomains = networkIgnoredDomains,
