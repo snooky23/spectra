@@ -160,3 +160,19 @@ See `_bmad-output/planning-artifacts/spec-events-webview-streaming/SPEC.md` and 
   - [x] Decouple iOS `SpectraWKScriptMessageHandler` via constructor-injected log sink function to remove global singleton coupling.
   - [x] Decouple `DefaultSpectraStreamClient` by eliminating circular imports and dependencies on the `SpectraLogger` facade.
   - [x] Verify complete dependency inversion and interface-driven design across all multiplatform streaming and webview components.
+
+## Phase 15: Enhanced Multi-Format Exporters, HAR 1.2 & Telemetry Bundle
+- [x] **Phase 15.1: Events Multi-Format Export Support**
+  - [x] Implement `exportEventsAsText`, `exportEventsAsJson`, `exportEventsAsCsv`, and `exportEventsAsMarkdown` in `LogExporter`.
+- [x] **Phase 15.2: Network HAR 1.2 Format Exporter**
+  - [x] Implement standard HTTP Archive 1.2 serialization (`HarRoot`, `HarLog`, `HarEntry`, `HarRequest`, `HarResponse`) for Chrome DevTools / Charles / Proxyman.
+- [x] **Phase 15.3: Full Unified Telemetry Debug Bundle**
+  - [x] Implement comprehensive debug bundle export combining Logs, Network, Events, and Device Context.
+- [x] **Phase 15.4: SettingsViewModel Decoupling & UI Integration**
+  - [x] Decouple `SettingsViewModel` via constructor injection (`LogStorage`, `NetworkLogStorage`, `EventLogStorage`).
+  - [x] Add HAR export option in Network viewer and Events export option in Events screen.
+  - [x] Update Settings screen export action to produce full multi-source bundle.
+- [x] **Phase 15.5: Hermetic Unit Tests & Verification**
+  - [x] Write unit tests for HAR 1.2 export, Events export formats, and decoupled `SettingsViewModelTest`.
+  - [x] Run test suite and ktlint validation to ensure zero warnings/errors.
+

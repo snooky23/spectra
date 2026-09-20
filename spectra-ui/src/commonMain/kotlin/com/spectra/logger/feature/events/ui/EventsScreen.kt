@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -58,6 +59,7 @@ fun EventsScreen(
                     onClearEvents = viewModel::clearEvents,
                     onSearchChange = viewModel::onSearchTextChanged,
                     onToggleEventType = viewModel::toggleEventType,
+                    onExportEvents = viewModel::exportEvents,
                 )
             },
             detailContent = { selectedItem, navigateBack, isDualPane ->
@@ -91,6 +93,7 @@ private fun EventsListContent(
     onClearEvents: () -> Unit,
     onSearchChange: (String) -> Unit,
     onToggleEventType: (EventType) -> Unit,
+    onExportEvents: (com.spectra.logger.feature.logs.export.ExportFormat) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -119,6 +122,30 @@ private fun EventsListContent(
                                 showMenu = false
                             },
                             leadingIcon = { Icon(Icons.Default.Refresh, null) },
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Export as Markdown") },
+                            onClick = {
+                                onExportEvents(com.spectra.logger.feature.logs.export.ExportFormat.MARKDOWN)
+                                showMenu = false
+                            },
+                            leadingIcon = { Icon(Icons.Default.Share, null) },
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Export as CSV") },
+                            onClick = {
+                                onExportEvents(com.spectra.logger.feature.logs.export.ExportFormat.CSV)
+                                showMenu = false
+                            },
+                            leadingIcon = { Icon(Icons.Default.Share, null) },
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Export as JSON") },
+                            onClick = {
+                                onExportEvents(com.spectra.logger.feature.logs.export.ExportFormat.JSON)
+                                showMenu = false
+                            },
+                            leadingIcon = { Icon(Icons.Default.Share, null) },
                         )
                         DropdownMenuItem(
                             text = { Text("Clear Events") },

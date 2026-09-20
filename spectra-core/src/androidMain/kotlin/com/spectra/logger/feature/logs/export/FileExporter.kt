@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.content.FileProvider
 import com.spectra.logger.SpectraLogger
-import com.spectra.logger.core.model.*
-import com.spectra.logger.core.utils.*
+import com.spectra.logger.core.utils.SpectraTime
+import com.spectra.logger.feature.events.model.EventFilter
 import com.spectra.logger.feature.logs.model.LogFilter
 import com.spectra.logger.feature.network.model.NetworkLogFilter
 import kotlinx.coroutines.Dispatchers
@@ -37,9 +37,11 @@ object FileExporter {
                     ExportFormat.TEXT -> "txt"
                     ExportFormat.JSON -> "json"
                     ExportFormat.CSV -> "csv"
+                    ExportFormat.HAR -> "har"
+                    ExportFormat.MARKDOWN -> "md"
                 }
 
-            val defaultFileName = "spectra_logs_${com.spectra.logger.core.utils.SpectraTime.now().toEpochMilliseconds()}.$extension"
+            val defaultFileName = "spectra_logs_${SpectraTime.now().toEpochMilliseconds()}.$extension"
             val file = File(context.cacheDir, fileName ?: defaultFileName)
 
             val content =
@@ -47,6 +49,8 @@ object FileExporter {
                     ExportFormat.TEXT -> LogExporter.exportLogsAsText(SpectraLogger.logStorage, filter)
                     ExportFormat.JSON -> LogExporter.exportLogsAsJson(SpectraLogger.logStorage, filter)
                     ExportFormat.CSV -> LogExporter.exportLogsAsCsv(SpectraLogger.logStorage, filter)
+                    ExportFormat.HAR -> LogExporter.exportLogsAsJson(SpectraLogger.logStorage, filter)
+                    ExportFormat.MARKDOWN -> LogExporter.exportLogsAsMarkdown(SpectraLogger.logStorage, filter)
                 }
 
             file.writeText(content)
@@ -74,26 +78,55 @@ object FileExporter {
                     ExportFormat.TEXT -> "txt"
                     ExportFormat.JSON -> "json"
                     ExportFormat.CSV -> "csv"
+                    ExportFormat.HAR -> "har"
+                    ExportFormat.MARKDOWN -> "md"
                 }
 
-            val defaultFileName = "spectra_network_logs_${com.spectra.logger.core.utils.SpectraTime.now().toEpochMilliseconds()}.$extension"
+            val defaultFileName = "spectra_network_logs_${SpectraTime.now().toEpochMilliseconds()}.$extension"
             val file = File(context.cacheDir, fileName ?: defaultFileName)
 
             val content =
                 when (format) {
-                    ExportFormat.TEXT ->
-                        LogExporter.exportNetworkLogsAsText(
-                            SpectraLogger.networkStorage,
-                            filter,
-                        )
+                    ExportFormat.TEXT -> LogExporter.exportNetworkLogsAsText(SpectraLogger.networkStorage, filter)
+                    ExportFormat.JSON -> LogExporter.exportNetworkLogsAsJson(SpectraLogger.networkStorage, filter)
+                    ExportFormat.CSV -> ""
+                    ExportFormat.HAR -> LogExporter.exportNetworkLogsAsHar(SpectraLogger.networkStorage, filter)
+                    ExportFormat.MARKDOWN -> LogExporter.exportNetworkLogsAsText(SpectraLogger.networkStorage, filter)
+                }
 
-                    ExportFormat.JSON ->
-                        LogExporter.exportNetworkLogsAsJson(
-                            SpectraLogger.networkStorage,
-                            filter,
-                        )
+            file.writeText(content)
+            file
+        }
 
-                    ExportFormat.CSV -> "" // CSV not implemented for network logs
+    /**
+     * Export events to a file and return the file.
+     */
+    suspend fun exportEventsToFile(
+        context: Context,
+        format: ExportFormat = ExportFormat.TEXT,
+        filter: EventFilter = EventFilter.NONE,
+        fileName: String? = null,
+    ): File =
+        withContext(Dispatchers.IO) {
+            val extension =
+                when (format) {
+                    ExportFormat.TEXT -> "txt"
+                    ExportFormat.JSON -> "json"
+                    ExportFormat.CSV -> "csv"
+                    ExportFormat.HAR -> "json"
+                    ExportFormat.MARKDOWN -> "md"
+                }
+
+            val defaultFileName = "spectra_events_${SpectraTime.now().toEpochMilliseconds()}.$extension"
+            val file = File(context.cacheDir, fileName ?: defaultFileName)
+
+            val content =
+                when (format) {
+                    ExportFormat.TEXT -> LogExporter.exportEventsAsText(SpectraLogger.eventStorage, filter)
+                    ExportFormat.JSON -> LogExporter.exportEventsAsJson(SpectraLogger.eventStorage, filter)
+                    ExportFormat.CSV -> LogExporter.exportEventsAsCsv(SpectraLogger.eventStorage, filter)
+                    ExportFormat.HAR -> LogExporter.exportEventsAsJson(SpectraLogger.eventStorage, filter)
+                    ExportFormat.MARKDOWN -> LogExporter.exportEventsAsMarkdown(SpectraLogger.eventStorage, filter)
                 }
 
             file.writeText(content)
@@ -102,10 +135,6 @@ object FileExporter {
 
     /**
      * Share logs via Android share sheet.
-     *
-     * @param context The context
-     * @param format Export format
-     * @param filter Optional log filter
      */
     suspend fun shareLogs(
         context: Context,
@@ -118,10 +147,6 @@ object FileExporter {
 
     /**
      * Share network logs via Android share sheet.
-     *
-     * @param context The context
-     * @param format Export format
-     * @param filter Optional network log filter
      */
     suspend fun shareNetworkLogs(
         context: Context,
@@ -133,11 +158,19 @@ object FileExporter {
     }
 
     /**
+     * Share events via Android share sheet.
+     */
+    suspend fun shareEvents(
+        context: Context,
+        format: ExportFormat = ExportFormat.TEXT,
+        filter: EventFilter = EventFilter.NONE,
+    ) {
+        val file = exportEventsToFile(context, format, filter)
+        shareFile(context, file, "application/octet-stream")
+    }
+
+    /**
      * Share a file using Android share sheet.
-     *
-     * @param context The context
-     * @param file The file to share
-     * @param mimeType MIME type of the file
      */
     private fun shareFile(
         context: Context,
@@ -158,7 +191,7 @@ object FileExporter {
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
-        val chooser = Intent.createChooser(shareIntent, "Share Spectra Logs")
+        val chooser = Intent.createChooser(shareIntent, "Share Spectra Telemetry")
         chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(chooser)
     }

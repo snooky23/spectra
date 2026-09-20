@@ -49,6 +49,8 @@ fun NetworkLogsScreen(
                     onRefresh = viewModel::loadLogs,
                     onClearLogs = viewModel::clearLogs,
                     onSearchChange = viewModel::onSearchTextChanged,
+                    onExportHar = { viewModel.exportLogs(com.spectra.logger.feature.logs.export.ExportFormat.HAR) },
+                    onExportJson = { viewModel.exportLogs(com.spectra.logger.feature.logs.export.ExportFormat.JSON) },
                 )
             },
             detailContent = { selectedItem, navigateBack, isDualPane ->
@@ -81,6 +83,8 @@ private fun NetworkLogsListContent(
     onRefresh: () -> Unit,
     onClearLogs: () -> Unit,
     onSearchChange: (String) -> Unit,
+    onExportHar: () -> Unit,
+    onExportJson: () -> Unit,
 ) {
     var isDashboardMode by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
 
@@ -111,6 +115,22 @@ private fun NetworkLogsListContent(
                                 showMenu = false
                             },
                             leadingIcon = { Icon(Icons.Default.Refresh, null) },
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Export as HAR") },
+                            onClick = {
+                                onExportHar()
+                                showMenu = false
+                            },
+                            leadingIcon = { Icon(Icons.Default.Share, null) },
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Export as JSON") },
+                            onClick = {
+                                onExportJson()
+                                showMenu = false
+                            },
+                            leadingIcon = { Icon(Icons.Default.Share, null) },
                         )
                         DropdownMenuItem(
                             text = { Text("Clear All") },

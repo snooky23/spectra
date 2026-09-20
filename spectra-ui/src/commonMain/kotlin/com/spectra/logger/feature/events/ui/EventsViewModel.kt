@@ -3,9 +3,12 @@ package com.spectra.logger.feature.events.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spectra.logger.SpectraLogger
+import com.spectra.logger.core.ui.util.PlatformUtils
 import com.spectra.logger.feature.events.model.EventFilter
 import com.spectra.logger.feature.events.model.EventType
 import com.spectra.logger.feature.events.storage.EventLogStorage
+import com.spectra.logger.feature.logs.export.ExportFormat
+import com.spectra.logger.feature.logs.export.LogExporter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -97,6 +100,24 @@ class EventsViewModel(
                     filteredEvents = emptyList(),
                 )
             }
+        }
+    }
+
+    fun exportEvents(
+        format: ExportFormat = ExportFormat.MARKDOWN,
+        context: Any? = null,
+    ) {
+        viewModelScope.launch {
+            val filter = _uiState.value.advancedFilter
+            val text =
+                when (format) {
+                    ExportFormat.JSON -> LogExporter.exportEventsAsJson(storage, filter)
+                    ExportFormat.CSV -> LogExporter.exportEventsAsCsv(storage, filter)
+                    ExportFormat.TEXT -> LogExporter.exportEventsAsText(storage, filter)
+                    else -> LogExporter.exportEventsAsMarkdown(storage, filter)
+                }
+            val title = "Export Events (${format.name})"
+            PlatformUtils.shareText(text, title, context)
         }
     }
 

@@ -32,6 +32,7 @@ fun SettingsScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showClearLogsDialog by remember { mutableStateOf(false) }
     var showClearNetworkDialog by remember { mutableStateOf(false) }
+    var showClearEventsDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
@@ -84,6 +85,15 @@ fun SettingsScreen(
                         label = "Network Logs",
                         count = uiState.networkLogCount,
                         onClear = { showClearNetworkDialog = true },
+                    )
+
+                    HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
+
+                    // User Events
+                    StorageItem(
+                        label = "User Events",
+                        count = uiState.eventLogCount,
+                        onClear = { showClearEventsDialog = true },
                     )
                 }
             }
@@ -176,13 +186,33 @@ fun SettingsScreen(
 
             // Export Section
             SettingsSection(title = "EXPORT") {
-                OutlinedButton(
-                    onClick = { viewModel.exportAllLogs() },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Icon(Icons.Default.Share, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Export All Logs")
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "Export comprehensive debug archive containing application logs, network telemetry, and user events.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        OutlinedButton(
+                            onClick = { viewModel.exportAllLogs(com.spectra.logger.feature.logs.export.ExportFormat.MARKDOWN) },
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Markdown")
+                        }
+                        OutlinedButton(
+                            onClick = { viewModel.exportAllLogs(com.spectra.logger.feature.logs.export.ExportFormat.JSON) },
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("JSON Bundle")
+                        }
+                    }
                 }
             }
 
@@ -220,6 +250,17 @@ fun SettingsScreen(
                 showClearNetworkDialog = false
             },
             onDismiss = { showClearNetworkDialog = false },
+        )
+    }
+
+    if (showClearEventsDialog) {
+        ClearLogsDialog(
+            title = "Clear User Events",
+            onConfirm = {
+                viewModel.clearEvents()
+                showClearEventsDialog = false
+            },
+            onDismiss = { showClearEventsDialog = false },
         )
     }
 }
