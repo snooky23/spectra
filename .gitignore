@@ -15,6 +15,10 @@ local.properties
 .idea/*
 !.idea/.gitignore
 !.idea/compiler.xml
+**/.idea/caches/
+**/.idea/shelf/
+**/.idea/workspace.xml
+**/.idea/**/workspace.xml
 .DS_Store
 /captures
 .externalNativeBuild

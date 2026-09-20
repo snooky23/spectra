@@ -1,0 +1,44 @@
+- id: "1"
+  title: "Remove root scratch scripts and temporary build logs"
+  description: >-
+    Purge one-off transitional migration scripts (fix_imports_2.py, fix_imports_3.py,
+    refactor.py, add_build_phase.rb), scratch test file (test.kt), and leftover build
+    logs (build-xcframework.log) from the repository root and git index.
+  spec_checkpoint: false
+  done_checkpoint: true
+  invoke_dev_with: >-
+    Ensure all deleted files are removed from Git tracking where applicable (git rm)
+    and verify no other files in the project import or depend on them.
+
+- id: "2"
+  title: "Harden .gitignore and purge tracked IDE caches"
+  description: >-
+    Update root .gitignore with generalized patterns to recursively ignore nested .idea
+    caches and workspace artifacts across all subdirectories, and untrack
+    examples/.idea/caches/deviceStreaming.xml.
+  spec_checkpoint: false
+  done_checkpoint: true
+  invoke_dev_with: >-
+    Use git rm --cached for examples/.idea/caches/deviceStreaming.xml so local file
+    is ignored rather than tracked.
+
+- id: "3"
+  title: "Align compiler bytecode targets and settings inclusions"
+  description: >-
+    Clean up .idea/compiler.xml to prune stale bytecode level entries for removed modules,
+    and add clarifying annotations to settings.gradle.kts for suspended sample inclusions.
+  spec_checkpoint: false
+  done_checkpoint: true
+  invoke_dev_with: >-
+    Check .idea/compiler.xml against actual modules in settings.gradle.kts so IDE
+    sync does not generate stale module warnings.
+
+- id: "4"
+  title: "Run validation suite and verify repository hygiene"
+  description: >-
+    Execute build checks and verify git status to ensure zero untracked debris remains
+    and core project builds cleanly.
+  spec_checkpoint: false
+  done_checkpoint: true
+  invoke_dev_with: >-
+    Verify with git status --short and ensure gradle and SPM builds remain valid.
