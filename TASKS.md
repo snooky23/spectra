@@ -156,3 +156,7 @@ See `_bmad-output/planning-artifacts/spec-events-webview-streaming/SPEC.md` and 
   - [x] Create desktop browser companion dashboard displaying pairing QR code on local Wi-Fi (`tools/desktop-companion`).
   - [x] Implement browser authorization prompt ("Allow [Device] to stream?").
   - [x] Render mirrored live telemetry using the big-screen adaptive dual-pane UI.
+- [x] **Phase 14.5: Clean Code Architecture & Low Coupling Hardening**
+  - [x] Decouple iOS `SpectraWKScriptMessageHandler` via constructor-injected log sink function to remove global singleton coupling.
+  - [x] Decouple `DefaultSpectraStreamClient` by eliminating circular imports and dependencies on the `SpectraLogger` facade.
+  - [x] Verify complete dependency inversion and interface-driven design across all multiplatform streaming and webview components.

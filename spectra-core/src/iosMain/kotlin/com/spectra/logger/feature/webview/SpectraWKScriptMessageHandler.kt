@@ -19,6 +19,9 @@ import platform.darwin.NSObject
  */
 class SpectraWKScriptMessageHandler(
     private val tag: String = "WebView",
+    private val logger: (LogLevel, String, String, Throwable?, Map<String, String>?) -> Unit = { level, tag, msg, thr, meta ->
+        SpectraLogger.log(level = level, tag = tag, message = msg, throwable = thr, metadata = meta)
+    },
 ) : NSObject(), WKScriptMessageHandlerProtocol {
 
     override fun userContentController(
@@ -47,12 +50,7 @@ class SpectraWKScriptMessageHandler(
             line?.let { put("line_number", it) }
         }
 
-        SpectraLogger.log(
-            level = level,
-            tag = tag,
-            message = message,
-            metadata = metadata,
-        )
+        logger(level, tag, message, null, metadata)
     }
 
     companion object {
@@ -119,8 +117,13 @@ class SpectraWKScriptMessageHandler(
  * Extension function to configure a [WKWebViewConfiguration] with Spectra logging.
  * Call this before initializing your [WKWebView].
  */
-fun WKWebViewConfiguration.attachSpectraLogger(tag: String = "WebView") {
-    val handler = SpectraWKScriptMessageHandler(tag = tag)
+fun WKWebViewConfiguration.attachSpectraLogger(
+    tag: String = "WebView",
+    logger: (LogLevel, String, String, Throwable?, Map<String, String>?) -> Unit = { level, t, msg, thr, meta ->
+        SpectraLogger.log(level = level, tag = t, message = msg, throwable = thr, metadata = meta)
+    },
+) {
+    val handler = SpectraWKScriptMessageHandler(tag = tag, logger = logger)
     userContentController.addScriptMessageHandler(handler, name = SpectraWKScriptMessageHandler.HANDLER_NAME)
     userContentController.addUserScript(SpectraWKScriptMessageHandler.createBridgeScript())
 }
