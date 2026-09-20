@@ -98,3 +98,17 @@ See `docs/design/KMP_UI_ADAPTIVE_SPEC.md` for full architectural details.
   - [x] Expand `build.gradle.kts` to support `jvm`, `macosX64`, `macosArm64`, `linuxX64`, `linuxArm64`, `mingwX64`.
   - [x] Expand `build.gradle.kts` to support Web targets (`js`, `wasmJs`) with memory-only fallbacks for I/O.
   - [x] Verify multiplatform coroutines test execution (`runTest`) across all targets.
+
+## Phase 11: Repository Hygiene & Codebase Cleanup
+See `_bmad-output/planning-artifacts/spec-cleanup/SPEC.md` and `SDD.md` for architectural design and capability specifications.
+- [x] **Phase 11.1: Root Scratch & Cruft Deletion**
+  - [x] Delete transitional migration scripts (`fix_imports_2.py`, `fix_imports_3.py`, `refactor.py`, `add_build_phase.rb`).
+  - [x] Remove scratch test file (`test.kt`) and local build logs (`build-xcframework.log`).
+- [x] **Phase 11.2: Git & IDE Configuration Hygiene**
+  - [x] Update root `.gitignore` to recursively ignore nested `.idea` caches across all subdirectories.
+  - [x] Untrack `examples/.idea/caches/deviceStreaming.xml` from Git.
+  - [x] Clean up `.idea/compiler.xml` bytecode target levels to match active modules.
+- [x] **Phase 11.3: Build & Settings Harmonization**
+  - [x] Annotate commented-out sample inclusions in `settings.gradle.kts`.
+- [x] **Phase 11.4: Validation & Quality Gate**
+  - [x] Verify clean git status and run validation checks across multiplatform targets.

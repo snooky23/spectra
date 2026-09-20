@@ -37,5 +37,7 @@ include(":spectra-ui")
 
 // Example applications
 include(":examples:android-native:app")
+
+// Note: kmp-app example is temporarily suspended pending CMP 1.10.3 / Material 3 Adaptive migration
 // include(":examples:kmp-app:shared")
 // include(":examples:kmp-app:androidApp")
