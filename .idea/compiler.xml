@@ -5,11 +5,6 @@
       <directory url="file://$PROJECT_DIR$/examples/ios-native" includeSubdirectories="true" />
     </excludeFromCompile>
     <bytecodeTargetLevel target="17">
-      <module name="Spectra.examples.android-native.app" target="21" />
-      <module name="Spectra.spectra-core" target="21" />
-      <module name="Spectra.spectra-core.jvmMain" target="21" />
-      <module name="Spectra.spectra-core.jvmTest" target="21" />
-      <module name="Spectra.spectra-ui" target="21" />
       <module name="Spectra.spectra-ui-android" target="21" />
     </bytecodeTargetLevel>
   </component>
