@@ -1,0 +1,132 @@
+epic:
+  id: EPIC-ROADMAP-2026
+  title: Spectra Universal Telemetry & Live Streaming Roadmap
+  status: planning
+  phases:
+    - phase: 12
+      name: Events Tab (Screen Views & User Analytics)
+    - phase: 13
+      name: WebView & JavaScript Logging
+    - phase: 14
+      name: Remote Log Streaming (WebSocket)
+
+stories:
+  # -------------------------------------------------------------
+  # Phase 12: Events Tab (Screen Views & User Analytics)
+  # -------------------------------------------------------------
+  - id: STORY-12.1
+    phase: 12
+    title: Event Data Models & Core Storage Implementation
+    description: >
+      Create EventLogEntry, EventType, EventFilter models and thread-safe EventLogStorage 
+      (InMemoryEventLogStorage) in spectra-core with coroutine flow observation.
+    acceptance_criteria:
+      - EventLogEntry is serializable with id, timestamp, eventType, name, parameters, durationMs.
+      - InMemoryEventLogStorage supports query, add, addAll, observe, clear, and count.
+      - Unit tests verify storage operations, filtering, and flow emissions.
+
+  - id: STORY-12.2
+    phase: 12
+    title: SpectraLogger Public Telemetry API
+    description: >
+      Add event(), screenStart(), and screenEnd() methods to SpectraLogger, supporting 
+      automatic duration calculation for screen sessions.
+    acceptance_criteria:
+      - SpectraLogger.event(name, parameters) captures custom and user action events.
+      - SpectraLogger.screenStart(screenName) starts an active screen timer.
+      - SpectraLogger.screenEnd(screenName) completes the timer and logs a SCREEN_VIEW event with durationMs.
+      - Thread safety and coroutine dispatch to background scope verified.
+
+  - id: STORY-12.3
+    phase: 12
+    title: Compose Multiplatform Events UI & Timeline Screen
+    description: >
+      Implement EventsScreen in spectra-ui using NavigableListDetailPaneScaffold with timeline 
+      visualization, duration badges, and parameter inspector.
+    acceptance_criteria:
+      - Events tab added to navigation rail/bar between Network and Settings.
+      - Compact layout presents full-screen list with push/pop detail navigation.
+      - Expanded/desktop layout presents dual-pane (40% list / 60% detail).
+      - Filter chips allow filtering by EventType (Screen Views, User Actions, Lifecycle).
+
+  # -------------------------------------------------------------
+  # Phase 13: WebView & JavaScript Logging
+  # -------------------------------------------------------------
+  - id: STORY-13.1
+    phase: 13
+    title: Android WebView Console Interceptor
+    description: >
+      Implement SpectraWebChromeClient in spectra-core androidMain, forwarding console 
+      messages and unhandled JS errors into SpectraLogger.
+    acceptance_criteria:
+      - Intercepts console.log, info, warn, error with source URL and line numbers.
+      - Provides WebView.attachSpectraLogger() extension function.
+      - Error logs preserve JavaScript stack trace info.
+
+  - id: STORY-13.2
+    phase: 13
+    title: iOS WKWebView Console Interceptor
+    description: >
+      Implement SpectraScriptMessageHandler and JavaScript console injector in spectra-core 
+      iosMain / Swift bridging for WKWebView.
+    acceptance_criteria:
+      - Injects console proxy via WKUserScript.
+      - Forwards console messages to native handler and SpectraLogger.
+      - Captures window.onerror uncaught exceptions.
+
+  - id: STORY-13.3
+    phase: 13
+    title: WebView Log Tagging & UI Filter Integration
+    description: >
+      Harmonize WebView logs with tag chips and filter options in spectra-ui.
+    acceptance_criteria:
+      - Logs tab displays [WebView] badge for JavaScript entries.
+      - Filter dialog includes toggle/chip for WebView logs.
+
+  # -------------------------------------------------------------
+  # Phase 14: Remote Log Streaming (WebSocket)
+  # -------------------------------------------------------------
+  - id: STORY-14.1
+    phase: 14
+    title: Streaming Protocol Models & Serialization Engine
+    description: >
+      Define StreamPacket hierarchy (Handshake, BatchHistory, LiveLog, LiveNetwork, LiveEvent) 
+      in spectra-core with JSON/KMP serialization.
+    acceptance_criteria:
+      - HandshakeRequest / HandshakeResponse packets defined with device metadata.
+      - BatchHistory chunking supports up to 200 items per payload.
+      - Serialization unit tests pass on JVM, Android, and iOS.
+
+  - id: STORY-14.2
+    phase: 14
+    title: Mobile WebSocket Client & Wi-Fi Pairing Engine
+    description: >
+      Implement Ktor WebSocket client in spectra-core for connecting to local desktop companion 
+      via scanned ws:// address.
+    acceptance_criteria:
+      - Connects via Ktor client (OkHttp on Android, Darwin on iOS).
+      - Reconnection, heartbeat, and graceful disconnect handlers implemented.
+      - Dispatches historical batch sync followed by live coroutine flow emissions.
+
+  - id: STORY-14.3
+    phase: 14
+    title: Mobile QR Code Scanner Integration
+    description: >
+      Add camera scanner UI in spectra-ui (CameraX for Android, AVFoundation for iOS) 
+      accessible via in-app drawer or FAB.
+    acceptance_criteria:
+      - Mobile camera recognizes standard QR codes containing WebSocket session URIs.
+      - Validates local Wi-Fi subnet connectivity.
+      - Displays connection status banner (Connecting, Awaiting Authorization, Streaming).
+
+  - id: STORY-14.4
+    phase: 14
+    title: Desktop Browser Companion & Authorization Gatekeeper
+    description: >
+      Create desktop browser companion web dashboard displaying pairing QR code, incoming 
+      authorization prompt, and big-screen adaptive dual-pane console.
+    acceptance_criteria:
+      - Browser displays pairing QR code on local Wi-Fi.
+      - Shows authorization dialog: 'Allow [Device Name] ([OS]) to stream?'.
+      - Upon 'Allow', receives historical catch-up batch and renders real-time stream.
+      - Dual-pane layout displays Logs, Network, Events, and WebViews side-by-side.

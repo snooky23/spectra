@@ -5,6 +5,11 @@ import com.spectra.logger.core.model.*
 import com.spectra.logger.core.storage.FileSystem
 import com.spectra.logger.core.utils.*
 import com.spectra.logger.core.utils.ioDispatcher
+import com.spectra.logger.feature.events.model.EventFilter
+import com.spectra.logger.feature.events.model.EventLogEntry
+import com.spectra.logger.feature.events.model.EventType
+import com.spectra.logger.feature.events.storage.EventLogStorage
+import com.spectra.logger.feature.events.storage.InMemoryEventLogStorage
 import com.spectra.logger.feature.logs.model.LogEntry
 import com.spectra.logger.feature.logs.model.LogFilter
 import com.spectra.logger.feature.logs.storage.FileLogStorage
@@ -17,10 +22,13 @@ import com.spectra.logger.feature.network.storage.NetworkLogStorage
 import com.spectra.logger.feature.settings.config.LoggerConfiguration
 import com.spectra.logger.feature.settings.config.LoggerConfigurationBuilder
 import kotlinx.atomicfu.atomic
+import kotlinx.atomicfu.locks.SynchronizedObject
+import kotlinx.atomicfu.locks.synchronized
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
 
 /**
  * Main entry point for the Spectra Logger framework.
@@ -50,6 +58,12 @@ object SpectraLogger {
         atomic<LogStorage?>(null)
     private val networkStorageAtomic =
         atomic<NetworkLogStorage?>(null)
+    private val eventStorageAtomic =
+        atomic<EventLogStorage?>(null)
+    private val streamClientAtomic =
+        atomic<com.spectra.logger.feature.streaming.SpectraStreamClient?>(null)
+    private val activeScreenTimersLock = SynchronizedObject()
+    private val activeScreenTimers = mutableMapOf<String, Pair<Instant, Map<String, String>>>()
     private val exceptionHandler =
         kotlinx.coroutines.CoroutineExceptionHandler { _, throwable ->
             // Silently swallow internal storage exceptions to prevent app crashes
@@ -104,6 +118,55 @@ object SpectraLogger {
             }
             return networkStorageAtomic.value!!
         }
+
+    /**
+     * Event log storage instance.
+     */
+    public val eventStorage: EventLogStorage
+        get() {
+            var current = eventStorageAtomic.value
+            if (current == null) {
+                current = InMemoryEventLogStorage(maxCapacity = configuration.eventStorageConfig.maxCapacity)
+                eventStorageAtomic.compareAndSet(null, current)
+            }
+            return eventStorageAtomic.value!!
+        }
+
+    /**
+     * Remote streaming client managing WebSocket sync with desktop companions.
+     */
+    public val streamClient: com.spectra.logger.feature.streaming.SpectraStreamClient
+        get() {
+            var current = streamClientAtomic.value
+            if (current == null) {
+                current =
+                    com.spectra.logger.feature.streaming.DefaultSpectraStreamClient(
+                        logStorage = logStorage,
+                        networkStorage = networkStorage,
+                        eventStorage = eventStorage,
+                        coroutineScope = ioScope,
+                    )
+                streamClientAtomic.compareAndSet(null, current)
+            }
+            return streamClientAtomic.value!!
+        }
+
+    /**
+     * Connects to a remote desktop companion for real-time log streaming.
+     */
+    public suspend fun startStreaming(
+        url: String,
+        token: String,
+    ) {
+        streamClient.connect(url, token)
+    }
+
+    /**
+     * Disconnects the active remote log streaming session.
+     */
+    public suspend fun stopStreaming() {
+        streamClient.disconnect()
+    }
 
     private val logger: Logger
         get() {
@@ -218,6 +281,32 @@ object SpectraLogger {
     ) = logger.f(tag, message, throwable, metadata)
 
     /**
+     * Log a message with a dynamic [LogLevel].
+     *
+     * @param level Severity level
+     * @param tag Category or source of the log
+     * @param message The log message
+     * @param throwable Optional exception
+     * @param metadata Optional context data
+     */
+    fun log(
+        level: com.spectra.logger.feature.logs.model.LogLevel,
+        tag: String,
+        message: String,
+        throwable: Throwable? = null,
+        metadata: Map<String, String>? = null,
+    ) {
+        when (level) {
+            com.spectra.logger.feature.logs.model.LogLevel.VERBOSE -> v(tag, message, throwable, metadata)
+            com.spectra.logger.feature.logs.model.LogLevel.DEBUG -> d(tag, message, throwable, metadata)
+            com.spectra.logger.feature.logs.model.LogLevel.INFO -> i(tag, message, throwable, metadata)
+            com.spectra.logger.feature.logs.model.LogLevel.WARNING -> w(tag, message, throwable, metadata)
+            com.spectra.logger.feature.logs.model.LogLevel.ERROR -> e(tag, message, throwable, metadata)
+            com.spectra.logger.feature.logs.model.LogLevel.FATAL -> f(tag, message, throwable, metadata)
+        }
+    }
+
+    /**
      * Internal setter for testing
      */
     internal fun setCoroutineScopeForTesting(scope: CoroutineScope) {
@@ -303,6 +392,115 @@ object SpectraLogger {
      */
     suspend fun clearNetwork() = networkStorage.clear()
 
+    // Events Telemetry API
+
+    /**
+     * Log a user interaction, lifecycle, or custom event without blocking.
+     */
+    fun event(
+        name: String,
+        parameters: Map<String, String> = emptyMap(),
+        eventType: EventType = EventType.USER_ACTION,
+        durationMs: Long? = null,
+    ) {
+        if (!configuration.enabledFeatures.enableEventLogging) return
+        val (source, sourceType) = SourceDetector.detectSource()
+        val entry =
+            EventLogEntry(
+                id = IdGenerator.generate(),
+                timestamp = SpectraTime.now(),
+                eventType = eventType,
+                name = name,
+                parameters = parameters,
+                durationMs = durationMs,
+                source = source,
+                sourceType = sourceType,
+            )
+        ioScope.launch {
+            eventStorage.add(entry)
+        }
+    }
+
+    /**
+     * Mark the start of a screen transition or view session.
+     * Begins tracking elapsed duration until [screenEnd] is called.
+     */
+    fun screenStart(
+        screenName: String,
+        parameters: Map<String, String> = emptyMap(),
+    ) {
+        if (!configuration.enabledFeatures.enableEventLogging) return
+        val now = SpectraTime.now()
+        synchronized(activeScreenTimersLock) {
+            activeScreenTimers[screenName] = Pair(now, parameters)
+        }
+    }
+
+    /**
+     * Mark the end of a screen transition or view session.
+     * Calculates elapsed duration and logs a [EventType.SCREEN_VIEW] event.
+     */
+    fun screenEnd(
+        screenName: String,
+        additionalParameters: Map<String, String> = emptyMap(),
+    ) {
+        if (!configuration.enabledFeatures.enableEventLogging) return
+        val now = SpectraTime.now()
+        val startInfo =
+            synchronized(activeScreenTimersLock) {
+                activeScreenTimers.remove(screenName)
+            }
+        val durationMs: Long? =
+            startInfo?.let { (startTime, _) ->
+                (now.toEpochMilliseconds() - startTime.toEpochMilliseconds()).coerceAtLeast(0L)
+            }
+        val mergedParams =
+            if (startInfo != null) {
+                startInfo.second + additionalParameters
+            } else {
+                additionalParameters
+            }
+
+        val (source, sourceType) = SourceDetector.detectSource()
+        val entry =
+            EventLogEntry(
+                id = IdGenerator.generate(),
+                timestamp = now,
+                eventType = EventType.SCREEN_VIEW,
+                name = screenName,
+                parameters = mergedParams,
+                durationMs = durationMs,
+                source = source,
+                sourceType = sourceType,
+            )
+        ioScope.launch {
+            eventStorage.add(entry)
+        }
+    }
+
+    /**
+     * Query stored event logs.
+     */
+    suspend fun queryEvents(
+        filter: EventFilter = EventFilter.NONE,
+        limit: Int? = null,
+    ): List<EventLogEntry> = eventStorage.query(filter, limit)
+
+    /**
+     * Observe event logs as a coroutine flow.
+     */
+    fun observeEvents(filter: EventFilter = EventFilter.NONE): Flow<EventLogEntry> = eventStorage.observe(filter)
+
+    /**
+     * Get total event log count.
+     */
+    suspend fun eventCount(): Int = eventStorage.count()
+
+    /**
+     * Clear all events.
+     */
+    suspend fun clearEvents() = eventStorage.clear()
+
     // Configuration API
 
     /**
@@ -365,6 +563,13 @@ object SpectraLogger {
             currentNetworkStorage.updateCapacity(newConfig.networkStorageConfig.maxCapacity)
         } else {
             networkStorageAtomic.value = InMemoryNetworkLogStorage(maxCapacity = newConfig.networkStorageConfig.maxCapacity)
+        }
+
+        val currentEventStorage = eventStorage
+        if (currentEventStorage is InMemoryEventLogStorage) {
+            currentEventStorage.updateCapacity(newConfig.eventStorageConfig.maxCapacity)
+        } else {
+            eventStorageAtomic.value = InMemoryEventLogStorage(maxCapacity = newConfig.eventStorageConfig.maxCapacity)
         }
 
         loggerAtomic.value =

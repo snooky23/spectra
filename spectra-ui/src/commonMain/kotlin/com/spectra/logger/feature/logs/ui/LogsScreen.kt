@@ -314,6 +314,19 @@ fun LogRow(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 LogLevelBadge(level = log.level)
+                if (log.metadata["source"] == "webview") {
+                    Surface(
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp),
+                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                    ) {
+                        Text(
+                            text = "WebView",
+                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        )
+                    }
+                }
                 Text(
                     text = log.tag,
                     style = MaterialTheme.typography.bodySmall,

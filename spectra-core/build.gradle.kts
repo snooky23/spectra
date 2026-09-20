@@ -116,6 +116,7 @@ kotlin {
             dependencies {
                 api(libs.bundles.kotlinx)
                 api(libs.ktor.client.core)
+                api(libs.ktor.client.websockets)
                 api(libs.okio.core)
             }
         }

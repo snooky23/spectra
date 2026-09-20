@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Spectra Logger Desktop Companion — Real-time mobile log and network streaming over local Wi-Fi.">
+    <title>Spectra Logger — Desktop Companion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="spectra-dark">
+    <div id="app-container">
+        <!-- Top Navigation Bar -->
+        <header id="top-navbar">
+            <div class="navbar-left">
+                <div class="brand-logo">
+                    <span class="logo-icon">⚡</span>
+                    <span class="logo-text">Spectra</span>
+                    <span class="logo-badge">Remote Companion</span>
+                </div>
+            </div>
+
+            <div class="navbar-center">
+                <nav class="nav-tabs" role="tablist">
+                    <button id="tab-logs" class="nav-tab active" data-tab="logs" role="tab" aria-selected="true">
+                        <span class="tab-label">Logs</span>
+                        <span id="badge-logs-count" class="tab-count">0</span>
+                    </button>
+                    <button id="tab-network" class="nav-tab" data-tab="network" role="tab" aria-selected="false">
+                        <span class="tab-label">Network</span>
+                        <span id="badge-network-count" class="tab-count">0</span>
+                    </button>
+                    <button id="tab-events" class="nav-tab" data-tab="events" role="tab" aria-selected="false">
+                        <span class="tab-label">Events</span>
+                        <span id="badge-events-count" class="tab-count">0</span>
+                    </button>
+                    <button id="tab-webview" class="nav-tab" data-tab="webview" role="tab" aria-selected="false">
+                        <span class="tab-label">WebView</span>
+                        <span id="badge-webview-count" class="tab-count">0</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="navbar-right">
+                <div id="connection-status-pill" class="status-pill status-disconnected">
+                    <span class="status-dot"></span>
+                    <span id="connection-status-label" class="status-text">Disconnected</span>
+                </div>
+
+                <button id="btn-show-qr" class="btn btn-secondary" title="Pair Device with QR Code">
+                    <span class="btn-icon">📷</span>
+                    <span>Pair Device</span>
+                </button>
+
+                <button id="btn-clear-telemetry" class="btn btn-ghost" title="Clear Buffer">
+                    <span class="btn-icon">🗑️</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Workspace Dual-Pane -->
+        <main id="workspace">
+            <!-- Master Pane (Left 40%) -->
+            <section id="master-pane" class="pane">
+                <div class="pane-header">
+                    <div class="search-bar">
+                        <span class="search-icon">🔍</span>
+                        <input id="search-input" type="search" placeholder="Search message, tag, URL, params..." autocomplete="off">
+                    </div>
+
+                    <div id="filter-chips-container" class="filter-chips">
+                        <!-- Dynamic filter chips rendered by JavaScript -->
+                    </div>
+                </div>
+
+                <div id="master-list-container" class="pane-content custom-scrollbar">
+                    <div id="master-empty-state" class="empty-state">
+                        <div class="empty-icon">📡</div>
+                        <h3>Waiting for Device Telemetry</h3>
+                        <p>Scan the pairing QR code on your mobile device to begin live streaming over local Wi-Fi.</p>
+                        <button id="btn-empty-pair" class="btn btn-primary">Open Pairing QR Code</button>
+                    </div>
+                    <ul id="master-list" class="item-list"></ul>
+                </div>
+
+                <footer id="master-footer" class="pane-footer">
+                    <span id="stats-summary">0 items</span>
+                    <label class="auto-scroll-toggle">
+                        <input id="chk-auto-scroll" type="checkbox" checked>
+                        <span>Auto-scroll</span>
+                    </label>
+                </footer>
+            </section>
+
+            <!-- Detail Pane (Right 60%) -->
+            <section id="detail-pane" class="pane">
+                <div class="pane-header">
+                    <h2 id="detail-title">Inspection</h2>
+                    <div class="detail-actions">
+                        <button id="btn-copy-detail" class="btn btn-ghost btn-sm" title="Copy raw JSON">
+                            <span>📋 Copy JSON</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="detail-content" class="pane-content custom-scrollbar">
+                    <div id="detail-placeholder" class="placeholder-state">
+                        <p>Select an item from the stream to inspect details, parameters, and network traces.</p>
+                    </div>
+                    <div id="detail-view" class="hidden">
+                        <!-- Rendered by app.js -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- QR Code Pairing Modal -->
+    <div id="modal-qr" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Pair Mobile Device</h3>
+                <button id="btn-close-qr" class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtitle">Ensure both devices are on the same local Wi-Fi network.</p>
+                <div id="qr-code-canvas-container" class="qr-container">
+                    <svg id="qr-svg" viewBox="0 0 200 200" width="200" height="200"></svg>
+                </div>
+                <div class="qr-details">
+                    <label>Pairing URL</label>
+                    <div class="code-box">
+                        <code id="text-ws-url">ws://...</code>
+                        <button id="btn-copy-ws-url" class="btn btn-ghost btn-sm">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authorization Gatekeeper Modal -->
+    <div id="modal-auth" class="modal-overlay hidden">
+        <div class="modal-card auth-card">
+            <div class="auth-icon-badge">📱</div>
+            <div class="modal-header auth-header">
+                <h3>Authorize Mobile Streaming</h3>
+                <p>A new device is requesting access to stream live telemetry to this dashboard.</p>
+            </div>
+            <div class="modal-body">
+                <div class="device-info-card">
+                    <div class="info-row">
+                        <span class="info-label">Device</span>
+                        <span id="auth-device-name" class="info-value">Google Pixel 7</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Operating System</span>
+                        <span id="auth-device-os" class="info-value">Android 14</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">App Version</span>
+                        <span id="auth-app-version" class="info-value">1.0.0</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">IP Address</span>
+                        <span id="auth-device-ip" class="info-value">192.168.1.50</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer auth-footer">
+                <button id="btn-auth-reject" class="btn btn-danger">Reject</button>
+                <button id="btn-auth-allow" class="btn btn-success">Allow Device to Stream</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

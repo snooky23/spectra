@@ -45,7 +45,7 @@ This document tracks the implementation progress of Spectra Logger against the f
   - Published artifacts (Maven Central, Cocoapods/SPM), GitHub release automation
 
 ## Phase 6: Post-Launch (Ongoing)
-- [ ] Remote log streaming (WebSocket)
+- [x] Remote log streaming (WebSocket)
 - [ ] Log analytics dashboard
 - [ ] Crash symbolication
 - [x] Plugin architecture for custom sinks
@@ -112,3 +112,47 @@ See `_bmad-output/planning-artifacts/spec-cleanup/SPEC.md` and `SDD.md` for arch
   - [x] Annotate commented-out sample inclusions in `settings.gradle.kts`.
 - [x] **Phase 11.4: Validation & Quality Gate**
   - [x] Verify clean git status and run validation checks across multiplatform targets.
+
+## Phase 12: Events Tab (Screen Views & User Analytics)
+See `_bmad-output/planning-artifacts/spec-events-webview-streaming/SPEC.md` and `SDD.md` for architectural design and capability specifications.
+- [x] **Phase 12.1: Core Event Data Models & Storage**
+  - [x] Implement `EventLogEntry`, `EventType`, and `EventFilter` in `spectra-core/src/commonMain`.
+  - [x] Implement `EventLogStorage` and `InMemoryEventLogStorage` with coroutine flow support.
+  - [x] Write comprehensive unit tests for event storage, filtering, and flows.
+- [x] **Phase 12.2: SpectraLogger Public Telemetry API**
+  - [x] Add `SpectraLogger.event(name, parameters)`.
+  - [x] Add `SpectraLogger.screenStart(screenName)` and `SpectraLogger.screenEnd(screenName)` with automatic duration calculation.
+  - [x] Ensure non-blocking background coroutine dispatch and thread safety.
+- [x] **Phase 12.3: Compose Multiplatform Events UI & Timeline**
+  - [x] Implement `EventsScreen` with `AdaptiveNavigator` (Dual-pane adaptive layout).
+  - [x] Add Events tab to `SpectraNavigationSuiteScaffold` between Network and Settings.
+  - [x] Build interactive event timeline, duration badges, and parameter inspector.
+- [x] **Phase 12.4: Clean Code Architecture, Low Coupling & High Cohesion Hardening**
+  - [x] Decouple `EventsViewModel` from static `SpectraLogger` singleton via constructor injection (`eventStorage: EventLogStorage`).
+  - [x] Decouple ViewModel clear action to operate strictly through the injected storage interface.
+  - [x] Add hermetic unit test in `EventsViewModelTest` using isolated in-memory storage.
+  - [x] Run multiplatform validation and verify zero cross-module leakage between core and UI.
+
+## Phase 13: WebView & JavaScript Logging
+- [x] **Phase 13.1: Android WebView Console Interception**
+  - [x] Implement `SpectraWebChromeClient` to capture `console.log/warn/error` and unhandled exceptions.
+  - [x] Add `WebView.attachSpectraLogger()` extension in `androidMain`.
+- [x] **Phase 13.2: iOS WKWebView Console Interception**
+  - [x] Implement `SpectraScriptMessageHandler` and JS console proxy script in `iosMain`.
+  - [x] Add `WKWebView.attachSpectraLogger()` bridging helper.
+- [x] **Phase 13.3: WebView Log Tagging & UI Integration**
+  - [x] Add `[WebView]` tag chips and dedicated filter controls in `spectra-ui`.
+
+## Phase 14: Remote Log Streaming (WebSocket)
+- [x] **Phase 14.1: Streaming Protocol Models & Serialization**
+  - [x] Define `StreamPacket` hierarchy (`HandshakeRequest`, `HandshakeResponse`, `BatchHistory`, `LiveLog`, `LiveNetwork`, `LiveEvent`, `Ping`, `Pong`).
+- [x] **Phase 14.2: Mobile WebSocket Client & Wi-Fi Pairing Engine**
+  - [x] Implement Ktor WebSocket client in `spectra-core` (`KtorStreamTransport`, `DefaultSpectraStreamClient`).
+  - [x] Implement two-phase sync: historical catch-up batch followed by live incremental stream.
+- [x] **Phase 14.3: Mobile QR Code Scanner Integration**
+  - [x] Implement pairing dialog and QR code decoder/parser in `spectra-ui`.
+  - [x] Add connection status banner and pairing flow (`RemoteStreamBanner`, `RemoteStreamDialog`, `RemoteStreamViewModel`).
+- [x] **Phase 14.4: Desktop Browser Companion & Authorization Gatekeeper**
+  - [x] Create desktop browser companion dashboard displaying pairing QR code on local Wi-Fi (`tools/desktop-companion`).
+  - [x] Implement browser authorization prompt ("Allow [Device] to stream?").
+  - [x] Render mirrored live telemetry using the big-screen adaptive dual-pane UI.

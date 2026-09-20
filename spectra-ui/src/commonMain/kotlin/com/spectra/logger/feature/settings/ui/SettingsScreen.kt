@@ -27,6 +27,7 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = viewModel { SettingsViewModel() },
     onDismiss: () -> Unit = {},
+    onOpenRemoteStreamDialog: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showClearLogsDialog by remember { mutableStateOf(false) }
@@ -151,6 +152,25 @@ fun SettingsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                     )
+                }
+            }
+
+            // Remote Streaming Section
+            SettingsSection(title = "REMOTE STREAMING") {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "Stream logs and network inspection in real-time to your desktop browser dashboard.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    OutlinedButton(
+                        onClick = onOpenRemoteStreamDialog,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Icon(Icons.Default.Cast, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Connect to Desktop Browser Companion")
+                    }
                 }
             }
 
