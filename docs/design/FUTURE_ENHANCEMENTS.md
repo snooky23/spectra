@@ -121,8 +121,9 @@ Consider as separate SDK or optional plugin rather than core feature.
 ## 4. Crash Reporting Integration
 
 **Priority:** 🔥 High  
-**Effort:** Low (if optional)  
-**Status:** Under consideration
+**Effort:** Low-Medium  
+**Status:** In Progress (Phase 16)
+
 
 Capture and display crash logs alongside regular logs.
 
@@ -191,7 +192,8 @@ Debug analytics events before they're sent to Firebase/Amplitude.
 
 **Priority:** 🔥 High  
 **Effort:** Low  
-**Status:** Planned
+**Status:** Implemented (Phase 15)
+
 
 Enhanced export options for sharing logs.
 
