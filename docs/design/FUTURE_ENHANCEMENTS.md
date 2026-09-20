@@ -18,7 +18,7 @@
 
 **Priority:** 📋 Medium  
 **Effort:** Medium  
-**Status:** Under consideration
+**Status:** Implemented (Phase 12)
 
 Track screen views and user interactions for debugging user flows.
 
@@ -56,7 +56,7 @@ SpectraLogger.event("button_click", mapOf("id" to "submit_btn"))
 
 **Priority:** 📋 Medium  
 **Effort:** Medium-High  
-**Status:** Under consideration
+**Status:** Implemented (Phase 13)
 
 Capture JavaScript console logs and errors from hosted WebViews.
 
@@ -208,7 +208,7 @@ Enhanced export options for sharing logs.
 
 **Priority:** 🔮 Low  
 **Effort:** Very High  
-**Status:** Long-term vision
+**Status:** Implemented (Phase 14)
 
 View logs from a connected device via desktop app.
 
