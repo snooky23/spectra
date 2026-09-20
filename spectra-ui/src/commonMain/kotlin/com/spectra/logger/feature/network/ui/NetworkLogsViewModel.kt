@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.spectra.logger.SpectraLogger
 import com.spectra.logger.core.model.*
 import com.spectra.logger.core.ui.util.PlatformUtils
-import com.spectra.logger.core.utils.*
+import com.spectra.logger.feature.logs.export.ExportFormat
+import com.spectra.logger.feature.logs.export.LogExporter
 import com.spectra.logger.feature.network.model.NetworkLogEntry
+import com.spectra.logger.feature.network.storage.NetworkLogStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,11 +17,13 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * ViewModel for the Network Logs screen
+ * ViewModel for the Network Logs screen.
+ *
+ * Implements Clean Architecture with constructor injection.
  */
-class NetworkLogsViewModel : ViewModel() {
-    private val storage get() = SpectraLogger.networkStorage
-
+class NetworkLogsViewModel(
+    private val storage: NetworkLogStorage = SpectraLogger.networkStorage,
+) : ViewModel() {
     private val _uiState = MutableStateFlow(NetworkLogsUiState())
     val uiState: StateFlow<NetworkLogsUiState> = _uiState.asStateFlow()
 
@@ -302,6 +306,22 @@ class NetworkLogsViewModel : ViewModel() {
                 }
             }
             else -> text.contains(pattern)
+        }
+    }
+
+    fun exportLogs(
+        format: ExportFormat = ExportFormat.HAR,
+        context: Any? = null,
+    ) {
+        viewModelScope.launch {
+            val text =
+                when (format) {
+                    ExportFormat.HAR -> LogExporter.exportNetworkLogsAsHar(storage)
+                    ExportFormat.JSON -> LogExporter.exportNetworkLogsAsJson(storage)
+                    else -> LogExporter.exportNetworkLogsAsText(storage)
+                }
+            val title = if (format == ExportFormat.HAR) "Export Network Logs (HAR)" else "Export Network Logs"
+            PlatformUtils.shareText(text, title, context)
         }
     }
 }

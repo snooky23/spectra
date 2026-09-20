@@ -4,10 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spectra.logger.SpectraLogger
 import com.spectra.logger.Version
-import com.spectra.logger.core.model.*
 import com.spectra.logger.core.ui.util.PlatformUtils
-import com.spectra.logger.core.utils.*
+import com.spectra.logger.feature.events.storage.EventLogStorage
+import com.spectra.logger.feature.logs.export.ExportFormat
+import com.spectra.logger.feature.logs.export.LogExporter
 import com.spectra.logger.feature.logs.model.LogFilter
+import com.spectra.logger.feature.logs.storage.LogStorage
+import com.spectra.logger.feature.network.storage.NetworkLogStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,12 +18,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
- * ViewModel for the Settings screen
+ * ViewModel for the Settings screen.
+ *
+ * Adheres to Clean Architecture with constructor-injected storage dependencies.
  */
-class SettingsViewModel : ViewModel() {
-    private val logStorage get() = SpectraLogger.logStorage
-    private val networkStorage get() = SpectraLogger.networkStorage
-
+class SettingsViewModel(
+    private val logStorage: LogStorage = SpectraLogger.logStorage,
+    private val networkStorage: NetworkLogStorage = SpectraLogger.networkStorage,
+    private val eventStorage: EventLogStorage = SpectraLogger.eventStorage,
+) : ViewModel() {
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
@@ -45,6 +51,13 @@ class SettingsViewModel : ViewModel() {
                 }
             }
         }
+        viewModelScope.launch {
+            eventStorage.observe().collect {
+                _uiState.update { state ->
+                    state.copy(eventLogCount = state.eventLogCount + 1)
+                }
+            }
+        }
     }
 
     fun refresh() {
@@ -60,22 +73,23 @@ class SettingsViewModel : ViewModel() {
                     )
                 val logCount = logStorage.query(filter = noFilter, limit = null).size
                 val networkCount = networkStorage.count()
+                val eventCount = eventStorage.count()
 
                 _uiState.update {
                     it.copy(
                         applicationLogCount = logCount,
                         networkLogCount = networkCount,
+                        eventLogCount = eventCount,
                     )
                 }
-            } catch (e: Exception) {
-                // Ignore errors
+            } catch (_: Exception) {
+                // Ignore query errors
             }
         }
     }
 
     fun setAppearanceMode(mode: AppearanceMode) {
         _uiState.update { it.copy(appearanceMode = mode) }
-        // TODO: Persist preference
     }
 
     fun clearApplicationLogs() {
@@ -89,6 +103,13 @@ class SettingsViewModel : ViewModel() {
         viewModelScope.launch {
             networkStorage.clear()
             _uiState.update { it.copy(networkLogCount = 0) }
+        }
+    }
+
+    fun clearEvents() {
+        viewModelScope.launch {
+            eventStorage.clear()
+            _uiState.update { it.copy(eventLogCount = 0) }
         }
     }
 
@@ -121,15 +142,17 @@ class SettingsViewModel : ViewModel() {
     }
 
     fun updateIgnoredDomains(domains: String) {
-        val list = domains.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+        val domainList =
+            domains.split(",")
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
         val currentFeatures = SpectraLogger.configuration.enabledFeatures
         SpectraLogger.configure {
             features {
                 enableNetworkLogging = currentFeatures.enableNetworkLogging
                 enableCrashReporting = currentFeatures.enableCrashReporting
                 enablePerformanceMetrics = currentFeatures.enablePerformanceMetrics
-                networkIgnoredDomains = list
-                networkIgnoredTokens = currentFeatures.networkIgnoredTokens
+                networkIgnoredDomains = domainList
                 networkIgnoredExtensions = currentFeatures.networkIgnoredExtensions
             }
         }
@@ -137,7 +160,10 @@ class SettingsViewModel : ViewModel() {
     }
 
     fun updateIgnoredTokens(tokens: String) {
-        val list = tokens.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+        val tokenList =
+            tokens.split(",")
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
         val currentFeatures = SpectraLogger.configuration.enabledFeatures
         SpectraLogger.configure {
             features {
@@ -145,7 +171,7 @@ class SettingsViewModel : ViewModel() {
                 enableCrashReporting = currentFeatures.enableCrashReporting
                 enablePerformanceMetrics = currentFeatures.enablePerformanceMetrics
                 networkIgnoredDomains = currentFeatures.networkIgnoredDomains
-                networkIgnoredTokens = list
+                networkIgnoredTokens = tokenList
                 networkIgnoredExtensions = currentFeatures.networkIgnoredExtensions
             }
         }
@@ -165,26 +191,33 @@ class SettingsViewModel : ViewModel() {
         refreshConfigState()
     }
 
-    suspend fun getExportAllText(): String {
-        val appLogs = logStorage.query(filter = LogFilter(null, null, null, null, null), limit = null)
-        val networkLogs = networkStorage.query()
+    suspend fun getExportAllText(): String =
+        LogExporter.exportFullBundleAsMarkdown(
+            logStorage = logStorage,
+            networkStorage = networkStorage,
+            eventStorage = eventStorage,
+        )
 
-        val appLogsText =
-            appLogs.joinToString("\n") { log ->
-                "[${log.level.name}] ${log.timestamp} - ${log.tag}: ${log.message}"
-            }
-        val networkLogsText =
-            networkLogs.joinToString("\n") { log ->
-                "[${log.method}] ${log.responseCode ?: "N/A"} ${log.url} - ${log.duration}ms"
-            }
-
-        return "--- APPLICATION LOGS ---\n$appLogsText\n\n--- NETWORK LOGS ---\n$networkLogsText"
-    }
-
-    fun exportAllLogs(context: Any? = null) {
+    fun exportAllLogs(
+        format: ExportFormat = ExportFormat.MARKDOWN,
+        context: Any? = null,
+    ) {
         viewModelScope.launch {
-            val text = getExportAllText()
-            PlatformUtils.shareText(text, "Export All Logs", context)
+            val text =
+                if (format == ExportFormat.JSON) {
+                    LogExporter.exportFullBundleAsJson(
+                        logStorage = logStorage,
+                        networkStorage = networkStorage,
+                        eventStorage = eventStorage,
+                    )
+                } else {
+                    LogExporter.exportFullBundleAsMarkdown(
+                        logStorage = logStorage,
+                        networkStorage = networkStorage,
+                        eventStorage = eventStorage,
+                    )
+                }
+            PlatformUtils.shareText(text, "Export All Telemetry", context)
         }
     }
 
@@ -209,6 +242,7 @@ data class SettingsUiState(
     val appearanceMode: AppearanceMode = AppearanceMode.SYSTEM,
     val applicationLogCount: Int = 0,
     val networkLogCount: Int = 0,
+    val eventLogCount: Int = 0,
     val version: String = Version.LIBRARY_VERSION,
     val isNetworkLoggingEnabled: Boolean = true,
     val isFilePersistenceEnabled: Boolean = false,
