@@ -2,6 +2,8 @@ package com.spectra.logger.feature.logs.storage
 
 import com.spectra.logger.core.model.*
 import com.spectra.logger.core.storage.FileSystem
+import com.spectra.logger.core.storage.RetentionPolicy
+import com.spectra.logger.core.utils.SpectraTime
 import com.spectra.logger.core.utils.ioDispatcher
 import com.spectra.logger.feature.logs.model.LogEntry
 import com.spectra.logger.feature.logs.model.LogFilter
@@ -41,7 +43,15 @@ class FileLogStorage(
     private val flushThreshold: Int = 50,
     private val maxCapacity: Int = InMemoryLogStorage.DEFAULT_CAPACITY,
     private val backgroundDispatcher: CoroutineDispatcher = ioDispatcher,
+    retentionPolicy: RetentionPolicy = RetentionPolicy.DEFAULT,
 ) : LogStorage {
+    private val _retentionPolicy = atomic(retentionPolicy)
+    var retentionPolicy: RetentionPolicy
+        get() = _retentionPolicy.value
+        set(value) {
+            _retentionPolicy.value = value
+        }
+
     private val _ioErrorHandler = atomic<((Throwable) -> Unit)?>(null)
     var ioErrorHandler: ((Throwable) -> Unit)?
         get() = _ioErrorHandler.value
@@ -58,6 +68,7 @@ class FileLogStorage(
 
     private val ioScope = CoroutineScope(backgroundDispatcher + SupervisorJob())
     private var currentFileIndex = 0
+    private val writeMutex = kotlinx.coroutines.sync.Mutex()
     private val initialized = CompletableDeferred<Unit>()
 
     init {
@@ -133,8 +144,6 @@ class FileLogStorage(
             }
         }
     }
-
-    private val writeMutex = kotlinx.coroutines.sync.Mutex()
 
     private suspend fun performWrite(batch: List<LogEntry>) {
         if (batch.isEmpty()) return
@@ -232,7 +241,12 @@ class FileLogStorage(
                     allLogs.addAll(logs)
                 }
 
-                val filtered = allLogs.filter { filter.matches(it) }
+                val now = SpectraTime.now().toEpochMilliseconds()
+                val ttlCutoff = retentionPolicy.maxAgeMs?.let { now - it }
+                val filtered =
+                    allLogs.filter { entry ->
+                        (ttlCutoff == null || entry.timestamp.toEpochMilliseconds() >= ttlCutoff) && filter.matches(entry)
+                    }
 
                 if (limit != null && limit > 0) {
                     filtered.take(limit)
@@ -300,9 +314,12 @@ class FileLogStorage(
         return countAtomic.value
     }
 
-    override suspend fun prune(policy: com.spectra.logger.core.storage.RetentionPolicy): Int {
+    override suspend fun prune(policy: RetentionPolicy): Int {
         if (!policy.hasLimits) return 0
-        val now = com.spectra.logger.core.utils.SpectraTime.now().toEpochMilliseconds()
+        _retentionPolicy.value = policy
+        flush()
+        initialized.await()
+        val now = SpectraTime.now().toEpochMilliseconds()
         var memoryPruned = 0
 
         // 1. Prune in-memory ring buffer
@@ -325,35 +342,99 @@ class FileLogStorage(
             }
         }
 
-        // 2. Prune disk files by maxSizeBytes
-        var filePrunedLines = 0
-        val maxSize = policy.maxSizeBytes
-        if (maxSize != null) {
+        // 2. Prune disk files
+        val diskPruned =
             writeMutex.withLock {
                 withContext(backgroundDispatcher) {
-                    try {
-                        val files = fileSystem.listFiles(".").filter { it.startsWith("logs_") && it.endsWith(".jsonl") }
-                        var totalSize = files.sumOf { fileSystem.getFileSize(it) }
-                        val sortedFiles =
-                            files.sortedBy { fileName ->
-                                fileName.removePrefix("logs_").removeSuffix(".jsonl").toIntOrNull() ?: 0
+                    pruneDiskInternal(policy, now)
+                }
+            }
+
+        return if (diskPruned > 0) diskPruned else memoryPruned
+    }
+
+    private suspend fun pruneDiskInternal(
+        policy: RetentionPolicy,
+        now: Long,
+    ): Int {
+        var filePrunedLines = 0
+        try {
+            val files = fileSystem.listFiles(".").filter { it.startsWith("logs_") && it.endsWith(".jsonl") }
+            val sortedFiles =
+                files.sortedBy { fileName ->
+                    fileName.removePrefix("logs_").removeSuffix(".jsonl").toIntOrNull() ?: 0
+                }.toMutableList()
+
+            // 1. Prune by maxAgeMs (TTL): evict files whose newest entry is older than cutoff
+            val maxAge = policy.maxAgeMs
+            if (maxAge != null) {
+                val cutoff = now - maxAge
+                val iterator = sortedFiles.iterator()
+                while (iterator.hasNext()) {
+                    val fileName = iterator.next()
+                    val content = fileSystem.readText(fileName) ?: continue
+                    val lines = content.lines().filter { it.isNotBlank() }
+                    val lastLine = lines.lastOrNull()
+                    val newestTimestamp =
+                        lastLine?.let { line ->
+                            try {
+                                json.decodeFromString<LogEntry>(line).timestamp.toEpochMilliseconds()
+                            } catch (_: Exception) {
+                                null
                             }
-                        for (file in sortedFiles) {
-                            if (totalSize <= maxSize) break
-                            val fileSize = fileSystem.getFileSize(file)
-                            val lines = fileSystem.countLines(file)
-                            fileSystem.delete(file)
-                            totalSize -= fileSize
-                            filePrunedLines += lines
                         }
-                        countAtomic.addAndGet(-filePrunedLines)
-                    } catch (_: Exception) {
+                    if (newestTimestamp != null && newestTimestamp < cutoff) {
+                        if (fileName == currentFileName) {
+                            currentFileIndex++
+                        }
+                        val linesCount = lines.size
+                        fileSystem.delete(fileName)
+                        countAtomic.addAndGet(-linesCount)
+                        filePrunedLines += linesCount
+                        iterator.remove()
                     }
                 }
             }
-        }
 
-        return maxOf(memoryPruned, filePrunedLines)
+            // 2. Prune by maxCount: evict oldest files while total count exceeds maxCount
+            val maxCount = policy.maxCount
+            if (maxCount != null) {
+                while (countAtomic.value > maxCount && sortedFiles.isNotEmpty()) {
+                    val oldestFile = sortedFiles.first()
+                    if (oldestFile == currentFileName) {
+                        if (countAtomic.value <= maxCount) break
+                        currentFileIndex++
+                    }
+                    val linesCount = fileSystem.countLines(oldestFile)
+                    fileSystem.delete(oldestFile)
+                    countAtomic.addAndGet(-linesCount)
+                    filePrunedLines += linesCount
+                    sortedFiles.removeAt(0)
+                }
+            }
+
+            // 3. Prune by maxSizeBytes: evict oldest files while total size exceeds maxSize
+            val maxSize = policy.maxSizeBytes
+            if (maxSize != null) {
+                var totalSize = sortedFiles.sumOf { fileSystem.getFileSize(it) }
+                while (totalSize > maxSize && sortedFiles.isNotEmpty()) {
+                    val oldestFile = sortedFiles.first()
+                    if (oldestFile == currentFileName) {
+                        currentFileIndex++
+                    }
+                    val fileSize = fileSystem.getFileSize(oldestFile)
+                    val linesCount = fileSystem.countLines(oldestFile)
+                    fileSystem.delete(oldestFile)
+                    totalSize -= fileSize
+                    countAtomic.addAndGet(-linesCount)
+                    filePrunedLines += linesCount
+                    sortedFiles.removeAt(0)
+                }
+            }
+        } catch (_: Exception) {
+            // Ignore disk I/O prune errors
+        }
+        return filePrunedLines
     }
 
     private suspend fun rotateFiles() {
@@ -370,6 +451,10 @@ class FileLogStorage(
             } catch (e: Exception) {
                 // Ignore delete errors
             }
+        }
+        if (retentionPolicy.hasLimits) {
+            val now = SpectraTime.now().toEpochMilliseconds()
+            pruneDiskInternal(retentionPolicy, now)
         }
     }
 
@@ -402,6 +487,13 @@ class FileLogStorage(
                     total += fileSystem.countLines(fileName)
                 }
                 countAtomic.value = total
+
+                if (retentionPolicy.hasLimits) {
+                    writeMutex.withLock {
+                        val now = SpectraTime.now().toEpochMilliseconds()
+                        pruneDiskInternal(retentionPolicy, now)
+                    }
+                }
             } catch (e: Exception) {
                 println("Spectra File I/O Error: ${e.message}")
             }

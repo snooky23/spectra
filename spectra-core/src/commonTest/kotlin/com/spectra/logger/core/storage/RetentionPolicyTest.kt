@@ -6,11 +6,14 @@ import com.spectra.logger.feature.events.model.EventType
 import com.spectra.logger.feature.events.storage.InMemoryEventLogStorage
 import com.spectra.logger.feature.logs.model.LogEntry
 import com.spectra.logger.feature.logs.model.LogLevel
+import com.spectra.logger.feature.logs.storage.FileLogStorage
 import com.spectra.logger.feature.logs.storage.InMemoryLogStorage
 import com.spectra.logger.feature.network.model.NetworkLogEntry
 import com.spectra.logger.feature.network.storage.InMemoryNetworkLogStorage
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
+import okio.fakefilesystem.FakeFileSystem
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -146,5 +149,97 @@ class RetentionPolicyTest {
             val pruned = storage.prune(RetentionPolicy(maxCount = 8))
             assertEquals(7, pruned)
             assertEquals(8, storage.count())
+        }
+
+    @Test
+    fun testFileLogStoragePruneByTtl() =
+        runTest {
+            val dispatcher = Dispatchers.Unconfined
+            val fakeFs = FakeFileSystem()
+            val fileSystem = FileSystem(".", okioFs = fakeFs, dispatcher = dispatcher)
+            val storage =
+                FileLogStorage(
+                    fileSystem = fileSystem,
+                    maxFileSize = 400L,
+                    maxFiles = 5,
+                    flushThreshold = 1,
+                    backgroundDispatcher = dispatcher,
+                )
+
+            val now = SpectraTime.now()
+            val oldTime = Instant.fromEpochMilliseconds(now.toEpochMilliseconds() - 300_000L)
+
+            // Add 3 old logs and flush (will trigger multiple files due to 400 byte limit)
+            for (i in 1..3) {
+                storage.add(
+                    LogEntry(
+                        id = "old_$i",
+                        timestamp = oldTime,
+                        level = LogLevel.INFO,
+                        tag = "Test",
+                        message = "Old message $i with substantial content to ensure file rotation",
+                    ),
+                )
+            }
+            storage.flush()
+
+            // Add 3 fresh logs
+            for (i in 4..6) {
+                storage.add(
+                    LogEntry(
+                        id = "new_$i",
+                        timestamp = now,
+                        level = LogLevel.INFO,
+                        tag = "Test",
+                        message = "New message $i",
+                    ),
+                )
+            }
+            storage.flush()
+
+            assertTrue(storage.count() >= 6)
+
+            // Prune with TTL of 100 seconds
+            val pruned = storage.prune(RetentionPolicy(maxAgeMs = 100_000L))
+            assertTrue(pruned > 0)
+
+            val remaining = storage.query()
+            assertTrue(remaining.all { it.id.startsWith("new_") })
+        }
+
+    @Test
+    fun testFileLogStoragePruneByCount() =
+        runTest {
+            val dispatcher = Dispatchers.Unconfined
+            val fakeFs = FakeFileSystem()
+            val fileSystem = FileSystem(".", okioFs = fakeFs, dispatcher = dispatcher)
+            val storage =
+                FileLogStorage(
+                    fileSystem = fileSystem,
+                    maxFileSize = 200L,
+                    maxFiles = 20,
+                    flushThreshold = 1,
+                    backgroundDispatcher = dispatcher,
+                )
+
+            val now = SpectraTime.now()
+            for (i in 1..10) {
+                storage.add(
+                    LogEntry(
+                        id = "log_$i",
+                        timestamp = now,
+                        level = LogLevel.INFO,
+                        tag = "Test",
+                        message = "Message number $i",
+                    ),
+                )
+            }
+            storage.flush()
+            val initialCount = storage.count()
+            assertTrue(initialCount >= 10)
+
+            val pruned = storage.prune(RetentionPolicy(maxCount = 4))
+            assertTrue(pruned > 0)
+            assertTrue(storage.count() <= 4 || storage.query().size <= 4)
         }
 }
