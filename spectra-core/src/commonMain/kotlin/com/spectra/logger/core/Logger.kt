@@ -30,6 +30,8 @@ class Logger(
     private val sinks: List<LogSink> = emptyList(),
     private val minLevel: LogLevel = LogLevel.VERBOSE,
     scope: CoroutineScope? = null,
+    private val breadcrumbRecorder: com.spectra.logger.feature.crash.interceptor.BreadcrumbRecorder? = null,
+    private val autoDetectSource: Boolean = false,
 ) {
     private val scope: CoroutineScope = scope ?: CoroutineScope(SupervisorJob() + ioDispatcher)
 
@@ -150,7 +152,12 @@ class Logger(
     ) {
         if (level.priority < minLevel.priority) return
 
-        val (source, sourceType) = SourceDetector.detectSource()
+        val (source, sourceType) =
+            if (autoDetectSource && SourceDetector.enabled) {
+                SourceDetector.detectSource()
+            } else {
+                "app" to SourceType.APP
+            }
 
         // Convert null to empty map (industry standard pattern from Firebase, Sentry, etc)
         val logMetadata = metadata ?: emptyMap()
@@ -170,6 +177,15 @@ class Logger(
                 source = source,
                 sourceType = sourceType,
             )
+
+        breadcrumbRecorder?.record(
+            com.spectra.logger.feature.crash.model.Breadcrumb(
+                timestamp = entry.timestamp.toEpochMilliseconds(),
+                type = com.spectra.logger.feature.crash.model.BreadcrumbType.LOG,
+                category = tag,
+                message = message,
+            ),
+        )
 
         scope.launch {
             // Run local storage concurrently with sinks so it doesn't block plugin execution

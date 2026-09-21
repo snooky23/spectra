@@ -5,6 +5,15 @@ import com.spectra.logger.core.model.*
 import com.spectra.logger.core.storage.FileSystem
 import com.spectra.logger.core.utils.*
 import com.spectra.logger.core.utils.ioDispatcher
+import com.spectra.logger.feature.crash.SpectraCrashReporter
+import com.spectra.logger.feature.crash.interceptor.BreadcrumbRecorder
+import com.spectra.logger.feature.crash.interceptor.DefaultBreadcrumbRecorder
+import com.spectra.logger.feature.crash.model.Breadcrumb
+import com.spectra.logger.feature.crash.model.BreadcrumbType
+import com.spectra.logger.feature.crash.model.CrashReport
+import com.spectra.logger.feature.crash.storage.CrashStorage
+import com.spectra.logger.feature.crash.storage.FileCrashStorage
+import com.spectra.logger.feature.crash.storage.InMemoryCrashStorage
 import com.spectra.logger.feature.events.model.EventFilter
 import com.spectra.logger.feature.events.model.EventLogEntry
 import com.spectra.logger.feature.events.model.EventType
@@ -60,6 +69,12 @@ object SpectraLogger {
         atomic<NetworkLogStorage?>(null)
     private val eventStorageAtomic =
         atomic<EventLogStorage?>(null)
+    private val crashStorageAtomic =
+        atomic<CrashStorage?>(null)
+    private val breadcrumbRecorderAtomic =
+        atomic<BreadcrumbRecorder?>(null)
+    private val crashReporterAtomic =
+        atomic<SpectraCrashReporter?>(null)
     private val streamClientAtomic =
         atomic<com.spectra.logger.feature.streaming.SpectraStreamClient?>(null)
     private val activeScreenTimersLock = SynchronizedObject()
@@ -81,6 +96,8 @@ object SpectraLogger {
                     sinks = configuration.logSinks,
                     minLevel = configuration.minLogLevel,
                     scope = value,
+                    breadcrumbRecorder = breadcrumbRecorder,
+                    autoDetectSource = configuration.enabledFeatures.enableSourceDetection,
                 )
         }
 
@@ -133,6 +150,49 @@ object SpectraLogger {
         }
 
     /**
+     * Crash storage instance.
+     */
+    public val crashStorage: CrashStorage
+        get() {
+            var current = crashStorageAtomic.value
+            if (current == null) {
+                current = InMemoryCrashStorage(maxCapacity = configuration.crashStorageConfig.maxCapacity)
+                crashStorageAtomic.compareAndSet(null, current)
+            }
+            return crashStorageAtomic.value!!
+        }
+
+    /**
+     * Breadcrumb recorder instance.
+     */
+    public val breadcrumbRecorder: BreadcrumbRecorder
+        get() {
+            var current = breadcrumbRecorderAtomic.value
+            if (current == null) {
+                current = DefaultBreadcrumbRecorder()
+                breadcrumbRecorderAtomic.compareAndSet(null, current)
+            }
+            return breadcrumbRecorderAtomic.value!!
+        }
+
+    /**
+     * Crash reporter instance.
+     */
+    public val crashReporter: SpectraCrashReporter
+        get() {
+            var current = crashReporterAtomic.value
+            if (current == null) {
+                current =
+                    SpectraCrashReporter(
+                        storage = crashStorage,
+                        breadcrumbRecorder = breadcrumbRecorder,
+                    )
+                crashReporterAtomic.compareAndSet(null, current)
+            }
+            return crashReporterAtomic.value!!
+        }
+
+    /**
      * Remote streaming client managing WebSocket sync with desktop companions.
      */
     public val streamClient: com.spectra.logger.feature.streaming.SpectraStreamClient
@@ -178,6 +238,8 @@ object SpectraLogger {
                         sinks = configuration.logSinks,
                         minLevel = configuration.minLogLevel,
                         scope = ioScope,
+                        breadcrumbRecorder = breadcrumbRecorder,
+                        autoDetectSource = configuration.enabledFeatures.enableSourceDetection,
                     )
                 loggerAtomic.compareAndSet(null, current)
             }
@@ -325,6 +387,15 @@ object SpectraLogger {
      */
     fun logNetwork(entry: NetworkLogEntry) {
         if (!configuration.enabledFeatures.enableNetworkLogging) return
+        breadcrumbRecorder.record(
+            Breadcrumb(
+                timestamp = entry.timestamp.toEpochMilliseconds(),
+                type = BreadcrumbType.NETWORK,
+                category = entry.method,
+                message = "${entry.method} ${entry.url} [${entry.responseCode ?: 0}]",
+                data = mapOf("duration" to entry.duration.toString()),
+            ),
+        )
         ioScope.launch {
             // Run local storage concurrently with sinks so it doesn't block plugin execution
             networkStorage.add(entry)
@@ -416,6 +487,15 @@ object SpectraLogger {
                 source = source,
                 sourceType = sourceType,
             )
+        breadcrumbRecorder.record(
+            Breadcrumb(
+                timestamp = entry.timestamp.toEpochMilliseconds(),
+                type = BreadcrumbType.EVENT,
+                category = name,
+                message = "Event: $name ($eventType)",
+                data = parameters,
+            ),
+        )
         ioScope.launch {
             eventStorage.add(entry)
         }
@@ -473,6 +553,15 @@ object SpectraLogger {
                 source = source,
                 sourceType = sourceType,
             )
+        breadcrumbRecorder.record(
+            Breadcrumb(
+                timestamp = now.toEpochMilliseconds(),
+                type = BreadcrumbType.EVENT,
+                category = "ScreenView",
+                message = "Screen: $screenName (${durationMs ?: 0}ms)",
+                data = mergedParams,
+            ),
+        )
         ioScope.launch {
             eventStorage.add(entry)
         }
@@ -572,12 +661,97 @@ object SpectraLogger {
             eventStorageAtomic.value = InMemoryEventLogStorage(maxCapacity = newConfig.eventStorageConfig.maxCapacity)
         }
 
+        val currentCrashStorage = crashStorageAtomic.value
+        if (newConfig.crashStorageConfig.enablePersistence && newConfig.crashStorageConfig.directoryPath != null) {
+            val fileSystem = FileSystem(newConfig.crashStorageConfig.directoryPath!!)
+            crashStorageAtomic.value =
+                FileCrashStorage(
+                    fileSystem = fileSystem,
+                    maxCrashes = newConfig.crashStorageConfig.maxCapacity,
+                )
+        } else if (currentCrashStorage == null) {
+            crashStorageAtomic.value = InMemoryCrashStorage(maxCapacity = newConfig.crashStorageConfig.maxCapacity)
+        }
+
         loggerAtomic.value =
             Logger(
                 storage = logStorageAtomic.value!!,
                 sinks = newConfig.logSinks,
                 minLevel = newConfig.minLogLevel,
                 scope = ioScope,
+                breadcrumbRecorder = breadcrumbRecorder,
+                autoDetectSource = newConfig.enabledFeatures.enableSourceDetection,
             )
     }
+
+    // Crash Telemetry API
+
+    /**
+     * Record a manual breadcrumb leading up to any potential failure.
+     */
+    fun recordBreadcrumb(
+        type: BreadcrumbType,
+        category: String,
+        message: String,
+        data: Map<String, String> = emptyMap(),
+    ) {
+        breadcrumbRecorder.record(
+            Breadcrumb(
+                timestamp = SpectraTime.now().toEpochMilliseconds(),
+                type = type,
+                category = category,
+                message = message,
+                data = data,
+            ),
+        )
+    }
+
+    /**
+     * Record a non-fatal exception without terminating the application.
+     */
+    fun recordNonFatalException(
+        throwable: Throwable,
+        metadata: Map<String, String> = emptyMap(),
+    ) {
+        crashReporter.recordNonFatalException(throwable, metadata)
+    }
+
+    /**
+     * Query stored crash reports.
+     */
+    suspend fun queryCrashes(limit: Int? = null): List<CrashReport> = crashStorage.getCrashes(limit)
+
+    /**
+     * Get the most recent crash report, if any.
+     */
+    suspend fun getLatestCrash(): CrashReport? = crashStorage.getLatestCrash()
+
+    /**
+     * Observe crash reports as a flow.
+     */
+    fun observeCrashes(): Flow<List<CrashReport>> = crashStorage.observeCrashes()
+
+    /**
+     * Get total crash count.
+     */
+    suspend fun crashCount(): Int = crashStorage.count()
+
+    /**
+     * Installs the platform uncaught exception handler.
+     */
+    fun installCrashHandler() {
+        crashReporter.install()
+    }
+
+    /**
+     * Uninstalls the platform uncaught exception handler.
+     */
+    fun uninstallCrashHandler() {
+        crashReporter.uninstall()
+    }
+
+    /**
+     * Clear all recorded crash reports.
+     */
+    suspend fun clearCrashes() = crashStorage.clear()
 }

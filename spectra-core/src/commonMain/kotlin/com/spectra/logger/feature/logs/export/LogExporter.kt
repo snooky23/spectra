@@ -1,6 +1,7 @@
 package com.spectra.logger.feature.logs.export
 
 import com.spectra.logger.core.utils.SpectraTime
+import com.spectra.logger.feature.crash.model.CrashReport
 import com.spectra.logger.feature.events.model.EventFilter
 import com.spectra.logger.feature.events.storage.EventLogStorage
 import com.spectra.logger.feature.logs.model.LogFilter
@@ -12,6 +13,8 @@ import com.spectra.logger.feature.streaming.model.DeviceInfo
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 /**
  * Supported export formats for Spectra telemetry.
@@ -596,6 +599,94 @@ object LogExporter {
             "\"${str.replace("\"", "\"\"")}\""
         } else {
             str
+        }
+
+    /**
+     * Export a crash report to plain text.
+     */
+    fun exportCrashAsText(report: CrashReport): String =
+        buildString {
+            appendLine("=== Spectra Crash Report ===")
+            appendLine("ID: ${report.id}")
+            appendLine("Timestamp: ${formatTimestamp(Instant.fromEpochMilliseconds(report.timestamp))}")
+            appendLine("Exception: ${report.exceptionClass}")
+            appendLine("Severity: ${report.severity.name}")
+            appendLine("Thread: ${report.threadName}")
+            if (report.message != null) {
+                appendLine("Message: ${report.message}")
+            }
+            appendLine()
+            appendLine("=== Stack Trace ===")
+            appendLine(report.stackTrace)
+            appendLine()
+            if (report.breadcrumbs.isNotEmpty()) {
+                appendLine("=== Breadcrumbs (${report.breadcrumbs.size}) ===")
+                report.breadcrumbs.forEach { bc ->
+                    appendLine(
+                        "${formatTimestamp(Instant.fromEpochMilliseconds(bc.timestamp))} [${bc.type.name}] ${bc.category}: ${bc.message}",
+                    )
+                    if (bc.data.isNotEmpty()) {
+                        appendLine("  Data: ${bc.data}")
+                    }
+                }
+                appendLine()
+            }
+            if (report.metadata.isNotEmpty()) {
+                appendLine("=== Metadata ===")
+                report.metadata.forEach { (k, v) -> appendLine("$k: $v") }
+            }
+        }
+
+    /**
+     * Export a crash report as JSON.
+     */
+    fun exportCrashAsJson(report: CrashReport): String {
+        val json =
+            Json {
+                prettyPrint = true
+                encodeDefaults = true
+            }
+        return json.encodeToString(report)
+    }
+
+    /**
+     * Export a crash report as a formatted Markdown document.
+     */
+    fun exportCrashAsMarkdown(report: CrashReport): String =
+        buildString {
+            appendLine("# 💥 Spectra Crash Report")
+            appendLine()
+            appendLine("- **Crash ID**: `${report.id}`")
+            appendLine("- **Timestamp**: `${formatTimestamp(Instant.fromEpochMilliseconds(report.timestamp))}`")
+            appendLine("- **Exception**: `${report.exceptionClass}`")
+            appendLine("- **Severity**: `${report.severity.name}`")
+            appendLine("- **Thread**: `${report.threadName}`")
+            if (report.message != null) {
+                appendLine("- **Message**: ${report.message}")
+            }
+            appendLine()
+            appendLine("## 📋 Stack Trace")
+            appendLine("```")
+            appendLine(report.stackTrace.trim())
+            appendLine("```")
+            appendLine()
+            if (report.breadcrumbs.isNotEmpty()) {
+                appendLine("## 🍞 Breadcrumbs (${report.breadcrumbs.size})")
+                appendLine("| Time | Type | Category | Message |")
+                appendLine("| --- | --- | --- | --- |")
+                report.breadcrumbs.forEach { bc ->
+                    val timeStr = formatTimestamp(Instant.fromEpochMilliseconds(bc.timestamp))
+                    appendLine("| $timeStr | `${bc.type.name}` | ${escapeMarkdownCell(bc.category)} | ${escapeMarkdownCell(bc.message)} |")
+                }
+                appendLine()
+            }
+            if (report.metadata.isNotEmpty()) {
+                appendLine("## 📱 Device Context & Metadata")
+                report.metadata.forEach { (k, v) ->
+                    appendLine("- **$k**: $v")
+                }
+                appendLine()
+            }
         }
 
     private fun escapeMarkdownCell(str: String): String =

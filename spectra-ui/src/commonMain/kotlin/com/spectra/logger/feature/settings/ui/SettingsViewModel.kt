@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.spectra.logger.SpectraLogger
 import com.spectra.logger.Version
 import com.spectra.logger.core.ui.util.PlatformUtils
+import com.spectra.logger.feature.crash.storage.CrashStorage
 import com.spectra.logger.feature.events.storage.EventLogStorage
 import com.spectra.logger.feature.logs.export.ExportFormat
 import com.spectra.logger.feature.logs.export.LogExporter
@@ -26,6 +27,7 @@ class SettingsViewModel(
     private val logStorage: LogStorage = SpectraLogger.logStorage,
     private val networkStorage: NetworkLogStorage = SpectraLogger.networkStorage,
     private val eventStorage: EventLogStorage = SpectraLogger.eventStorage,
+    private val crashStorage: CrashStorage = SpectraLogger.crashStorage,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
@@ -58,6 +60,13 @@ class SettingsViewModel(
                 }
             }
         }
+        viewModelScope.launch {
+            crashStorage.observeCrashes().collect { crashes ->
+                _uiState.update { state ->
+                    state.copy(crashCount = crashes.size)
+                }
+            }
+        }
     }
 
     fun refresh() {
@@ -74,12 +83,14 @@ class SettingsViewModel(
                 val logCount = logStorage.query(filter = noFilter, limit = null).size
                 val networkCount = networkStorage.count()
                 val eventCount = eventStorage.count()
+                val crashCount = crashStorage.count()
 
                 _uiState.update {
                     it.copy(
                         applicationLogCount = logCount,
                         networkLogCount = networkCount,
                         eventLogCount = eventCount,
+                        crashCount = crashCount,
                     )
                 }
             } catch (_: Exception) {
@@ -110,6 +121,13 @@ class SettingsViewModel(
         viewModelScope.launch {
             eventStorage.clear()
             _uiState.update { it.copy(eventLogCount = 0) }
+        }
+    }
+
+    fun clearCrashes() {
+        viewModelScope.launch {
+            crashStorage.clear()
+            _uiState.update { it.copy(crashCount = 0) }
         }
     }
 
@@ -243,6 +261,7 @@ data class SettingsUiState(
     val applicationLogCount: Int = 0,
     val networkLogCount: Int = 0,
     val eventLogCount: Int = 0,
+    val crashCount: Int = 0,
     val version: String = Version.LIBRARY_VERSION,
     val isNetworkLoggingEnabled: Boolean = true,
     val isFilePersistenceEnabled: Boolean = false,
