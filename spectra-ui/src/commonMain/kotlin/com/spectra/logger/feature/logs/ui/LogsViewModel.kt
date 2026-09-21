@@ -9,6 +9,7 @@ import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogEntry
 import com.spectra.logger.feature.logs.model.LogFilter
 import com.spectra.logger.feature.logs.model.LogLevel
+import com.spectra.logger.feature.logs.storage.LogStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,11 +18,13 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 
 /**
- * ViewModel for the Logs screen
+ * ViewModel for the Logs screen.
+ *
+ * Implements Clean Architecture with Dependency Inversion via constructor injection.
  */
-class LogsViewModel : ViewModel() {
-    private val storage get() = SpectraLogger.logStorage
-
+class LogsViewModel(
+    private val storage: LogStorage = SpectraLogger.logStorage,
+) : ViewModel() {
     private val _uiState = MutableStateFlow(LogsUiState())
     val uiState: StateFlow<LogsUiState> = _uiState.asStateFlow()
 
