@@ -117,4 +117,38 @@ class SettingsViewModelTest {
             assertEquals(0, viewModel.uiState.value.eventLogCount)
             assertEquals(0, viewModel.uiState.value.crashCount)
         }
+
+    @Test
+    fun testSettingsViewModelPruning() =
+        runTest(testDispatcher) {
+            val logStorage = InMemoryLogStorage(maxCapacity = 100)
+            val networkStorage = InMemoryNetworkLogStorage(maxCapacity = 100)
+            val eventStorage = InMemoryEventLogStorage(maxCapacity = 100)
+
+            for (i in 1..10) {
+                logStorage.add(LogEntry("$i", SpectraTime.now(), LogLevel.INFO, "Tag", "Msg $i"))
+                networkStorage.add(NetworkLogEntry("n$i", SpectraTime.now(), "https://example.com/$i", "GET"))
+                eventStorage.add(EventLogEntry("e$i", SpectraTime.now(), EventType.CUSTOM, "Event $i"))
+            }
+
+            val viewModel =
+                SettingsViewModel(
+                    logStorage = logStorage,
+                    networkStorage = networkStorage,
+                    eventStorage = eventStorage,
+                )
+            advanceUntilIdle()
+
+            assertEquals(10, viewModel.uiState.value.applicationLogCount)
+            assertEquals(10, viewModel.uiState.value.networkLogCount)
+            assertEquals(10, viewModel.uiState.value.eventLogCount)
+
+            viewModel.pruneLogs(com.spectra.logger.core.storage.RetentionPolicy(maxCount = 3))
+            advanceUntilIdle()
+
+            assertEquals(3, viewModel.uiState.value.applicationLogCount)
+            assertEquals(3, viewModel.uiState.value.networkLogCount)
+            assertEquals(3, viewModel.uiState.value.eventLogCount)
+            assertTrue(viewModel.uiState.value.lastPruneSummary?.contains("Pruned 7 logs") == true)
+        }
 }

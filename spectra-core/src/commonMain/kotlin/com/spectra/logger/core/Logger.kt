@@ -224,6 +224,14 @@ class Logger(
     suspend fun clear() = storage.clear()
 
     /**
+     * Prune logs according to retention policy.
+     */
+    suspend fun prune(
+        policy: com.spectra.logger.core.storage.RetentionPolicy =
+            com.spectra.logger.core.storage.RetentionPolicy.DEFAULT,
+    ): Int = storage.prune(policy)
+
+    /**
      * Export all log entries to a single file and return its absolute path.
      * @return Absolute path to the exported `.jsonl` file, or null if empty/failed.
      */
