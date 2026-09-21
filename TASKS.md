@@ -226,10 +226,10 @@ See `_bmad-output/planning-artifacts/spec-events-webview-streaming/SPEC.md` and 
 
 ## Phase 17: Log Retention Policies & Auto-Pruning
 
-- [ ] **Phase 17.1: Retention Policy Configuration**
-  - [ ] Define `RetentionPolicy` (max log count, max age TTL, max storage size in bytes).
-- [ ] **Phase 17.2: Automated Storage Pruning Engine**
-  - [ ] Implement TTL-based and size-based eviction in `FileLogStorage` and `InMemoryLogStorage`.
-  - [ ] Add manual "Prune Now" action in `SettingsViewModel` and UI.
-- [ ] **Phase 17.3: Hermetic Unit Tests & Verification**
-  - [ ] Test time-based expiration and capacity eviction.
+- [x] **Phase 17.1: Retention Policy Configuration**
+  - [x] Define `RetentionPolicy` (max log count, max age TTL, max storage size in bytes).
+- [x] **Phase 17.2: Automated Storage Pruning Engine**
+  - [x] Implement TTL-based and size-based eviction in `FileLogStorage` and `InMemoryLogStorage`.
+  - [x] Add manual "Prune Now" action in `SettingsViewModel` and UI.
+- [x] **Phase 17.3: Hermetic Unit Tests & Verification**
+  - [x] Test time-based expiration and capacity eviction.

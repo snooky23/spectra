@@ -300,6 +300,62 @@ class FileLogStorage(
         return countAtomic.value
     }
 
+    override suspend fun prune(policy: com.spectra.logger.core.storage.RetentionPolicy): Int {
+        if (!policy.hasLimits) return 0
+        val now = com.spectra.logger.core.utils.SpectraTime.now().toEpochMilliseconds()
+        var memoryPruned = 0
+
+        // 1. Prune in-memory ring buffer
+        synchronized(lock) {
+            val maxAge = policy.maxAgeMs
+            if (maxAge != null) {
+                val cutoff = now - maxAge
+                while (buffer.isNotEmpty() && buffer.first().timestamp.toEpochMilliseconds() < cutoff) {
+                    buffer.removeFirst()
+                    memoryPruned++
+                }
+            }
+
+            val maxCount = policy.maxCount
+            if (maxCount != null) {
+                while (buffer.size > maxCount) {
+                    buffer.removeFirst()
+                    memoryPruned++
+                }
+            }
+        }
+
+        // 2. Prune disk files by maxSizeBytes
+        var filePrunedLines = 0
+        val maxSize = policy.maxSizeBytes
+        if (maxSize != null) {
+            writeMutex.withLock {
+                withContext(backgroundDispatcher) {
+                    try {
+                        val files = fileSystem.listFiles(".").filter { it.startsWith("logs_") && it.endsWith(".jsonl") }
+                        var totalSize = files.sumOf { fileSystem.getFileSize(it) }
+                        val sortedFiles =
+                            files.sortedBy { fileName ->
+                                fileName.removePrefix("logs_").removeSuffix(".jsonl").toIntOrNull() ?: 0
+                            }
+                        for (file in sortedFiles) {
+                            if (totalSize <= maxSize) break
+                            val fileSize = fileSystem.getFileSize(file)
+                            val lines = fileSystem.countLines(file)
+                            fileSystem.delete(file)
+                            totalSize -= fileSize
+                            filePrunedLines += lines
+                        }
+                        countAtomic.addAndGet(-filePrunedLines)
+                    } catch (_: Exception) {
+                    }
+                }
+            }
+        }
+
+        return maxOf(memoryPruned, filePrunedLines)
+    }
+
     private suspend fun rotateFiles() {
         currentFileIndex++
         val oldestFileIndex = currentFileIndex - maxFiles

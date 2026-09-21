@@ -46,4 +46,11 @@ interface TelemetryStorage<T, in F> {
      * Clear all stored items.
      */
     suspend fun clear()
+
+    /**
+     * Prune stored items according to the given retention policy.
+     * @param policy Retention constraints (max count, max age TTL, max size).
+     * @return Number of pruned entries.
+     */
+    suspend fun prune(policy: RetentionPolicy): Int = 0
 }

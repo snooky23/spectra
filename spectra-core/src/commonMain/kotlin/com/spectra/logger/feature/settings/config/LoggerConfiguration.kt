@@ -41,6 +41,8 @@ data class StorageConfiguration(
     val flushThreshold: Int = 50,
     val maxFileSizeBytes: Long = 50_000_000L,
     val fileLogLevel: LogLevel = LogLevel.DEBUG,
+    val retentionPolicy: com.spectra.logger.core.storage.RetentionPolicy =
+        com.spectra.logger.core.storage.RetentionPolicy.DEFAULT,
 )
 
 /**
@@ -176,6 +178,8 @@ class StorageConfigurationBuilder(
     var flushThreshold: Int = 50,
     var maxFileSizeBytes: Long = 50_000_000L,
     var fileLogLevel: LogLevel = LogLevel.DEBUG,
+    var retentionPolicy: com.spectra.logger.core.storage.RetentionPolicy =
+        com.spectra.logger.core.storage.RetentionPolicy.DEFAULT,
 ) {
     internal fun build(): StorageConfiguration =
         StorageConfiguration(
@@ -185,6 +189,7 @@ class StorageConfigurationBuilder(
             flushThreshold = flushThreshold,
             maxFileSizeBytes = maxFileSizeBytes,
             fileLogLevel = fileLogLevel,
+            retentionPolicy = retentionPolicy,
         )
 }
 

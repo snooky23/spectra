@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spectra.logger.SpectraLogger
 import com.spectra.logger.Version
+import com.spectra.logger.core.storage.RetentionPolicy
 import com.spectra.logger.core.ui.util.PlatformUtils
 import com.spectra.logger.feature.crash.storage.CrashStorage
 import com.spectra.logger.feature.events.storage.EventLogStorage
@@ -128,6 +129,20 @@ class SettingsViewModel(
         viewModelScope.launch {
             crashStorage.clear()
             _uiState.update { it.copy(crashCount = 0) }
+        }
+    }
+
+    fun pruneLogs(policy: RetentionPolicy = RetentionPolicy.DEFAULT) {
+        viewModelScope.launch {
+            val prunedLogs = logStorage.prune(policy)
+            val prunedNetwork = networkStorage.prune(policy)
+            val prunedEvents = eventStorage.prune(policy)
+            refresh()
+            _uiState.update {
+                it.copy(
+                    lastPruneSummary = "Pruned $prunedLogs logs, $prunedNetwork network, $prunedEvents events",
+                )
+            }
         }
     }
 
@@ -268,6 +283,7 @@ data class SettingsUiState(
     val ignoredDomainsText: String = "",
     val ignoredTokensText: String = "",
     val maxBodySizeText: String = "250000",
+    val lastPruneSummary: String? = null,
 )
 
 enum class AppearanceMode(val label: String) {

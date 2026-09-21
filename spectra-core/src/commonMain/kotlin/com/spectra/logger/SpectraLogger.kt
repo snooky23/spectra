@@ -3,6 +3,7 @@ package com.spectra.logger
 import com.spectra.logger.core.Logger
 import com.spectra.logger.core.model.*
 import com.spectra.logger.core.storage.FileSystem
+import com.spectra.logger.core.storage.RetentionPolicy
 import com.spectra.logger.core.utils.*
 import com.spectra.logger.core.utils.ioDispatcher
 import com.spectra.logger.feature.crash.SpectraCrashReporter
@@ -433,6 +434,13 @@ object SpectraLogger {
     suspend fun clear() = logger.clear()
 
     /**
+     * Prune application logs according to retention policy.
+     * @param policy Retention constraints (max count, max age TTL, max size).
+     * @return Number of pruned entries.
+     */
+    suspend fun prune(policy: RetentionPolicy = RetentionPolicy.DEFAULT): Int = logger.prune(policy)
+
+    /**
      * Export all log entries to a single file and return its absolute path.
      * @return Absolute path to the exported `.jsonl` file, or null if empty/failed.
      */
@@ -462,6 +470,11 @@ object SpectraLogger {
      * Clear all network logs.
      */
     suspend fun clearNetwork() = networkStorage.clear()
+
+    /**
+     * Prune network logs according to retention policy.
+     */
+    suspend fun pruneNetwork(policy: RetentionPolicy = RetentionPolicy.DEFAULT): Int = networkStorage.prune(policy)
 
     // Events Telemetry API
 
@@ -589,6 +602,11 @@ object SpectraLogger {
      * Clear all events.
      */
     suspend fun clearEvents() = eventStorage.clear()
+
+    /**
+     * Prune analytics events according to retention policy.
+     */
+    suspend fun pruneEvents(policy: RetentionPolicy = RetentionPolicy.DEFAULT): Int = eventStorage.prune(policy)
 
     // Configuration API
 

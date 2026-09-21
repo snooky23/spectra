@@ -102,6 +102,38 @@ class InMemoryLogStorage(
         }
     }
 
+    override suspend fun prune(policy: com.spectra.logger.core.storage.RetentionPolicy): Int {
+        if (!policy.hasLimits) return 0
+        val now = SpectraTime.now().toEpochMilliseconds()
+        var prunedCount = 0
+
+        synchronized(lock) {
+            if (buffer.isEmpty()) return 0
+
+            // 1. Prune by maxAgeMs (TTL)
+            val maxAge = policy.maxAgeMs
+            if (maxAge != null) {
+                val cutoff = now - maxAge
+                while (buffer.isNotEmpty() && buffer.first().timestamp.toEpochMilliseconds() < cutoff) {
+                    buffer.removeFirst()
+                    prunedCount++
+                }
+            }
+
+            // 2. Prune by maxCount (FIFO)
+            val maxCount = policy.maxCount
+            if (maxCount != null) {
+                while (buffer.size > maxCount) {
+                    buffer.removeFirst()
+                    prunedCount++
+                }
+            }
+
+            countAtomic.value = buffer.size
+        }
+        return prunedCount
+    }
+
     companion object {
         const val DEFAULT_CAPACITY = 10_000
         private const val FLOW_BUFFER_CAPACITY = 64

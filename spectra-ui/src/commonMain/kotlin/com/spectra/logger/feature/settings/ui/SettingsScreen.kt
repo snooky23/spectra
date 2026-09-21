@@ -107,6 +107,29 @@ fun SettingsScreen(
                         onClear = { showClearCrashesDialog = true },
                         onView = onOpenCrashHistoryDialog,
                     )
+
+                    HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
+
+                    // Retention & Pruning
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Retention & Pruning", style = MaterialTheme.typography.bodyLarge)
+                            Text(
+                                uiState.lastPruneSummary ?: "Auto-prune telemetry older than 7 days",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        FilledTonalButton(
+                            onClick = { viewModel.pruneLogs() },
+                        ) {
+                            Text("Prune Now")
+                        }
+                    }
                 }
             }
 
