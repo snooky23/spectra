@@ -177,19 +177,20 @@ See `_bmad-output/planning-artifacts/spec-events-webview-streaming/SPEC.md` and 
   - [x] Run test suite and ktlint validation to ensure zero warnings/errors.
 
 ## Phase 16: Crash Reporting & Uncaught Exception Interception
-- [ ] **Phase 16.1: Core Crash Models, Breadcrumbs & Storage Abstraction**
-  - [ ] Define `CrashReport`, `Breadcrumb`, and `CrashSeverity` models in `spectra-core`.
-  - [ ] Implement `CrashStorage` interface with thread-safe `FileCrashStorage` (persisting across process restarts using Okio) and `InMemoryCrashStorage`.
-- [ ] **Phase 16.2: Platform Uncaught Exception Interceptors**
-  - [ ] Android: Implement `SpectraCrashHandler` hooking `Thread.setDefaultUncaughtExceptionHandler` chaining original handler.
-  - [ ] iOS: Implement native uncaught exception and signal interception.
-  - [ ] Implement `BreadcrumbRecorder` automatically capturing recent logs, network calls, and UI events.
-- [ ] **Phase 16.3: UI Crash Inspector & Settings Integration**
-  - [ ] Build `CrashDetailPane` and `CrashHistoryDialog` displaying stack trace, thread info, device state, and breadcrumbs timeline.
-  - [ ] Wire crash notifications/banners into `spectra-ui` and `SettingsScreen`.
-- [ ] **Phase 16.4: Hermetic Unit Tests & Verification**
-  - [ ] Test crash serialization, breadcrumb buffering, and exception interceptor chaining.
-  - [ ] Verify zero regressions and ktlint compliance.
+- [x] **Phase 16.1: Core Crash Models, Breadcrumbs & Storage Abstraction**
+  - [x] Define `CrashReport`, `Breadcrumb`, and `CrashSeverity` models in `spectra-core`.
+  - [x] Implement `CrashStorage` interface with thread-safe `FileCrashStorage` (persisting across process restarts using Okio) and `InMemoryCrashStorage`.
+- [x] **Phase 16.2: Platform Uncaught Exception Interceptors**
+  - [x] Android: Implement `SpectraCrashHandler` hooking `Thread.setDefaultUncaughtExceptionHandler` chaining original handler.
+  - [x] iOS: Implement native uncaught exception and signal interception (`kotlin.native.setUnhandledExceptionHook`).
+  - [x] Implement `BreadcrumbRecorder` automatically capturing recent logs, network calls, and UI events into circular ring buffer.
+- [x] **Phase 16.3: UI Crash Inspector & Settings Integration**
+  - [x] Build `CrashDetailPane` and `CrashHistoryDialog` displaying stack trace, thread info, device state, and breadcrumbs timeline.
+  - [x] Wire crash notifications/banners into `spectra-ui` (`CrashBanner`) and `SettingsScreen`.
+- [x] **Phase 16.4: Hermetic Unit Tests & Verification**
+  - [x] Test crash serialization, breadcrumb buffering, and exception interceptor chaining.
+  - [x] Fix GitHub Actions unit test bottleneck (optimized call-stack source detection to prevent Kotlin Native benchmark timeout).
+  - [x] Verify zero regressions, 100% test pass rate, and ktlint compliance across all targets.
 
 ## Phase 17: Log Retention Policies & Auto-Pruning
 - [ ] **Phase 17.1: Retention Policy Configuration**

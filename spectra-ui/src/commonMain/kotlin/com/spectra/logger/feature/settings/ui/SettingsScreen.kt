@@ -28,11 +28,13 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = viewModel { SettingsViewModel() },
     onDismiss: () -> Unit = {},
     onOpenRemoteStreamDialog: () -> Unit = {},
+    onOpenCrashHistoryDialog: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showClearLogsDialog by remember { mutableStateOf(false) }
     var showClearNetworkDialog by remember { mutableStateOf(false) }
     var showClearEventsDialog by remember { mutableStateOf(false) }
+    var showClearCrashesDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
@@ -94,6 +96,16 @@ fun SettingsScreen(
                         label = "User Events",
                         count = uiState.eventLogCount,
                         onClear = { showClearEventsDialog = true },
+                    )
+
+                    HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
+
+                    // Crash Reports
+                    StorageItem(
+                        label = "Crash Reports",
+                        count = uiState.crashCount,
+                        onClear = { showClearCrashesDialog = true },
+                        onView = onOpenCrashHistoryDialog,
                     )
                 }
             }
@@ -263,6 +275,17 @@ fun SettingsScreen(
             onDismiss = { showClearEventsDialog = false },
         )
     }
+
+    if (showClearCrashesDialog) {
+        ClearLogsDialog(
+            title = "Clear Crash Reports",
+            onConfirm = {
+                viewModel.clearCrashes()
+                showClearCrashesDialog = false
+            },
+            onDismiss = { showClearCrashesDialog = false },
+        )
+    }
 }
 
 @Composable
@@ -294,13 +317,14 @@ private fun StorageItem(
     label: String,
     count: Int,
     onClear: () -> Unit,
+    onView: (() -> Unit)? = null,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(text = label, style = MaterialTheme.typography.bodyLarge)
             Text(
                 text = "$count entries stored",
@@ -308,10 +332,20 @@ private fun StorageItem(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        TextButton(onClick = onClear, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)) {
-            Icon(Icons.Default.DeleteSweep, contentDescription = null)
-            Spacer(modifier = Modifier.width(4.dp))
-            Text("Clear")
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (onView != null) {
+                TextButton(onClick = onView) {
+                    Text("View")
+                }
+            }
+            TextButton(
+                onClick = onClear,
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+            ) {
+                Icon(Icons.Default.DeleteSweep, contentDescription = null)
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("Clear")
+            }
         }
     }
 }

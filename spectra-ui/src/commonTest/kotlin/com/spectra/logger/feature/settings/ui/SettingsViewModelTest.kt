@@ -1,6 +1,9 @@
 package com.spectra.logger.feature.settings.ui
 
 import com.spectra.logger.core.utils.SpectraTime
+import com.spectra.logger.feature.crash.model.CrashReport
+import com.spectra.logger.feature.crash.model.CrashSeverity
+import com.spectra.logger.feature.crash.storage.InMemoryCrashStorage
 import com.spectra.logger.feature.events.model.EventLogEntry
 import com.spectra.logger.feature.events.model.EventType
 import com.spectra.logger.feature.events.storage.InMemoryEventLogStorage
@@ -42,18 +45,21 @@ class SettingsViewModelTest {
             val logStorage = InMemoryLogStorage(maxCapacity = 100)
             val networkStorage = InMemoryNetworkLogStorage(maxCapacity = 100)
             val eventStorage = InMemoryEventLogStorage(maxCapacity = 100)
+            val crashStorage = InMemoryCrashStorage(maxCapacity = 100)
 
             val viewModel =
                 SettingsViewModel(
                     logStorage = logStorage,
                     networkStorage = networkStorage,
                     eventStorage = eventStorage,
+                    crashStorage = crashStorage,
                 )
             advanceUntilIdle()
 
             assertEquals(0, viewModel.uiState.value.applicationLogCount)
             assertEquals(0, viewModel.uiState.value.networkLogCount)
             assertEquals(0, viewModel.uiState.value.eventLogCount)
+            assertEquals(0, viewModel.uiState.value.crashCount)
 
             // Add logs to storages
             logStorage.add(LogEntry("1", SpectraTime.now(), LogLevel.INFO, "Tag1", "Message 1"))
@@ -74,11 +80,23 @@ class SettingsViewModelTest {
                     name = "HomeScreen",
                 ),
             )
+            crashStorage.recordCrash(
+                CrashReport(
+                    id = "c1",
+                    timestamp = SpectraTime.now().toEpochMilliseconds(),
+                    exceptionClass = "NullPointerException",
+                    message = "NPE",
+                    stackTrace = "at A.b()",
+                    threadName = "main",
+                    severity = CrashSeverity.FATAL,
+                ),
+            )
             advanceUntilIdle()
 
             assertEquals(1, viewModel.uiState.value.applicationLogCount)
             assertEquals(1, viewModel.uiState.value.networkLogCount)
             assertEquals(1, viewModel.uiState.value.eventLogCount)
+            assertEquals(1, viewModel.uiState.value.crashCount)
 
             // Test export bundle content
             val exportText = viewModel.getExportAllText()
@@ -91,10 +109,12 @@ class SettingsViewModelTest {
             viewModel.clearApplicationLogs()
             viewModel.clearNetworkLogs()
             viewModel.clearEvents()
+            viewModel.clearCrashes()
             advanceUntilIdle()
 
             assertEquals(0, viewModel.uiState.value.applicationLogCount)
             assertEquals(0, viewModel.uiState.value.networkLogCount)
             assertEquals(0, viewModel.uiState.value.eventLogCount)
+            assertEquals(0, viewModel.uiState.value.crashCount)
         }
 }

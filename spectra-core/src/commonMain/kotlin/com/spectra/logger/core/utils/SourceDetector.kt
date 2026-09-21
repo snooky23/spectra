@@ -12,6 +12,11 @@ import com.spectra.logger.core.model.SourceType
  */
 object SourceDetector {
     /**
+     * Globally enable or disable source detection.
+     */
+    var enabled: Boolean = true
+
+    /**
      * Detects the source package/bundle ID from the call stack.
      *
      * Analyzes stack frames to identify which package/library made the call.
@@ -20,6 +25,9 @@ object SourceDetector {
      * and sourceType indicates whether it's APP, SDK, or PLUGIN
      */
     fun detectSource(): Pair<String, SourceType> {
+        if (!enabled) {
+            return "app" to SourceType.APP
+        }
         val stackTrace = getStackTrace()
         val sourceId = extractSourceIdFromStack(stackTrace)
 

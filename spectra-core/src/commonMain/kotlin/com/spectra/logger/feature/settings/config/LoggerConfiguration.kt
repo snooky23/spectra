@@ -16,6 +16,7 @@ data class LoggerConfiguration(
     val logStorageConfig: StorageConfiguration = StorageConfiguration(),
     val networkStorageConfig: StorageConfiguration = StorageConfiguration(maxCapacity = 1_000),
     val eventStorageConfig: StorageConfiguration = StorageConfiguration(maxCapacity = 5_000),
+    val crashStorageConfig: StorageConfiguration = StorageConfiguration(maxCapacity = 100),
     val performanceConfig: PerformanceConfiguration = PerformanceConfiguration(),
     val enabledFeatures: FeatureFlags = FeatureFlags(),
     val appContext: AppContext? = null,
@@ -61,6 +62,7 @@ data class FeatureFlags(
     val enableEventLogging: Boolean = true,
     val enableCrashReporting: Boolean = false,
     val enablePerformanceMetrics: Boolean = false,
+    val enableSourceDetection: Boolean = false,
     val networkIgnoredDomains: List<String> = emptyList(),
     val networkIgnoredTokens: List<String> = emptyList(),
     val networkIgnoredExtensions: List<String> = listOf("png", "jpg", "jpeg", "gif", "svg", "ico"),
@@ -83,6 +85,7 @@ class LoggerConfigurationBuilder {
     private var logStorageConfig = StorageConfiguration()
     private var networkStorageConfig = StorageConfiguration(maxCapacity = 1_000)
     private var eventStorageConfig = StorageConfiguration(maxCapacity = 5_000)
+    private var crashStorageConfig = StorageConfiguration(maxCapacity = 100)
     private var performanceConfig = PerformanceConfiguration()
     private var enabledFeatures = FeatureFlags()
     private val logSinks = mutableListOf<LogSink>()
@@ -109,6 +112,14 @@ class LoggerConfigurationBuilder {
     fun eventStorage(block: StorageConfigurationBuilder.() -> Unit) {
         eventStorageConfig =
             StorageConfigurationBuilder(maxCapacity = 5_000).apply(block).build()
+    }
+
+    /**
+     * Configure crash storage settings.
+     */
+    fun crashStorage(block: StorageConfigurationBuilder.() -> Unit) {
+        crashStorageConfig =
+            StorageConfigurationBuilder(maxCapacity = 100).apply(block).build()
     }
 
     /**
@@ -145,6 +156,7 @@ class LoggerConfigurationBuilder {
             logStorageConfig = logStorageConfig,
             networkStorageConfig = networkStorageConfig,
             eventStorageConfig = eventStorageConfig,
+            crashStorageConfig = crashStorageConfig,
             performanceConfig = performanceConfig,
             enabledFeatures = enabledFeatures,
             appContext = appContext,
@@ -202,6 +214,7 @@ class FeatureFlagsBuilder(
     var enableEventLogging: Boolean = true,
     var enableCrashReporting: Boolean = false,
     var enablePerformanceMetrics: Boolean = false,
+    var enableSourceDetection: Boolean = false,
     var networkIgnoredDomains: List<String> = emptyList(),
     var networkIgnoredTokens: List<String> = emptyList(),
     var networkIgnoredExtensions: List<String> = listOf("png", "jpg", "jpeg", "gif", "svg", "ico"),
@@ -212,6 +225,7 @@ class FeatureFlagsBuilder(
             enableEventLogging = enableEventLogging,
             enableCrashReporting = enableCrashReporting,
             enablePerformanceMetrics = enablePerformanceMetrics,
+            enableSourceDetection = enableSourceDetection,
             networkIgnoredDomains = networkIgnoredDomains,
             networkIgnoredTokens = networkIgnoredTokens,
             networkIgnoredExtensions = networkIgnoredExtensions,

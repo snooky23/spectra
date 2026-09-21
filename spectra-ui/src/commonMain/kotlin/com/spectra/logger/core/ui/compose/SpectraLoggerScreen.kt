@@ -20,6 +20,9 @@ import com.spectra.logger.core.ui.components.common.*
 import com.spectra.logger.core.ui.components.common.SpectraTheme
 import com.spectra.logger.core.ui.components.effects.*
 import com.spectra.logger.core.ui.components.pickers.*
+import com.spectra.logger.feature.crash.ui.CrashBanner
+import com.spectra.logger.feature.crash.ui.CrashHistoryDialog
+import com.spectra.logger.feature.crash.ui.CrashViewModel
 import com.spectra.logger.feature.events.ui.EventsScreen
 import com.spectra.logger.feature.logs.ui.LogsScreen
 import com.spectra.logger.feature.network.ui.NetworkLogsScreen
@@ -38,11 +41,15 @@ fun SpectraLoggerScreen(
         viewModel {
             com.spectra.logger.feature.streaming.ui.RemoteStreamViewModel()
         },
+    crashViewModel: CrashViewModel = viewModel { CrashViewModel() },
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
     var showRemoteStreamDialog by remember { mutableStateOf(false) }
+    var showCrashDialog by remember { mutableStateOf(false) }
+    var showCrashBanner by remember { mutableStateOf(true) }
     val settingsState by settingsViewModel.uiState.collectAsState()
     val streamState by streamViewModel.uiState.collectAsState()
+    val crashState by crashViewModel.uiState.collectAsState()
 
     val tabs =
         listOf(
@@ -61,6 +68,17 @@ fun SpectraLoggerScreen(
                 activeSessionId = streamState.activeSessionId,
                 onDisconnect = { streamViewModel.disconnect() },
             )
+
+            if (showCrashBanner && crashState.crashes.isNotEmpty()) {
+                CrashBanner(
+                    latestCrash = crashState.crashes.firstOrNull(),
+                    onViewCrash = { crash ->
+                        crashViewModel.selectCrash(crash)
+                        showCrashDialog = true
+                    },
+                    onDismiss = { showCrashBanner = false },
+                )
+            }
 
             NavigationSuiteScaffold(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
@@ -89,6 +107,7 @@ fun SpectraLoggerScreen(
                             viewModel = settingsViewModel,
                             onDismiss = onDismiss,
                             onOpenRemoteStreamDialog = { showRemoteStreamDialog = true },
+                            onOpenCrashHistoryDialog = { showCrashDialog = true },
                         )
                 }
             }
@@ -98,6 +117,13 @@ fun SpectraLoggerScreen(
             com.spectra.logger.feature.streaming.ui.RemoteStreamDialog(
                 viewModel = streamViewModel,
                 onDismiss = { showRemoteStreamDialog = false },
+            )
+        }
+
+        if (showCrashDialog) {
+            CrashHistoryDialog(
+                viewModel = crashViewModel,
+                onDismiss = { showCrashDialog = false },
             )
         }
     }
