@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spectra.logger.SpectraLogger
 import com.spectra.logger.feature.network.statistics.NetworkDashboardStatistics
+import com.spectra.logger.feature.network.statistics.NetworkFilterEngineRepository
 import com.spectra.logger.feature.network.statistics.NetworkFilterEngineRepositoryImpl
+import com.spectra.logger.feature.network.storage.NetworkLogStorage
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.CoroutineDispatcher
@@ -30,12 +32,14 @@ data class NetworkStatisticsUiState(
 
 /**
  * ViewModel that bridges the domain statistical aggregation engine to the Network Dashboard UI.
+ *
+ * Implements Clean Architecture with Dependency Inversion via constructor injection.
  */
 class NetworkStatisticsViewModel(
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    storage: NetworkLogStorage = SpectraLogger.networkStorage,
 ) : ViewModel() {
-    // Lazily initialize the repository using the central storage
-    private val repository = NetworkFilterEngineRepositoryImpl(SpectraLogger.networkStorage, dispatcher)
+    private val repository: NetworkFilterEngineRepository = NetworkFilterEngineRepositoryImpl(storage, dispatcher)
 
     // Map the domain statistics directly to the UI state
     val uiState: StateFlow<NetworkStatisticsUiState> =

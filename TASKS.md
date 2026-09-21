@@ -3,6 +3,7 @@
 This document tracks the implementation progress of Spectra Logger against the formal Product Requirements Document (`docs/design/PRD.md`).
 
 ## Phase 1: Foundation (Weeks 1-4)
+
 - [x] **Milestone 1.1: Project Setup**
   - Repository initialization, KMP module structure, Gradle build, CI/CD, Documentation
 - [x] **Milestone 1.2: Core Logging**
@@ -11,6 +12,7 @@ This document tracks the implementation progress of Spectra Logger against the f
   - File-based storage (Android/iOS), export APIs, performance benchmarks
 
 ## Phase 2: Network Logging (Weeks 5-7)
+
 - [x] **Milestone 2.1: Android Network Interception**
   - OkHttp interceptor, capture details, filtering
 - [x] **Milestone 2.2: iOS Network Interception**
@@ -19,6 +21,7 @@ This document tracks the implementation progress of Spectra Logger against the f
   - Dedicated storage, Network-specific models, search capabilities
 
 ## Phase 3: UI Development (Weeks 8-12)
+
 - [x] **Milestone 3.1: Log Viewer Screen**
   - List view, log level filtering, search, platform UI integration
 - [x] **Milestone 3.2: Detail Views**
@@ -29,6 +32,7 @@ This document tracks the implementation progress of Spectra Logger against the f
   - Settings screen (Configuration UI), access mechanisms (FAB, gesture), dark mode support, accessibility
 
 ## Phase 4: Integration & Testing (Weeks 13-15)
+
 - [x] **Milestone 4.1: Example Apps**
   - Sample Android app, sample iOS app, sample KMP app
 - [x] **Milestone 4.2: Performance Testing**
@@ -37,6 +41,7 @@ This document tracks the implementation progress of Spectra Logger against the f
   - Completed API documentation, Integration guides, Configuration reference, Architecture documentation, and Troubleshooting guide
 
 ## Phase 5: Beta & Launch (Weeks 16-18)
+
 - [x] **Milestone 5.1: Beta Release**
   - Initial releases and snapshot builds
 - [ ] **Milestone 5.2: Bug Fixes & Refinement**
@@ -45,6 +50,7 @@ This document tracks the implementation progress of Spectra Logger against the f
   - Published artifacts (Maven Central, Cocoapods/SPM), GitHub release automation
 
 ## Phase 6: Post-Launch (Ongoing)
+
 - [x] Remote log streaming (WebSocket)
 - [ ] Log analytics dashboard
 - [ ] Crash symbolication
@@ -52,7 +58,9 @@ This document tracks the implementation progress of Spectra Logger against the f
 - [ ] Integration with crash reporting services (Sentry, Firebase)
 
 ## Phase 7: KMP UI SDK Migration & Android 17 Compliance
+
 See `docs/design/KMP_UI_ADAPTIVE_SPEC.md` for full architectural details.
+
 - [x] **Phase 1: KMP UI Module Foundation**
   - Create the `spectra-ui` module, configure CMP dependencies, and implement `@CommonParcelize`.
 - [x] **Phase 2: UI Migration & Refactoring**
@@ -70,11 +78,13 @@ See `docs/design/KMP_UI_ADAPTIVE_SPEC.md` for full architectural details.
   - [x] Target near 100% test coverage for core and UI logic.
 
 ## Phase 8: Build & Performance Optimization
+
 - [x] **Phase 8.1: Build Speed Improvements**
   - [x] Enable and optimize Gradle configuration cache for faster incremental builds.
   - [x] Investigate and resolve any configuration cache incompatibilities in the build scripts.
 
 ## Phase 9: Advanced Build & Performance Optimization
+
 - [x] **Phase 9.1: Build Analytics & Bottleneck Identification**
   - [x] Integrate Gradle Build Scans (Develocity) for deep performance analysis.
   - [x] Resolve configuration-time resolution issues for better build scalability.
@@ -88,6 +98,7 @@ See `docs/design/KMP_UI_ADAPTIVE_SPEC.md` for full architectural details.
   - [x] Optimize XCFramework generation to only build required architectures for testing.
 
 ## Phase 10: Universal Platform Support & Okio Migration
+
 - [x] **Phase 10.1: Disk I/O Abstraction**
   - [x] Migrate `spectra-core` disk writing to use `com.squareup.okio:okio`.
   - [x] Remove legacy `expect`/`actual` logic for FileSystem on Android and iOS.
@@ -100,7 +111,9 @@ See `docs/design/KMP_UI_ADAPTIVE_SPEC.md` for full architectural details.
   - [x] Verify multiplatform coroutines test execution (`runTest`) across all targets.
 
 ## Phase 11: Repository Hygiene & Codebase Cleanup
+
 See `_bmad-output/planning-artifacts/spec-cleanup/SPEC.md` and `SDD.md` for architectural design and capability specifications.
+
 - [x] **Phase 11.1: Root Scratch & Cruft Deletion**
   - [x] Delete transitional migration scripts (`fix_imports_2.py`, `fix_imports_3.py`, `refactor.py`, `add_build_phase.rb`).
   - [x] Remove scratch test file (`test.kt`) and local build logs (`build-xcframework.log`).
@@ -114,7 +127,9 @@ See `_bmad-output/planning-artifacts/spec-cleanup/SPEC.md` and `SDD.md` for arch
   - [x] Verify clean git status and run validation checks across multiplatform targets.
 
 ## Phase 12: Events Tab (Screen Views & User Analytics)
+
 See `_bmad-output/planning-artifacts/spec-events-webview-streaming/SPEC.md` and `SDD.md` for architectural design and capability specifications.
+
 - [x] **Phase 12.1: Core Event Data Models & Storage**
   - [x] Implement `EventLogEntry`, `EventType`, and `EventFilter` in `spectra-core/src/commonMain`.
   - [x] Implement `EventLogStorage` and `InMemoryEventLogStorage` with coroutine flow support.
@@ -134,6 +149,7 @@ See `_bmad-output/planning-artifacts/spec-events-webview-streaming/SPEC.md` and 
   - [x] Run multiplatform validation and verify zero cross-module leakage between core and UI.
 
 ## Phase 13: WebView & JavaScript Logging
+
 - [x] **Phase 13.1: Android WebView Console Interception**
   - [x] Implement `SpectraWebChromeClient` to capture `console.log/warn/error` and unhandled exceptions.
   - [x] Add `WebView.attachSpectraLogger()` extension in `androidMain`.
@@ -144,6 +160,7 @@ See `_bmad-output/planning-artifacts/spec-events-webview-streaming/SPEC.md` and 
   - [x] Add `[WebView]` tag chips and dedicated filter controls in `spectra-ui`.
 
 ## Phase 14: Remote Log Streaming (WebSocket)
+
 - [x] **Phase 14.1: Streaming Protocol Models & Serialization**
   - [x] Define `StreamPacket` hierarchy (`HandshakeRequest`, `HandshakeResponse`, `BatchHistory`, `LiveLog`, `LiveNetwork`, `LiveEvent`, `Ping`, `Pong`).
 - [x] **Phase 14.2: Mobile WebSocket Client & Wi-Fi Pairing Engine**
@@ -162,6 +179,7 @@ See `_bmad-output/planning-artifacts/spec-events-webview-streaming/SPEC.md` and 
   - [x] Verify complete dependency inversion and interface-driven design across all multiplatform streaming and webview components.
 
 ## Phase 15: Enhanced Multi-Format Exporters, HAR 1.2 & Telemetry Bundle
+
 - [x] **Phase 15.1: Events Multi-Format Export Support**
   - [x] Implement `exportEventsAsText`, `exportEventsAsJson`, `exportEventsAsCsv`, and `exportEventsAsMarkdown` in `LogExporter`.
 - [x] **Phase 15.2: Network HAR 1.2 Format Exporter**
@@ -177,6 +195,7 @@ See `_bmad-output/planning-artifacts/spec-events-webview-streaming/SPEC.md` and 
   - [x] Run test suite and ktlint validation to ensure zero warnings/errors.
 
 ## Phase 16: Crash Reporting & Uncaught Exception Interception
+
 - [x] **Phase 16.1: Core Crash Models, Breadcrumbs & Storage Abstraction**
   - [x] Define `CrashReport`, `Breadcrumb`, and `CrashSeverity` models in `spectra-core`.
   - [x] Implement `CrashStorage` interface with thread-safe `FileCrashStorage` (persisting across process restarts using Okio) and `InMemoryCrashStorage`.
@@ -192,7 +211,21 @@ See `_bmad-output/planning-artifacts/spec-events-webview-streaming/SPEC.md` and 
   - [x] Fix GitHub Actions unit test bottleneck (optimized call-stack source detection to prevent Kotlin Native benchmark timeout).
   - [x] Verify zero regressions, 100% test pass rate, and ktlint compliance across all targets.
 
+## Phase 16.5: Clean Architecture, Low Coupling & High Cohesion Telemetry Abstractions
+
+- [x] **Phase 16.5.1: Unified Generic Telemetry Storage Contract**
+  - [x] Create `TelemetryStorage<T, in F>` unifying log, network, and event storage under a single generic abstraction (`add`, `addAll`, `query`, `observe`, `count`, `clear`).
+  - [x] Specialize `LogStorage`, `NetworkLogStorage`, and `EventLogStorage` conforming to the generic contract with zero-arg default overloads for seamless backward compatibility.
+  - [x] Implement optimized batch `addAll` in `InMemoryNetworkLogStorage`.
+- [x] **Phase 16.5.2: Complete UI ViewModel Decoupling**
+  - [x] Decouple `LogsViewModel`, `StatisticsViewModel`, and `NetworkStatisticsViewModel` via constructor injection of storages/repositories.
+  - [x] Ensure 100% of ViewModels in `spectra-ui` adhere to Dependency Inversion with default fallbacks.
+- [x] **Phase 16.5.3: Verification & Quality Gate**
+  - [x] Verify multiplatform test pass across all targets (`:spectra-core:allTests :spectra-ui:allTests`).
+  - [x] Validate ktlint and detekt compliance with 0 errors.
+
 ## Phase 17: Log Retention Policies & Auto-Pruning
+
 - [ ] **Phase 17.1: Retention Policy Configuration**
   - [ ] Define `RetentionPolicy` (max log count, max age TTL, max storage size in bytes).
 - [ ] **Phase 17.2: Automated Storage Pruning Engine**
@@ -200,4 +233,3 @@ See `_bmad-output/planning-artifacts/spec-events-webview-streaming/SPEC.md` and 
   - [ ] Add manual "Prune Now" action in `SettingsViewModel` and UI.
 - [ ] **Phase 17.3: Hermetic Unit Tests & Verification**
   - [ ] Test time-based expiration and capacity eviction.
-

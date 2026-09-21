@@ -7,7 +7,9 @@ import com.spectra.logger.core.model.*
 import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogLevel
 import com.spectra.logger.feature.logs.statistics.DashboardStatistics
+import com.spectra.logger.feature.logs.statistics.FilterEngineRepository
 import com.spectra.logger.feature.logs.statistics.FilterEngineRepositoryImpl
+import com.spectra.logger.feature.logs.storage.LogStorage
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.CoroutineDispatcher
@@ -33,12 +35,14 @@ data class StatisticsUiState(
 
 /**
  * ViewModel that bridges the domain statistical aggregation engine to the UI.
+ *
+ * Implements Clean Architecture with Dependency Inversion via constructor injection.
  */
 class StatisticsViewModel(
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    storage: LogStorage = SpectraLogger.logStorage,
 ) : ViewModel() {
-    // Lazily initialize the repository using the central storage
-    private val repository = FilterEngineRepositoryImpl(SpectraLogger.logStorage, dispatcher)
+    private val repository: FilterEngineRepository = FilterEngineRepositoryImpl(storage, dispatcher)
 
     // Map the domain statistics directly to the UI state
     val uiState: StateFlow<StatisticsUiState> =

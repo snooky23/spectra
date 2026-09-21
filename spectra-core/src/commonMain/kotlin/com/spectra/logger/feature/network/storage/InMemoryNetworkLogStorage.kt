@@ -52,6 +52,23 @@ class InMemoryNetworkLogStorage(
         logFlow.emit(entry)
     }
 
+    override suspend fun addAll(entries: List<NetworkLogEntry>) {
+        if (entries.isEmpty()) return
+
+        synchronized(lock) {
+            entries.forEach { entry ->
+                if (buffer.size >= currentMaxCapacity) {
+                    buffer.removeFirst()
+                } else {
+                    countAtomic.incrementAndGet()
+                }
+                buffer.addLast(entry)
+            }
+        }
+
+        entries.forEach { logFlow.emit(it) }
+    }
+
     override suspend fun query(
         filter: NetworkLogFilter,
         limit: Int?,

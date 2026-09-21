@@ -1,7 +1,6 @@
 package com.spectra.logger.feature.network.storage
 
-import com.spectra.logger.core.model.*
-import com.spectra.logger.core.utils.*
+import com.spectra.logger.core.storage.TelemetryStorage
 import com.spectra.logger.feature.network.model.NetworkLogEntry
 import com.spectra.logger.feature.network.model.NetworkLogFilter
 import kotlinx.coroutines.flow.Flow
@@ -10,38 +9,15 @@ import kotlinx.coroutines.flow.Flow
  * Storage interface for network log entries.
  * Implementations must be thread-safe.
  */
-interface NetworkLogStorage {
+interface NetworkLogStorage : TelemetryStorage<NetworkLogEntry, NetworkLogFilter> {
     /**
-     * Add a network log entry to storage.
-     * @param entry The network log entry to store
-     */
-    suspend fun add(entry: NetworkLogEntry)
-
-    /**
-     * Retrieve network log entries matching the filter.
-     * @param filter Filter criteria
+     * Retrieve network log entries without filtering.
      * @param limit Maximum number of entries to return (null = no limit)
-     * @return List of matching network log entries, sorted by timestamp descending
      */
-    suspend fun query(
-        filter: NetworkLogFilter = NetworkLogFilter.NONE,
-        limit: Int? = null,
-    ): List<NetworkLogEntry>
+    suspend fun query(limit: Int? = null): List<NetworkLogEntry> = query(NetworkLogFilter.NONE, limit)
 
     /**
-     * Observe network log entries as a flow.
-     * @param filter Filter criteria
-     * @return Flow of network log entries matching the filter
+     * Observe all network log entries without filtering.
      */
-    fun observe(filter: NetworkLogFilter = NetworkLogFilter.NONE): Flow<NetworkLogEntry>
-
-    /**
-     * Get total count of stored entries.
-     */
-    suspend fun count(): Int
-
-    /**
-     * Clear all network log entries from storage.
-     */
-    suspend fun clear()
+    fun observe(): Flow<NetworkLogEntry> = observe(NetworkLogFilter.NONE)
 }
