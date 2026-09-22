@@ -76,7 +76,7 @@ jobs:
         run: chmod +x gradlew scripts/**/*.sh
 
       - name: Build KMP Core and UI
-        run: ./gradlew :spectra-core:build :spectra-ui:build -x test
+        run: ./gradlew :spectra-core:assemble :spectra-ui:assemble
 
       - name: Run KMP Tests
         run: ./gradlew :spectra-core:allTests :spectra-ui:allTests
