@@ -7,9 +7,6 @@ import SpectraLoggerUI
  */
 struct SpectraLoggerView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
-        // Initialize the UI module if needed (registers the provider)
-        SpectraUI.shared.doInit()
-        
         // Create the controller from the KMP UI module
         return SpectraLoggerViewControllerKt.SpectraLoggerViewController(onDismiss: {
             SpectraUIManager.shared.dismissScreen()

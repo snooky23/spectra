@@ -39,12 +39,15 @@ kotlin {
     if (isIosArm64Enabled) iosTargets.add(iosArm64())
     if (isIosSimulatorArm64Enabled) iosTargets.add(iosSimulatorArm64())
 
+    val isMac = org.jetbrains.kotlin.konan.target.HostManager.hostIsMac
     iosTargets.forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = iosFrameworkName
-            isStatic = true
-            export(project(":spectra-core"))
-            xcf.add(this)
+        if (isMac) {
+            iosTarget.binaries.framework {
+                baseName = iosFrameworkName
+                isStatic = true
+                export(project(":spectra-core"))
+                xcf.add(this)
+            }
         }
 
         iosTarget.compilerOptions {

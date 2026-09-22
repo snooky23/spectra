@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.caching=true"
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.parallel=false -Dorg.gradle.caching=true -Dorg.gradle.jvmargs=\"-Xmx4g -XX:MaxMetaspaceSize=1024m\""
   JAVA_VERSION: '17'
 
 jobs:
@@ -160,6 +160,8 @@ jobs:
     name: Build & Test iOS
     runs-on: macos-15
     needs: build-kmp
+    env:
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.parallel=false -Dorg.gradle.caching=true -Dorg.gradle.jvmargs=\"-Xmx8g -XX:MaxMetaspaceSize=1024m\""
 
     steps:
       - name: Checkout code
@@ -201,12 +203,16 @@ jobs:
 
       - name: Setup XCFrameworks for local development
         run: |
-          # Create the expected directory structure for the root Package.swift
-          mkdir -p build/xcframework
+          # Create expected directory structure for both root Package.swift and Xcode project
+          mkdir -p build/xcframework SpectraFrameworks
+          rm -rf SpectraFrameworks/*
           cp -R spectra-core/build/XCFrameworks/release/SpectraLogger.xcframework build/xcframework/
           cp -R spectra-ui/build/XCFrameworks/release/SpectraLoggerUI.xcframework build/xcframework/
-          echo "✅ XCFrameworks copied to build/xcframework/"
+          cp -R spectra-core/build/XCFrameworks/release/SpectraLogger.xcframework SpectraFrameworks/
+          cp -R spectra-ui/build/XCFrameworks/release/SpectraLoggerUI.xcframework SpectraFrameworks/
+          echo "✅ XCFrameworks copied to build/xcframework/ and SpectraFrameworks/"
           ls -la build/xcframework/
+          ls -la SpectraFrameworks/
 
       - name: Build iOS Example App
         run: |

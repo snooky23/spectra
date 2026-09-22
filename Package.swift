@@ -14,8 +14,19 @@ import Foundation
 // Get the directory containing this Package.swift
 let packageDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
 
-let localCorePath = "SpectraFrameworks/SpectraLogger.xcframework"
-let localUIPath = "SpectraFrameworks/SpectraLoggerUI.xcframework"
+let localCorePath: String = {
+    if FileManager.default.fileExists(atPath: packageDir + "/SpectraFrameworks/SpectraLogger.xcframework") {
+        return "SpectraFrameworks/SpectraLogger.xcframework"
+    }
+    return "build/xcframework/SpectraLogger.xcframework"
+}()
+
+let localUIPath: String = {
+    if FileManager.default.fileExists(atPath: packageDir + "/SpectraFrameworks/SpectraLoggerUI.xcframework") {
+        return "SpectraFrameworks/SpectraLoggerUI.xcframework"
+    }
+    return "build/xcframework/SpectraLoggerUI.xcframework"
+}()
 
 let absoluteCorePath = packageDir + "/" + localCorePath
 let absoluteUIPath = packageDir + "/" + localUIPath
