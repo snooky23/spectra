@@ -259,9 +259,12 @@ class SpectraURLProtocol(
                 }
             }
             val finalStr = str ?: if (responseBodyData.length > 0u) "[Binary body omitted]" else ""
-            responseBodyText = if (isResponseTruncated) {
-                if (finalStr.isEmpty()) "\n[Body truncated]" else "$finalStr\n[Body truncated]"
-            } else finalStr
+            responseBodyText =
+                if (isResponseTruncated) {
+                    if (finalStr.isEmpty()) "\n[Body truncated]" else "$finalStr\n[Body truncated]"
+                } else {
+                    finalStr
+                }
         }
 
         val logEntry =

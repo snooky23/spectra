@@ -59,21 +59,22 @@ class SpectraURLProtocolTest {
     fun testInitializationOverheadIsUnder1ms() {
         val url = NSURL.URLWithString("https://api.spectra.com/test")!!
         val request = NSURLRequest.requestWithURL(url)
-        
+
         // Warmup
         SpectraURLProtocol.canInitWithRequest(request)
-        
+
         val iterations = 1000
-        
-        val totalTime = kotlin.time.measureTime {
-            repeat(iterations) { i ->
-                val dynamicRequest = NSURLRequest.requestWithURL(NSURL.URLWithString("https://api.spectra.com/test/$i")!!)
-                SpectraURLProtocol.canInitWithRequest(dynamicRequest)
+
+        val totalTime =
+            kotlin.time.measureTime {
+                repeat(iterations) { i ->
+                    val dynamicRequest = NSURLRequest.requestWithURL(NSURL.URLWithString("https://api.spectra.com/test/$i")!!)
+                    SpectraURLProtocol.canInitWithRequest(dynamicRequest)
+                }
             }
-        }
-        
+
         val averageTimeMs = totalTime.inWholeNanoseconds.toDouble() / iterations / 1_000_000.0
-        
+
         assertTrue(averageTimeMs < 5.0, "Average iOS interceptor init overhead was ${averageTimeMs}ms, should be < 5.0ms")
     }
 }

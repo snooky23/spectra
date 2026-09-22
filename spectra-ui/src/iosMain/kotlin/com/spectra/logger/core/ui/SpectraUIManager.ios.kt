@@ -23,7 +23,10 @@ actual object SpectraUIManager {
     actual fun showScreen() {
         if (currentController != null) return
 
-        val provider = controllerProvider ?: return
+        val provider =
+            controllerProvider ?: {
+                com.spectra.logger.core.ui.compose.SpectraLoggerViewController(onDismiss = { dismissScreen() })
+            }
         val controller = provider()
         currentController = controller
 

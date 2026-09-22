@@ -9,7 +9,10 @@ import platform.darwin.NSObject
 internal class SpectraURLSessionDelegate : NSObject(), NSURLSessionDataDelegateProtocol {
     private val protocols = mutableMapOf<NSURLSessionTask, SpectraURLProtocol>()
 
-    fun register(task: NSURLSessionTask, protocol: SpectraURLProtocol) {
+    fun register(
+        task: NSURLSessionTask,
+        protocol: SpectraURLProtocol,
+    ) {
         // Need to synchronize? Kotlin Native memory model usually requires atomic or main thread.
         // NSURLProtocol methods are typically called on a background thread.
     }

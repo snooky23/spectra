@@ -6,8 +6,10 @@ import com.spectra.logger.feature.crash.model.CrashReport
 import com.spectra.logger.feature.crash.model.CrashSeverity
 import com.spectra.logger.feature.crash.storage.CrashStorage
 import kotlinx.atomicfu.atomic
+import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.setUnhandledExceptionHook
 
+@OptIn(ExperimentalNativeApi::class)
 class SpectraIosCrashHandler(
     private val crashStorage: CrashStorage,
     private val breadcrumbRecorder: BreadcrumbRecorder,

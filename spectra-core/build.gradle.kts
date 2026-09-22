@@ -79,11 +79,14 @@ kotlin {
     if (isIosArm64Enabled) iosTargets.add(iosArm64())
     if (isIosSimulatorArm64Enabled) iosTargets.add(iosSimulatorArm64())
 
+    val isMac = org.jetbrains.kotlin.konan.target.HostManager.hostIsMac
     iosTargets.forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = iosFrameworkName
-            isStatic = true
-            xcf.add(this)
+        if (isMac) {
+            iosTarget.binaries.framework {
+                baseName = iosFrameworkName
+                isStatic = true
+                xcf.add(this)
+            }
         }
 
         // Add compiler flags to suppress expect/actual class warnings
@@ -153,10 +156,27 @@ kotlin {
             dependsOn(commonMain)
         }
 
+        val iosMain by creating {
+            dependsOn(nativeMain)
+        }
+
         macosTargets.forEach { getByName("${it.name}Main").dependsOn(nativeMain) }
         linuxTargets.forEach { getByName("${it.name}Main").dependsOn(nativeMain) }
         mingwTargets.forEach { getByName("${it.name}Main").dependsOn(nativeMain) }
-        iosTargets.forEach { getByName("${it.name}Main").dependsOn(nativeMain) }
+        iosTargets.forEach { getByName("${it.name}Main").dependsOn(iosMain) }
+
+        val nativeTest by creating {
+            dependsOn(commonTest)
+        }
+
+        val iosTest by creating {
+            dependsOn(nativeTest)
+        }
+
+        macosTargets.forEach { getByName("${it.name}Test").dependsOn(nativeTest) }
+        linuxTargets.forEach { getByName("${it.name}Test").dependsOn(nativeTest) }
+        mingwTargets.forEach { getByName("${it.name}Test").dependsOn(nativeTest) }
+        iosTargets.forEach { getByName("${it.name}Test").dependsOn(iosTest) }
     }
 }
 
