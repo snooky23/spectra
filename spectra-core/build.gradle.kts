@@ -3,6 +3,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
@@ -52,8 +53,8 @@ kotlin {
     // Android target using the modern KMP-first plugin DSL
     android {
         namespace = "com.spectra.logger"
-        compileSdk = 35
-        minSdk = 24
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
 
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
@@ -86,6 +87,7 @@ kotlin {
                 baseName = iosFrameworkName
                 isStatic = true
                 xcf.add(this)
+                binaryOption("bundleId", "com.spectra.logger")
             }
         }
 
@@ -97,6 +99,7 @@ kotlin {
 
     // Desktop/JVM targets
     jvm()
+    @Suppress("DEPRECATION")
     val macosTargets = listOf(macosX64(), macosArm64())
     val linuxTargets = listOf(linuxX64(), linuxArm64())
     val mingwTargets = listOf(mingwX64())
@@ -107,7 +110,7 @@ kotlin {
         nodejs()
     }
 
-    @OptIn(org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl::class)
+    @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
         nodejs()
@@ -214,7 +217,7 @@ mavenPublishing {
 
 // Jacoco configuration for code coverage
 jacoco {
-    toolVersion = "0.8.11"
+    toolVersion = libs.versions.jacoco.get()
 }
 
 tasks.register<JacocoReport>("jacocoTestReport") {

@@ -5,7 +5,7 @@
 
 [versions]
 # Kotlin Ecosystem
-kotlin = "2.2.10"
+kotlin = "2.3.20"
 coroutines = "1.10.1"
 serialization = "1.8.0"
 datetime = "0.6.1"
@@ -14,35 +14,44 @@ kotlinx-collections-immutable = "0.3.7"
 
 # Build Tools
 agp = "9.1.0"
-compose-multiplatform = "1.10.3"
-material3-adaptive = "1.3.0-alpha03"
-material3-adaptive-nav-suite = "1.11.0-alpha05"
+compose-multiplatform = "1.11.1"
+compose-multiplatform-material3 = "1.11.0-alpha07"
+compose-material-icons = "1.7.3"
+compose-hot-reload = "1.2.0"
+material3-adaptive = "1.3.0-alpha07"
+jetbrains-lifecycle = "2.11.0-beta01"
+
 
 # Compose (Android only now)
 
 compose-ui = "1.7.6"
-compose-material3 = "1.3.1"
+androidx-compose-material3 = "1.3.1"
 
 # Android Platform
+android-compileSdk = "37"
+android-minSdk = "24"
+android-targetSdk = "35"
 androidx-core = "1.15.0"
 androidx-lifecycle = "2.8.7"
 androidx-activity-compose = "1.10.0"
 androidx-navigation-compose = "2.8.5"
 
 # Networking
-ktor = "3.0.3"
+ktor = "3.6.0"
 okhttp = "4.12.0"
 okio = "3.9.1"
 
 # Testing
 junit = "4.13.2"
-kotlin-test = "2.2.10"
+kotlin-test = "2.3.20"
 turbine = "1.2.0"
 mockk = "1.13.13"
 
 # Code Quality Tools
 ktlint = "12.1.0"
-detekt = "1.23.5"
+ktlint-engine = "1.5.0"
+detekt = "1.23.8"
+jacoco = "0.8.12"
 
 # Publishing
 vanniktech-publish = "0.30.0"
@@ -94,16 +103,28 @@ okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", versio
 # Compose - AndroidX (Android only, not multiplatform)
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose-ui" }
 compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-ui" }
-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
+compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "androidx-compose-material3" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose-ui" }
 compose-material-icons = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose-ui" }
-androidx-lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.8.2" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
+jetbrains-lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "jetbrains-lifecycle" }
+
+# Compose Multiplatform (JetBrains)
+compose-multiplatform-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
+compose-multiplatform-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
+compose-multiplatform-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-multiplatform-material3" }
+compose-multiplatform-material-icons = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "compose-material-icons" }
+compose-multiplatform-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-multiplatform" }
+compose-multiplatform-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
+compose-multiplatform-adaptive-navigation-suite = { module = "org.jetbrains.compose.material3:material3-adaptive-navigation-suite", version.ref = "compose-multiplatform-material3" }
 
 # Compose Multiplatform - Adaptive
 compose-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "material3-adaptive" }
 compose-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version.ref = "material3-adaptive" }
 compose-adaptive-navigation = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation", version.ref = "material3-adaptive" }
-compose-adaptive-navigation-suite = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation-suite", version.ref = "material3-adaptive" }
+
+# Code Quality Tools
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 
 # Testing - Unit Testing
 junit = { module = "junit:junit", version.ref = "junit" }
@@ -119,6 +140,7 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+compose-hot-reload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-hot-reload" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
@@ -160,10 +182,16 @@ compose-ui = [
 
 # Compose Multiplatform UI bundle
 compose-multiplatform-ui = [
+    "compose-multiplatform-runtime",
+    "compose-multiplatform-foundation",
+    "compose-multiplatform-material3",
+    "compose-multiplatform-material-icons",
+    "compose-multiplatform-components-resources",
+    "compose-multiplatform-ui-tooling-preview",
     "compose-adaptive",
     "compose-adaptive-layout",
     "compose-adaptive-navigation",
-    "compose-adaptive-navigation-suite"
+    "compose-multiplatform-adaptive-navigation-suite"
 ]
 
 # Ktor client dependencies

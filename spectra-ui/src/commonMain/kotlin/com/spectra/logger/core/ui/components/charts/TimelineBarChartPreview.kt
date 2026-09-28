@@ -16,11 +16,11 @@ import com.spectra.logger.core.ui.components.pickers.*
 import com.spectra.logger.core.ui.model.BarChartData
 import com.spectra.logger.core.utils.*
 import kotlinx.collections.immutable.persistentListOf
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @Preview
 @Composable
-fun TimelineBarChartPreview() {
+private fun TimelineBarChartPreview() {
     MaterialTheme {
         Box(modifier = Modifier.width(400.dp).height(200.dp).background(MaterialTheme.colorScheme.surface)) {
             val sampleData =
@@ -44,7 +44,7 @@ fun TimelineBarChartPreview() {
 
 @Preview
 @Composable
-fun TimelineBarChartLoadingPreview() {
+private fun TimelineBarChartLoadingPreview() {
     MaterialTheme {
         Box(modifier = Modifier.width(400.dp).height(200.dp).background(MaterialTheme.colorScheme.surface)) {
             TimelineBarChart(
@@ -58,7 +58,7 @@ fun TimelineBarChartLoadingPreview() {
 
 @Preview
 @Composable
-fun TimelineBarChartEmptyPreview() {
+private fun TimelineBarChartEmptyPreview() {
     MaterialTheme {
         Box(modifier = Modifier.width(400.dp).height(200.dp).background(MaterialTheme.colorScheme.surface)) {
             TimelineBarChart(

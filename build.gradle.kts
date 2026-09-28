@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.android.kotlin.multiplatform.library) apply false
     alias(libs.plugins.jetbrains.compose) apply false
+    alias(libs.plugins.compose.hot.reload) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.ktlint) apply false
     alias(libs.plugins.detekt) apply false
@@ -23,11 +24,6 @@ java {
 allprojects {
     group = project.findProperty("GROUP") as String? ?: "com.spectra.logger"
     version = project.findProperty("VERSION_NAME") as String? ?: "0.0.1-SNAPSHOT"
-
-    repositories {
-        google()
-        mavenCentral()
-    }
 }
 
 // Apply quality tools globally but apply them lazily
@@ -45,7 +41,7 @@ subprojects {
             apply(plugin = "io.gitlab.arturbosch.detekt")
 
             extensions.configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-                version.set("1.1.1")
+                version.set(libs.versions.ktlint.engine.get())
                 android.set(true)
                 outputToConsole.set(true)
                 ignoreFailures.set(false)
@@ -70,7 +66,7 @@ subprojects {
             }
 
             dependencies {
-                "detektPlugins"("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.5")
+                "detektPlugins"(libs.detekt.formatting)
             }
         }
     }

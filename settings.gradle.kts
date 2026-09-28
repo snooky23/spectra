@@ -1,13 +1,20 @@
 pluginManagement {
     repositories {
-        google()
         gradlePluginPortal()
         mavenCentral()
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
     }
 }
 
 plugins {
     id("com.gradle.develocity") version "3.19.1"
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 develocity {
@@ -23,9 +30,30 @@ rootProject.name = "Spectra"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
     repositories {
-        google()
+        // List repository hosting the vast majority of dependencies first to minimize 404s
         mavenCentral()
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+                includeGroupByRegex("android\\.arch.*")
+            }
+        }
+        ivy("https://nodejs.org/dist") {
+            name = "Node Distributions at https://nodejs.org/dist"
+            patternLayout {
+                artifact("v[revision]/[artifact](-v[revision]-[classifier]).[ext]")
+            }
+            metadataSources {
+                artifact()
+            }
+            content {
+                includeModule("org.nodejs", "node")
+            }
+        }
     }
 }
 

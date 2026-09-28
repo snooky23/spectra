@@ -13,11 +13,11 @@ import com.spectra.logger.core.ui.components.effects.*
 import com.spectra.logger.core.ui.components.pickers.*
 import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogLevel
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @Preview
 @Composable
-fun LevelPieChartPreview() {
+private fun LevelPieChartPreview() {
     MaterialTheme {
         Box(modifier = Modifier.padding(16.dp).background(MaterialTheme.colorScheme.surface)) {
             val sampleData =
@@ -37,7 +37,7 @@ fun LevelPieChartPreview() {
 
 @Preview
 @Composable
-fun LevelPieChartLoadingPreview() {
+private fun LevelPieChartLoadingPreview() {
     MaterialTheme {
         Box(modifier = Modifier.padding(16.dp).background(MaterialTheme.colorScheme.surface)) {
             LevelPieChart(
@@ -50,7 +50,7 @@ fun LevelPieChartLoadingPreview() {
 
 @Preview
 @Composable
-fun LevelPieChartEmptyPreview() {
+private fun LevelPieChartEmptyPreview() {
     MaterialTheme {
         Box(modifier = Modifier.padding(16.dp).background(MaterialTheme.colorScheme.surface)) {
             LevelPieChart(
