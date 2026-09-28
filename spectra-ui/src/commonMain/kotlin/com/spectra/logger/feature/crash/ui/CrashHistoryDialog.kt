@@ -41,7 +41,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.spectra.logger.feature.crash.model.CrashReport
 import com.spectra.logger.feature.crash.model.CrashSeverity
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 

@@ -1,7 +1,7 @@
 package com.spectra.logger.feature.events.model
 
 import com.spectra.logger.core.model.SourceType
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 
 /**

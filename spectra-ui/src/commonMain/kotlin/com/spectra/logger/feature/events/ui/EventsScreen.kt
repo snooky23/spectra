@@ -28,7 +28,7 @@ import com.spectra.logger.core.ui.navigation.AdaptiveNavigator
 import com.spectra.logger.core.ui.theme.SpectraDesignTokens
 import com.spectra.logger.feature.events.model.EventLogEntry
 import com.spectra.logger.feature.events.model.EventType
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 

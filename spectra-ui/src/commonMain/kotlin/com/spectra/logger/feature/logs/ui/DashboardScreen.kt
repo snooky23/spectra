@@ -46,7 +46,7 @@ import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogLevel
 import com.spectra.logger.feature.logs.statistics.DashboardStatistics
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 

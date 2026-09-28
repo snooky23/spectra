@@ -50,7 +50,7 @@ import com.spectra.logger.feature.network.statistics.NetworkDashboardStatistics
 import com.spectra.logger.feature.network.ui.components.StatusPieChart
 import com.spectra.logger.feature.network.ui.components.colorForStatus
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 

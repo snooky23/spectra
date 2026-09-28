@@ -8,7 +8,7 @@ import com.spectra.logger.feature.logs.model.LogLevel
 import com.spectra.logger.feature.logs.storage.InMemoryLogStorage
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

@@ -24,6 +24,7 @@ import com.spectra.logger.core.ui.components.pickers.*
 import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogEntry
 import com.spectra.logger.feature.logs.model.LogLevel
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -62,8 +63,8 @@ fun LogsScreen(
                     onClearTimeRange = viewModel::clearTimeRangeFilter,
                     onClearHasError = viewModel::clearHasErrorFilter,
                     onTimeRangeSelected = { from, to ->
-                        val fromInstant = kotlinx.datetime.Instant.fromEpochMilliseconds(from)
-                        val toInstant = kotlinx.datetime.Instant.fromEpochMilliseconds(to)
+                        val fromInstant = Instant.fromEpochMilliseconds(from)
+                        val toInstant = Instant.fromEpochMilliseconds(to)
                         viewModel.updateFilter(
                             uiState.advancedFilter.copy(fromTimestamp = fromInstant, toTimestamp = toInstant),
                         )
@@ -371,7 +372,7 @@ fun LogRow(
     }
 }
 
-private fun formatShortTime(timestamp: kotlinx.datetime.Instant): String {
+private fun formatShortTime(timestamp: Instant): String {
     val localDateTime = timestamp.toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault())
     val hour = localDateTime.hour.toString().padStart(2, '0')
     val minute = localDateTime.minute.toString().padStart(2, '0')

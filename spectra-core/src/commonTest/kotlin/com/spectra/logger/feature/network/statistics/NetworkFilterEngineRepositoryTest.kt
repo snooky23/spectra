@@ -5,7 +5,7 @@ import com.spectra.logger.feature.network.model.NetworkLogEntry
 import com.spectra.logger.feature.network.storage.InMemoryNetworkLogStorage
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

@@ -10,7 +10,7 @@ import com.spectra.logger.feature.network.model.NetworkLogEntry
 import com.spectra.logger.feature.network.model.NetworkLogFilter
 import com.spectra.logger.feature.network.storage.NetworkLogStorage
 import com.spectra.logger.feature.streaming.model.DeviceInfo
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime

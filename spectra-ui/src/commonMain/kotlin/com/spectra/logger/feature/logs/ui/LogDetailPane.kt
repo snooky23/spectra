@@ -22,6 +22,7 @@ import com.spectra.logger.core.ui.components.pickers.*
 import com.spectra.logger.core.ui.util.PlatformUtils
 import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogEntry
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -186,7 +187,7 @@ private fun MetadataRow(
     }
 }
 
-private fun formatFullTime(timestamp: kotlinx.datetime.Instant): String {
+private fun formatFullTime(timestamp: Instant): String {
     val localDateTime = timestamp.toLocalDateTime(TimeZone.currentSystemDefault())
     return "${localDateTime.date} ${localDateTime.hour.toString().padStart(
         2,

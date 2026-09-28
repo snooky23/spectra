@@ -12,6 +12,7 @@ import com.spectra.logger.core.ui.components.charts.*
 import com.spectra.logger.core.ui.components.common.*
 import com.spectra.logger.core.ui.components.effects.*
 import com.spectra.logger.core.utils.*
+import kotlin.time.Instant
 import kotlinx.datetime.*
 
 @OptIn(ExperimentalMaterial3Api::class)

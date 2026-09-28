@@ -19,7 +19,7 @@ import com.spectra.logger.core.ui.components.effects.*
 import com.spectra.logger.core.ui.components.pickers.*
 import com.spectra.logger.core.ui.components.pickers.DateTimePickerRow
 import com.spectra.logger.core.utils.*
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 /**
  * Filter configuration for Network screen

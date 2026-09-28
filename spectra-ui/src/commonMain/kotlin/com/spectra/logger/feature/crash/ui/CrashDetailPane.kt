@@ -54,7 +54,7 @@ import com.spectra.logger.feature.crash.model.BreadcrumbType
 import com.spectra.logger.feature.crash.model.CrashReport
 import com.spectra.logger.feature.crash.model.CrashSeverity
 import com.spectra.logger.feature.logs.export.LogExporter
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
