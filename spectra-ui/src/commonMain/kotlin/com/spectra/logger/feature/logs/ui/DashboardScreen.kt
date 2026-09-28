@@ -16,7 +16,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Label
+import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material3.ElevatedCard
@@ -155,7 +155,7 @@ fun DashboardContent(
             ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(imageVector = Icons.Default.Label, contentDescription = null, modifier = Modifier.size(24.dp))
+                        Icon(imageVector = androidx.compose.material.icons.Icons.AutoMirrored.Filled.Label, contentDescription = null, modifier = Modifier.size(24.dp))
                         Spacer(modifier = Modifier.size(8.dp))
                         Text(text = "Top Subsystems", style = MaterialTheme.typography.titleMedium)
                     }

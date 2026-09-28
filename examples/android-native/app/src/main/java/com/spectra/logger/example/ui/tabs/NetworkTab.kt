@@ -3,6 +3,7 @@ package com.spectra.logger.example.ui.tabs
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.HelpCenter
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -70,7 +71,7 @@ fun NetworkTab(
         item {
             LogButton(
                 label = "GET Request (404 Not Found)",
-                icon = Icons.Default.HelpCenter,
+                icon = Icons.AutoMirrored.Filled.HelpCenter,
                 backgroundColor = Color.Yellow,
                 action = {
                     viewModel.simulateRequest(

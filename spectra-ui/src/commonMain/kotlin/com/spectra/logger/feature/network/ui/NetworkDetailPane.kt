@@ -36,7 +36,7 @@ fun NetworkDetailPane(
     var selectedTab by remember { mutableIntStateOf(0) }
 
     Column(modifier = modifier.fillMaxSize()) {
-        TabRow(selectedTabIndex = selectedTab) {
+        PrimaryTabRow(selectedTabIndex = selectedTab) {
             Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }, text = { Text("Overview") })
             Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }, text = { Text("Request") })
             Tab(selected = selectedTab == 2, onClick = { selectedTab = 2 }, text = { Text("Response") })

@@ -1,15 +1,8 @@
 package com.spectra.logger.core.ui.theme
 
-import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.window.core.layout.WindowWidthSizeClass
-import com.spectra.logger.core.model.*
-import com.spectra.logger.core.ui.components.charts.*
-import com.spectra.logger.core.ui.components.common.*
-import com.spectra.logger.core.ui.components.effects.*
-import com.spectra.logger.core.ui.components.pickers.*
-import com.spectra.logger.core.utils.*
+import androidx.window.core.layout.WindowSizeClass
 
 /**
  * Holds the structural layout context based on available physical window space.
@@ -22,19 +15,13 @@ data class ScreenConfig(
 /**
  * Retrieves the current layout context, automatically recalculating upon orientation or window change.
  */
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun rememberScreenConfig(): ScreenConfig {
-    val adaptiveInfo = currentWindowAdaptiveInfo()
-    val widthSizeClass = adaptiveInfo.windowSizeClass.windowWidthSizeClass
-
-    val isCompact = widthSizeClass == WindowWidthSizeClass.COMPACT
-    val isDualPane =
-        widthSizeClass == WindowWidthSizeClass.MEDIUM ||
-            widthSizeClass == WindowWidthSizeClass.EXPANDED
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    val isDualPane = windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
 
     return ScreenConfig(
-        isCompact = isCompact,
+        isCompact = !isDualPane,
         isDualPane = isDualPane,
     )
 }

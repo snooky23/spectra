@@ -10,6 +10,10 @@ plugins {
 }
 
 kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
     // Android target for KMP UI
     android {
         namespace = "com.spectra.logger.ui"
@@ -48,17 +52,12 @@ kotlin {
                 binaryOption("bundleId", "com.spectra.logger.ui")
             }
         }
-
-        iosTarget.compilerOptions {
-            freeCompilerArgs.add("-Xexpect-actual-classes")
-        }
     }
 
     // Desktop/JVM target for Compose Hot Reload and desktop support
     jvm {
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
-            freeCompilerArgs.add("-Xexpect-actual-classes")
         }
     }
 

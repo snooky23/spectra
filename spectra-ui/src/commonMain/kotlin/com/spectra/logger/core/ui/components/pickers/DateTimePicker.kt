@@ -101,8 +101,8 @@ fun DateTimePickerRow(
                         val localDateTime =
                             LocalDateTime(
                                 year = date.year,
-                                monthNumber = date.monthNumber,
-                                dayOfMonth = date.dayOfMonth,
+                                month = date.month,
+                                day = date.day,
                                 hour = timePickerState.hour,
                                 minute = timePickerState.minute,
                                 second = 0,

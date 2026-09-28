@@ -3,6 +3,7 @@ package com.spectra.logger.example.ui.tabs
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -76,7 +77,7 @@ fun ActionsTab(
         item {
             LogButton(
                 label = "Generate 10 Logs",
-                icon = Icons.Default.List,
+                icon = Icons.AutoMirrored.Filled.List,
                 backgroundColor = Color(0xFF9C27B0),
                 action = viewModel::generate10Logs
             )

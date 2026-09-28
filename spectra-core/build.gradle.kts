@@ -50,6 +50,10 @@ val generateVersionFile =
     }
 
 kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
     // Android target using the modern KMP-first plugin DSL
     android {
         namespace = "com.spectra.logger"

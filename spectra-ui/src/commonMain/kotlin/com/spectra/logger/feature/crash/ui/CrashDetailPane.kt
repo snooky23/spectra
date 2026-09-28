@@ -64,6 +64,7 @@ fun CrashDetailPane(
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    @Suppress("DEPRECATION")
     val clipboardManager = LocalClipboardManager.current
     var showExportMenu by remember { mutableStateOf(false) }
 

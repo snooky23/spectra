@@ -7,7 +7,6 @@ import com.spectra.logger.feature.network.model.NetworkLogEntry
 import com.spectra.logger.core.model.SourceType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import java.util.UUID
 
 class NetworkViewModel : ViewModel() {
