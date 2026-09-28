@@ -195,8 +195,7 @@ class SpectraURLProtocol(
     private fun logSuccess(durationMs: Long) {
         val httpResponse = urlResponse as? NSHTTPURLResponse
 
-        @Suppress("UNCHECKED_CAST")
-        val responseHeadersRaw = httpResponse?.allHeaderFields as? Map<Any?, Any?> ?: emptyMap()
+        val responseHeadersRaw = httpResponse?.allHeaderFields ?: emptyMap<Any?, Any?>()
         val responseHeaders =
             responseHeadersRaw.entries.associate { (k, v) ->
                 val keyStr = k.toString()

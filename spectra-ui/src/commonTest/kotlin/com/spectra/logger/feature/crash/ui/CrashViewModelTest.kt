@@ -93,7 +93,7 @@ class CrashViewModelTest {
             viewModel.uiState.test {
                 val state = awaitItem()
                 assertNotNull(state.selectedCrash)
-                assertEquals("crash-selected", state.selectedCrash?.id)
+                assertEquals("crash-selected", state.selectedCrash.id)
             }
 
             viewModel.selectCrash(null)
