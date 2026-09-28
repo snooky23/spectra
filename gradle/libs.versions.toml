@@ -5,7 +5,7 @@
 
 [versions]
 # Kotlin Ecosystem
-kotlin = "2.3.20"
+kotlin = "2.4.20"
 coroutines = "1.10.1"
 serialization = "1.8.0"
 datetime = "0.7.1"
@@ -43,7 +43,7 @@ okio = "3.16.0"
 
 # Testing
 junit = "4.13.2"
-kotlin-test = "2.3.20"
+kotlin-test = "2.4.20"
 turbine = "1.2.0"
 mockk = "1.13.13"
 

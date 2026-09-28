@@ -91,5 +91,5 @@ tasks.named<Delete>("clean") {
 }
 
 plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
-    the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().ignoreScripts = false
+    the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().ignoreScriptsProperty.set(false)
 }
