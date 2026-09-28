@@ -50,6 +50,7 @@ dependencies {
     // Spectra Logger (Unified KMP UI)
     implementation(project(":spectra-ui"))
     implementation(project(":spectra-core"))
+    implementation(libs.ktor.client.cio)
 
     // AndroidX
     implementation(libs.androidx.core.ktx)

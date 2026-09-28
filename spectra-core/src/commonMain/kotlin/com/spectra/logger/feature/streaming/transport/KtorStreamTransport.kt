@@ -19,15 +19,19 @@ import kotlinx.serialization.json.Json
  * Ktor multiplatform WebSocket implementation of [StreamTransport].
  */
 class KtorStreamTransport(
-    private val client: HttpClient =
-        HttpClient {
-            install(WebSockets)
-        },
+    client: HttpClient? = null,
     private val json: Json =
         Json {
             ignoreUnknownKeys = true
         },
 ) : StreamTransport {
+    private val clientLazy: Lazy<HttpClient> =
+        lazy {
+            client ?: HttpClient {
+                install(WebSockets)
+            }
+        }
+    private val client: HttpClient get() = clientLazy.value
     private var session: DefaultClientWebSocketSession? = null
 
     override suspend fun connect(url: String) {

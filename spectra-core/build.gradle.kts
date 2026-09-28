@@ -151,12 +151,19 @@ kotlin {
 
         val androidMain by getting {
             dependencies {
+                api(libs.ktor.client.cio)
                 implementation(libs.androidx.core.ktx)
                 implementation(libs.kotlinx.coroutines.android)
                 implementation(libs.okhttp)
                 // Compose UI
                 implementation(libs.bundles.compose.ui)
                 implementation(libs.bundles.androidx.compose)
+            }
+        }
+
+        val jvmMain by getting {
+            dependencies {
+                implementation(libs.ktor.client.cio)
             }
         }
 
@@ -173,6 +180,9 @@ kotlin {
 
         val iosMain by creating {
             dependsOn(nativeMain)
+            dependencies {
+                implementation(libs.ktor.client.darwin)
+            }
         }
 
         macosTargets.forEach { getByName("${it.name}Main").dependsOn(nativeMain) }
