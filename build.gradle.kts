@@ -24,6 +24,15 @@ java {
 allprojects {
     group = project.findProperty("GROUP") as String? ?: "com.spectra.logger"
     version = project.findProperty("VERSION_NAME") as String? ?: "0.0.1-SNAPSHOT"
+
+    configurations.configureEach {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "org.jetbrains.kotlinx" && requested.name.startsWith("kotlinx-datetime")) {
+                useVersion("0.7.1")
+                because("Align on official kotlinx-datetime 0.7.1 across all targets")
+            }
+        }
+    }
 }
 
 // Apply quality tools globally but apply them lazily

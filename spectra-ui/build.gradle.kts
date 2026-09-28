@@ -72,6 +72,7 @@ kotlin {
                 implementation(libs.bundles.compose.multiplatform.ui)
 
                 implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.kotlinx.datetime)
             }
         }
 
@@ -80,6 +81,7 @@ kotlin {
                 implementation(libs.kotlin.test)
                 implementation(libs.kotlinx.coroutines.test)
                 implementation(libs.turbine)
+                implementation(libs.kotlinx.datetime)
             }
         }
 
@@ -99,8 +101,13 @@ kotlin {
             dependsOn(commonMain)
         }
 
+        val iosTest by creating {
+            dependsOn(commonTest)
+        }
+
         iosTargets.forEach { target ->
             getByName("${target.name}Main").dependsOn(iosMain)
+            getByName("${target.name}Test").dependsOn(iosTest)
         }
     }
 }

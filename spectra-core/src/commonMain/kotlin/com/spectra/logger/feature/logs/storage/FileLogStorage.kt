@@ -102,7 +102,7 @@ class FileLogStorage(
         logFlow.emit(entry)
 
         if (shouldFlush && batchToWrite != null) {
-            flushBatch(batchToWrite!!)
+            flushBatch(batchToWrite)
         }
     }
 
@@ -129,7 +129,7 @@ class FileLogStorage(
         entries.forEach { logFlow.emit(it) }
 
         if (batchToWrite != null) {
-            flushBatch(batchToWrite!!)
+            flushBatch(batchToWrite)
         }
     }
 
@@ -201,7 +201,7 @@ class FileLogStorage(
         if (batchToWrite != null) {
             withContext(backgroundDispatcher) {
                 try {
-                    performWrite(batchToWrite!!)
+                    performWrite(batchToWrite)
                 } catch (e: Exception) {
                     ioErrorHandler?.invoke(e)
                 }

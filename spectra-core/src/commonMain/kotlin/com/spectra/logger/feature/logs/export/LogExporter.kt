@@ -12,6 +12,7 @@ import com.spectra.logger.feature.network.storage.NetworkLogStorage
 import com.spectra.logger.feature.streaming.model.DeviceInfo
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -576,10 +577,10 @@ object LogExporter {
 
     private fun formatTimestamp(instant: Instant): String {
         val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-        return "${localDateTime.year}-${localDateTime.monthNumber.toString().padStart(
+        return "${localDateTime.year}-${localDateTime.month.number.toString().padStart(
             2,
             '0',
-        )}-${localDateTime.dayOfMonth.toString().padStart(2, '0')} " +
+        )}-${localDateTime.day.toString().padStart(2, '0')} " +
             "${localDateTime.hour.toString().padStart(
                 2,
                 '0',

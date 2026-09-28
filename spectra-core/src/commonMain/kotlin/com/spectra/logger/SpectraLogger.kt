@@ -637,15 +637,15 @@ object SpectraLogger {
         val currentLogStorage = logStorage
         val newStorage =
             if (newConfig.logStorageConfig.enablePersistence && newConfig.logStorageConfig.directoryPath != null) {
-                val fileSystem = FileSystem(newConfig.logStorageConfig.directoryPath!!)
+                val fileSystem = FileSystem(newConfig.logStorageConfig.directoryPath)
                 if (fileSystem.okioFs != null) {
                     if (currentLogStorage is FileLogStorage) {
                         ioScope.launch { currentLogStorage.close() }
                     }
                     FileLogStorage(
                         fileSystem = fileSystem,
-                        maxFileSize = newConfig.logStorageConfig.maxFileSizeBytes ?: FileLogStorage.DEFAULT_MAX_FILE_SIZE,
-                        flushThreshold = newConfig.logStorageConfig.flushThreshold ?: 50,
+                        maxFileSize = newConfig.logStorageConfig.maxFileSizeBytes,
+                        flushThreshold = newConfig.logStorageConfig.flushThreshold,
                         maxCapacity = newConfig.logStorageConfig.maxCapacity,
                     )
                 } else {
@@ -681,7 +681,7 @@ object SpectraLogger {
 
         val currentCrashStorage = crashStorageAtomic.value
         if (newConfig.crashStorageConfig.enablePersistence && newConfig.crashStorageConfig.directoryPath != null) {
-            val fileSystem = FileSystem(newConfig.crashStorageConfig.directoryPath!!)
+            val fileSystem = FileSystem(newConfig.crashStorageConfig.directoryPath)
             crashStorageAtomic.value =
                 FileCrashStorage(
                     fileSystem = fileSystem,

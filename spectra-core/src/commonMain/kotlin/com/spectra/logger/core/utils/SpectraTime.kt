@@ -1,7 +1,8 @@
 package com.spectra.logger.core.utils
 
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import kotlin.experimental.ExperimentalObjCRefinement
 import kotlin.native.HiddenFromObjC
 import kotlin.time.Duration.Companion.days
@@ -10,7 +11,7 @@ import kotlin.time.Duration.Companion.hours
 /**
  * Common time utility to avoid resolution issues in dependent modules.
  */
-@OptIn(ExperimentalObjCRefinement::class)
+@OptIn(ExperimentalObjCRefinement::class, ExperimentalTime::class)
 @HiddenFromObjC
 object SpectraTime {
     /**

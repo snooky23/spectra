@@ -140,7 +140,7 @@ class SpectraKtorPluginTest {
             assertNull(log.responseCode)
             assertTrue(log.isFailed)
             assertNotNull(log.error)
-            assertTrue(log.error!!.contains("Network unreachable") || log.error!!.contains("IllegalStateException"))
+            assertTrue(log.error.contains("Network unreachable") || log.error.contains("IllegalStateException"))
         }
 
     /**

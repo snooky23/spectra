@@ -67,7 +67,7 @@ class SpectraLoggerEventTest {
             assertEquals("3", screenEvent.parameters["cart_items"])
             assertEquals("true", screenEvent.parameters["completed"])
             assertNotNull(screenEvent.durationMs)
-            assertTrue(screenEvent.durationMs!! >= 0)
+            assertTrue(screenEvent.durationMs >= 0)
         }
 
     @Test
