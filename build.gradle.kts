@@ -15,9 +15,11 @@ plugins {
     id("java")
 }
 
+val javaVersion = file(".java-version").readText().trim().toInt()
+
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(javaVersion))
     }
 }
 
