@@ -145,8 +145,10 @@ SpectraLogger.showScreen() // Or use SpectraLoggerFabOverlay
 ```swift
 import SpectraUI
 // ...
-.sheet(isPresented: $showLogs) {
-    SpectraLoggerView()
+.fullScreenCover(isPresented: $showLogs) {
+    SpectraLoggerView(onDismiss: {
+        showLogs = false
+    })
 }
 ```
 

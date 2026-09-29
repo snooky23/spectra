@@ -76,8 +76,10 @@ struct MainAppView: View {
         Button("Open Logs") {
             showLogs = true
         }
-        .sheet(isPresented: $showLogs) {
-            SpectraLoggerView()
+        .fullScreenCover(isPresented: $showLogs) {
+            SpectraLoggerView(onDismiss: {
+                showLogs = false
+            })
         }
     }
 }

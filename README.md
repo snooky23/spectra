@@ -589,7 +589,7 @@ struct ContentView: View {
         Button("Open Debug Inspector") {
             isSpectraOpen = true
         }
-        .sheet(isPresented: $isSpectraOpen) {
+        .fullScreenCover(isPresented: $isSpectraOpen) {
             SpectraLoggerView(onDismiss: {
                 isSpectraOpen = false
             })

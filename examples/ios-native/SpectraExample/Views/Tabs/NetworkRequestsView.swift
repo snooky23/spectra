@@ -97,8 +97,10 @@ public struct NetworkRequestsView: View {
                 .padding(.horizontal)
             }
         }
-        .sheet(isPresented: $showSpectraLogger) {
-            SpectraLoggerView()
+        .fullScreenCover(isPresented: $showSpectraLogger) {
+            SpectraLoggerView(onDismiss: {
+                showSpectraLogger = false
+            })
         }
     }
 }

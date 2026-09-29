@@ -24,9 +24,11 @@ struct MyApp: View {
         Button("Open Spectra Logger") {
             showLogger = true
         }
-        .sheet(isPresented: $showLogger) {
-            // That's it! One line to get the complete logger UI
-            SpectraLoggerScreen()
+        .fullScreenCover(isPresented: $showLogger) {
+            // Opens Spectra as a true fullscreen debug inspector
+            SpectraLoggerView(onDismiss: {
+                showLogger = false
+            })
         }
     }
 }

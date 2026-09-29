@@ -108,9 +108,11 @@ struct SpectraLoggerView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }
 
-// In your SwiftUI code
-.sheet(isPresented: $showLogs) {
-    SpectraLoggerView()
+// In your SwiftUI code (full-screen debug inspector presentation)
+.fullScreenCover(isPresented: $showLogs) {
+    SpectraLoggerView(onDismiss: {
+        showLogs = false
+    })
 }
 ```
 

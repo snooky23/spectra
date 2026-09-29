@@ -159,8 +159,10 @@ public struct EventsView: View {
                 .padding(.horizontal)
             }
         }
-        .sheet(isPresented: $showLocalSpectraLogger) {
-            SpectraLoggerView()
+        .fullScreenCover(isPresented: $showLocalSpectraLogger) {
+            SpectraLoggerView(onDismiss: {
+                showLocalSpectraLogger = false
+            })
         }
     }
 }

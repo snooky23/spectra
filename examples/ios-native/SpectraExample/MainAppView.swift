@@ -52,7 +52,7 @@ public struct MainAppView: View {
                 logger.screenStart(screenName: initialScreen, parameters: ["tab_index": "\(selectedTab)"])
                 currentTrackedScreen = initialScreen
             }
-            .sheet(isPresented: $showSpectraLogger) {
+            .fullScreenCover(isPresented: $showSpectraLogger) {
                 SpectraLoggerView(initialTab: initialSpectraTab, onDismiss: {
                     showSpectraLogger = false
                 })
