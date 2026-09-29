@@ -5,9 +5,19 @@ import Spectra
 public struct NetworkRequestsView: View {
     @StateObject private var viewModel: NetworkTestingViewModel
     @State private var showSpectraLogger = false
+    private let onOpenSpectra: (() -> Void)?
 
-    public init(logger: AppLogger) {
+    public init(logger: AppLogger, onOpenSpectra: (() -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: NetworkTestingViewModel(logger: logger))
+        self.onOpenSpectra = onOpenSpectra
+    }
+
+    private func handleOpenSpectra() {
+        if let onOpenSpectra = onOpenSpectra {
+            onOpenSpectra()
+        } else {
+            showSpectraLogger = true
+        }
     }
 
     public var body: some View {
@@ -67,26 +77,25 @@ public struct NetworkRequestsView: View {
                         viewModel.simulateBatchCalls()
                     }
 
-                    Spacer().frame(height: 10)
+                    Spacer().frame(height: 16)
+
+                    Button(action: handleOpenSpectra) {
+                        HStack {
+                            Image(systemName: "doc.text.magnifyingglass")
+                            Text("Open Spectra Logger")
+                                .fontWeight(.semibold)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.purple)
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                    }
+
+                    Spacer().frame(height: 80)
                 }
                 .padding(.horizontal)
             }
-
-            Divider()
-
-            Button(action: { showSpectraLogger = true }) {
-                HStack {
-                    Image(systemName: "doc.text.magnifyingglass")
-                    Text("Open Spectra Logger")
-                        .fontWeight(.semibold)
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.purple)
-                .foregroundColor(.white)
-                .cornerRadius(12)
-            }
-            .padding()
         }
         .sheet(isPresented: $showSpectraLogger) {
             SpectraLoggerView()
