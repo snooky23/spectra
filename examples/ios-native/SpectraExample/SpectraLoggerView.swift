@@ -8,17 +8,19 @@ import Spectra
  * falling back to the unified Compose navigation for older iOS versions.
  */
 public struct SpectraLoggerView: View {
+    private var initialTab: Int
     private var onDismiss: () -> Void
 
-    public init(onDismiss: @escaping () -> Void = {
+    public init(initialTab: Int = 0, onDismiss: @escaping () -> Void = {
         SpectraUIManager.shared.dismissScreen()
     }) {
+        self.initialTab = initialTab
         self.onDismiss = onDismiss
     }
 
     public var body: some View {
         if #available(iOS 26.0, *) {
-            SpectraLiquidGlassTabView(onDismiss: onDismiss)
+            SpectraLiquidGlassTabView(initialTab: initialTab, onDismiss: onDismiss)
         } else {
             LegacySpectraLoggerRepresentable(onDismiss: onDismiss)
                 .ignoresSafeArea(.all)
@@ -33,10 +35,11 @@ public struct SpectraLoggerView: View {
  */
 @available(iOS 26.0, *)
 public struct SpectraLiquidGlassTabView: View {
-    @State private var selectedTab: Int = 0
+    @State private var selectedTab: Int
     var onDismiss: () -> Void
 
-    public init(onDismiss: @escaping () -> Void = {}) {
+    public init(initialTab: Int = 0, onDismiss: @escaping () -> Void = {}) {
+        _selectedTab = State(initialValue: initialTab)
         self.onDismiss = onDismiss
     }
 

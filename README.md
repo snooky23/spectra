@@ -22,6 +22,24 @@ A lightweight, on-device logging framework for iOS and Android with a unified, a
 
 ---
 
+## Screenshots & Demos
+
+### In-App Debug Inspector (Compose Multiplatform & Liquid Glass UI)
+
+| Logs View | Network Inspector | Events & Telemetry |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/spectra-ui-logs.png" width="260" alt="Spectra Logs Screen" /> | <img src="docs/screenshots/spectra-ui-network.png" width="260" alt="Spectra Network Logs Screen" /> | <img src="docs/screenshots/spectra-ui-events.png" width="260" alt="Spectra Events Screen" /> |
+| Filter by level (Debug, Info, Warn, Error), search query, dashboard view | Live HTTP traffic inspection with status codes, latency, payload viewer | Lifecycle, screen dwell tracking, and custom event telemetry |
+
+### Native Example & Playground App
+
+| Generator Actions | Network Traffic Simulation | Event Tracking & Dwell |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/ios-example-actions.png" width="260" alt="Example Actions Tab" /> | <img src="docs/screenshots/ios-example-network.png" width="260" alt="Example Network Tab" /> | <img src="docs/screenshots/ios-example-events.png" width="260" alt="Example Events Tab" /> |
+| Single & batch logging with levels, metadata, and debug FAB launcher | Simulate GET/POST requests, HTTP errors, timeouts, and batch traffic | Screen views, button taps, lifecycle events, and dwell duration triggers |
+
+---
+
 ## Installation
 
 ### Android

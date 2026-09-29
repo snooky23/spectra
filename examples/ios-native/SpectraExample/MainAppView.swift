@@ -8,12 +8,14 @@ import Spectra
 /// screen dwell duration tracking, and integrated Spectra Logger presentation.
 public struct MainAppView: View {
     private let logger: AppLogger
+    private let initialSpectraTab: Int
     @State private var selectedTab: Int = 0
     @State private var showSpectraLogger: Bool = false
     @State private var currentTrackedScreen: String = "ActionsScreen"
 
-    public init(logger: AppLogger = LiveAppLogger(), initialTab: Int = 0, initialShowSpectra: Bool = false) {
+    public init(logger: AppLogger = LiveAppLogger(), initialTab: Int = 0, initialShowSpectra: Bool = false, initialSpectraTab: Int = 0) {
         self.logger = logger
+        self.initialSpectraTab = initialSpectraTab
         _selectedTab = State(initialValue: initialTab)
         _showSpectraLogger = State(initialValue: initialShowSpectra)
     }
@@ -51,7 +53,7 @@ public struct MainAppView: View {
                 currentTrackedScreen = initialScreen
             }
             .sheet(isPresented: $showSpectraLogger) {
-                SpectraLoggerView(onDismiss: {
+                SpectraLoggerView(initialTab: initialSpectraTab, onDismiss: {
                     showSpectraLogger = false
                 })
             }

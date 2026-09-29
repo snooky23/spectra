@@ -37,6 +37,18 @@ This example app uses **Swift Package Manager** to depend on:
 
 The root `Package.swift` is configured to look for these frameworks in `build/xcframework/` during local development.
 
+## Screenshots
+
+### Native SwiftUI Playground
+| Actions Tab | Network Tab | Events Tab |
+| :---: | :---: | :---: |
+| <img src="../../docs/screenshots/ios-example-actions.png" width="250" /> | <img src="../../docs/screenshots/ios-example-network.png" width="250" /> | <img src="../../docs/screenshots/ios-example-events.png" width="250" /> |
+
+### In-App Spectra Inspector (Liquid Glass UI)
+| Logs Screen | Network Screen | Events Screen |
+| :---: | :---: | :---: |
+| <img src="../../docs/screenshots/spectra-ui-logs.png" width="250" /> | <img src="../../docs/screenshots/spectra-ui-network.png" width="250" /> | <img src="../../docs/screenshots/spectra-ui-events.png" width="250" /> |
+
 ## Features Demonstrated
 
 ### Core Logging Features
