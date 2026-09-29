@@ -1,4 +1,6 @@
 import Foundation
+import SpectraLogger
+import class SpectraLogger.KotlinInt
 import SpectraLoggerUI
 
 /// A service to generate mock network requests and fake stack traces for the example app.
@@ -84,7 +86,7 @@ public struct MockDataGenerator {
             // Create a network log entry with proper KMP type conversions
             let networkLogEntry = NetworkLogEntry(
                 id: UUID().uuidString,
-                timestamp: Kotlinx_datetimeInstant.companion.fromEpochMilliseconds(
+                timestamp: KotlinInstant.companion.fromEpochMilliseconds(
                     epochMilliseconds: Int64(Date().timeIntervalSince1970 * 1000)
                 ),
                 url: url,

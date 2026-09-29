@@ -1,4 +1,5 @@
 import Foundation
+import SpectraLogger
 import SpectraLoggerUI
 
 /// A protocol that abstracts the logging capability so it can be mocked in SwiftUI Previews.

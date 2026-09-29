@@ -3,7 +3,7 @@ import SpectraLoggerUI
 
 // MARK: - Main App View
 
-/// Main app screen with tab-based navigation for different example types
+/// Main app screen using the KMP Spectra Logger navigation with iOS Liquid Glass
 public struct MainAppView: View {
     private let logger: AppLogger
     
@@ -12,17 +12,7 @@ public struct MainAppView: View {
     }
     
     public var body: some View {
-        TabView {
-            ExampleActionsView(logger: logger)
-                .tabItem {
-                    Label("Actions", systemImage: "sparkles")
-                }
-            
-            NetworkRequestsView(logger: logger)
-                .tabItem {
-                    Label("Network", systemImage: "network")
-                }
-        }
+        SpectraLoggerView()
     }
 }
 
