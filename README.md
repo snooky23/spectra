@@ -18,6 +18,7 @@
 [📸 Screenshots](#visual-showcase) •
 [✨ Key Features](#key-features) •
 [📦 Installation](#installation) •
+[🧩 Compose Multiplatform](#cmp-guide) •
 [🤖 Android](#android-guide) •
 [🍎 iOS](#ios-guide) •
 [🌐 Web](#web-guide) •
@@ -148,6 +149,17 @@ Choose the integration method that best matches your project setup:
 ### Recommended: Unified Umbrella Package
 Import both Core logic and the In-App Inspector UI with a single dependency:
 
+#### Compose Multiplatform / KMP Shared (`build.gradle.kts`)
+```kotlin
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation("com.spectra.logger:spectra-umbrella:1.0.5")
+        }
+    }
+}
+```
+
 #### Android (`build.gradle.kts`)
 ```kotlin
 dependencies {
@@ -166,11 +178,138 @@ dependencies {
 ### Modular Setup (Advanced)
 If you only need headless logging or want to conditionally include the UI in Debug builds:
 
-| Module | Android Dependency | iOS SPM Product | Purpose |
+| Module | Gradle Dependency (KMP / Android) | iOS SPM Product | Purpose |
 | :--- | :--- | :--- | :--- |
 | **Core Engine** | `com.spectra.logger:spectra-core:1.0.5` | `SpectraLogger` | Headless logging, storage, interceptors |
 | **Unified UI** | `com.spectra.logger:spectra-ui:1.0.5` | `SpectraLoggerUI` | Compose Multiplatform inspector viewer |
 | **Umbrella** | `com.spectra.logger:spectra-umbrella:1.0.5` | `Spectra` | **Recommended:** Core + UI combined |
+
+---
+
+<a id="cmp-guide"></a>
+## 🧩 Compose Multiplatform (CMP Shared) Guide
+
+If your project is built with **Compose Multiplatform (CMP)** targeting Android, iOS, Desktop, or Web, you can implement **100% of your logging, network interception, and debug UI in `commonMain`** without writing platform-specific wrappers.
+
+### 1. Add Dependency in `commonMain`
+```kotlin
+// build.gradle.kts
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            // Spectra Umbrella provides both Core logging and the Compose Inspector UI
+            implementation("com.spectra.logger:spectra-umbrella:1.0.5")
+        }
+    }
+}
+```
+
+### 2. Configure & Log in Shared Code
+Initialize Spectra once during your app's startup sequence in `commonMain`:
+
+```kotlin
+import com.spectra.logger.SpectraLogger
+import com.spectra.logger.feature.logs.model.LogLevel
+import com.spectra.logger.feature.events.model.EventType
+
+// Global logger configuration
+SpectraLogger.configure {
+    minLogLevel = LogLevel.VERBOSE
+    logStorage { maxCapacity = 5_000 }
+    eventStorage { maxCapacity = 2_000 }
+}
+
+// Log from any shared ViewModel, Repository, or UseCase
+SpectraLogger.d("Repository", "Fetching remote product feed")
+SpectraLogger.i("Analytics", "User opened detail view", metadata = mapOf("item_id" to "prod_42"))
+
+// Screen dwell time & analytics tracking
+SpectraLogger.event(
+    name = "screen_dwell",
+    parameters = mapOf("screen" to "FeedScreen"),
+    eventType = EventType.screenView,
+    durationMs = 3_200L
+)
+```
+
+### 3. Cross-Platform Ktor HTTP Interceptor
+Install `SpectraKtorPlugin` into your shared `HttpClient` to automatically capture all HTTP requests, responses, status codes, and JSON bodies across Android, iOS, Desktop, and Web:
+
+```kotlin
+import com.spectra.logger.feature.network.interceptor.SpectraKtorPlugin
+import io.ktor.client.HttpClient
+
+val sharedHttpClient = HttpClient {
+    install(SpectraKtorPlugin) {
+        maxBodySize = 250_000L
+        ignoreHosts("telemetry.internal.net")
+    }
+}
+```
+
+### 4. Present the In-App Inspector in Shared Compose
+Because `SpectraLoggerScreen` is a pure `@Composable`, you can integrate it directly into your shared UI tree:
+
+#### Pattern A: Shared Navigation Destination (Navigation Compose / Voyager / Decompose)
+```kotlin
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.spectra.logger.core.ui.compose.SpectraLoggerScreen
+
+@Composable
+fun SharedApp() {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = "home") {
+        composable("home") {
+            HomeScreen(onOpenDebugger = { navController.navigate("spectra_debug") })
+        }
+        composable("spectra_debug") {
+            // Fullscreen adaptive inspector destination
+            SpectraLoggerScreen(onDismiss = { navController.popBackStack() })
+        }
+    }
+}
+```
+
+#### Pattern B: Shared Modal Bottom Sheet
+```kotlin
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import com.spectra.logger.core.ui.compose.SpectraLoggerScreen
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SharedAppRoot() {
+    var isDebugSheetOpen by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        MainAppContent(onOpenDebug = { isDebugSheetOpen = true })
+
+        if (isDebugSheetOpen) {
+            ModalBottomSheet(onDismissRequest = { isDebugSheetOpen = false }) {
+                SpectraLoggerScreen(onDismiss = { isDebugSheetOpen = false })
+            }
+        }
+    }
+}
+```
+
+#### Pattern C: Universal Trigger with `SpectraUI.showScreen()`
+From any button or gesture in your shared Compose UI, call `SpectraUI.showScreen()` to trigger the modal debugger:
+
+```kotlin
+import com.spectra.logger.core.ui.SpectraUI
+
+Button(onClick = { SpectraUI.showScreen() }) {
+    Text("Open Debugger")
+}
+```
 
 ---
 
