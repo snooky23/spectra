@@ -9,6 +9,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.lifecycleScope
 import com.spectra.logger.SpectraLogger
+import com.spectra.logger.feature.events.model.EventLogEntry
+import com.spectra.logger.feature.events.model.EventType
 import com.spectra.logger.feature.logs.model.LogEntry
 import com.spectra.logger.feature.logs.model.LogLevel
 import com.spectra.logger.core.model.SourceType
@@ -21,7 +23,7 @@ import kotlin.time.Duration.Companion.seconds
 
 /**
  * Example activity demonstrating Spectra Logger usage.
- * Shows a simple interface with tabs for Actions and Network requests.
+ * Shows a simple interface with tabs for Actions, Network requests, and Events.
  * Includes an "Open Spectra Logger" button to view the captured logs.
  */
 class MainActivity : ComponentActivity() {
@@ -33,7 +35,9 @@ class MainActivity : ComponentActivity() {
 
         configureLogger()
         seedHistoricalLogs()
+        seedHistoricalEvents()
         generateSampleLogs()
+        generateSampleEvents()
 
         setContent {
             MaterialTheme {
@@ -49,6 +53,9 @@ class MainActivity : ComponentActivity() {
             minLogLevel = LogLevel.VERBOSE
             logStorage {
                 maxCapacity = MAX_LOG_STORAGE_CAPACITY
+            }
+            eventStorage {
+                maxCapacity = MAX_EVENT_STORAGE_CAPACITY
             }
         }
     }
@@ -151,6 +158,107 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun seedHistoricalEvents() {
+        lifecycleScope.launch {
+            val now = SpectraTime.now()
+            val events = mutableListOf<EventLogEntry>()
+
+            val screenNames = listOf("HomeScreen", "CatalogScreen", "ProductDetailsScreen", "SettingsScreen", "ProfileScreen")
+            val userActions = listOf(
+                Pair("button_tap", mapOf("target" to "explore_more")),
+                Pair("filter_applied", mapOf("category" to "audio", "brand" to "Sony")),
+                Pair("add_to_cart", mapOf("item_id" to "SKU-9901", "price" to "149.99")),
+                Pair("search_executed", mapOf("query" to "noise cancelling", "results" to "8")),
+                Pair("item_favorited", mapOf("item_id" to "SKU-9901"))
+            )
+            val lifecycles = listOf(
+                Pair("app_foreground", mapOf("cold_start" to "true")),
+                Pair("screen_orientation_change", mapOf("orientation" to "landscape")),
+                Pair("network_state_change", mapOf("network" to "wifi")),
+                Pair("session_renewed", mapOf("session_id" to "sess-84920"))
+            )
+            val customEvents = listOf(
+                Pair("promo_code_applied", mapOf("code" to "SUMMER2026", "discount" to "15%")),
+                Pair("checkout_completed", mapOf("order_id" to "ORD-7712", "amount" to "149.99")),
+                Pair("review_submitted", mapOf("rating" to "5", "has_text" to "true")),
+                Pair("feature_flag_evaluation", mapOf("flag" to "dark_mode_v2", "variant" to "enabled"))
+            )
+
+            // Seed historical events spanning the last 15 minutes
+            for (minutesAgo in 0..15) {
+                val bucketTime = now - minutesAgo.minutes
+
+                // Seed screen views
+                if (minutesAgo % 2 == 0) {
+                    val screen = screenNames.random()
+                    val duration = (1200L..45000L).random()
+                    events.add(
+                        EventLogEntry(
+                            id = IdGenerator.generate(),
+                            timestamp = bucketTime - (0..30).random().seconds,
+                            eventType = EventType.SCREEN_VIEW,
+                            name = screen,
+                            parameters = mapOf("screen_class" to screen, "platform" to "Android"),
+                            durationMs = duration,
+                            source = "example-app",
+                            sourceType = SourceType.APP
+                        )
+                    )
+                }
+
+                // Seed user actions
+                repeat((1..2).random()) {
+                    val action = userActions.random()
+                    events.add(
+                        EventLogEntry(
+                            id = IdGenerator.generate(),
+                            timestamp = bucketTime - (10..55).random().seconds,
+                            eventType = EventType.USER_ACTION,
+                            name = action.first,
+                            parameters = action.second,
+                            source = "example-app",
+                            sourceType = SourceType.APP
+                        )
+                    )
+                }
+
+                // Seed lifecycle events
+                if (minutesAgo % 3 == 0) {
+                    val lifecycle = lifecycles.random()
+                    events.add(
+                        EventLogEntry(
+                            id = IdGenerator.generate(),
+                            timestamp = bucketTime - (5..45).random().seconds,
+                            eventType = EventType.LIFECYCLE,
+                            name = lifecycle.first,
+                            parameters = lifecycle.second,
+                            source = "example-app",
+                            sourceType = SourceType.APP
+                        )
+                    )
+                }
+
+                // Seed custom business events
+                if (minutesAgo % 4 == 0) {
+                    val custom = customEvents.random()
+                    events.add(
+                        EventLogEntry(
+                            id = IdGenerator.generate(),
+                            timestamp = bucketTime - (15..50).random().seconds,
+                            eventType = EventType.CUSTOM,
+                            name = custom.first,
+                            parameters = custom.second,
+                            source = "example-app",
+                            sourceType = SourceType.APP
+                        )
+                    )
+                }
+            }
+
+            SpectraLogger.eventStorage.addAll(events)
+        }
+    }
+
     private fun generateSampleLogs() {
         lifecycleScope.launch {
             SpectraLogger.i("App", "Spectra Logger Example Started")
@@ -181,8 +289,25 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun generateSampleEvents() {
+        lifecycleScope.launch {
+            delay(DELAY_SHORT)
+            SpectraLogger.event(
+                name = "app_launch",
+                parameters = mapOf("version" to SpectraLogger.getVersion(), "build_type" to "debug"),
+                eventType = EventType.LIFECYCLE
+            )
+            SpectraLogger.event(
+                name = "session_started",
+                parameters = mapOf("user_type" to "standard_user"),
+                eventType = EventType.CUSTOM
+            )
+        }
+    }
+
     private companion object {
         private const val MAX_LOG_STORAGE_CAPACITY = 20_000
+        private const val MAX_EVENT_STORAGE_CAPACITY = 5_000
         private const val DELAY_SHORT = 500L
         private const val DELAY_MEDIUM = 1000L
     }
