@@ -48,6 +48,7 @@ kotlin {
             iosTarget.binaries.framework {
                 baseName = iosFrameworkName
                 isStatic = true
+                export(project(":spectra-core"))
                 xcf.add(this)
                 binaryOption("bundleId", "com.spectra.logger.ui")
             }

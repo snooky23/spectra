@@ -1,6 +1,4 @@
 import Foundation
-import SpectraLogger
-import class SpectraLogger.KotlinInt
 import SpectraLoggerUI
 
 /// A service to generate mock network requests and fake stack traces for the example app.

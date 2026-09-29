@@ -1,5 +1,4 @@
 import SwiftUI
-import SpectraLogger
 import SpectraLoggerUI
 
 @main
