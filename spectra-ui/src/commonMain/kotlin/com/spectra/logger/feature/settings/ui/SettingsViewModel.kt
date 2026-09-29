@@ -176,7 +176,8 @@ class SettingsViewModel(
 
     fun updateIgnoredDomains(domains: String) {
         val domainList =
-            domains.split(",")
+            domains
+                .split(",")
                 .map { it.trim() }
                 .filter { it.isNotEmpty() }
         val currentFeatures = SpectraLogger.configuration.enabledFeatures
@@ -194,7 +195,8 @@ class SettingsViewModel(
 
     fun updateIgnoredTokens(tokens: String) {
         val tokenList =
-            tokens.split(",")
+            tokens
+                .split(",")
                 .map { it.trim() }
                 .filter { it.isNotEmpty() }
         val currentFeatures = SpectraLogger.configuration.enabledFeatures
@@ -286,7 +288,9 @@ data class SettingsUiState(
     val lastPruneSummary: String? = null,
 )
 
-enum class AppearanceMode(val label: String) {
+enum class AppearanceMode(
+    val label: String,
+) {
     LIGHT("Light"),
     DARK("Dark"),
     SYSTEM("System"),

@@ -153,13 +153,12 @@ class FileSystem(
      * @param path File path relative to app storage directory
      * @return The absolute path as a string
      */
-    fun getAbsolutePath(path: String): String {
-        return if (directoryPath.isEmpty()) {
+    fun getAbsolutePath(path: String): String =
+        if (directoryPath.isEmpty()) {
             path
         } else {
             if (path.isEmpty()) directoryPath else "$directoryPath/$path"
         }
-    }
 
     /**
      * Appends the contents of sourcePath to destPath efficiently.

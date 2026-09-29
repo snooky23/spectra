@@ -162,11 +162,10 @@ class NetworkLogsViewModel(
         }
     }
 
-    fun getShareText(logs: List<NetworkLogEntry>): String {
-        return logs.joinToString("\n") { log ->
+    fun getShareText(logs: List<NetworkLogEntry>): String =
+        logs.joinToString("\n") { log ->
             "[${log.method}] ${log.responseCode ?: "N/A"} ${log.url} - ${log.duration}ms"
         }
-    }
 
     fun shareLogs(
         logs: List<NetworkLogEntry>,
@@ -263,14 +262,13 @@ class NetworkLogsViewModel(
         }
     }
 
-    private fun extractHost(url: String): String {
-        return try {
+    private fun extractHost(url: String): String =
+        try {
             val noProtocol = if (url.contains("://")) url.substringAfter("://") else url
             noProtocol.substringBefore("/").substringBefore(":")
         } catch (e: Exception) {
             url
         }
-    }
 
     private fun matchesWildcard(
         pattern: String,

@@ -24,13 +24,12 @@ import platform.UIKit.UIViewController
  * Creates a UIViewController that hosts the Spectra Logger UI with Compose navigation.
  * This is used by iOS applications to present the logger.
  */
-fun SpectraLoggerViewController(onDismiss: () -> Unit = {}): UIViewController {
-    return ComposeUIViewController(configure = {
+fun SpectraLoggerViewController(onDismiss: () -> Unit = {}): UIViewController =
+    ComposeUIViewController(configure = {
         enforceStrictPlistSanityCheck = false
     }) {
         SpectraLoggerScreen(onDismiss = onDismiss)
     }
-}
 
 /**
  * Creates a UIViewController for an individual Spectra tab (Logs, Network, Events, Settings).
@@ -39,9 +38,9 @@ fun SpectraLoggerViewController(onDismiss: () -> Unit = {}): UIViewController {
  */
 fun SpectraTabViewController(
     tabIndex: Int,
-    onDismiss: () -> Unit = {}
-): UIViewController {
-    return ComposeUIViewController(configure = {
+    onDismiss: () -> Unit = {},
+): UIViewController =
+    ComposeUIViewController(configure = {
         enforceStrictPlistSanityCheck = false
     }) {
         SpectraTheme {
@@ -83,5 +82,3 @@ fun SpectraTabViewController(
             }
         }
     }
-}
-

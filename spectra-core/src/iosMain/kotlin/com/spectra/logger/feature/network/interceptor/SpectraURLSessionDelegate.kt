@@ -6,7 +6,9 @@ import platform.Foundation.*
 import platform.darwin.NSObject
 
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-internal class SpectraURLSessionDelegate : NSObject(), NSURLSessionDataDelegateProtocol {
+internal class SpectraURLSessionDelegate :
+    NSObject(),
+    NSURLSessionDataDelegateProtocol {
     private val protocols = mutableMapOf<NSURLSessionTask, SpectraURLProtocol>()
 
     fun register(

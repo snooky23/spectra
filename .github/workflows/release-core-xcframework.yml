@@ -54,22 +54,28 @@ jobs:
         run: |
           ./scripts/release/create-release.sh ${{ steps.version.outputs.version }}
           
+          UMBRELLA_CHECKSUM=$(cat build/releases/${{ steps.version.outputs.version }}/Spectra-checksum.txt)
           CORE_CHECKSUM=$(cat build/releases/${{ steps.version.outputs.version }}/SpectraLogger-checksum.txt)
           UI_CHECKSUM=$(cat build/releases/${{ steps.version.outputs.version }}/SpectraLoggerUI-checksum.txt)
           
+          echo "umbrella_checksum=$UMBRELLA_CHECKSUM" >> $GITHUB_OUTPUT
           echo "core_checksum=$CORE_CHECKSUM" >> $GITHUB_OUTPUT
           echo "ui_checksum=$UI_CHECKSUM" >> $GITHUB_OUTPUT
 
       - name: Update and commit Package.swift
         run: |
           VERSION="${{ steps.version.outputs.version }}"
+          UMBRELLA_CHECKSUM="${{ steps.build.outputs.umbrella_checksum }}"
           CORE_CHECKSUM="${{ steps.build.outputs.core_checksum }}"
           UI_CHECKSUM="${{ steps.build.outputs.ui_checksum }}"
+
+          # Update Umbrella target
+          perl -i -pe "s|name: \"Spectra\",\s*url: \"https://github.com/snooky23/spectra/releases/download/v.*/Spectra.xcframework.zip\",\s*checksum: \".*\"|name: \"Spectra\", url: \"https://github.com/snooky23/spectra/releases/download/v${VERSION}/Spectra.xcframework.zip\", checksum: \"${UMBRELLA_CHECKSUM}\"|g" Package.swift
 
           # Update Core target
           perl -i -pe "s|name: \"SpectraLogger\",\s*url: \"https://github.com/snooky23/spectra/releases/download/v.*/SpectraLogger.xcframework.zip\",\s*checksum: \".*\"|name: \"SpectraLogger\", url: \"https://github.com/snooky23/spectra/releases/download/v${VERSION}/SpectraLogger.xcframework.zip\", checksum: \"${CORE_CHECKSUM}\"|g" Package.swift
           
-          # Update UI target (Note: This might need more precise regex based on the file content)
+          # Update UI target
           perl -i -pe "s|name: \"SpectraLoggerUI\",\s*url: \"https://github.com/snooky23/spectra/releases/download/v.*/SpectraLoggerUI.xcframework.zip\",\s*checksum: \".*\"|name: \"SpectraLoggerUI\", url: \"https://github.com/snooky23/spectra/releases/download/v${VERSION}/SpectraLoggerUI.xcframework.zip\", checksum: \"${UI_CHECKSUM}\"|g" Package.swift
 
           git config user.name "Avi Levin"
@@ -85,6 +91,7 @@ jobs:
           TAG_NAME="${{ steps.version.outputs.tag }}"
           
           gh release create "${TAG_NAME}" \
+            build/releases/${VERSION}/Spectra.xcframework.zip \
             build/releases/${VERSION}/SpectraLogger.xcframework.zip \
             build/releases/${VERSION}/SpectraLoggerUI.xcframework.zip \
             --title "Release ${VERSION}" \

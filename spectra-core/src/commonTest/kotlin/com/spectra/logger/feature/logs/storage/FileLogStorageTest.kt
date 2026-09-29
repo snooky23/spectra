@@ -13,10 +13,12 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class FileLogStorageTest {
-    private fun createDummyEntry(msg: String): LogEntry {
-        return LogEntry(
+    private fun createDummyEntry(msg: String): LogEntry =
+        LogEntry(
             id = IdGenerator.generate(),
-            timestamp = com.spectra.logger.core.utils.SpectraTime.now(),
+            timestamp =
+                com.spectra.logger.core.utils.SpectraTime
+                    .now(),
             level = LogLevel.INFO,
             tag = "Test",
             message = msg,
@@ -25,7 +27,6 @@ class FileLogStorageTest {
             source = "App",
             sourceType = SourceType.APP,
         )
-    }
 
     @Test
     fun testExportLogs() =

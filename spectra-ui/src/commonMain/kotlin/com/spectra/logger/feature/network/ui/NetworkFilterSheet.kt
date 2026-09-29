@@ -33,7 +33,10 @@ data class NetworkFilterConfig(
     val responseTimeThreshold: ResponseTimeThreshold? = null,
     val showOnlyFailed: Boolean = false,
 ) {
-    enum class ResponseTimeThreshold(val label: String, val milliseconds: Long) {
+    enum class ResponseTimeThreshold(
+        val label: String,
+        val milliseconds: Long,
+    ) {
         OVER_100MS("> 100ms", 100),
         OVER_500MS("> 500ms", 500),
         OVER_1S("> 1s", 1000),
@@ -243,7 +246,9 @@ fun NetworkFilterSheet(
                         onClick = {
                             localFilter =
                                 localFilter.copy(
-                                    fromTimestamp = com.spectra.logger.core.utils.SpectraTime.hoursAgo(1),
+                                    fromTimestamp =
+                                        com.spectra.logger.core.utils.SpectraTime
+                                            .hoursAgo(1),
                                     toTimestamp = null,
                                 )
                         },
@@ -253,7 +258,9 @@ fun NetworkFilterSheet(
                         onClick = {
                             localFilter =
                                 localFilter.copy(
-                                    fromTimestamp = com.spectra.logger.core.utils.SpectraTime.daysAgo(1),
+                                    fromTimestamp =
+                                        com.spectra.logger.core.utils.SpectraTime
+                                            .daysAgo(1),
                                     toTimestamp = null,
                                 )
                         },
@@ -263,7 +270,9 @@ fun NetworkFilterSheet(
                         onClick = {
                             localFilter =
                                 localFilter.copy(
-                                    fromTimestamp = com.spectra.logger.core.utils.SpectraTime.daysAgo(1),
+                                    fromTimestamp =
+                                        com.spectra.logger.core.utils.SpectraTime
+                                            .daysAgo(1),
                                     toTimestamp = null,
                                 )
                         },
@@ -273,7 +282,9 @@ fun NetworkFilterSheet(
                         onClick = {
                             localFilter =
                                 localFilter.copy(
-                                    fromTimestamp = com.spectra.logger.core.utils.SpectraTime.daysAgo(7),
+                                    fromTimestamp =
+                                        com.spectra.logger.core.utils.SpectraTime
+                                            .daysAgo(7),
                                     toTimestamp = null,
                                 )
                         },

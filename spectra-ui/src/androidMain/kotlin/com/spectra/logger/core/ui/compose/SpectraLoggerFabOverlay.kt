@@ -135,8 +135,7 @@ private fun DraggableLoggerFab(modifier: Modifier = Modifier) {
                     .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
                     .onGloballyPositioned { coordinates ->
                         fabSize = coordinates.size
-                    }
-                    .pointerInput(Unit) {
+                    }.pointerInput(Unit) {
                         detectDragGestures { change, dragAmount ->
                             change.consume()
 

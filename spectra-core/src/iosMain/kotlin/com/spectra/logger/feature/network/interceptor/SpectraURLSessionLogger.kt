@@ -109,7 +109,9 @@ object SpectraURLSessionLogger {
         val entry =
             NetworkLogEntry(
                 id = IdGenerator.generate(),
-                timestamp = com.spectra.logger.core.utils.SpectraTime.now(),
+                timestamp =
+                    com.spectra.logger.core.utils.SpectraTime
+                        .now(),
                 url = url,
                 method = method,
                 requestHeaders = emptyMap(),
@@ -144,10 +146,16 @@ object SpectraURLSessionLogger {
         completionHandler: (NSData?, NSURLResponse?, platform.Foundation.NSError?) -> Unit,
     ): NSURLSessionDataTask {
         val url = request.URL?.absoluteString ?: ""
-        val startTime = com.spectra.logger.core.utils.SpectraTime.now().toEpochMilliseconds()
+        val startTime =
+            com.spectra.logger.core.utils.SpectraTime
+                .now()
+                .toEpochMilliseconds()
 
         return session.dataTaskWithRequest(request) { data, response, error ->
-            val duration = com.spectra.logger.core.utils.SpectraTime.now().toEpochMilliseconds() - startTime
+            val duration =
+                com.spectra.logger.core.utils.SpectraTime
+                    .now()
+                    .toEpochMilliseconds() - startTime
             logRequest(url, "GET", response, data, error, duration, storage)
             completionHandler(data, response, error)
         }

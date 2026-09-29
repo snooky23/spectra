@@ -57,24 +57,28 @@ jobs:
         id: package
         run: |
           VERSION="${{ steps.get_version.outputs.VERSION }}"
-          FRAMEWORK_NAME="SpectraLogger"
-          XCFRAMEWORK_PATH="build/xcframework/$FRAMEWORK_NAME.xcframework"
-          ZIP_NAME="$FRAMEWORK_NAME.xcframework.zip"
-
-          # Create zip
+          
           cd build/xcframework
-          zip -r "$ZIP_NAME" "$FRAMEWORK_NAME.xcframework"
+          zip -r "Spectra.xcframework.zip" "Spectra.xcframework"
+          zip -r "SpectraLogger.xcframework.zip" "SpectraLogger.xcframework"
+          zip -r "SpectraLoggerUI.xcframework.zip" "SpectraLoggerUI.xcframework"
           cd ../..
 
-          # Calculate checksum
-          CHECKSUM=$(swift package compute-checksum "build/xcframework/$ZIP_NAME")
-          echo "CHECKSUM=$CHECKSUM" >> $GITHUB_OUTPUT
-          echo "ZIP_PATH=build/xcframework/$ZIP_NAME" >> $GITHUB_OUTPUT
-          echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_OUTPUT
+          UMBRELLA_CHECKSUM=$(swift package compute-checksum "build/xcframework/Spectra.xcframework.zip")
+          CORE_CHECKSUM=$(swift package compute-checksum "build/xcframework/SpectraLogger.xcframework.zip")
+          UI_CHECKSUM=$(swift package compute-checksum "build/xcframework/SpectraLoggerUI.xcframework.zip")
 
-          echo "✅ Package created"
-          echo "📦 File: $ZIP_NAME"
-          echo "🔐 Checksum: $CHECKSUM"
+          echo "UMBRELLA_CHECKSUM=$UMBRELLA_CHECKSUM" >> $GITHUB_OUTPUT
+          echo "CORE_CHECKSUM=$CORE_CHECKSUM" >> $GITHUB_OUTPUT
+          echo "UI_CHECKSUM=$UI_CHECKSUM" >> $GITHUB_OUTPUT
+          echo "CHECKSUM=$UMBRELLA_CHECKSUM" >> $GITHUB_OUTPUT
+          echo "ZIP_PATH=build/xcframework/Spectra.xcframework.zip" >> $GITHUB_OUTPUT
+          echo "ZIP_NAME=Spectra.xcframework.zip" >> $GITHUB_OUTPUT
+
+          echo "✅ Packages created"
+          echo "🔐 Spectra Checksum: $UMBRELLA_CHECKSUM"
+          echo "🔐 SpectraLogger Checksum: $CORE_CHECKSUM"
+          echo "🔐 SpectraLoggerUI Checksum: $UI_CHECKSUM"
 
       - name: Generate release notes
         id: release_notes
@@ -243,7 +247,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            ${{ steps.package.outputs.ZIP_PATH }}
+            build/xcframework/Spectra.xcframework.zip
+            build/xcframework/SpectraLogger.xcframework.zip
+            build/xcframework/SpectraLoggerUI.xcframework.zip
           body_path: ${{ steps.release_notes.outputs.RELEASE_NOTES_PATH }}
           draft: false
           prerelease: false
@@ -254,32 +260,37 @@ jobs:
       - name: Print release summary
         run: |
           VERSION="${{ steps.get_version.outputs.VERSION }}"
-          CHECKSUM="${{ steps.package.outputs.CHECKSUM }}"
-          ZIP_NAME="${{ steps.package.outputs.ZIP_NAME }}"
+          UMBRELLA_CHECKSUM="${{ steps.package.outputs.UMBRELLA_CHECKSUM }}"
+          CORE_CHECKSUM="${{ steps.package.outputs.CORE_CHECKSUM }}"
+          UI_CHECKSUM="${{ steps.package.outputs.UI_CHECKSUM }}"
 
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "✅ Release created successfully!"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "📦 Version: $VERSION"
-          echo "📁 File: $ZIP_NAME"
-          echo "🔐 Checksum: $CHECKSUM"
+          echo "🔐 Spectra Checksum: $UMBRELLA_CHECKSUM"
+          echo "🔐 SpectraLogger Checksum: $CORE_CHECKSUM"
+          echo "🔐 SpectraLoggerUI Checksum: $UI_CHECKSUM"
           echo "🔗 Release URL: https://github.com/${{ github.repository }}/releases/tag/v$VERSION"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
       - name: Update Package.swift with new checksum
         run: |
           VERSION="${{ steps.get_version.outputs.VERSION }}"
-          CHECKSUM="${{ steps.package.outputs.CHECKSUM }}"
-          REPO="${{ github.repository }}"
-          NEW_URL="https://github.com/${REPO}/releases/download/v${VERSION}/SpectraLogger.xcframework.zip"
+          UMBRELLA_CHECKSUM="${{ steps.package.outputs.UMBRELLA_CHECKSUM }}"
+          CORE_CHECKSUM="${{ steps.package.outputs.CORE_CHECKSUM }}"
+          UI_CHECKSUM="${{ steps.package.outputs.UI_CHECKSUM }}"
 
-          # Update URL and checksum in Package.swift
-          sed -i '' "s|url: \"https://github.com/.*/releases/download/.*/SpectraLogger.xcframework.zip\"|url: \"${NEW_URL}\"|g" Package.swift
-          sed -i '' "s|checksum: \".*\"|checksum: \"${CHECKSUM}\"|g" Package.swift
+          # Update Umbrella target
+          perl -i -pe "s|name: \"Spectra\",\s*url: \"https://github.com/snooky23/spectra/releases/download/v.*/Spectra.xcframework.zip\",\s*checksum: \".*\"|name: \"Spectra\", url: \"https://github.com/snooky23/spectra/releases/download/v${VERSION}/Spectra.xcframework.zip\", checksum: \"${UMBRELLA_CHECKSUM}\"|g" Package.swift
 
-          echo "✅ Package.swift updated"
-          echo "  URL: $NEW_URL"
-          echo "  Checksum: $CHECKSUM"
+          # Update Core target
+          perl -i -pe "s|name: \"SpectraLogger\",\s*url: \"https://github.com/snooky23/spectra/releases/download/v.*/SpectraLogger.xcframework.zip\",\s*checksum: \".*\"|name: \"SpectraLogger\", url: \"https://github.com/snooky23/spectra/releases/download/v${VERSION}/SpectraLogger.xcframework.zip\", checksum: \"${CORE_CHECKSUM}\"|g" Package.swift
+
+          # Update UI target
+          perl -i -pe "s|name: \"SpectraLoggerUI\",\s*url: \"https://github.com/snooky23/spectra/releases/download/v.*/SpectraLoggerUI.xcframework.zip\",\s*checksum: \".*\"|name: \"SpectraLoggerUI\", url: \"https://github.com/snooky23/spectra/releases/download/v${VERSION}/SpectraLoggerUI.xcframework.zip\", checksum: \"${UI_CHECKSUM}\"|g" Package.swift
+
+          echo "✅ Package.swift updated with release checksums"
 
       - name: Update README.md with new version
         run: |
@@ -316,7 +327,7 @@ jobs:
 
       # Publish to Maven Central (Android only - iOS uses XCFramework via SPM)
       - name: Publish to Maven Central
-        run: ./gradlew :spectra-core:publishAllPublicationsToMavenCentralRepository
+        run: ./gradlew :spectra-core:publishAllPublicationsToMavenCentralRepository :spectra-ui:publishAllPublicationsToMavenCentralRepository :spectra-umbrella:publishAllPublicationsToMavenCentralRepository
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OSSRH_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.OSSRH_PASSWORD }}

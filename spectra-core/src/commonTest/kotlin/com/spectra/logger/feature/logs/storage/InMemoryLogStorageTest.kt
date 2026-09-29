@@ -18,7 +18,9 @@ class InMemoryLogStorageTest {
         tag: String = "Test",
     ) = LogEntry(
         id = id,
-        timestamp = com.spectra.logger.core.utils.SpectraTime.now(),
+        timestamp =
+            com.spectra.logger.core.utils.SpectraTime
+                .now(),
         level = level,
         tag = tag,
         message = "Message $id",

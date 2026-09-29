@@ -12,12 +12,12 @@ import com.spectra.logger.feature.network.model.NetworkLogEntry
 import com.spectra.logger.feature.network.storage.InMemoryNetworkLogStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
-import kotlin.time.Instant
 import okio.fakefilesystem.FakeFileSystem
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.Instant
 
 class RetentionPolicyTest {
     @Test

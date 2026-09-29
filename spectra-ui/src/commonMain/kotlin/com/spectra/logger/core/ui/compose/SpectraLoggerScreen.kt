@@ -39,7 +39,8 @@ fun SpectraLoggerScreen(
     settingsViewModel: SettingsViewModel = viewModel { SettingsViewModel() },
     streamViewModel: com.spectra.logger.feature.streaming.ui.RemoteStreamViewModel =
         viewModel {
-            com.spectra.logger.feature.streaming.ui.RemoteStreamViewModel()
+            com.spectra.logger.feature.streaming.ui
+                .RemoteStreamViewModel()
         },
     crashViewModel: CrashViewModel = viewModel { CrashViewModel() },
 ) {

@@ -10,7 +10,9 @@ class LogFilterTest {
     private val sampleEntry =
         LogEntry(
             id = "test-1",
-            timestamp = com.spectra.logger.core.utils.SpectraTime.now(),
+            timestamp =
+                com.spectra.logger.core.utils.SpectraTime
+                    .now(),
             level = LogLevel.INFO,
             tag = "TestTag",
             message = "Test message",
@@ -59,7 +61,9 @@ class LogFilterTest {
 
     @Test
     fun testTimestampFilter() {
-        val now = com.spectra.logger.core.utils.SpectraTime.now()
+        val now =
+            com.spectra.logger.core.utils.SpectraTime
+                .now()
         val entry = sampleEntry.copy(timestamp = now)
 
         val beforeFilter = LogFilter(fromTimestamp = now.toEpochMilliseconds() - 1000)

@@ -203,14 +203,13 @@ class NetworkFilterEngineRepositoryImpl(
         }
     }
 
-    private fun getLatencyCategory(duration: Long): String {
-        return when {
+    private fun getLatencyCategory(duration: Long): String =
+        when {
             duration < 100 -> "< 100ms"
             duration in 100..499 -> "100-500ms"
             duration in 500..1999 -> "500ms-2s"
             else -> "> 2s"
         }
-    }
 
     private fun getBucketTimestamp(timestamp: Long): Long {
         // Group by 1-minute intervals (60,000 ms)

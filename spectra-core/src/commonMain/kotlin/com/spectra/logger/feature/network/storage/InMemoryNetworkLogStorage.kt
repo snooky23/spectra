@@ -74,13 +74,13 @@ class InMemoryNetworkLogStorage(
         limit: Int?,
     ): List<NetworkLogEntry> =
         synchronized(lock) {
-            buffer.asReversed()
+            buffer
+                .asReversed()
                 .asSequence()
                 .filter { filter.matches(it) }
                 .let { sequence ->
                     if (limit != null) sequence.take(limit) else sequence
-                }
-                .toList()
+                }.toList()
         }
 
     override fun observe(filter: NetworkLogFilter): Flow<NetworkLogEntry> = logFlow.filter { filter.matches(it) }
@@ -96,7 +96,10 @@ class InMemoryNetworkLogStorage(
 
     override suspend fun prune(policy: com.spectra.logger.core.storage.RetentionPolicy): Int {
         if (!policy.hasLimits) return 0
-        val now = com.spectra.logger.core.utils.SpectraTime.now().toEpochMilliseconds()
+        val now =
+            com.spectra.logger.core.utils.SpectraTime
+                .now()
+                .toEpochMilliseconds()
         var prunedCount = 0
 
         synchronized(lock) {

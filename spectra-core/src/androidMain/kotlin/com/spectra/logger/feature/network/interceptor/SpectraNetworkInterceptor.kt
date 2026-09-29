@@ -48,7 +48,10 @@ class SpectraNetworkInterceptor(
             return chain.proceed(request)
         }
 
-        val startTime = com.spectra.logger.core.utils.SpectraTime.now().toEpochMilliseconds()
+        val startTime =
+            com.spectra.logger.core.utils.SpectraTime
+                .now()
+                .toEpochMilliseconds()
 
         // Capture request details
         val requestHeaders =
@@ -75,7 +78,10 @@ class SpectraNetworkInterceptor(
             error = e.message ?: "Unknown error"
         }
 
-        val duration = com.spectra.logger.core.utils.SpectraTime.now().toEpochMilliseconds() - startTime
+        val duration =
+            com.spectra.logger.core.utils.SpectraTime
+                .now()
+                .toEpochMilliseconds() - startTime
 
         // Capture response details
         val responseCode = response?.code
@@ -96,7 +102,9 @@ class SpectraNetworkInterceptor(
         val entry =
             NetworkLogEntry(
                 id = IdGenerator.generate(),
-                timestamp = com.spectra.logger.core.utils.SpectraTime.now(),
+                timestamp =
+                    com.spectra.logger.core.utils.SpectraTime
+                        .now(),
                 url = request.url.toString(),
                 method = request.method,
                 requestHeaders = requestHeaders,

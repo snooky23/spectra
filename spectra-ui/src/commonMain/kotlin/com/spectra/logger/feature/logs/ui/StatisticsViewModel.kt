@@ -53,8 +53,7 @@ class StatisticsViewModel(
                     // Since FilterEngineRepository computes instantly, we mark as loaded when stats emit
                     isLoading = false,
                 )
-            }
-            .stateIn(
+            }.stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
                 initialValue = StatisticsUiState(isLoading = true),

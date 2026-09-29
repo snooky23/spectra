@@ -46,9 +46,9 @@ import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogLevel
 import com.spectra.logger.feature.logs.statistics.DashboardStatistics
 import kotlinx.collections.immutable.toImmutableList
-import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Instant
 
 @Composable
 fun DashboardScreen(
@@ -76,23 +76,24 @@ fun DashboardContent(
 ) {
     val barChartData =
         remember(statistics.timeline) {
-            statistics.timeline.map { bucket ->
-                val totalCount = bucket.counts.values.sum()
-                // Find most severe level
-                val mostSevereLevel = bucket.counts.keys.maxByOrNull { it.ordinal } ?: LogLevel.INFO
-                val color = colorForLogLevel(mostSevereLevel)
+            statistics.timeline
+                .map { bucket ->
+                    val totalCount = bucket.counts.values.sum()
+                    // Find most severe level
+                    val mostSevereLevel = bucket.counts.keys.maxByOrNull { it.ordinal } ?: LogLevel.INFO
+                    val color = colorForLogLevel(mostSevereLevel)
 
-                val instant = Instant.fromEpochMilliseconds(bucket.timestamp)
-                val time = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-                val timeString = "${time.hour.toString().padStart(2, '0')}:${time.minute.toString().padStart(2, '0')}"
+                    val instant = Instant.fromEpochMilliseconds(bucket.timestamp)
+                    val time = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+                    val timeString = "${time.hour.toString().padStart(2, '0')}:${time.minute.toString().padStart(2, '0')}"
 
-                BarChartData(
-                    id = bucket.timestamp,
-                    value = totalCount.toFloat(),
-                    color = color,
-                    label = timeString,
-                )
-            }.toImmutableList()
+                    BarChartData(
+                        id = bucket.timestamp,
+                        value = totalCount.toFloat(),
+                        color = color,
+                        label = timeString,
+                    )
+                }.toImmutableList()
         }
 
     val maxValue =
@@ -155,13 +156,20 @@ fun DashboardContent(
             ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(imageVector = androidx.compose.material.icons.Icons.AutoMirrored.Filled.Label, contentDescription = null, modifier = Modifier.size(24.dp))
+                        Icon(
+                            imageVector = androidx.compose.material.icons.Icons.AutoMirrored.Filled.Label,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                        )
                         Spacer(modifier = Modifier.size(8.dp))
                         Text(text = "Top Subsystems", style = MaterialTheme.typography.titleMedium)
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Column(modifier = Modifier.fillMaxWidth().height(250.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        val topTags = statistics.tagCounts.entries.sortedByDescending { it.value }.take(5)
+                        val topTags =
+                            statistics.tagCounts.entries
+                                .sortedByDescending { it.value }
+                                .take(5)
                         val maxCount = topTags.maxOfOrNull { it.value }?.toFloat() ?: 1f
                         if (topTags.isEmpty()) {
                             Text(text = "No tag data available", style = MaterialTheme.typography.bodyMedium)

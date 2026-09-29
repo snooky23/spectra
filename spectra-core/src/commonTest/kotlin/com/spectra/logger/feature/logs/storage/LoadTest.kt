@@ -25,8 +25,8 @@ class LoadTest {
     /**
      * Creates a dummy log entry for testing.
      */
-    private fun createDummyEntry(index: Int): LogEntry {
-        return LogEntry(
+    private fun createDummyEntry(index: Int): LogEntry =
+        LogEntry(
             id = IdGenerator.generate(),
             timestamp = SpectraTime.now(),
             level = LogLevel.INFO,
@@ -37,7 +37,6 @@ class LoadTest {
             source = "App",
             sourceType = SourceType.APP,
         )
-    }
 
     /**
      * Spawns 100 coroutines to concurrently write a total of 10,000 logs.

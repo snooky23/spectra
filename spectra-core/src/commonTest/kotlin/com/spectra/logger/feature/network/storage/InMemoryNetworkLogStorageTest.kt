@@ -18,7 +18,9 @@ class InMemoryNetworkLogStorageTest {
         responseCode: Int = 200,
     ) = NetworkLogEntry(
         id = id,
-        timestamp = com.spectra.logger.core.utils.SpectraTime.now(),
+        timestamp =
+            com.spectra.logger.core.utils.SpectraTime
+                .now(),
         url = url,
         method = method,
         responseCode = responseCode,

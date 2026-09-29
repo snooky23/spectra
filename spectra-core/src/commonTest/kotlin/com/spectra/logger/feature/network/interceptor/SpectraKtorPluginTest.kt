@@ -160,13 +160,14 @@ class SpectraKtorPluginTest {
 
             val iterations = 50
             val times =
-                (1..iterations).map {
-                    async {
-                        kotlin.time.measureTime {
-                            client.get("https://api.spectra.com/test")
+                (1..iterations)
+                    .map {
+                        async {
+                            kotlin.time.measureTime {
+                                client.get("https://api.spectra.com/test")
+                            }
                         }
-                    }
-                }.awaitAll()
+                    }.awaitAll()
 
             val totalNs = times.sumOf { it.inWholeNanoseconds }
             val averageTimeMs = totalNs.toDouble() / iterations / 1_000_000.0

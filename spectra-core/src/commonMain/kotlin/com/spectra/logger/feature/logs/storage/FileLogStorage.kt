@@ -235,8 +235,7 @@ class FileLogStorage(
                                 } catch (e: Exception) {
                                     null
                                 }
-                            }
-                            .reversed()
+                            }.reversed()
 
                     allLogs.addAll(logs)
                 }
@@ -264,7 +263,9 @@ class FileLogStorage(
         return writeMutex.withLock {
             withContext(backgroundDispatcher) {
                 val timeStr =
-                    com.spectra.logger.core.utils.SpectraTime.now().toString()
+                    com.spectra.logger.core.utils.SpectraTime
+                        .now()
+                        .toString()
                         .replace(":", "-")
                         .replace(".", "-")
                         .replace("T", "_")
@@ -310,9 +311,7 @@ class FileLogStorage(
         }
     }
 
-    override suspend fun count(): Int {
-        return countAtomic.value
-    }
+    override suspend fun count(): Int = countAtomic.value
 
     override suspend fun prune(policy: RetentionPolicy): Int {
         if (!policy.hasLimits) return 0
@@ -361,9 +360,10 @@ class FileLogStorage(
         try {
             val files = fileSystem.listFiles(".").filter { it.startsWith("logs_") && it.endsWith(".jsonl") }
             val sortedFiles =
-                files.sortedBy { fileName ->
-                    fileName.removePrefix("logs_").removeSuffix(".jsonl").toIntOrNull() ?: 0
-                }.toMutableList()
+                files
+                    .sortedBy { fileName ->
+                        fileName.removePrefix("logs_").removeSuffix(".jsonl").toIntOrNull() ?: 0
+                    }.toMutableList()
 
             // 1. Prune by maxAgeMs (TTL): evict files whose newest entry is older than cutoff
             val maxAge = policy.maxAgeMs

@@ -36,7 +36,9 @@ fun <T> AdaptiveNavigator(
     emptyDetailContent: @Composable (() -> Unit)? = null,
 ) {
     var selectedItem by remember { mutableStateOf<T?>(null) }
-    val screenConfig = com.spectra.logger.core.ui.theme.rememberScreenConfig()
+    val screenConfig =
+        com.spectra.logger.core.ui.theme
+            .rememberScreenConfig()
 
     // Branch navigation based on layout context
     if (screenConfig.isDualPane) {

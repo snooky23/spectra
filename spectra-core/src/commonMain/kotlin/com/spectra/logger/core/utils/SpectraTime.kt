@@ -1,12 +1,12 @@
 package com.spectra.logger.core.utils
 
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 import kotlin.experimental.ExperimentalObjCRefinement
 import kotlin.native.HiddenFromObjC
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 /**
  * Common time utility to avoid resolution issues in dependent modules.
@@ -29,4 +29,3 @@ object SpectraTime {
      */
     fun daysAgo(count: Int): Instant = Clock.System.now().minus(count.days)
 }
-

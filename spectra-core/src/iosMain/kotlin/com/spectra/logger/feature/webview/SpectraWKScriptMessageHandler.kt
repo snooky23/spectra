@@ -68,7 +68,8 @@ class SpectraWKScriptMessageHandler(
     private val logger: (LogLevel, String, String, Throwable?, Map<String, String>?) -> Unit = { level, tag, msg, thr, meta ->
         SpectraLogger.log(level = level, tag = tag, message = msg, throwable = thr, metadata = meta)
     },
-) : NSObject(), WKScriptMessageHandlerProtocol {
+) : NSObject(),
+    WKScriptMessageHandlerProtocol {
     override fun userContentController(
         userContentController: WKUserContentController,
         didReceiveScriptMessage: WKScriptMessage,

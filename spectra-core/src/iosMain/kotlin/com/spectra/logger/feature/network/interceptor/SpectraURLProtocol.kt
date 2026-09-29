@@ -55,7 +55,14 @@ object SpectraIOSInterceptorConfig {
     internal val currentMaxBodySize: Long
         get() {
             val max = maxBodySize
-            return (if (max >= 0L) max else SpectraLogger.configuration.performanceConfig.maxBodySize.toLong()).coerceAtLeast(0L)
+            return (
+                if (max >= 0L) {
+                    max
+                } else {
+                    SpectraLogger.configuration.performanceConfig.maxBodySize
+                        .toLong()
+                }
+            ).coerceAtLeast(0L)
         }
 
     internal val currentIgnoreTokens: List<String>
@@ -75,7 +82,8 @@ class SpectraURLProtocol(
     request: NSURLRequest,
     cachedResponse: NSCachedURLResponse?,
     client: NSURLProtocolClientProtocol?,
-) : NSURLProtocol(request, cachedResponse, client), NSURLSessionDataDelegateProtocol {
+) : NSURLProtocol(request, cachedResponse, client),
+    NSURLSessionDataDelegateProtocol {
     private var dataTask: NSURLSessionDataTask? = null
     private var urlSession: NSURLSession? = null
     private var responseBodyData: NSMutableData = NSMutableData()
@@ -102,9 +110,7 @@ class SpectraURLProtocol(
             return !shouldIgnore
         }
 
-        override fun canonicalRequestForRequest(request: NSURLRequest): NSURLRequest {
-            return request
-        }
+        override fun canonicalRequestForRequest(request: NSURLRequest): NSURLRequest = request
     }
 
     override fun startLoading() {

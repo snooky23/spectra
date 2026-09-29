@@ -60,11 +60,12 @@ package_framework() {
     echo "✅ $name Checksum: $checksum"
 }
 
+package_framework "Spectra"
 package_framework "SpectraLogger"
 package_framework "SpectraLoggerUI"
 
-# Create a combined checksum file for CI
-cat "$RELEASES_DIR/SpectraLogger-checksum.txt" > "$RELEASES_DIR/checksum.txt"
+# Create a combined checksum file for CI (umbrella takes priority)
+cat "$RELEASES_DIR/Spectra-checksum.txt" > "$RELEASES_DIR/checksum.txt"
 
 echo ""
 echo "✅ Release build complete!"

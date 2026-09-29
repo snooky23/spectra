@@ -81,16 +81,27 @@ if [[ "${SPECTRA_LOCAL_DEV:-}" == "1" && -n "${PLATFORM_NAME:-}" && -n "${ARCHS:
 fi
 
 if [ "$BUILD_TYPE" == "Release" ]; then
-    ./gradlew :spectra-core:assembleSpectraLoggerReleaseXCFramework :spectra-ui:assembleSpectraLoggerUIReleaseXCFramework :spectra-umbrella:assembleSpectraReleaseXCFramework $ARCH_ARGS
+    echo "🔨 Building SpectraLogger (Core) Release XCFramework..."
+    ./gradlew :spectra-core:assembleSpectraLoggerReleaseXCFramework $ARCH_ARGS --no-parallel
+    echo "🔨 Building SpectraLoggerUI (UI) Release XCFramework..."
+    ./gradlew :spectra-ui:assembleSpectraLoggerUIReleaseXCFramework $ARCH_ARGS --no-parallel
+    echo "🔨 Building Spectra (Umbrella) Release XCFramework..."
+    ./gradlew :spectra-umbrella:assembleSpectraReleaseXCFramework $ARCH_ARGS --no-parallel
 else
-    ./gradlew :spectra-core:assembleSpectraLoggerDebugXCFramework :spectra-ui:assembleSpectraLoggerUIDebugXCFramework :spectra-umbrella:assembleSpectraDebugXCFramework $ARCH_ARGS
+    echo "🔨 Building SpectraLogger (Core) Debug XCFramework..."
+    ./gradlew :spectra-core:assembleSpectraLoggerDebugXCFramework $ARCH_ARGS --no-parallel
+    echo "🔨 Building SpectraLoggerUI (UI) Debug XCFramework..."
+    ./gradlew :spectra-ui:assembleSpectraLoggerUIDebugXCFramework $ARCH_ARGS --no-parallel
+    echo "🔨 Building Spectra (Umbrella) Debug XCFramework..."
+    ./gradlew :spectra-umbrella:assembleSpectraDebugXCFramework $ARCH_ARGS --no-parallel
 fi
 
-# Ensure output directory exists for consumers (e.g. Package.swift)
+# Ensure output directories exist for consumers (Package.swift and Xcode project)
 XCFRAMEWORK_DIR="$PROJECT_ROOT/SpectraFrameworks"
-mkdir -p "$XCFRAMEWORK_DIR"
+BUILD_XCFRAMEWORK_DIR="$PROJECT_ROOT/build/xcframework"
+mkdir -p "$XCFRAMEWORK_DIR" "$BUILD_XCFRAMEWORK_DIR"
 
-# Copy the generated XCFrameworks to the centralized location
+# Copy the generated XCFrameworks to the centralized locations
 # The official KMP tasks put them in [module]/build/XCFrameworks/[type]/[name].xcframework
 
 copy_xcframework() {
@@ -99,11 +110,13 @@ copy_xcframework() {
     local build_type_lower=$(echo "$BUILD_TYPE" | tr '[:upper:]' '[:lower:]')
     local src="$PROJECT_ROOT/$module/build/XCFrameworks/$build_type_lower/$name.xcframework"
     local dest="$XCFRAMEWORK_DIR/$name.xcframework"
+    local dest_build="$BUILD_XCFRAMEWORK_DIR/$name.xcframework"
     
     if [ -d "$src" ]; then
-        rm -rf "$dest"
+        rm -rf "$dest" "$dest_build"
         cp -R "$src" "$dest"
-        echo "✅ $name.xcframework copied to $dest"
+        cp -R "$src" "$dest_build"
+        echo "✅ $name.xcframework copied to $dest and $dest_build"
     else
         echo "❌ Error: $name.xcframework not found at $src"
         exit 1

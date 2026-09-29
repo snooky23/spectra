@@ -41,7 +41,8 @@ class FileCrashStorage(
             try {
                 if (fs.exists(dirPath)) {
                     val files =
-                        fs.list(dirPath)
+                        fs
+                            .list(dirPath)
                             .filter { it.name.startsWith("crash_") && it.name.endsWith(".json") }
                             .sortedByDescending { it.name }
 

@@ -88,13 +88,21 @@ class EventsViewModelTest {
             testDispatcher.scheduler.advanceUntilIdle()
 
             assertEquals(1, viewModel.uiState.value.events.size)
-            assertEquals("isolated_event", viewModel.uiState.value.events.first().name)
+            assertEquals(
+                "isolated_event",
+                viewModel.uiState.value.events
+                    .first()
+                    .name,
+            )
 
             // Verify clear through injected storage
             viewModel.clearEvents()
             testDispatcher.scheduler.advanceUntilIdle()
 
-            assertTrue(viewModel.uiState.value.events.isEmpty())
+            assertTrue(
+                viewModel.uiState.value.events
+                    .isEmpty(),
+            )
             assertEquals(0, isolatedStorage.count())
         }
 
@@ -108,6 +116,9 @@ class EventsViewModelTest {
             assertTrue(state.selectedEventTypes.contains(EventType.SCREEN_VIEW))
 
             viewModel.toggleEventType(EventType.SCREEN_VIEW)
-            assertTrue(viewModel.uiState.value.selectedEventTypes.isEmpty())
+            assertTrue(
+                viewModel.uiState.value.selectedEventTypes
+                    .isEmpty(),
+            )
         }
 }

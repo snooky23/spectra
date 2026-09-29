@@ -98,7 +98,9 @@ fun LevelPieChart(
         return
     }
     val total = remember(levelCounts) { levelCounts.values.sum().coerceAtLeast(1) }
-    val textMeasurer = androidx.compose.ui.text.rememberTextMeasurer()
+    val textMeasurer =
+        androidx.compose.ui.text
+            .rememberTextMeasurer()
 
     BoxWithConstraints(
         modifier = baseModifier,

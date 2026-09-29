@@ -174,12 +174,11 @@ fun StatusPieChart(
     }
 }
 
-fun colorForStatus(status: String): Color {
-    return when (status) {
+fun colorForStatus(status: String): Color =
+    when (status) {
         "2xx" -> SpectraDesignTokens.InfoGreen
         "3xx" -> SpectraDesignTokens.DebugBlue
         "4xx" -> SpectraDesignTokens.WarningOrange
         "5xx" -> SpectraDesignTokens.ErrorRed
         else -> SpectraDesignTokens.FatalPurple
     }
-}

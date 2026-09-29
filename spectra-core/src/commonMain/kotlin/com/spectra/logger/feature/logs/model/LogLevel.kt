@@ -9,7 +9,9 @@ import kotlinx.serialization.Serializable
  * Ordered from least to most severe.
  */
 @Serializable
-enum class LogLevel(val priority: Int) {
+enum class LogLevel(
+    val priority: Int,
+) {
     VERBOSE(0),
     DEBUG(1),
     INFO(2),

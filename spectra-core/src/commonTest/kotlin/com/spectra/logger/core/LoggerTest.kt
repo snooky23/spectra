@@ -26,9 +26,7 @@ class LoggerTest {
         storage: LogStorage,
         minLevel: LogLevel = LogLevel.VERBOSE,
         scope: CoroutineScope,
-    ): Logger {
-        return Logger(storage = storage, minLevel = minLevel, scope = scope)
-    }
+    ): Logger = Logger(storage = storage, minLevel = minLevel, scope = scope)
 
     @Test
     fun testBasicLogging() =

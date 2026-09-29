@@ -3,8 +3,8 @@ package com.spectra.logger.feature.network.model
 import com.spectra.logger.core.model.*
 import com.spectra.logger.core.model.SourceType
 import com.spectra.logger.core.utils.*
-import kotlin.time.Instant
 import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 
 /**
  * Represents a network request/response log entry.

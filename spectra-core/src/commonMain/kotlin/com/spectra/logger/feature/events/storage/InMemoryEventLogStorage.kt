@@ -71,13 +71,13 @@ class InMemoryEventLogStorage(
         limit: Int?,
     ): List<EventLogEntry> =
         synchronized(lock) {
-            buffer.asReversed()
+            buffer
+                .asReversed()
                 .asSequence()
                 .filter { filter.matches(it) }
                 .let { sequence ->
                     if (limit != null) sequence.take(limit) else sequence
-                }
-                .toList()
+                }.toList()
         }
 
     override fun observe(filter: EventFilter): Flow<EventLogEntry> = eventFlow.filter { filter.matches(it) }
@@ -93,7 +93,10 @@ class InMemoryEventLogStorage(
 
     override suspend fun prune(policy: com.spectra.logger.core.storage.RetentionPolicy): Int {
         if (!policy.hasLimits) return 0
-        val now = com.spectra.logger.core.utils.SpectraTime.now().toEpochMilliseconds()
+        val now =
+            com.spectra.logger.core.utils.SpectraTime
+                .now()
+                .toEpochMilliseconds()
         var prunedCount = 0
 
         synchronized(lock) {

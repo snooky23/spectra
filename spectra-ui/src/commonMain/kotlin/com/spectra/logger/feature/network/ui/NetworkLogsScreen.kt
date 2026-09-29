@@ -86,7 +86,8 @@ private fun NetworkLogsListContent(
     onExportHar: () -> Unit,
     onExportJson: () -> Unit,
 ) {
-    var isDashboardMode by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
+    var isDashboardMode by androidx.compose.runtime.saveable
+        .rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -193,7 +194,9 @@ private fun NetworkLogsListContent(
                     } else {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
-                            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = horizontalPadding),
+                            contentPadding =
+                                androidx.compose.foundation.layout
+                                    .PaddingValues(horizontal = horizontalPadding),
                         ) {
                             items(uiState.filteredLogs, key = { it.id }) { log ->
                                 NetworkLogRow(log = log, onClick = { onLogClick(log) })

@@ -10,12 +10,12 @@ import com.spectra.logger.feature.network.model.NetworkLogEntry
 import com.spectra.logger.feature.network.model.NetworkLogFilter
 import com.spectra.logger.feature.network.storage.NetworkLogStorage
 import com.spectra.logger.feature.streaming.model.DeviceInfo
-import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlin.time.Instant
 
 /**
  * Supported export formats for Spectra telemetry.
@@ -530,7 +530,12 @@ object LogExporter {
     }
 
     private fun formatHarHeaders(log: NetworkLogEntry): Triple<String, String, String> {
-        val queryParts = log.url.substringAfter('?', "").takeIf { it.isNotEmpty() }?.split('&').orEmpty()
+        val queryParts =
+            log.url
+                .substringAfter('?', "")
+                .takeIf { it.isNotEmpty() }
+                ?.split('&')
+                .orEmpty()
         val queryJson =
             if (queryParts.isEmpty()) {
                 "[]"

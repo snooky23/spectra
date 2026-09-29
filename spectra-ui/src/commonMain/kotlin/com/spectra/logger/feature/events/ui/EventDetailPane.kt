@@ -17,9 +17,9 @@ import com.spectra.logger.core.ui.theme.SpectraDesignTokens
 import com.spectra.logger.core.ui.util.PlatformUtils
 import com.spectra.logger.feature.events.model.EventLogEntry
 import com.spectra.logger.feature.events.model.EventType
-import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Instant
 
 /**
  * Detailed view of an event or screen view session.

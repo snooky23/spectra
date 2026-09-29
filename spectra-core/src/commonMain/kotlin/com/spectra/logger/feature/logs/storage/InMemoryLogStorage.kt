@@ -75,13 +75,13 @@ class InMemoryLogStorage(
         limit: Int?,
     ): List<LogEntry> =
         synchronized(lock) {
-            buffer.asReversed()
+            buffer
+                .asReversed()
                 .asSequence()
                 .filter { filter.matches(it) }
                 .let { sequence ->
                     if (limit != null) sequence.take(limit) else sequence
-                }
-                .toList()
+                }.toList()
         }
 
     override fun observe(filter: LogFilter): Flow<LogEntry> = logFlow.filter { filter.matches(it) }

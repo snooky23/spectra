@@ -22,9 +22,9 @@ import com.spectra.logger.core.ui.components.pickers.*
 import com.spectra.logger.core.ui.util.PlatformUtils
 import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogEntry
-import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Instant
 
 /**
  * Detailed view of a single log entry.

@@ -80,7 +80,9 @@ class PerformanceBenchmarks {
                 storage.add(
                     LogEntry(
                         id = "log-$index",
-                        timestamp = com.spectra.logger.core.utils.SpectraTime.now(),
+                        timestamp =
+                            com.spectra.logger.core.utils.SpectraTime
+                                .now(),
                         level = LogLevel.INFO,
                         tag = "Test",
                         message = "Message $index",
@@ -169,7 +171,9 @@ class PerformanceBenchmarks {
                 storage.add(
                     LogEntry(
                         id = "log-$index",
-                        timestamp = com.spectra.logger.core.utils.SpectraTime.now(),
+                        timestamp =
+                            com.spectra.logger.core.utils.SpectraTime
+                                .now(),
                         level = level,
                         tag = "Test",
                         message = "Message $index",

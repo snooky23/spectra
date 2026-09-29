@@ -12,7 +12,8 @@ class SpectraCrashHandler(
     private val breadcrumbRecorder: BreadcrumbRecorder,
     private val deviceInfoProvider: (() -> Map<String, String>)? = null,
     private val onCrashRecorded: ((CrashReport) -> Unit)? = null,
-) : Thread.UncaughtExceptionHandler, CrashInterceptor {
+) : Thread.UncaughtExceptionHandler,
+    CrashInterceptor {
     private val defaultHandlerAtomic = atomic<Thread.UncaughtExceptionHandler?>(null)
     private val isInstalledAtomic = atomic(false)
 

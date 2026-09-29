@@ -143,12 +143,18 @@ class SettingsViewModelTest {
             assertEquals(10, viewModel.uiState.value.networkLogCount)
             assertEquals(10, viewModel.uiState.value.eventLogCount)
 
-            viewModel.pruneLogs(com.spectra.logger.core.storage.RetentionPolicy(maxCount = 3))
+            viewModel.pruneLogs(
+                com.spectra.logger.core.storage
+                    .RetentionPolicy(maxCount = 3),
+            )
             advanceUntilIdle()
 
             assertEquals(3, viewModel.uiState.value.applicationLogCount)
             assertEquals(3, viewModel.uiState.value.networkLogCount)
             assertEquals(3, viewModel.uiState.value.eventLogCount)
-            assertTrue(viewModel.uiState.value.lastPruneSummary?.contains("Pruned 7 logs") == true)
+            assertTrue(
+                viewModel.uiState.value.lastPruneSummary
+                    ?.contains("Pruned 7 logs") == true,
+            )
         }
 }

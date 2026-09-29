@@ -49,8 +49,7 @@ class NetworkStatisticsViewModel(
                     statistics = stats,
                     isLoading = false,
                 )
-            }
-            .stateIn(
+            }.stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
                 initialValue = NetworkStatisticsUiState(isLoading = true),

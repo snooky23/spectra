@@ -19,12 +19,13 @@ import kotlin.test.assertTrue
  */
 class MemoryStressTest {
     private val largeString =
-        StringBuilder().apply {
-            repeat(100) { append("This is a very long text payload intended to consume memory rapidly. ") }
-        }.toString()
+        StringBuilder()
+            .apply {
+                repeat(100) { append("This is a very long text payload intended to consume memory rapidly. ") }
+            }.toString()
 
-    private fun createHeavyEntry(index: Int): LogEntry {
-        return LogEntry(
+    private fun createHeavyEntry(index: Int): LogEntry =
+        LogEntry(
             id = IdGenerator.generate(),
             timestamp = SpectraTime.now(),
             level = LogLevel.ERROR,
@@ -42,7 +43,6 @@ class MemoryStressTest {
             source = "App",
             sourceType = SourceType.APP,
         )
-    }
 
     /**
      * Floods the system with 50,000 huge log entries (15KB each).

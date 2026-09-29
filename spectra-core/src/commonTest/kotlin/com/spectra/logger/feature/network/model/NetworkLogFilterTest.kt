@@ -10,7 +10,9 @@ class NetworkLogFilterTest {
     private val sampleEntry =
         NetworkLogEntry(
             id = "test-1",
-            timestamp = com.spectra.logger.core.utils.SpectraTime.now(),
+            timestamp =
+                com.spectra.logger.core.utils.SpectraTime
+                    .now(),
             url = "https://api.example.com/users",
             method = "GET",
             responseCode = 200,

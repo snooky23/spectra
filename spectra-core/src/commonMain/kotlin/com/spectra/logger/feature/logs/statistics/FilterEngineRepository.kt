@@ -84,12 +84,14 @@ class FilterEngineRepositoryImpl(
         }
 
         val timelineBuckets =
-            timelineMap.entries.sortedBy { it.key }.map { (timestamp, counts) ->
-                TimelineBucket(
-                    timestamp = timestamp,
-                    counts = counts.toPersistentMap(),
-                )
-            }.toPersistentList()
+            timelineMap.entries
+                .sortedBy { it.key }
+                .map { (timestamp, counts) ->
+                    TimelineBucket(
+                        timestamp = timestamp,
+                        counts = counts.toPersistentMap(),
+                    )
+                }.toPersistentList()
 
         return DashboardStatistics(
             timeline = timelineBuckets,

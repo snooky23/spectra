@@ -12,8 +12,8 @@ import com.spectra.logger.core.ui.components.charts.*
 import com.spectra.logger.core.ui.components.common.*
 import com.spectra.logger.core.ui.components.effects.*
 import com.spectra.logger.core.utils.*
-import kotlin.time.Instant
 import kotlinx.datetime.*
+import kotlin.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +49,9 @@ fun DateTimePickerRow(
             rememberDatePickerState(
                 initialSelectedDateMillis =
                     timestamp?.toEpochMilliseconds()
-                        ?: com.spectra.logger.core.utils.SpectraTime.now().toEpochMilliseconds(),
+                        ?: com.spectra.logger.core.utils.SpectraTime
+                            .now()
+                            .toEpochMilliseconds(),
             )
 
         DatePickerDialog(
@@ -77,7 +79,9 @@ fun DateTimePickerRow(
 
     if (showTimePicker) {
         val defaultTz = TimeZone.currentSystemDefault()
-        val now = com.spectra.logger.core.utils.SpectraTime.now()
+        val now =
+            com.spectra.logger.core.utils.SpectraTime
+                .now()
         val currentDateTime = (timestamp ?: now).toLocalDateTime(defaultTz)
 
         val timePickerState =
@@ -96,8 +100,10 @@ fun DateTimePickerRow(
                     showTimePicker = false
                     selectedDateMillis?.let { dateMillis ->
                         val date =
-                            Instant.fromEpochMilliseconds(dateMillis)
-                                .toLocalDateTime(TimeZone.UTC).date
+                            Instant
+                                .fromEpochMilliseconds(dateMillis)
+                                .toLocalDateTime(TimeZone.UTC)
+                                .date
 
                         val localDateTime =
                             LocalDateTime(

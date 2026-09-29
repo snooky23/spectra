@@ -42,12 +42,22 @@ val SpectraNetworkLogger: ClientPlugin<SpectraNetworkLoggerConfig> =
         val startTimeKey = AttributeKey<Long>("SpectraStartTime")
 
         onRequest { request, _ ->
-            request.attributes.put(startTimeKey, com.spectra.logger.core.utils.SpectraTime.now().toEpochMilliseconds())
+            request.attributes.put(
+                startTimeKey,
+                com.spectra.logger.core.utils.SpectraTime
+                    .now()
+                    .toEpochMilliseconds(),
+            )
         }
 
         onResponse { response ->
-            val startTime = response.call.request.attributes.getOrNull(startTimeKey) ?: 0L
-            val duration = com.spectra.logger.core.utils.SpectraTime.now().toEpochMilliseconds() - startTime
+            val startTime =
+                response.call.request.attributes
+                    .getOrNull(startTimeKey) ?: 0L
+            val duration =
+                com.spectra.logger.core.utils.SpectraTime
+                    .now()
+                    .toEpochMilliseconds() - startTime
 
             val request = response.call.request
 
@@ -72,7 +82,9 @@ val SpectraNetworkLogger: ClientPlugin<SpectraNetworkLoggerConfig> =
             val entry =
                 NetworkLogEntry(
                     id = IdGenerator.generate(),
-                    timestamp = com.spectra.logger.core.utils.SpectraTime.now(),
+                    timestamp =
+                        com.spectra.logger.core.utils.SpectraTime
+                            .now(),
                     url = url,
                     method = method,
                     requestHeaders = requestHeaders,

@@ -37,7 +37,8 @@ val SpectraKtorPlugin =
                                 config.networkIgnoredTokens.any { urlString.contains(it, ignoreCase = true) } ||
                                     config.networkIgnoredDomains.any { urlString.contains(it, ignoreCase = true) }
                             }.getOrDefault(true) // Fail-close: if config crashes, ignore the log to prevent PII leaks
-                    ) || pluginConfig.ignoreRegex.any { it.containsMatchIn(urlString) }
+                    ) ||
+                    pluginConfig.ignoreRegex.any { it.containsMatchIn(urlString) }
 
             if (shouldIgnore) {
                 return@on proceed(request)
@@ -51,7 +52,10 @@ val SpectraKtorPlugin =
             val body = request.body
             val currentMaxBodySize =
                 runCatching {
-                    (pluginConfig.maxBodySize ?: SpectraLogger.configuration.performanceConfig.maxBodySize.toLong()).coerceAtLeast(0L)
+                    (
+                        pluginConfig.maxBodySize ?: SpectraLogger.configuration.performanceConfig.maxBodySize
+                            .toLong()
+                    ).coerceAtLeast(0L)
                 }.getOrDefault(1024L * 1024L)
 
             fun truncateSafely(text: String): String {

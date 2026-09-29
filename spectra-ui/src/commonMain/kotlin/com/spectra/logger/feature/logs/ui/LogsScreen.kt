@@ -24,9 +24,9 @@ import com.spectra.logger.core.ui.components.pickers.*
 import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogEntry
 import com.spectra.logger.feature.logs.model.LogLevel
-import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Instant
 
 /**
  * Logs screen displaying application logs with simplified filtering and detail views.
@@ -123,7 +123,8 @@ private fun LogsListContent(
     onClearHasError: () -> Unit,
     onTimeRangeSelected: (Long, Long) -> Unit,
 ) {
-    var isDashboardMode by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
+    var isDashboardMode by androidx.compose.runtime.saveable
+        .rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -258,7 +259,9 @@ private fun LogsListContent(
                         else -> {
                             LazyColumn(
                                 modifier = Modifier.fillMaxSize(),
-                                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = horizontalPadding),
+                                contentPadding =
+                                    androidx.compose.foundation.layout
+                                        .PaddingValues(horizontal = horizontalPadding),
                             ) {
                                 items(uiState.filteredLogs, key = { it.id }) { log ->
                                     LogRow(log = log, onClick = { onLogClick(log) })
@@ -317,7 +320,9 @@ fun LogRow(
                 LogLevelBadge(level = log.level)
                 if (log.metadata["source"] == "webview") {
                     Surface(
-                        shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp),
+                        shape =
+                            androidx.compose.foundation.shape
+                                .RoundedCornerShape(4.dp),
                         color = MaterialTheme.colorScheme.tertiaryContainer,
                     ) {
                         Text(

@@ -112,6 +112,9 @@ class RemoteStreamViewModelTest {
             advanceUntilIdle()
 
             assertEquals(StreamConnectionState.REJECTED, viewModel.uiState.value.connectionState)
-            assertTrue(viewModel.uiState.value.errorMessage!!.contains("rejected by the desktop"))
+            assertTrue(
+                viewModel.uiState.value.errorMessage!!
+                    .contains("rejected by the desktop"),
+            )
         }
 }

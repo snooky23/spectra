@@ -50,9 +50,9 @@ import com.spectra.logger.feature.network.statistics.NetworkDashboardStatistics
 import com.spectra.logger.feature.network.ui.components.StatusPieChart
 import com.spectra.logger.feature.network.ui.components.colorForStatus
 import kotlinx.collections.immutable.toImmutableList
-import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Instant
 
 @Composable
 fun NetworkDashboardScreen(
@@ -75,19 +75,20 @@ fun NetworkDashboardContent(
     // 1. Request Volume Timeline data
     val volumeChartData =
         remember(statistics.timeline) {
-            statistics.timeline.map { bucket ->
-                val instant = Instant.fromEpochMilliseconds(bucket.timestamp)
-                val time = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-                val timeString = "${time.hour.toString().padStart(2, '0')}:${time.minute.toString().padStart(2, '0')}"
+            statistics.timeline
+                .map { bucket ->
+                    val instant = Instant.fromEpochMilliseconds(bucket.timestamp)
+                    val time = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+                    val timeString = "${time.hour.toString().padStart(2, '0')}:${time.minute.toString().padStart(2, '0')}"
 
-                BarChartData(
-                    id = bucket.timestamp,
-                    value = bucket.count.toFloat(),
-                    // Indigo/Blue for volume
-                    color = SpectraDesignTokens.DebugBlue,
-                    label = timeString,
-                )
-            }.toImmutableList()
+                    BarChartData(
+                        id = bucket.timestamp,
+                        value = bucket.count.toFloat(),
+                        // Indigo/Blue for volume
+                        color = SpectraDesignTokens.DebugBlue,
+                        label = timeString,
+                    )
+                }.toImmutableList()
         }
 
     val maxVolume =
@@ -98,19 +99,20 @@ fun NetworkDashboardContent(
     // 2. Latency Timeline data
     val latencyChartData =
         remember(statistics.timeline) {
-            statistics.timeline.map { bucket ->
-                val instant = Instant.fromEpochMilliseconds(bucket.timestamp)
-                val time = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-                val timeString = "${time.hour.toString().padStart(2, '0')}:${time.minute.toString().padStart(2, '0')}"
+            statistics.timeline
+                .map { bucket ->
+                    val instant = Instant.fromEpochMilliseconds(bucket.timestamp)
+                    val time = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+                    val timeString = "${time.hour.toString().padStart(2, '0')}:${time.minute.toString().padStart(2, '0')}"
 
-                BarChartData(
-                    id = bucket.timestamp,
-                    value = bucket.averageDurationMs.toFloat(),
-                    // Emerald for latency
-                    color = SpectraDesignTokens.InfoGreen,
-                    label = timeString,
-                )
-            }.toImmutableList()
+                    BarChartData(
+                        id = bucket.timestamp,
+                        value = bucket.averageDurationMs.toFloat(),
+                        // Emerald for latency
+                        color = SpectraDesignTokens.InfoGreen,
+                        label = timeString,
+                    )
+                }.toImmutableList()
         }
 
     val maxLatency =

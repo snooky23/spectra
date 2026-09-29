@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.spectra.logger.core.model.*
 import com.spectra.logger.core.ui.components.common.*
@@ -13,7 +14,6 @@ import com.spectra.logger.core.ui.components.effects.*
 import com.spectra.logger.core.ui.components.pickers.*
 import com.spectra.logger.core.utils.*
 import com.spectra.logger.feature.logs.model.LogLevel
-import androidx.compose.ui.tooling.preview.Preview
 
 @Preview
 @Composable

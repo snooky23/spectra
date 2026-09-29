@@ -333,8 +333,8 @@ fun LogLevelBadge(level: LogLevel) {
     }
 }
 
-fun colorForLogLevel(level: LogLevel): Color {
-    return when (level) {
+fun colorForLogLevel(level: LogLevel): Color =
+    when (level) {
         LogLevel.VERBOSE -> SpectraDesignTokens.VerboseGray
         LogLevel.DEBUG -> SpectraDesignTokens.DebugBlue
         LogLevel.INFO -> SpectraDesignTokens.InfoGreen
@@ -342,7 +342,6 @@ fun colorForLogLevel(level: LogLevel): Color {
         LogLevel.ERROR -> SpectraDesignTokens.ErrorRed
         LogLevel.FATAL -> SpectraDesignTokens.FatalPurple
     }
-}
 
 /**
  * Standard detail section for panes and sheets
@@ -392,25 +391,23 @@ fun StatusBadge(
 fun colorForStatusRange(
     code: Int?,
     error: String?,
-): Color {
-    return when {
+): Color =
+    when {
         error != null || code == null -> SpectraDesignTokens.ErrorRed
         code in 200..299 -> SpectraDesignTokens.InfoGreen
         code in 300..399 -> SpectraDesignTokens.DebugBlue
         code in 400..499 -> SpectraDesignTokens.WarningOrange
         else -> SpectraDesignTokens.ErrorRed
     }
-}
 
-fun colorForStatusRange(range: String): Color {
-    return when (range) {
+fun colorForStatusRange(range: String): Color =
+    when (range) {
         "2xx" -> SpectraDesignTokens.InfoGreen
         "3xx" -> SpectraDesignTokens.DebugBlue
         "4xx" -> SpectraDesignTokens.WarningOrange
         "5xx" -> SpectraDesignTokens.ErrorRed
         else -> SpectraDesignTokens.VerboseGray
     }
-}
 
 /**
  * A horizontal flow-based legend for log levels.

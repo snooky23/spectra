@@ -23,7 +23,10 @@ class SpectraOkHttpInterceptor(
 
         val currentMaxBodySize =
             runCatching {
-                (maxBodySize ?: SpectraLogger.configuration.performanceConfig.maxBodySize.toLong()).coerceAtLeast(0L)
+                (
+                    maxBodySize ?: SpectraLogger.configuration.performanceConfig.maxBodySize
+                        .toLong()
+                ).coerceAtLeast(0L)
             }.getOrDefault(1024L * 1024L) // 1MB fallback
 
         val shouldIgnore =

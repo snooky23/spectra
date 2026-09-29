@@ -3,8 +3,8 @@ package com.spectra.logger.feature.logs.model
 import com.spectra.logger.core.model.*
 import com.spectra.logger.core.model.SourceType
 import com.spectra.logger.core.utils.*
-import kotlin.time.Instant
 import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 
 /**
  * Represents a single log entry in the system.

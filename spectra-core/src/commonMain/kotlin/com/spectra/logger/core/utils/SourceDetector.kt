@@ -46,14 +46,13 @@ object SourceDetector {
      * Gets the current call stack as a list of stack frame information.
      * Common implementation using Exception stack trace.
      */
-    private fun getStackTrace(): List<String> {
-        return try {
+    private fun getStackTrace(): List<String> =
+        try {
             Exception().stackTraceToString().split('\n')
         } catch (e: Exception) {
             // Fallback if stack trace not available
             emptyList()
         }
-    }
 
     /**
      * Extracts the source package ID from the stack trace.
@@ -129,14 +128,22 @@ object SourceDetector {
     private fun isKnownSdk(sourceId: String): Boolean {
         val knownSdks =
             setOf(
-                "com.google", "google",
-                "com.facebook", "facebook",
-                "com.firebase", "firebase",
-                "com.crashlytics", "crashlytics",
-                "io.sentry", "sentry",
-                "com.amplitude", "amplitude",
-                "com.mixpanel", "mixpanel",
-                "com.segment", "segment",
+                "com.google",
+                "google",
+                "com.facebook",
+                "facebook",
+                "com.firebase",
+                "firebase",
+                "com.crashlytics",
+                "crashlytics",
+                "io.sentry",
+                "sentry",
+                "com.amplitude",
+                "amplitude",
+                "com.mixpanel",
+                "mixpanel",
+                "com.segment",
+                "segment",
                 "retrofit",
                 "okhttp3",
                 "androidx",

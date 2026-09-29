@@ -245,7 +245,9 @@ fun LogsFilterSheet(
                         onClick = {
                             localFilter =
                                 localFilter.copy(
-                                    fromTimestamp = com.spectra.logger.core.utils.SpectraTime.hoursAgo(1),
+                                    fromTimestamp =
+                                        com.spectra.logger.core.utils.SpectraTime
+                                            .hoursAgo(1),
                                     toTimestamp = null,
                                 )
                         },
@@ -255,7 +257,9 @@ fun LogsFilterSheet(
                         onClick = {
                             localFilter =
                                 localFilter.copy(
-                                    fromTimestamp = com.spectra.logger.core.utils.SpectraTime.daysAgo(1),
+                                    fromTimestamp =
+                                        com.spectra.logger.core.utils.SpectraTime
+                                            .daysAgo(1),
                                     toTimestamp = null,
                                 )
                         },
@@ -265,7 +269,9 @@ fun LogsFilterSheet(
                         onClick = {
                             localFilter =
                                 localFilter.copy(
-                                    fromTimestamp = com.spectra.logger.core.utils.SpectraTime.daysAgo(7),
+                                    fromTimestamp =
+                                        com.spectra.logger.core.utils.SpectraTime
+                                            .daysAgo(7),
                                     toTimestamp = null,
                                 )
                         },

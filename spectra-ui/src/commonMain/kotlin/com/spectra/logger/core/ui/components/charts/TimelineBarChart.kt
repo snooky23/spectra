@@ -130,10 +130,12 @@ fun TimelineBarChart(
         val density = LocalDensity.current
         val leftPadding =
             if (data.isNotEmpty()) {
-                textMeasurer.measure(
-                    text = maxValue.toInt().toString(),
-                    style = TextStyle(fontSize = 10.sp),
-                ).size.width.toFloat() + with(density) { 8.dp.toPx() }
+                textMeasurer
+                    .measure(
+                        text = maxValue.toInt().toString(),
+                        style = TextStyle(fontSize = 10.sp),
+                    ).size.width
+                    .toFloat() + with(density) { 8.dp.toPx() }
             } else {
                 0f
             }
@@ -159,8 +161,7 @@ fun TimelineBarChart(
                             onElementClick(tappedIndex)
                         }
                     }
-                }
-                .pointerInput(data, onRangeSelected, leftPadding) {
+                }.pointerInput(data, onRangeSelected, leftPadding) {
                     if (onRangeSelected == null) return@pointerInput
                     detectHorizontalDragGestures(
                         onDragStart = { offset ->

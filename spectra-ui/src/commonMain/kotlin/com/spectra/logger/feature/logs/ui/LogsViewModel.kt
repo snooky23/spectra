@@ -150,11 +150,10 @@ class LogsViewModel(
         }
     }
 
-    fun getShareText(logs: List<LogEntry>): String {
-        return logs.joinToString("\n") { log ->
+    fun getShareText(logs: List<LogEntry>): String =
+        logs.joinToString("\n") { log ->
             "[${log.level.name}] ${log.timestamp} - ${log.tag}: ${log.message}"
         }
-    }
 
     fun shareLogs(
         logs: List<LogEntry>,
@@ -202,7 +201,9 @@ class LogsViewModel(
                     filtered.filter { log ->
                         log.message.lowercase().contains(query) ||
                             log.tag.lowercase().contains(query) ||
-                            log.level.name.lowercase().contains(query)
+                            log.level.name
+                                .lowercase()
+                                .contains(query)
                     }
             }
 

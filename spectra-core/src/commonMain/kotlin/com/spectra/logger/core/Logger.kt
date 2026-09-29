@@ -168,7 +168,9 @@ class Logger(
         val entry =
             LogEntry(
                 id = IdGenerator.generate(),
-                timestamp = com.spectra.logger.core.utils.SpectraTime.now(),
+                timestamp =
+                    com.spectra.logger.core.utils.SpectraTime
+                        .now(),
                 level = level,
                 tag = tag,
                 message = message,
