@@ -98,6 +98,52 @@ esac
 CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
 
+# On Darwin (macOS), auto-locate Java 21/17+ if JAVA_HOME is not set or points to Java < 17
+if "$darwin" ; then
+    target_java_ver="21"
+    if [ -f "$APP_HOME/.java-version" ]; then
+        target_java_ver="$(tr -d '[:space:]' < "$APP_HOME/.java-version")"
+    fi
+    need_detect_java=false
+    if [ -z "$JAVA_HOME" ] || [ ! -x "$JAVA_HOME/bin/java" ]; then
+        need_detect_java=true
+    else
+        curr_ver="$("$JAVA_HOME/bin/java" -version 2>&1 | awk -F '"' '/version/ {print $2}' | cut -d'.' -f1)"
+        if [ -n "$curr_ver" ] && [ "$curr_ver" -lt 17 ] 2>/dev/null; then
+            need_detect_java=true
+        fi
+    fi
+    if [ "$need_detect_java" = true ]; then
+        # 1. SDKMAN candidate matching target version or current
+        for candidate in "$HOME/.sdkman/candidates/java/${target_java_ver}"* "$HOME/.sdkman/candidates/java/current"; do
+            if [ -d "$candidate" ] && [ -x "$candidate/bin/java" ]; then
+                JAVA_HOME="$candidate"
+                break
+            fi
+        done
+        # 2. Android Studio JBR
+        if [ -z "$JAVA_HOME" ]; then
+            for jbr in "/Applications/Android Studio.app/Contents/jbr/Contents/Home" "$HOME/Applications/Android Studio.app/Contents/jbr/Contents/Home"; do
+                if [ -d "$jbr" ] && [ -x "$jbr/bin/java" ]; then
+                    JAVA_HOME="$jbr"
+                    break
+                fi
+            done
+        fi
+        # 3. macOS java_home
+        if [ -z "$JAVA_HOME" ]; then
+            if /usr/libexec/java_home -v "$target_java_ver" >/dev/null 2>&1; then
+                JAVA_HOME="$(/usr/libexec/java_home -v "$target_java_ver")"
+            elif /usr/libexec/java_home -v "17+" >/dev/null 2>&1; then
+                JAVA_HOME="$(/usr/libexec/java_home -v "17+")"
+            fi
+        fi
+        if [ -n "$JAVA_HOME" ]; then
+            export JAVA_HOME
+        fi
+    fi
+fi
+
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
     if [ -x "$JAVA_HOME/jre/sh/java" ] ; then

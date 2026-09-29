@@ -13,6 +13,58 @@ echo "Build Type: $BUILD_TYPE"
 
 cd "$PROJECT_ROOT"
 
+# Ensure JAVA_HOME is configured for Java 17+ (needed when invoked from Xcode / Android Studio)
+TARGET_JAVA_VERSION="21"
+if [ -f "$PROJECT_ROOT/.java-version" ]; then
+    TARGET_JAVA_VERSION="$(tr -d '[:space:]' < "$PROJECT_ROOT/.java-version")"
+fi
+
+need_java_home=false
+if [ -z "${JAVA_HOME:-}" ] || [ ! -x "${JAVA_HOME}/bin/java" ]; then
+    need_java_home=true
+else
+    CURRENT_JAVA_VER="$("${JAVA_HOME}/bin/java" -version 2>&1 | awk -F '"' '/version/ {print $2}' | cut -d'.' -f1)"
+    if [ -n "$CURRENT_JAVA_VER" ] && [ "$CURRENT_JAVA_VER" -lt 17 ] 2>/dev/null; then
+        need_java_home=true
+    fi
+fi
+
+if [ "$need_java_home" = true ]; then
+    FOUND_JAVA=""
+    # 1. SDKMAN candidate matching target version or current
+    for candidate in "$HOME/.sdkman/candidates/java/${TARGET_JAVA_VERSION}"* "$HOME/.sdkman/candidates/java/current"; do
+        if [ -d "$candidate" ] && [ -x "$candidate/bin/java" ]; then
+            FOUND_JAVA="$candidate"
+            break
+        fi
+    done
+
+    # 2. Android Studio JBR
+    if [ -z "$FOUND_JAVA" ]; then
+        for jbr in "/Applications/Android Studio.app/Contents/jbr/Contents/Home" "$HOME/Applications/Android Studio.app/Contents/jbr/Contents/Home"; do
+            if [ -d "$jbr" ] && [ -x "$jbr/bin/java" ]; then
+                FOUND_JAVA="$jbr"
+                break
+            fi
+        done
+    fi
+
+    # 3. macOS java_home
+    if [ -z "$FOUND_JAVA" ]; then
+        if /usr/libexec/java_home -v "$TARGET_JAVA_VERSION" >/dev/null 2>&1; then
+            FOUND_JAVA="$(/usr/libexec/java_home -v "$TARGET_JAVA_VERSION")"
+        elif /usr/libexec/java_home -v "17+" >/dev/null 2>&1; then
+            FOUND_JAVA="$(/usr/libexec/java_home -v "17+")"
+        fi
+    fi
+
+    if [ -n "$FOUND_JAVA" ]; then
+        export JAVA_HOME="$FOUND_JAVA"
+        export PATH="$JAVA_HOME/bin:$PATH"
+        echo "☕ Auto-configured JAVA_HOME=$JAVA_HOME for Gradle build"
+    fi
+fi
+
 # Determine active architecture for Xcode local dev
 ARCH_ARGS=""
 if [[ "${SPECTRA_LOCAL_DEV:-}" == "1" && -n "${PLATFORM_NAME:-}" && -n "${ARCHS:-}" ]]; then
