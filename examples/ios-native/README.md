@@ -45,9 +45,28 @@ The root `Package.swift` is configured to look for these frameworks in `build/xc
 | <img src="../../docs/screenshots/ios-example-actions.png" width="250" /> | <img src="../../docs/screenshots/ios-example-network.png" width="250" /> | <img src="../../docs/screenshots/ios-example-events.png" width="250" /> |
 
 ### In-App Spectra Inspector (Liquid Glass UI)
-| Logs Screen | Network Screen | Events Screen |
-| :---: | :---: | :---: |
-| <img src="../../docs/screenshots/spectra-ui-logs.png" width="250" /> | <img src="../../docs/screenshots/spectra-ui-network.png" width="250" /> | <img src="../../docs/screenshots/spectra-ui-events.png" width="250" /> |
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <b>Logs Screen</b><br/>
+      <img src="../../docs/screenshots/spectra-ui-logs.png" width="280" />
+    </td>
+    <td width="50%" align="center">
+      <b>Network Screen</b><br/>
+      <img src="../../docs/screenshots/spectra-ui-network.png" width="280" />
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <b>Events Screen</b><br/>
+      <img src="../../docs/screenshots/spectra-ui-events.png" width="280" />
+    </td>
+    <td width="50%" align="center">
+      <b>Settings Screen</b><br/>
+      <img src="../../docs/screenshots/spectra-ui-settings.png" width="280" />
+    </td>
+  </tr>
+</table>
 
 ## Features Demonstrated
 

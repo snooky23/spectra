@@ -17,6 +17,7 @@
 
 [📸 Screenshots](#visual-showcase) •
 [✨ Key Features](#key-features) •
+[⚙️ Settings](#settings-management) •
 [📦 Installation](#installation) •
 [🧩 Compose Multiplatform](#cmp-guide) •
 [🤖 Android](#android-guide) •
@@ -47,17 +48,54 @@
 
 ### In-App Debug Inspector *(Compose Multiplatform & Liquid Glass UI)*
 
-| Logs View | Network Inspector | Events & Telemetry |
-| :---: | :---: | :---: |
-| <img src="docs/screenshots/spectra-ui-logs.png" width="270" alt="Spectra Logs Screen" /> | <img src="docs/screenshots/spectra-ui-network.png" width="270" alt="Spectra Network Logs Screen" /> | <img src="docs/screenshots/spectra-ui-events.png" width="270" alt="Spectra Events Screen" /> |
-| **Real-time Log Stream**<br/>• Instant search & regex filtering<br/>• Level badges (`DEBUG`, `INFO`, `WARN`, `ERROR`)<br/>• List / Dashboard aggregation toggle | **Live HTTP/HTTPS Traffic**<br/>• Method, URL & status chips (`200 OK`, `201`)<br/>• Headers, payloads & latency timing<br/>• Instant URL search | **User Analytics & Dwell Time**<br/>• Screen dwell duration tracking (`450ms`)<br/>• Type filter chips (`SCREEN`, `ACTION`, `LIFECYCLE`)<br/>• Key-value parameter inspector |
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <h3>Logs Inspector</h3>
+      <img src="docs/screenshots/spectra-ui-logs.png" width="310" alt="Spectra Logs Screen" />
+      <p><b>Real-time Log Stream</b><br/>• Instant search & regex filtering<br/>• Color-coded badges (<code>DEBUG</code>, <code>INFO</code>, <code>WARN</code>, <code>ERROR</code>)<br/>• List / Dashboard aggregation toggle</p>
+    </td>
+    <td width="50%" align="center">
+      <h3>Network Inspector</h3>
+      <img src="docs/screenshots/spectra-ui-network.png" width="310" alt="Spectra Network Logs Screen" />
+      <p><b>Live HTTP/HTTPS Traffic</b><br/>• Status code chips (<code>200 OK</code>, <code>201</code>, <code>404</code>, <code>500</code>)<br/>• Headers, JSON payload & latency timing<br/>• Instant URL query filtering</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <h3>Events & Telemetry</h3>
+      <img src="docs/screenshots/spectra-ui-events.png" width="310" alt="Spectra Events Screen" />
+      <p><b>User Analytics & Dwell Time</b><br/>• Screen dwell duration tracking (<code>450ms</code>)<br/>• Type filter chips (<code>SCREEN</code>, <code>ACTION</code>, <code>LIFECYCLE</code>)<br/>• Key-value parameter inspector</p>
+    </td>
+    <td width="50%" align="center">
+      <h3>Settings & Storage</h3>
+      <img src="docs/screenshots/spectra-ui-settings.png" width="310" alt="Spectra Settings Screen" />
+      <p><b>Diagnostics & Capacity Management</b><br/>• Dynamic theme switching (Light, Dark, System)<br/>• Storage quota monitoring & category-level purging<br/>• Retention auto-pruning & WebSocket streaming</p>
+    </td>
+  </tr>
+</table>
 
 ### Native Example & Playground Application
 
-| Generator Actions | Traffic Simulation | Event Tracking & Dwell |
-| :---: | :---: | :---: |
-| <img src="docs/screenshots/ios-example-actions.png" width="270" alt="Example Actions Tab" /> | <img src="docs/screenshots/ios-example-network.png" width="270" alt="Example Network Tab" /> | <img src="docs/screenshots/ios-example-events.png" width="270" alt="Example Events Tab" /> |
-| **Interactive Triggers**<br/>• Single & burst log generation<br/>• Configurable log levels & metadata<br/>• Draggable floating debug bubble (FAB) | **Mock API Simulator**<br/>• Simulate `200 OK`, `201 Created`<br/>• Error test cases (`404 Not Found`, `500 Server`)<br/>• Network timeouts & bulk traffic bursts | **Telemetry Playground**<br/>• Automated screen enter/exit dwell timers<br/>• Button interactions & custom event tracking<br/>• Real-time parameter verification |
+<table>
+  <tr>
+    <td width="33.3%" align="center">
+      <h4>Generator Actions</h4>
+      <img src="docs/screenshots/ios-example-actions.png" width="250" alt="Example Actions Tab" />
+      <p>Single & burst log generation, configurable log levels & metadata, and draggable floating debug bubble (FAB).</p>
+    </td>
+    <td width="33.3%" align="center">
+      <h4>Traffic Simulation</h4>
+      <img src="docs/screenshots/ios-example-network.png" width="250" alt="Example Network Tab" />
+      <p>Simulate <code>200 OK</code>, <code>201 Created</code>, error test cases (<code>404</code>, <code>500</code>), timeouts, and bulk network bursts.</p>
+    </td>
+    <td width="33.3%" align="center">
+      <h4>Event Tracking & Dwell</h4>
+      <img src="docs/screenshots/ios-example-events.png" width="250" alt="Example Events Tab" />
+      <p>Automated screen enter/exit dwell timers, button interactions, custom event tracking, and parameter verification.</p>
+    </td>
+  </tr>
+</table>
 
 ---
 
@@ -138,6 +176,48 @@ Spectra follows **Clean Architecture** to maintain complete isolation between da
         │    iOS: Spectra.xcframework / SPM package: Spectra      │
         └─────────────────────────────────────────────────────────┘
 ```
+
+<a id="settings-management"></a>
+## ⚙️ In-App Settings & Diagnostics
+
+The 4th tab of the Spectra Debug Inspector provides developers and QA engineers with deep, runtime control over their local environment without needing to rebuild or relaunch the application:
+
+<table>
+<tr>
+<td width="50%">
+
+### 🌓 Appearance & Theming
+- **Dynamic Theme Modes**: Toggle seamlessly between **Light**, **Dark**, and **System** modes.
+- **Translucent Fluid Blurs**: Automatically applies iOS 26 Liquid Glass floating bars on Apple devices and Material 3 Dynamic Color on Android 12+.
+- **Instant Persistence**: Theme preferences persist across app sessions.
+
+</td>
+<td width="50%">
+
+### 📊 Storage Quotas & Capacity
+- **Live Counter Telemetry**: View real-time stored counts for Application Logs, Network Requests, User Events, and Crash Reports.
+- **Granular Purging**: Dedicated **Clear** actions per domain allow clearing noisy network history without losing critical application logs.
+- **Automated Retention**: Configurable auto-pruning (e.g. prune telemetry older than 7 days) and manual one-tap **Prune Now** optimization.
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 💥 Crash Reports & Breadcrumb Trails
+- **Crash History Viewer**: Review uncaught exceptions and fatal application states.
+- **Timeline Breadcrumbs**: Inspect the sequence of user taps, screen transitions, and log entries immediately preceding the failure.
+
+</td>
+<td width="50%">
+
+### 📡 Remote Telemetry Streaming
+- **WebSocket Synchronization**: Connect the local client to a remote logging server or team observability dashboard via `wss://`.
+- **Live Session Pairing**: Real-time log broadcasting for remote team debugging sessions.
+
+</td>
+</tr>
+</table>
 
 ---
 
