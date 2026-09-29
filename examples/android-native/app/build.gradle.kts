@@ -47,9 +47,8 @@ kotlin {
 }
 
 dependencies {
-    // Spectra Logger (Unified KMP UI)
-    implementation(project(":spectra-ui"))
-    implementation(project(":spectra-core"))
+    // Spectra Unified Umbrella SDK (Core + UI)
+    implementation(project(":spectra-umbrella"))
     implementation(libs.ktor.client.cio)
 
     // AndroidX

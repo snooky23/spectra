@@ -1,5 +1,5 @@
 import SwiftUI
-import SpectraLoggerUI
+import Spectra
 
 // MARK: - Main App View
 

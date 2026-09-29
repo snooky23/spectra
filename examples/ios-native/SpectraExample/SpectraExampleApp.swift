@@ -1,5 +1,5 @@
 import SwiftUI
-import SpectraLoggerUI
+import Spectra
 
 @main
 struct SpectraExampleApp: App {

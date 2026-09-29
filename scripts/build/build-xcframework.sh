@@ -81,9 +81,9 @@ if [[ "${SPECTRA_LOCAL_DEV:-}" == "1" && -n "${PLATFORM_NAME:-}" && -n "${ARCHS:
 fi
 
 if [ "$BUILD_TYPE" == "Release" ]; then
-    ./gradlew :spectra-core:assembleSpectraLoggerReleaseXCFramework :spectra-ui:assembleSpectraLoggerUIReleaseXCFramework $ARCH_ARGS
+    ./gradlew :spectra-core:assembleSpectraLoggerReleaseXCFramework :spectra-ui:assembleSpectraLoggerUIReleaseXCFramework :spectra-umbrella:assembleSpectraReleaseXCFramework $ARCH_ARGS
 else
-    ./gradlew :spectra-core:assembleSpectraLoggerDebugXCFramework :spectra-ui:assembleSpectraLoggerUIDebugXCFramework $ARCH_ARGS
+    ./gradlew :spectra-core:assembleSpectraLoggerDebugXCFramework :spectra-ui:assembleSpectraLoggerUIDebugXCFramework :spectra-umbrella:assembleSpectraDebugXCFramework $ARCH_ARGS
 fi
 
 # Ensure output directory exists for consumers (e.g. Package.swift)
@@ -112,5 +112,6 @@ copy_xcframework() {
 
 copy_xcframework "spectra-core" "SpectraLogger"
 copy_xcframework "spectra-ui" "SpectraLoggerUI"
+copy_xcframework "spectra-umbrella" "Spectra"
 
 echo "✨ All XCFrameworks prepared successfully!"

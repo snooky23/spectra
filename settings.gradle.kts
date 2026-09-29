@@ -63,6 +63,9 @@ include(":spectra-core")
 // Unified UI module (Compose Multiplatform)
 include(":spectra-ui")
 
+// Unified Umbrella module (Core + UI)
+include(":spectra-umbrella")
+
 // Example applications
 include(":examples:android-native:app")
 

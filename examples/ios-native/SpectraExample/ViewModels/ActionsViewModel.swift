@@ -1,6 +1,6 @@
 import Foundation
 import Combine
-import SpectraLoggerUI
+import Spectra
 
 @MainActor
 public class ActionsViewModel: ObservableObject {

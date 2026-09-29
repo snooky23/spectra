@@ -1,6 +1,6 @@
 import SwiftUI
 import UIKit
-import SpectraLoggerUI
+import Spectra
 
 /**
  * A SwiftUI wrapper for the Compose Multiplatform Spectra Logger UI.

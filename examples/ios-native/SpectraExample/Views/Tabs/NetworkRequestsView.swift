@@ -1,5 +1,5 @@
 import SwiftUI
-import SpectraLoggerUI
+import Spectra
 
 /// Tab showing network request simulation examples
 public struct NetworkRequestsView: View {

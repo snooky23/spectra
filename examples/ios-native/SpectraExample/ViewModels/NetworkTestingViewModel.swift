@@ -1,5 +1,5 @@
 import Foundation
-import SpectraLoggerUI
+import Spectra
 
 @MainActor
 public class NetworkTestingViewModel: ObservableObject {

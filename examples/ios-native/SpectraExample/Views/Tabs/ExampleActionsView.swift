@@ -1,5 +1,5 @@
 import SwiftUI
-import SpectraLoggerUI
+import Spectra
 
 /// Tab showing basic logging examples
 public struct ExampleActionsView: View {
