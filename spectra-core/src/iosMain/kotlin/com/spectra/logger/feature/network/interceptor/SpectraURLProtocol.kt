@@ -5,6 +5,7 @@ import com.spectra.logger.core.model.SourceType
 import com.spectra.logger.core.utils.IdGenerator
 import com.spectra.logger.core.utils.SpectraTime
 import com.spectra.logger.feature.network.model.NetworkLogEntry
+import com.spectra.logger.feature.settings.config.LoggerConfiguration
 import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.*
 import platform.Foundation.*
@@ -52,6 +53,20 @@ object SpectraIOSInterceptorConfig {
             _ignoreRegex.value = value
         }
 
+    private val _logSink = atomic<(NetworkLogEntry) -> Unit>({ SpectraLogger.logNetwork(it) })
+    var logSink: (NetworkLogEntry) -> Unit
+        get() = _logSink.value
+        set(value) {
+            _logSink.value = value
+        }
+
+    private val _configProvider = atomic<() -> LoggerConfiguration>({ SpectraLogger.configuration })
+    var configProvider: () -> LoggerConfiguration
+        get() = _configProvider.value
+        set(value) {
+            _configProvider.value = value
+        }
+
     internal val currentMaxBodySize: Long
         get() {
             val max = maxBodySize
@@ -59,7 +74,8 @@ object SpectraIOSInterceptorConfig {
                 if (max >= 0L) {
                     max
                 } else {
-                    SpectraLogger.configuration.performanceConfig.maxBodySize
+                    configProvider()
+                        .performanceConfig.maxBodySize
                         .toLong()
                 }
             ).coerceAtLeast(0L)
@@ -71,8 +87,8 @@ object SpectraIOSInterceptorConfig {
             return if (tokens.isNotEmpty()) {
                 tokens
             } else {
-                SpectraLogger.configuration.enabledFeatures.networkIgnoredTokens +
-                    SpectraLogger.configuration.enabledFeatures.networkIgnoredDomains
+                configProvider().enabledFeatures.networkIgnoredTokens +
+                    configProvider().enabledFeatures.networkIgnoredDomains
             }
         }
 }
@@ -288,7 +304,7 @@ class SpectraURLProtocol(
                 source = "urlsession",
                 sourceType = SourceType.PLUGIN,
             )
-        SpectraLogger.logNetwork(logEntry)
+        SpectraIOSInterceptorConfig.logSink(logEntry)
     }
 
     private fun logFailed(
@@ -316,6 +332,6 @@ class SpectraURLProtocol(
                 source = "urlsession",
                 sourceType = SourceType.PLUGIN,
             )
-        SpectraLogger.logNetwork(logEntry)
+        SpectraIOSInterceptorConfig.logSink(logEntry)
     }
 }

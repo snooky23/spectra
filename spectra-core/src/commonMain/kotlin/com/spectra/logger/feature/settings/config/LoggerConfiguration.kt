@@ -152,7 +152,7 @@ class LoggerConfigurationBuilder {
         networkLogSinks.add(sink)
     }
 
-    internal fun build(): LoggerConfiguration =
+    fun build(): LoggerConfiguration =
         LoggerConfiguration(
             minLogLevel = minLogLevel,
             logStorageConfig = logStorageConfig,

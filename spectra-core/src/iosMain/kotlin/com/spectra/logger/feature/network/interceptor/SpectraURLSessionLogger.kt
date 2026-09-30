@@ -74,8 +74,11 @@ object SpectraURLSessionLogger {
         error: platform.Foundation.NSError?,
         duration: Long,
         storage: NetworkLogStorage,
+        configProvider: () -> com.spectra.logger.feature.settings.config.LoggerConfiguration = {
+            com.spectra.logger.SpectraLogger.configuration
+        },
     ) {
-        val config = com.spectra.logger.SpectraLogger.configuration.enabledFeatures
+        val config = configProvider().enabledFeatures
         val isIgnoredDomain = config.networkIgnoredDomains.any { url.contains(it, ignoreCase = true) }
         val isIgnoredExtension =
             config.networkIgnoredExtensions.any {
@@ -143,6 +146,9 @@ object SpectraURLSessionLogger {
         session: NSURLSession,
         request: NSURLRequest,
         storage: NetworkLogStorage,
+        configProvider: () -> com.spectra.logger.feature.settings.config.LoggerConfiguration = {
+            com.spectra.logger.SpectraLogger.configuration
+        },
         completionHandler: (NSData?, NSURLResponse?, platform.Foundation.NSError?) -> Unit,
     ): NSURLSessionDataTask {
         val url = request.URL?.absoluteString ?: ""
@@ -156,7 +162,7 @@ object SpectraURLSessionLogger {
                 com.spectra.logger.core.utils.SpectraTime
                     .now()
                     .toEpochMilliseconds() - startTime
-            logRequest(url, "GET", response, data, error, duration, storage)
+            logRequest(url, "GET", response, data, error, duration, storage, configProvider)
             completionHandler(data, response, error)
         }
     }

@@ -12,6 +12,8 @@ import com.spectra.logger.feature.logs.model.LogLevel
 import com.spectra.logger.feature.logs.storage.InMemoryLogStorage
 import com.spectra.logger.feature.network.model.NetworkLogEntry
 import com.spectra.logger.feature.network.storage.InMemoryNetworkLogStorage
+import com.spectra.logger.feature.settings.config.LoggerConfiguration
+import com.spectra.logger.feature.settings.config.LoggerConfigurationBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -23,6 +25,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -156,5 +159,48 @@ class SettingsViewModelTest {
                 viewModel.uiState.value.lastPruneSummary
                     ?.contains("Pruned 7 logs") == true,
             )
+        }
+
+    @Test
+    fun testSettingsViewModelDecoupledConfiguration() =
+        runTest(testDispatcher) {
+            var currentConfig = LoggerConfiguration.DEFAULT
+            val configProvider = { currentConfig }
+            val configUpdater: ((LoggerConfigurationBuilder.() -> Unit) -> Unit) = { block ->
+                val builder = LoggerConfigurationBuilder()
+                builder.block()
+                currentConfig = builder.build()
+            }
+
+            val viewModel =
+                SettingsViewModel(
+                    logStorage = InMemoryLogStorage(maxCapacity = 100),
+                    networkStorage = InMemoryNetworkLogStorage(maxCapacity = 100),
+                    eventStorage = InMemoryEventLogStorage(maxCapacity = 100),
+                    crashStorage = InMemoryCrashStorage(maxCapacity = 100),
+                    configProvider = configProvider,
+                    configUpdater = configUpdater,
+                )
+            advanceUntilIdle()
+
+            assertTrue(viewModel.uiState.value.isNetworkLoggingEnabled)
+
+            viewModel.toggleNetworkLogging(false)
+            advanceUntilIdle()
+
+            assertFalse(viewModel.uiState.value.isNetworkLoggingEnabled)
+            assertFalse(currentConfig.enabledFeatures.enableNetworkLogging)
+
+            viewModel.updateIgnoredDomains("example.com, test.org")
+            advanceUntilIdle()
+
+            assertEquals("example.com, test.org", viewModel.uiState.value.ignoredDomainsText)
+            assertEquals(listOf("example.com", "test.org"), currentConfig.enabledFeatures.networkIgnoredDomains)
+
+            viewModel.updateMaxBodySize("500000")
+            advanceUntilIdle()
+
+            assertEquals("500000", viewModel.uiState.value.maxBodySizeText)
+            assertEquals(500000, currentConfig.performanceConfig.maxBodySize)
         }
 }

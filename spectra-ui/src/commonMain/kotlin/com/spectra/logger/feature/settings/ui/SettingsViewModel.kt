@@ -13,6 +13,8 @@ import com.spectra.logger.feature.logs.export.LogExporter
 import com.spectra.logger.feature.logs.model.LogFilter
 import com.spectra.logger.feature.logs.storage.LogStorage
 import com.spectra.logger.feature.network.storage.NetworkLogStorage
+import com.spectra.logger.feature.settings.config.LoggerConfiguration
+import com.spectra.logger.feature.settings.config.LoggerConfigurationBuilder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,13 +24,15 @@ import kotlinx.coroutines.launch
 /**
  * ViewModel for the Settings screen.
  *
- * Adheres to Clean Architecture with constructor-injected storage dependencies.
+ * Adheres to Clean Architecture with constructor-injected storage and configuration dependencies.
  */
 class SettingsViewModel(
     private val logStorage: LogStorage = SpectraLogger.logStorage,
     private val networkStorage: NetworkLogStorage = SpectraLogger.networkStorage,
     private val eventStorage: EventLogStorage = SpectraLogger.eventStorage,
     private val crashStorage: CrashStorage = SpectraLogger.crashStorage,
+    private val configProvider: () -> LoggerConfiguration = { SpectraLogger.configuration },
+    private val configUpdater: ((LoggerConfigurationBuilder.() -> Unit) -> Unit) = { SpectraLogger.configure(it) },
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
@@ -149,8 +153,8 @@ class SettingsViewModel(
     // --- Configuration Mutators --- //
 
     fun toggleNetworkLogging(enabled: Boolean) {
-        val currentFeatures = SpectraLogger.configuration.enabledFeatures
-        SpectraLogger.configure {
+        val currentFeatures = configProvider().enabledFeatures
+        configUpdater {
             features {
                 enableNetworkLogging = enabled
                 enableCrashReporting = currentFeatures.enableCrashReporting
@@ -163,8 +167,8 @@ class SettingsViewModel(
     }
 
     fun toggleFilePersistence(enabled: Boolean) {
-        val currentStorage = SpectraLogger.configuration.logStorageConfig
-        SpectraLogger.configure {
+        val currentStorage = configProvider().logStorageConfig
+        configUpdater {
             logStorage {
                 maxCapacity = currentStorage.maxCapacity
                 enablePersistence = enabled
@@ -180,8 +184,8 @@ class SettingsViewModel(
                 .split(",")
                 .map { it.trim() }
                 .filter { it.isNotEmpty() }
-        val currentFeatures = SpectraLogger.configuration.enabledFeatures
-        SpectraLogger.configure {
+        val currentFeatures = configProvider().enabledFeatures
+        configUpdater {
             features {
                 enableNetworkLogging = currentFeatures.enableNetworkLogging
                 enableCrashReporting = currentFeatures.enableCrashReporting
@@ -199,8 +203,8 @@ class SettingsViewModel(
                 .split(",")
                 .map { it.trim() }
                 .filter { it.isNotEmpty() }
-        val currentFeatures = SpectraLogger.configuration.enabledFeatures
-        SpectraLogger.configure {
+        val currentFeatures = configProvider().enabledFeatures
+        configUpdater {
             features {
                 enableNetworkLogging = currentFeatures.enableNetworkLogging
                 enableCrashReporting = currentFeatures.enableCrashReporting
@@ -214,9 +218,9 @@ class SettingsViewModel(
     }
 
     fun updateMaxBodySize(size: String) {
-        val parsedSize = size.toIntOrNull() ?: SpectraLogger.configuration.performanceConfig.maxBodySize
-        val currentPerf = SpectraLogger.configuration.performanceConfig
-        SpectraLogger.configure {
+        val currentPerf = configProvider().performanceConfig
+        val parsedSize = size.toIntOrNull() ?: currentPerf.maxBodySize
+        configUpdater {
             performance {
                 flowBufferCapacity = currentPerf.flowBufferCapacity
                 asyncWriteTimeout = currentPerf.asyncWriteTimeout
@@ -257,7 +261,7 @@ class SettingsViewModel(
     }
 
     private fun refreshConfigState() {
-        val config = SpectraLogger.configuration
+        val config = configProvider()
         _uiState.update {
             it.copy(
                 isNetworkLoggingEnabled = config.enabledFeatures.enableNetworkLogging,

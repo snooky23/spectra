@@ -5,6 +5,7 @@ import com.spectra.logger.core.model.SourceType
 import com.spectra.logger.core.utils.IdGenerator
 import com.spectra.logger.core.utils.SpectraTime
 import com.spectra.logger.feature.network.model.NetworkLogEntry
+import com.spectra.logger.feature.settings.config.LoggerConfiguration
 import okhttp3.Headers
 import okhttp3.Interceptor
 import okhttp3.MediaType
@@ -16,6 +17,8 @@ class SpectraOkHttpInterceptor(
     private val maxBodySize: Long? = null,
     private val ignoreTokens: List<String>? = null,
     private val ignoreRegex: List<Regex> = emptyList(),
+    private val logSink: (NetworkLogEntry) -> Unit = { SpectraLogger.logNetwork(it) },
+    private val configProvider: () -> LoggerConfiguration = { SpectraLogger.configuration },
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
@@ -24,7 +27,8 @@ class SpectraOkHttpInterceptor(
         val currentMaxBodySize =
             runCatching {
                 (
-                    maxBodySize ?: SpectraLogger.configuration.performanceConfig.maxBodySize
+                    maxBodySize ?: configProvider()
+                        .performanceConfig.maxBodySize
                         .toLong()
                 ).coerceAtLeast(0L)
             }.getOrDefault(1024L * 1024L) // 1MB fallback
@@ -34,7 +38,7 @@ class SpectraOkHttpInterceptor(
                 (
                     ignoreTokens == null &&
                         runCatching {
-                            val config = SpectraLogger.configuration.enabledFeatures
+                            val config = configProvider().enabledFeatures
                             config.networkIgnoredTokens.any { urlString.contains(it, ignoreCase = true) } ||
                                 config.networkIgnoredDomains.any { urlString.contains(it, ignoreCase = true) }
                         }.getOrDefault(true) // Fail-close: if config crashes, ignore the log to prevent PII leaks
@@ -134,7 +138,7 @@ class SpectraOkHttpInterceptor(
                     source = "okhttp",
                     sourceType = SourceType.PLUGIN,
                 )
-            SpectraLogger.logNetwork(errorLog)
+            logSink(errorLog)
             throw e
         }
 
@@ -178,7 +182,7 @@ class SpectraOkHttpInterceptor(
                 source = "okhttp",
                 sourceType = SourceType.PLUGIN,
             )
-        SpectraLogger.logNetwork(successLog)
+        logSink(successLog)
 
         return response
     }

@@ -87,8 +87,11 @@ open class SpectraWebChromeClient(
 fun WebView.attachSpectraLogger(
     existingClient: WebChromeClient? = null,
     tag: String = "WebView",
+    logger: (LogLevel, String, String, Throwable?, Map<String, String>?) -> Unit = { level, t, msg, thr, meta ->
+        SpectraLogger.log(level = level, tag = t, message = msg, throwable = thr, metadata = meta)
+    },
 ): SpectraWebChromeClient {
-    val client = SpectraWebChromeClient(delegate = existingClient, tag = tag)
+    val client = SpectraWebChromeClient(delegate = existingClient, tag = tag, logger = logger)
     this.webChromeClient = client
     return client
 }

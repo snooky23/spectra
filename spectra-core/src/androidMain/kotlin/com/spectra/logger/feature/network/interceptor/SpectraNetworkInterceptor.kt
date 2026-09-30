@@ -31,12 +31,15 @@ import java.io.IOException
 class SpectraNetworkInterceptor(
     private val storage: NetworkLogStorage,
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
+    private val configProvider: () -> com.spectra.logger.feature.settings.config.LoggerConfiguration = {
+        com.spectra.logger.SpectraLogger.configuration
+    },
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val url = request.url
 
-        val config = com.spectra.logger.SpectraLogger.configuration.enabledFeatures
+        val config = configProvider().enabledFeatures
         val isIgnoredDomain = config.networkIgnoredDomains.any { url.host.contains(it, ignoreCase = true) }
         val isIgnoredExtension =
             config.networkIgnoredExtensions.any {

@@ -5,6 +5,7 @@ import com.spectra.logger.core.model.SourceType
 import com.spectra.logger.core.utils.IdGenerator
 import com.spectra.logger.core.utils.SpectraTime
 import com.spectra.logger.feature.network.model.NetworkLogEntry
+import com.spectra.logger.feature.settings.config.LoggerConfiguration
 import io.ktor.client.call.save
 import io.ktor.client.plugins.api.Send
 import io.ktor.client.plugins.api.createClientPlugin
@@ -21,6 +22,8 @@ class SpectraKtorConfig {
     var maxBodySize: Long? = null
     var ignoreTokens: List<String>? = null
     var ignoreRegex: List<Regex> = emptyList()
+    var logSink: (NetworkLogEntry) -> Unit = { SpectraLogger.logNetwork(it) }
+    var configProvider: () -> LoggerConfiguration = { SpectraLogger.configuration }
 }
 
 val SpectraKtorPlugin =
@@ -33,7 +36,7 @@ val SpectraKtorPlugin =
                     (
                         localTokens == null &&
                             runCatching {
-                                val config = SpectraLogger.configuration.enabledFeatures
+                                val config = pluginConfig.configProvider().enabledFeatures
                                 config.networkIgnoredTokens.any { urlString.contains(it, ignoreCase = true) } ||
                                     config.networkIgnoredDomains.any { urlString.contains(it, ignoreCase = true) }
                             }.getOrDefault(true) // Fail-close: if config crashes, ignore the log to prevent PII leaks
@@ -53,7 +56,9 @@ val SpectraKtorPlugin =
             val currentMaxBodySize =
                 runCatching {
                     (
-                        pluginConfig.maxBodySize ?: SpectraLogger.configuration.performanceConfig.maxBodySize
+                        pluginConfig.maxBodySize ?: pluginConfig
+                            .configProvider()
+                            .performanceConfig.maxBodySize
                             .toLong()
                     ).coerceAtLeast(0L)
                 }.getOrDefault(1024L * 1024L)
@@ -128,7 +133,7 @@ val SpectraKtorPlugin =
                         sourceType = SourceType.PLUGIN,
                     )
 
-                SpectraLogger.logNetwork(logEntry)
+                pluginConfig.logSink(logEntry)
                 return@on savedCall
             } catch (e: Throwable) {
                 val isCancelled = e is CancellationException
@@ -151,7 +156,7 @@ val SpectraKtorPlugin =
                         sourceType = SourceType.PLUGIN,
                     )
 
-                SpectraLogger.logNetwork(logEntry)
+                pluginConfig.logSink(logEntry)
                 throw e
             }
         }
