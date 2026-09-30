@@ -679,6 +679,23 @@ fun main() = application {
 }
 ```
 
+Run the standalone Compose Desktop application:
+```bash
+./gradlew :spectra-ui:run
+```
+
+### Desktop Browser Companion Website 🌐
+Spectra also includes a zero-dependency web companion dashboard (`tools/desktop-companion`) that streams mobile telemetry in real time over local Wi-Fi:
+
+```bash
+# Option 1: Via Gradle
+./gradlew runDesktopCompanion
+
+# Option 2: Via npm
+cd tools/desktop-companion && npm start
+```
+Navigate to `http://localhost:9292` to access the live dual-pane telemetry stream, search filters, and QR pairing gatekeeper.
+
 ---
 
 ## 📤 Exporting & Sharing Logs

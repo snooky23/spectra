@@ -95,3 +95,11 @@ tasks.named<Delete>("clean") {
 plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
     the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().ignoreScriptsProperty.set(false)
 }
+
+tasks.register<Exec>("runDesktopCompanion") {
+    group = "application"
+    description = "Runs the Spectra Desktop Browser Companion HTTP and WebSocket server"
+    workingDir = file("tools/desktop-companion")
+    commandLine = listOf("node", "server.js")
+}
+
